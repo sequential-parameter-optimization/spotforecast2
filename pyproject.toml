@@ -1,0 +1,40 @@
+[project]
+name = "spotforecast2"
+version = "0.0.1"
+description = "Forecasting with spot"
+readme = "README.md"
+authors = [
+    { name = "bartzbeielstein", email = "32470350+bartzbeielstein@users.noreply.github.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "astral>=3.2",
+    "feature-engine>=1.9.3",
+    "flake8>=7.3.0",
+    "holidays>=0.90",
+    "ipykernel>=7.1.0",
+    "jupyter>=1.1.1",
+    "lightgbm>=4.6.0",
+    "matplotlib>=3.10.8",
+    "numba>=0.63.1",
+    "optuna>=4.7.0",
+    "pandas>=3.0.0",
+    "plotly>=6.5.2",
+    "pyarrow>=23.0.0",
+    "scikit-learn>=1.8.0",
+    "spotoptim>=0.0.160",
+    "tqdm>=4.67.2",
+]
+
+[build-system]
+requires = ["uv_build>=0.9.18,<0.10.0"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "mkdocs>=1.6.1",
+    "mkdocs-material>=9.7.1",
+    "mkdocstrings>=1.0.2",
+    "mkdocstrings-python>=2.0.1",
+    "pytest>=9.0.2",
+]
