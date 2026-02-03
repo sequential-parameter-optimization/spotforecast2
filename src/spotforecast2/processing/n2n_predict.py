@@ -1,5 +1,5 @@
 import pandas as pd
-from typing import List, Optional, Tuple, Dict, Any
+from typing import List, Optional
 from spotforecast2.forecaster.recursive import ForecasterEquivalentDate
 from spotforecast2.data.fetch_data import fetch_data
 from spotforecast2.preprocessing.curate_data import basic_ts_checks
@@ -8,8 +8,12 @@ from spotforecast2.preprocessing.outlier import mark_outliers
 
 from spotforecast2.preprocessing.split import split_rel_train_val_test
 from spotforecast2.forecaster.utils import predict_multivariate
-from spotforecast2.model_selection import TimeSeriesFold, backtesting_forecaster
 from spotforecast2.preprocessing.curate_data import get_start_end
+
+try:
+    from tqdm.auto import tqdm
+except ImportError:  # pragma: no cover - fallback when tqdm is not installed
+    tqdm = None
 
 
 def n2n_predict(
@@ -18,22 +22,22 @@ def n2n_predict(
     contamination: float = 0.01,
     window_size: int = 72,
     verbose: bool = True,
-) -> Tuple[pd.DataFrame, Optional[Dict[str, Any]]]:
+    show_progress: bool = True,
+) -> pd.DataFrame:
     """
     End-to-end prediction function replicating the workflow from 01_base_predictor combined with fetch_data.
 
     Args:
         columns: List of target columns to forecast. If None, uses a default set (defined internally or from data).
-                 Note: fetch_data now supports None to return all columns.
+                 Note: fetch_data supports None to return all columns.
         forecast_horizon: Number of steps to forecast.
         contamination: Contamination factor for outlier detection.
         window_size: Window size for weighting (not fully utilized in main flow but kept for consistency).
         verbose: Whether to print progress logs.
+        show_progress: Show progress bar during training and prediction.
 
     Returns:
-        Tuple containing:
-            - predictions (pd.DataFrame): The multi-output predictions.
-            - metrics (Optional[Dict]): Dictionary containing backtesting metrics if performed.
+        pd.DataFrame: The multi-output predictions.
     """
     if columns is not None:
         TARGET = columns
@@ -95,7 +99,11 @@ def n2n_predict(
 
     baseline_forecasters = {}
 
-    for target in data.columns:
+    target_iter = data.columns
+    if show_progress and tqdm is not None:
+        target_iter = tqdm(data.columns, desc="Training forecasters", unit="model")
+
+    for target in target_iter:
         forecaster = ForecasterEquivalentDate(offset=pd.DateOffset(days=1), n_offsets=1)
 
         forecaster.fit(y=data.loc[:end_validation, target])
@@ -105,13 +113,14 @@ def n2n_predict(
     if verbose:
         print("✓ Multi-output baseline system trained")
 
-    
     # --- Predict ---
     if verbose:
         print("Generating predictions...")
 
     predictions = predict_multivariate(
-        baseline_forecasters, steps_ahead=forecast_horizon
+        baseline_forecasters,
+        steps_ahead=forecast_horizon,
+        show_progress=show_progress,
     )
 
     return predictions

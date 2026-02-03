@@ -9,7 +9,6 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from spotforecast2.forecaster.recursive import ForecasterRecursive
 
-# ForecasterDirect is not ported, so removing related tests
 from spotforecast2.model_selection.utils_common import (
     initialize_lags_grid,
     check_backtesting_input,

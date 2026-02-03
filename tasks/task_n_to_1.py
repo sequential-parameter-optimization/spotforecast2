@@ -10,6 +10,7 @@ def main():
     CONTAMINATION = 0.01
     WINDOW_SIZE = 72
     VERBOSE = True
+    SHOW_PROGRESS = True
     WEIGHTS = [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0]
 
     print("--- Starting n_to_1_task using modular functions ---")
@@ -22,6 +23,7 @@ def main():
         contamination=CONTAMINATION,
         window_size=WINDOW_SIZE,
         verbose=VERBOSE,
+        show_progress=SHOW_PROGRESS,
     )
 
     print("\nMulti-output predictions head:")

@@ -20,6 +20,11 @@ from spotforecast2.utils import (
 )
 from spotforecast2.exceptions import set_skforecast_warnings, UnknownLevelWarning
 
+try:
+    from tqdm.auto import tqdm
+except ImportError:  # pragma: no cover - fallback when tqdm is not installed
+    tqdm = None
+
 
 def check_preprocess_series(series):
     pass
@@ -785,6 +790,7 @@ def predict_multivariate(
     forecasters: dict[str, Any],
     steps_ahead: int,
     exog: pd.DataFrame | None = None,
+    show_progress: bool = False,
 ) -> pd.DataFrame:
     """
     Generate multi-output predictions using multiple baseline forecasters.
@@ -796,6 +802,8 @@ def predict_multivariate(
         steps_ahead (int): Number of steps to forecast.
         exog (pd.DataFrame, optional): Exogenous variables for prediction.
             If provided, will be passed to each forecaster's predict method.
+        show_progress (bool, optional): Show progress bar while predicting
+            per target forecaster. Default: False.
 
     Returns:
         pd.DataFrame: DataFrame with predictions for all targets.
@@ -824,7 +832,15 @@ def predict_multivariate(
 
     predictions = {}
 
-    for target, forecaster in forecasters.items():
+    target_iter = forecasters.items()
+    if show_progress and tqdm is not None:
+        target_iter = tqdm(
+            forecasters.items(),
+            desc="Predicting targets",
+            unit="model",
+        )
+
+    for target, forecaster in target_iter:
         # Generate predictions for this target
         if exog is not None:
             pred = forecaster.predict(steps=steps_ahead, exog=exog)

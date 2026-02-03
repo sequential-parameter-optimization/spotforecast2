@@ -1,4 +1,3 @@
-import pytest
 import pandas as pd
 from unittest.mock import patch, MagicMock
 from spotforecast2.processing.n2n_predict import n2n_predict
@@ -11,13 +10,9 @@ from spotforecast2.processing.n2n_predict import n2n_predict
 @patch("spotforecast2.processing.n2n_predict.mark_outliers")
 @patch("spotforecast2.processing.n2n_predict.split_rel_train_val_test")
 @patch("spotforecast2.processing.n2n_predict.ForecasterEquivalentDate")
-@patch("spotforecast2.processing.n2n_predict.TimeSeriesFold")
-@patch("spotforecast2.processing.n2n_predict.backtesting_forecaster")
 @patch("spotforecast2.processing.n2n_predict.predict_multivariate")
 def test_n2n_predict_flow(
     mock_predict_multivariate,
-    mock_backtesting_forecaster,
-    mock_time_series_fold,
     mock_forecaster_class,
     mock_split,
     mock_mark_outliers,
@@ -46,9 +41,6 @@ def test_n2n_predict_flow(
     mock_forecaster_instance = MagicMock()
     mock_forecaster_class.return_value = mock_forecaster_instance
 
-    # Mock Backtesting
-    mock_backtesting_forecaster.return_value = (0.5, pd.DataFrame())
-
     # Mock Prediction
     mock_predictions = pd.DataFrame(
         {"col_1": [10, 11], "col_2": [12, 13]},
@@ -58,7 +50,7 @@ def test_n2n_predict_flow(
 
     # --- Run Function ---
     columns = ["col_1", "col_2"]
-    predictions, metrics = n2n_predict(
+    predictions = n2n_predict(
         columns=columns, forecast_horizon=2, verbose=False
     )
 
@@ -80,16 +72,11 @@ def test_n2n_predict_flow(
     assert mock_forecaster_class.call_count == 2
     assert mock_forecaster_instance.fit.call_count == 2
 
-    # Verify backtesting called
-    assert mock_backtesting_forecaster.call_count == 2
-
     # Verify predict called
     mock_predict_multivariate.assert_called_once()
 
     # Verify output
     pd.testing.assert_frame_equal(predictions, mock_predictions)
-    assert isinstance(metrics, dict)
-    assert len(metrics) == 2
 
 
 @patch("spotforecast2.processing.n2n_predict.fetch_data")
@@ -99,13 +86,9 @@ def test_n2n_predict_flow(
 @patch("spotforecast2.processing.n2n_predict.mark_outliers")
 @patch("spotforecast2.processing.n2n_predict.split_rel_train_val_test")
 @patch("spotforecast2.processing.n2n_predict.ForecasterEquivalentDate")
-@patch("spotforecast2.processing.n2n_predict.TimeSeriesFold")
-@patch("spotforecast2.processing.n2n_predict.backtesting_forecaster")
 @patch("spotforecast2.processing.n2n_predict.predict_multivariate")
 def test_n2n_predict_combined_calculation(
     mock_predict_multivariate,
-    mock_backtesting_forecaster,
-    mock_time_series_fold,
     mock_forecaster_class,
     mock_split,
     mock_mark_outliers,
@@ -123,7 +106,6 @@ def test_n2n_predict_combined_calculation(
     mock_agg.return_value = mock_df
     mock_mark_outliers.return_value = (mock_df, None)
     mock_split.return_value = (mock_df, mock_df, mock_df)
-    mock_backtesting_forecaster.return_value = (0, pd.DataFrame())
 
     # Mock Predictions with ALL required columns
     required_cols = [f"col_{i}" for i in range(5)]
@@ -135,7 +117,7 @@ def test_n2n_predict_combined_calculation(
     mock_predict_multivariate.return_value = mock_predictions
 
     # Run
-    predictions, _ = n2n_predict(columns=["dummy"], verbose=False)
+    predictions = n2n_predict(columns=["dummy"], verbose=False)
 
     # Check that predictions are returned correctly (combined not calculated here anymore)
     assert predictions.equals(mock_predictions)
