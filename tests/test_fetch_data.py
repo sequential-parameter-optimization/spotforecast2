@@ -146,10 +146,21 @@ class TestFetchData:
 
             yield csv_path
 
-    def test_fetch_data_columns_required(self):
-        """Test that fetch_data raises ValueError when columns is None."""
-        with pytest.raises(ValueError, match="columns must be specified"):
-            fetch_data(filename="test.csv")
+    def test_fetch_data_columns_none(self, sample_csv):
+        """Test that fetch_data returns all columns when columns is None."""
+        with patch("spotforecast2.data.fetch_data.get_data_home") as mock_home:
+            mock_home.return_value = sample_csv.parent
+
+            with patch("spotforecast2.data.fetch_data.Data.from_csv") as mock_from_csv:
+                mock_data = MagicMock()
+                mock_data.data = pd.DataFrame()
+                mock_from_csv.return_value = mock_data
+
+                fetch_data(filename=sample_csv.name, columns=None)
+
+                # verification that columns=None is passed to Data.from_csv
+                call_kwargs = mock_from_csv.call_args[1]
+                assert call_kwargs["columns"] is None
 
     def test_fetch_data_columns_empty_list(self):
         """Test that fetch_data raises ValueError when columns is empty list."""

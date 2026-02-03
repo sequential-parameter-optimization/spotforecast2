@@ -44,7 +44,7 @@ def get_data_home(data_home: Optional[Union[str, Path]] = None) -> Path:
 
 
 def fetch_data(
-    filename: str = "integrated_raw_data.csv",
+    filename: str = "data_in.csv",
     columns: Optional[list] = None,
     index_col: int = 0,
     parse_dates: bool = True,
@@ -56,8 +56,9 @@ def fetch_data(
     Args:
         filename (str):
             Filename of the CSV file containing the dataset. It must be located in the data home directory, which can be get or set using `get_data_home()`.
-        columns (list):
-            List of columns to be included in the dataset. Must be specified.
+        columns (list, optional):
+            List of columns to be included in the dataset. If None, all columns are included.
+            If an empty list is provided, a ValueError is blocked.
         index_col (int):
             Column index to be used as the index.
         parse_dates (bool):
@@ -71,7 +72,7 @@ def fetch_data(
         pd.DataFrame: The integrated raw dataset.
 
     Raises:
-        ValueError: If columns is None or empty.
+        ValueError: If columns is an empty list.
 
     Examples:
         >>> from spotforecast2.data.fetch_data import fetch_data
@@ -79,7 +80,7 @@ def fetch_data(
         >>> data.head()
                         Header1  Header2  Header3
     """
-    if columns is None or len(columns) == 0:
+    if columns is not None and len(columns) == 0:
         raise ValueError("columns must be specified and cannot be empty.")
 
     csv_path = get_data_home() / filename
