@@ -836,7 +836,7 @@ def n2n_predict_with_covariates(
     if verbose:
         print("\n[7/9] Splitting data into train/validation/test...")
 
-    perc_val = (1.0 - train_ratio)
+    perc_val = 1.0 - train_ratio
     data_train, data_val, data_test = split_rel_train_val_test(
         data_with_exog,
         perc_train=train_ratio,
