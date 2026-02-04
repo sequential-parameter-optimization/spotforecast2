@@ -216,3 +216,5 @@ notebooks/01_base_predictor.qmd
 notebooks/02_recursive_predictor.qmd
 scripts/init_pypi.sh
 /local
+BRANCH_PROTECTION_GUIDE.md
+TEST_DEBUGGING.md
