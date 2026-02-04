@@ -1,3 +1,10 @@
+## [0.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.0.5...v0.1.0) (2026-02-04)
+
+
+### Features
+
+* model persistence, (n2n_predict_with_covariates) : force-train argument ([ee35425](https://github.com/sequential-parameter-optimization/spotforecast2/commit/ee35425fbeb718edfbf54c1ec1480058f3e9a51a))
+
 ## [0.0.5](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.0.4...v0.0.5) (2026-02-04)
 
 
