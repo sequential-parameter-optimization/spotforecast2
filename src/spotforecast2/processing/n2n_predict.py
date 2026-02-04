@@ -319,7 +319,7 @@ def n2n_predict(
     if data is not None:
         if verbose:
             print("Using provided dataframe...")
-        data = fetch_data(filename=data, columns=TARGET)
+        data = fetch_data(dataframe=data, columns=TARGET)
     else:
         if verbose:
             print("Fetching data from CSV...")

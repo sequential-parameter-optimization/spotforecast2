@@ -876,7 +876,7 @@ def n2n_predict_with_covariates(
     else:
         if verbose:
             print("  Using provided dataframe...")
-        data = fetch_data(filename=data, timezone=timezone)
+        data = fetch_data(dataframe=data, timezone=timezone)
     
     target_columns = data.columns.tolist()
 

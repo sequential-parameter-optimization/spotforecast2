@@ -44,7 +44,8 @@ def get_data_home(data_home: Optional[Union[str, Path]] = None) -> Path:
 
 
 def fetch_data(
-    filename: Union[str, pd.DataFrame] = "data_in.csv",
+    filename: Optional[str] = None,
+    dataframe: Optional[pd.DataFrame] = None,
     columns: Optional[list] = None,
     index_col: int = 0,
     parse_dates: bool = True,
@@ -54,13 +55,15 @@ def fetch_data(
     """Fetches the integrated raw dataset from a CSV file or processes a DataFrame.
 
     Args:
-        filename (str or pd.DataFrame):
-            Filename of the CSV file containing the dataset (located in data home directory)
-            or a pandas DataFrame. If DataFrame is provided, it will be processed with
-            proper timezone handling. Default: "data_in.csv".
+        filename (str, optional):
+            Filename of the CSV file containing the dataset. Must be located in the 
+            data home directory. If both filename and dataframe are None, defaults to "data_in.csv".
+        dataframe (pd.DataFrame, optional):
+            A pandas DataFrame to process. If provided, it will be processed with
+            proper timezone handling. Mutually exclusive with filename.
         columns (list, optional):
             List of columns to be included in the dataset. If None, all columns are included.
-            If an empty list is provided, a ValueError is blocked.
+            If an empty list is provided, a ValueError is raised.
         index_col (int):
             Column index to be used as the index (only used when loading from CSV).
         parse_dates (bool):
@@ -75,37 +78,44 @@ def fetch_data(
         pd.DataFrame: The integrated raw dataset with UTC timezone.
 
     Raises:
-        ValueError: If columns is an empty list.
+        ValueError: If columns is an empty list or if both filename and dataframe are provided.
         FileNotFoundError: If CSV file does not exist.
 
     Examples:
-        Load from CSV:
+        Load from CSV (default):
         >>> from spotforecast2.data.fetch_data import fetch_data
         >>> data = fetch_data(columns=["col1", "col2"])
         >>> data.head()
                         Header1  Header2  Header3
         
+        Load from specific CSV:
+        >>> data = fetch_data(filename="custom_data.csv")
+        
         Process a DataFrame:
         >>> import pandas as pd
         >>> df = pd.DataFrame({"value": [1, 2, 3]}, 
         ...                   index=pd.date_range("2024-01-01", periods=3, freq="h"))
-        >>> data = fetch_data(filename=df, timezone="Europe/Berlin")
+        >>> data = fetch_data(dataframe=df, timezone="Europe/Berlin")
         >>> data.index.tz
         <UTC>
     """
     if columns is not None and len(columns) == 0:
         raise ValueError("columns must be specified and cannot be empty.")
+    
+    if filename is not None and dataframe is not None:
+        raise ValueError("Cannot specify both filename and dataframe. Please provide only one.")
 
-    # Check if filename is actually a DataFrame
-    if isinstance(filename, pd.DataFrame):
-        # Use Data.from_dataframe for proper timezone handling
+    # Process DataFrame if provided
+    if dataframe is not None:
         dataset = Data.from_dataframe(
-            df=filename,
+            df=dataframe,
             timezone=timezone,
             columns=columns,
         )
     else:
         # Load from CSV file
+        if filename is None:
+            filename = "data_in.csv"
         csv_path = get_data_home() / filename
         if not Path(csv_path).is_file():
             raise FileNotFoundError(f"The file {csv_path} does not exist.")
