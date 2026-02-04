@@ -1,3 +1,15 @@
+## [0.1.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.1.0...v0.1.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* persistence folder name corrected ([b0bc7ca](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b0bc7cad3960725cc48f5612558d0f61da007d9f))
+
+
+### Documentation
+
+* quick-reference updated ([de12cb2](https://github.com/sequential-parameter-optimization/spotforecast2/commit/de12cb204e3d5fcb91ea86485269b09a53ce29bb))
+
 ## [0.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.0.5...v0.1.0) (2026-02-04)
 
 
