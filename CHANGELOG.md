@@ -1,3 +1,10 @@
+## [0.2.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.1...v0.2.2) (2026-02-04)
+
+
+### Bug Fixes
+
+* Create separate params for df and csv filename ([969da31](https://github.com/sequential-parameter-optimization/spotforecast2/commit/969da311c780e315b1bfe17e9ad06de66c2dc380))
+
 ## [0.2.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.0...v0.2.1) (2026-02-04)
 
 
