@@ -1,3 +1,10 @@
+## [0.2.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.2...v0.2.3) (2026-02-04)
+
+
+### Bug Fixes
+
+* force_train default set to True ([354d1c8](https://github.com/sequential-parameter-optimization/spotforecast2/commit/354d1c82bfa6073b733b3e90803417b622782878))
+
 ## [0.2.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.1...v0.2.2) (2026-02-04)
 
 
