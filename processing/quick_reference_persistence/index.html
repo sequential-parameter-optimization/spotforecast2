@@ -13,10 +13,8 @@
       
       
       
-        <link rel="prev" href="../../api/weather/">
+        <link rel="prev" href="../model_persistence/">
       
-      
-        <link rel="next" href="../quick_reference_persistence/">
       
       
         
@@ -27,7 +25,7 @@
     
     
       
-        <title>Model Persistence - spotforecast2</title>
+        <title>Quick Reference - spotforecast2</title>
       
     
     
@@ -80,7 +78,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#model-persistence-guide" class="md-skip">
+        <a href="#quick-reference-model-persistence" class="md-skip">
           Skip to content
         </a>
       
@@ -114,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Model Persistence
+              Quick Reference
             
           </span>
         </div>
@@ -256,7 +254,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="./" class="md-tabs__link">
+        <a href="../model_persistence/" class="md-tabs__link">
           
   
   
@@ -618,6 +616,34 @@
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../model_persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Persistence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -637,7 +663,7 @@
   <span class="md-ellipsis">
     
   
-    Model Persistence
+    Quick Reference
   
 
     
@@ -655,7 +681,7 @@
   <span class="md-ellipsis">
     
   
-    Model Persistence
+    Quick Reference
   
 
     
@@ -681,10 +707,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#installation-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        Installation &amp; Setup
       
     </span>
   </a>
@@ -692,22 +718,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Basic Usage
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Quick Start">
+    <nav class="md-nav" aria-label="Basic Usage">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#first-run-training-and-caching" class="md-nav__link">
+  <a href="#first-run-model-training-caching" class="md-nav__link">
     <span class="md-ellipsis">
       
-        First Run - Training and Caching
+        First Run (Model Training + Caching)
       
     </span>
   </a>
@@ -715,10 +741,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#second-run-loading-from-cache" class="md-nav__link">
+  <a href="#second-run-load-from-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Second Run - Loading from Cache
+        Second Run (Load from Cache)
       
     </span>
   </a>
@@ -764,10 +790,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance-impact" class="md-nav__link">
+  <a href="#files" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance Impact
+        Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helper-functions-advanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Helper Functions (Advanced)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-expectations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Expectations
       
     </span>
   </a>
@@ -798,10 +857,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#all-models-loaded-from-cache" class="md-nav__link">
+  <a href="#all-models-cached" class="md-nav__link">
     <span class="md-ellipsis">
       
-        All Models Loaded from Cache
+        All models cached:
       
     </span>
   </a>
@@ -809,10 +868,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#partial-cache-loading-and-training" class="md-nav__link">
+  <a href="#partial-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Partial Cache - Loading and Training
+        Partial cache:
       
     </span>
   </a>
@@ -820,38 +879,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#force-retraining_1" class="md-nav__link">
+  <a href="#force-train" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Force Retraining
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#advanced-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Advanced Usage
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Advanced Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#working-with-helper-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Working with Helper Functions
+        Force train:
       
     </span>
   </a>
@@ -872,124 +903,13 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#q-models-not-loading" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: Models not loading?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q-slow-on-first-run" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: Slow on first run?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q-want-to-clear-cache" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: Want to clear cache?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q-models-taking-up-too-much-space" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: Models taking up too much space?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q-how-do-i-use-custom-estimators-with-persistence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: How do I use custom estimators with persistence?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
-  <a href="#technical-details" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Details
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Details">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#smart-caching-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Smart Caching Strategy
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#api-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
         API Compatibility
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#see-also" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        See Also
       
     </span>
   </a>
@@ -1000,34 +920,6 @@
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../quick_reference_persistence/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quick Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -1067,10 +959,10 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#installation-setup" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Overview
+        Installation &amp; Setup
       
     </span>
   </a>
@@ -1078,22 +970,22 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#basic-usage" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick Start
+        Basic Usage
       
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Quick Start">
+    <nav class="md-nav" aria-label="Basic Usage">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#first-run-training-and-caching" class="md-nav__link">
+  <a href="#first-run-model-training-caching" class="md-nav__link">
     <span class="md-ellipsis">
       
-        First Run - Training and Caching
+        First Run (Model Training + Caching)
       
     </span>
   </a>
@@ -1101,10 +993,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#second-run-loading-from-cache" class="md-nav__link">
+  <a href="#second-run-load-from-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Second Run - Loading from Cache
+        Second Run (Load from Cache)
       
     </span>
   </a>
@@ -1150,10 +1042,43 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#performance-impact" class="md-nav__link">
+  <a href="#files" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Performance Impact
+        Files
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#helper-functions-advanced" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Helper Functions (Advanced)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#performance-expectations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Expectations
       
     </span>
   </a>
@@ -1184,10 +1109,10 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#all-models-loaded-from-cache" class="md-nav__link">
+  <a href="#all-models-cached" class="md-nav__link">
     <span class="md-ellipsis">
       
-        All Models Loaded from Cache
+        All models cached:
       
     </span>
   </a>
@@ -1195,10 +1120,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#partial-cache-loading-and-training" class="md-nav__link">
+  <a href="#partial-cache" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Partial Cache - Loading and Training
+        Partial cache:
       
     </span>
   </a>
@@ -1206,38 +1131,10 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#force-retraining_1" class="md-nav__link">
+  <a href="#force-train" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Force Retraining
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#advanced-usage" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Advanced Usage
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Advanced Usage">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#working-with-helper-functions" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Working with Helper Functions
+        Force train:
       
     </span>
   </a>
@@ -1258,124 +1155,13 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Troubleshooting">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#q-models-not-loading" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: Models not loading?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q-slow-on-first-run" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: Slow on first run?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q-want-to-clear-cache" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: Want to clear cache?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q-models-taking-up-too-much-space" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: Models taking up too much space?
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#q-how-do-i-use-custom-estimators-with-persistence" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Q: How do I use custom estimators with persistence?
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
-  <a href="#technical-details" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Technical Details
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Technical Details">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#implementation" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Implementation
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#smart-caching-strategy" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Smart Caching Strategy
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
   <a href="#api-compatibility" class="md-nav__link">
     <span class="md-ellipsis">
       
         API Compatibility
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#see-also" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        See Also
       
     </span>
   </a>
@@ -1399,40 +1185,36 @@
 
 
 
-<h1 id="model-persistence-guide">Model Persistence Guide</h1>
-<h2 id="overview">Overview</h2>
-<p>This guide explains how to use the model persistence feature in spotforecast2, which provides scikit-learn-style caching of trained forecasters to disk.</p>
-<h2 id="quick-start">Quick Start</h2>
-<h3 id="first-run-training-and-caching">First Run - Training and Caching</h3>
+<h1 id="quick-reference-model-persistence">Quick Reference - Model Persistence</h1>
+<h2 id="installation-setup">Installation &amp; Setup</h2>
+<p>No additional installation needed. The implementation uses joblib (already in requirements).</p>
+<h2 id="basic-usage">Basic Usage</h2>
+<h3 id="first-run-model-training-caching">First Run (Model Training + Caching)</h3>
 <pre><code class="language-python">from spotforecast2.processing.n2n_predict_with_covariates import n2n_predict_with_covariates
 
-# Models are trained and cached automatically
 predictions, metadata, forecasters = n2n_predict_with_covariates(
     forecast_horizon=24,
-    verbose=True
+    verbose=True  # Shows: &quot;Training X forecasters...&quot; and &quot;Saving X trained forecasters...&quot;
 )
 # Time: ~5-10 minutes
 </code></pre>
-<h3 id="second-run-loading-from-cache">Second Run - Loading from Cache</h3>
-<pre><code class="language-python"># Models are loaded from cache (much faster!)
-predictions, metadata, forecasters = n2n_predict_with_covariates(
+<h3 id="second-run-load-from-cache">Second Run (Load from Cache)</h3>
+<pre><code class="language-python">predictions, metadata, forecasters = n2n_predict_with_covariates(
     forecast_horizon=24,
-    verbose=True
+    verbose=True  # Shows: &quot;All X forecasters loaded from cache&quot;
 )
-# Time: ~1-2 seconds
+# Time: ~1-2 seconds (150-600x faster!)
 </code></pre>
 <h3 id="force-retraining">Force Retraining</h3>
-<pre><code class="language-python"># Force retraining - ignore cache, retrain all models
-predictions, metadata, forecasters = n2n_predict_with_covariates(
+<pre><code class="language-python">predictions, metadata, forecasters = n2n_predict_with_covariates(
     forecast_horizon=24,
-    force_train=True,
+    force_train=True,  # Ignore cache, retrain all
     verbose=True
 )
 # Time: ~5-10 minutes
 </code></pre>
 <h3 id="custom-cache-location">Custom Cache Location</h3>
-<pre><code class="language-python"># Use custom directory for models
-predictions, metadata, forecasters = n2n_predict_with_covariates(
+<pre><code class="language-python">predictions, metadata, forecasters = n2n_predict_with_covariates(
     forecast_horizon=24,
     model_dir=&quot;/path/to/models&quot;,  # Default: &quot;./forecaster_models&quot;
     verbose=True
@@ -1463,8 +1245,55 @@ predictions, metadata, forecasters = n2n_predict_with_covariates(
 </tr>
 </tbody>
 </table>
-<h2 id="performance-impact">Performance Impact</h2>
-<p>Typical execution times when forecasting for 10 target variables:</p>
+<h2 id="files">Files</h2>
+<p><strong>Implementation File</strong>:
+- <code>src/spotforecast2/processing/n2n_predict_with_covariates.py</code></p>
+<p><strong>Test Files</strong>:
+- <code>tests/test_model_persistence.py</code> (35 unit tests)
+- <code>tests/test_n2n_persistence_integration.py</code> (12 integration tests)</p>
+<h2 id="testing">Testing</h2>
+<pre><code class="language-bash"># Run persistence tests
+uv run pytest tests/test_model_persistence.py -v
+
+# Run integration tests
+uv run pytest tests/test_n2n_persistence_integration.py -v
+
+# Run all tests
+uv run pytest tests/ -v
+
+# Quick check
+uv run pytest tests/test_model_persistence.py tests/test_n2n_persistence_integration.py --tb=no -q
+</code></pre>
+<h2 id="helper-functions-advanced">Helper Functions (Advanced)</h2>
+<pre><code class="language-python">from spotforecast2.processing.n2n_predict_with_covariates import (
+    _ensure_model_dir,
+    _get_model_filepath,
+    _save_forecasters,
+    _load_forecasters,
+    _model_directory_exists
+)
+
+# Create model directory
+model_dir = _ensure_model_dir(&quot;./my_models&quot;)
+
+# Get path for a specific model
+path = _get_model_filepath(model_dir, &quot;power&quot;)
+
+# Load cached models
+forecasters, missing = _load_forecasters(
+    [&quot;power&quot;, &quot;energy&quot;],
+    model_dir,
+    verbose=True
+)
+
+# Save models
+saved_paths = _save_forecasters(forecasters, model_dir, verbose=True)
+
+# Check if cache exists
+if _model_directory_exists(model_dir):
+    print(&quot;Cache directory found&quot;)
+</code></pre>
+<h2 id="performance-expectations">Performance Expectations</h2>
 <table>
 <thead>
 <tr>
@@ -1475,204 +1304,75 @@ predictions, metadata, forecasters = n2n_predict_with_covariates(
 </thead>
 <tbody>
 <tr>
-<td>First run (train + save)</td>
+<td>First run (with 10 targets)</td>
 <td>5-10 min</td>
 <td>Baseline</td>
 </tr>
 <tr>
-<td>Subsequent runs (load)</td>
+<td>Load from cache (10 targets)</td>
 <td>1-2 sec</td>
-<td><strong>150-600x faster</strong></td>
+<td>~200-400x</td>
 </tr>
 <tr>
 <td>Partial cache (5 cached, 5 new)</td>
 <td>2-3 min</td>
-<td>~2x faster</td>
+<td>~2x</td>
 </tr>
 <tr>
-<td>Force retrain (all models)</td>
+<td>Force retrain (10 targets)</td>
 <td>5-10 min</td>
-<td>Full retraining</td>
+<td>Retrains all</td>
 </tr>
 </tbody>
 </table>
 <h2 id="storage-usage">Storage Usage</h2>
-<p>Each model is approximately 1-5 MB when compressed:
-- 10 models: ~10-50 MB total
-- 50 models: ~50-250 MB total</p>
-<p>Models are stored in the format: <code>model_dir/forecaster_{target_name}.joblib</code></p>
+<ul>
+<li><strong>Per model</strong>: 1-5 MB (compressed)</li>
+<li><strong>10 models</strong>: ~10-50 MB</li>
+<li><strong>50 models</strong>: ~50-250 MB</li>
+</ul>
+<p>Models are stored in: <code>model_dir/forecaster_{target_name}.joblib</code></p>
 <h2 id="verbose-output-examples">Verbose Output Examples</h2>
-<h3 id="all-models-loaded-from-cache">All Models Loaded from Cache</h3>
-<pre><code>[8/9] Loading or training recursive forecasters with exogenous variables...
-  Attempting to load cached models...
-  ✓ Loaded forecaster for power from ./forecaster_models/forecaster_power.joblib
-  ✓ Loaded forecaster for energy from ./forecaster_models/forecaster_energy.joblib
-  ...
-  ✓ All 10 forecasters loaded from cache
+<h3 id="all-models-cached">All models cached:</h3>
+<pre><code>[8/9] Loading or training recursive forecasters...
+Attempting to load cached models...
+All 10 forecasters loaded from cache
 </code></pre>
-<h3 id="partial-cache-loading-and-training">Partial Cache - Loading and Training</h3>
-<pre><code>[8/9] Loading or training recursive forecasters with exogenous variables...
-  Attempting to load cached models...
-  ✓ Loaded forecaster for power from ./forecaster_models/forecaster_power.joblib
-  ✓ Loaded 1 forecasters, will train 1 new ones
-  Training forecaster for energy...
-    ✓ Forecaster trained for energy
-  Saving 1 trained forecasters to disk...
-  ✓ Saved forecaster for energy to ./forecaster_models/forecaster_energy.joblib
-  ✓ Total forecasters available: 2
+<h3 id="partial-cache">Partial cache:</h3>
+<pre><code>[8/9] Loading or training recursive forecasters...
+Attempting to load cached models...
+Loaded 7, will train 3 new ones...
+Training 3 forecasters...
+Saving 3 trained forecasters to disk...
 </code></pre>
-<h3 id="force-retraining_1">Force Retraining</h3>
-<pre><code>[8/9] Loading or training recursive forecasters with exogenous variables...
-  Force retraining all 2 forecasters...
-  Training forecaster for power...
-    ✓ Forecaster trained for power
-  Training forecaster for energy...
-    ✓ Forecaster trained for energy
-  Saving 2 trained forecasters to disk...
-  ✓ Saved forecaster for power to ./forecaster_models/forecaster_power.joblib
-  ✓ Saved forecaster for energy to ./forecaster_models/forecaster_energy.joblib
-  ✓ Total forecasters available: 2
-</code></pre>
-<h2 id="advanced-usage">Advanced Usage</h2>
-<h3 id="working-with-helper-functions">Working with Helper Functions</h3>
-<p>For advanced use cases, you can directly use the persistence helper functions:</p>
-<pre><code class="language-python">from spotforecast2.processing.n2n_predict_with_covariates import (
-    _ensure_model_dir,
-    _get_model_filepath,
-    _save_forecasters,
-    _load_forecasters,
-    _model_directory_exists
-)
-
-# Create/ensure model directory exists
-model_dir = _ensure_model_dir(&quot;./my_models&quot;)
-
-# Get path for a specific model
-path = _get_model_filepath(model_dir, &quot;power&quot;)
-# Returns: my_models/forecaster_power.joblib
-
-# Load cached models
-forecasters, missing = _load_forecasters(
-    [&quot;power&quot;, &quot;energy&quot;, &quot;temperature&quot;],
-    model_dir,
-    verbose=True
-)
-# Returns: (loaded_forecasters_dict, missing_targets_list)
-
-# Save models to disk
-saved_paths = _save_forecasters(
-    {&quot;power&quot;: forecaster_obj, &quot;energy&quot;: forecaster_obj},
-    model_dir,
-    verbose=True
-)
-
-# Check if cache directory exists
-if _model_directory_exists(model_dir):
-    print(&quot;Cache directory found&quot;)
+<h3 id="force-train">Force train:</h3>
+<pre><code>[8/9] Loading or training recursive forecasters...
+Force retraining all 10 forecasters...
+Training 10 forecasters...
+Saving 10 trained forecasters to disk...
 </code></pre>
 <h2 id="troubleshooting">Troubleshooting</h2>
-<h3 id="q-models-not-loading">Q: Models not loading?</h3>
-<p><strong>A:</strong> Check that the <code>model_dir</code> path is correct and accessible:</p>
-<pre><code class="language-bash"># Verify models exist in the directory
-ls ./forecaster_models/
-
-# Check file permissions
-ls -la ./forecaster_models/
-</code></pre>
-<p>Use <code>force_train=True</code> to rebuild the cache if needed:</p>
-<pre><code class="language-python">predictions, metadata, forecasters = n2n_predict_with_covariates(
-    forecast_horizon=24,
-    force_train=True,  # Rebuild cache
-    model_dir=&quot;./forecaster_models&quot;,
-    verbose=True
-)
-</code></pre>
-<h3 id="q-slow-on-first-run">Q: Slow on first run?</h3>
-<p><strong>A:</strong> Training takes 5-10 minutes depending on data size and number of models. This is normal - models are then cached for fast reuse. Subsequent runs will be 1-2 seconds.</p>
-<h3 id="q-want-to-clear-cache">Q: Want to clear cache?</h3>
-<p><strong>A:</strong> Delete the model directory:</p>
-<pre><code class="language-bash">rm -rf ./forecaster_models/
-</code></pre>
-<p>Or set <code>force_train=True</code> to rebuild:</p>
-<pre><code class="language-python">predictions, metadata, forecasters = n2n_predict_with_covariates(
-    forecast_horizon=24,
-    force_train=True,
-    model_dir=&quot;./forecaster_models&quot;,
-    verbose=True
-)
-</code></pre>
-<h3 id="q-models-taking-up-too-much-space">Q: Models taking up too much space?</h3>
-<p><strong>A:</strong> Each model is ~1-5 MB compressed with joblib. You can:
-- Delete <code>model_dir</code> to free space: <code>rm -rf ./forecaster_models/</code>
-- Use a different location: Set <code>model_dir</code> to a location with more space
+<p><strong>Q: Models not loading?</strong>
+- Check that <code>model_dir</code> path is correct and accessible
+- Verify models exist in the directory: <code>ls ./forecaster_models/</code>
+- Use <code>force_train=True</code> to rebuild cache</p>
+<p><strong>Q: Slow on first run?</strong>
+- Training takes 5-10 minutes depending on data size
+- This is normal - models are then cached for fast reuse
+- Subsequent runs will be 1-2 seconds</p>
+<p><strong>Q: Want to clear cache?</strong>
+- Delete the <code>model_dir</code> directory: <code>rm -rf ./forecaster_models/</code>
+- Or set <code>force_train=True</code> to rebuild</p>
+<p><strong>Q: Models taking up too much space?</strong>
+- Each model is ~1-5 MB compressed
+- Delete <code>model_dir</code> to free space
 - Set <code>force_train=True</code> to rebuild only if needed</p>
-<h3 id="q-how-do-i-use-custom-estimators-with-persistence">Q: How do I use custom estimators with persistence?</h3>
-<p><strong>A:</strong> Custom estimators work with persistence as long as they're pickle-compatible (most scikit-learn compatible estimators are):</p>
-<pre><code class="language-python">from lightgbm import LGBMRegressor
-
-custom_estimator = LGBMRegressor(
-    n_estimators=500,
-    learning_rate=0.05,
-    max_depth=7,
-    random_state=42
-)
-
-predictions, metadata, forecasters = n2n_predict_with_covariates(
-    forecast_horizon=24,
-    estimator=custom_estimator,
-    force_train=False,  # Use cache if available
-    model_dir=&quot;./models&quot;,
-    verbose=True
-)
-</code></pre>
-<h2 id="technical-details">Technical Details</h2>
-<h3 id="implementation">Implementation</h3>
-<p>The model persistence feature uses <strong>joblib</strong> for serialization, following scikit-learn conventions:
-- <strong>Format</strong>: Binary compressed files with <code>.joblib</code> extension
-- <strong>Compression</strong>: joblib compress=3 (good balance of speed and size)
-- <strong>Location</strong>: Configurable directory (default: <code>./forecaster_models/</code>)
-- <strong>Naming</strong>: <code>forecaster_{target_name}.joblib</code></p>
-<h3 id="smart-caching-strategy">Smart Caching Strategy</h3>
-<p>The system implements intelligent selective retraining:</p>
-<ol>
-<li><strong>Cache Lookup</strong> (if <code>force_train=False</code>)</li>
-<li>Check if model cache directory exists</li>
-<li>Attempt to load all target models from disk</li>
-<li>
-<p>Identify which targets are missing</p>
-</li>
-<li>
-<p><strong>Selective Training</strong></p>
-</li>
-<li>Train only missing models (not cached)</li>
-<li>Keep loaded models in memory</li>
-<li>
-<p>Saves significant computation time</p>
-</li>
-<li>
-<p><strong>Auto-Save</strong></p>
-</li>
-<li>Newly trained models automatically saved to disk</li>
-<li>Maintains cache consistency</li>
-<li>
-<p>No manual save required</p>
-</li>
-<li>
-<p><strong>Force Retraining</strong> (if <code>force_train=True</code>)</p>
-</li>
-<li>Clears cache directory</li>
-<li>Trains all models from scratch</li>
-<li>Useful for model updates or validation</li>
-</ol>
-<h3 id="api-compatibility">API Compatibility</h3>
-<p>✅ <strong>Backward Compatible</strong> - All new parameters have defaults
-✅ <strong>Drop-in Replacement</strong> - Works with existing code
-✅ <strong>No Breaking Changes</strong> - Safe to upgrade</p>
-<h2 id="see-also">See Also</h2>
+<h2 id="api-compatibility">API Compatibility</h2>
 <ul>
-<li><a href="../../api/forecaster/">API Reference - Forecasting</a></li>
-<li><a href="../../api/data/">API Reference - Data</a></li>
-<li><a href="../../api/preprocessing/">Preprocessing Guide</a></li>
+<li>✅ Backward compatible (all new parameters have defaults)</li>
+<li>✅ Drop-in replacement for existing code</li>
+<li>✅ No breaking changes</li>
+<li>✅ Works with existing configurations</li>
 </ul>
 
 
