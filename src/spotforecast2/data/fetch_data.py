@@ -44,57 +44,80 @@ def get_data_home(data_home: Optional[Union[str, Path]] = None) -> Path:
 
 
 def fetch_data(
-    filename: str = "data_in.csv",
+    filename: Union[str, pd.DataFrame] = "data_in.csv",
     columns: Optional[list] = None,
     index_col: int = 0,
     parse_dates: bool = True,
     dayfirst: bool = False,
     timezone: str = "UTC",
 ) -> pd.DataFrame:
-    """Fetches the integrated raw dataset from a CSV file.
+    """Fetches the integrated raw dataset from a CSV file or processes a DataFrame.
 
     Args:
-        filename (str):
-            Filename of the CSV file containing the dataset. It must be located in the data home directory, which can be get or set using `get_data_home()`.
+        filename (str or pd.DataFrame):
+            Filename of the CSV file containing the dataset (located in data home directory)
+            or a pandas DataFrame. If DataFrame is provided, it will be processed with
+            proper timezone handling. Default: "data_in.csv".
         columns (list, optional):
             List of columns to be included in the dataset. If None, all columns are included.
             If an empty list is provided, a ValueError is blocked.
         index_col (int):
-            Column index to be used as the index.
+            Column index to be used as the index (only used when loading from CSV).
         parse_dates (bool):
-            Whether to parse dates in the index column.
+            Whether to parse dates in the index column (only used when loading from CSV).
         dayfirst (bool):
-            Whether the day comes first in date parsing.
+            Whether the day comes first in date parsing (only used when loading from CSV).
         timezone (str):
-            Timezone to set for the datetime index.
+            Timezone to set for the datetime index. If a DataFrame with naive index is provided,
+            it will be localized to this timezone then converted to UTC. Default: "UTC".
 
     Returns:
-        pd.DataFrame: The integrated raw dataset.
+        pd.DataFrame: The integrated raw dataset with UTC timezone.
 
     Raises:
         ValueError: If columns is an empty list.
+        FileNotFoundError: If CSV file does not exist.
 
     Examples:
+        Load from CSV:
         >>> from spotforecast2.data.fetch_data import fetch_data
         >>> data = fetch_data(columns=["col1", "col2"])
         >>> data.head()
                         Header1  Header2  Header3
+        
+        Process a DataFrame:
+        >>> import pandas as pd
+        >>> df = pd.DataFrame({"value": [1, 2, 3]}, 
+        ...                   index=pd.date_range("2024-01-01", periods=3, freq="h"))
+        >>> data = fetch_data(filename=df, timezone="Europe/Berlin")
+        >>> data.index.tz
+        <UTC>
     """
     if columns is not None and len(columns) == 0:
         raise ValueError("columns must be specified and cannot be empty.")
 
-    csv_path = get_data_home() / filename
-    if not Path(csv_path).is_file():
-        raise FileNotFoundError(f"The file {csv_path} does not exist.")
+    # Check if filename is actually a DataFrame
+    if isinstance(filename, pd.DataFrame):
+        # Use Data.from_dataframe for proper timezone handling
+        dataset = Data.from_dataframe(
+            df=filename,
+            timezone=timezone,
+            columns=columns,
+        )
+    else:
+        # Load from CSV file
+        csv_path = get_data_home() / filename
+        if not Path(csv_path).is_file():
+            raise FileNotFoundError(f"The file {csv_path} does not exist.")
 
-    dataset = Data.from_csv(
-        csv_path=csv_path,
-        index_col=index_col,
-        parse_dates=parse_dates,
-        dayfirst=dayfirst,
-        timezone=timezone,
-        columns=columns,
-    )
+        dataset = Data.from_csv(
+            csv_path=csv_path,
+            index_col=index_col,
+            parse_dates=parse_dates,
+            dayfirst=dayfirst,
+            timezone=timezone,
+            columns=columns,
+        )
 
     return dataset.data
 

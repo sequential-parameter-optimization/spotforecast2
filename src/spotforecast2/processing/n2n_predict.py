@@ -314,13 +314,15 @@ def n2n_predict(
 
     if verbose:
         print("--- Starting n2n_predict ---")
-        print("Fetching data...")
 
-    # Fetch data
+    # Handle data input - fetch_data handles both CSV and DataFrame
     if data is not None:
-        if TARGET is not None:
-            data = data[TARGET]
+        if verbose:
+            print("Using provided dataframe...")
+        data = fetch_data(filename=data, columns=TARGET)
     else:
+        if verbose:
+            print("Fetching data from CSV...")
         data = fetch_data(columns=TARGET)
 
     START, END, COV_START, COV_END = get_start_end(

@@ -868,8 +868,16 @@ def n2n_predict_with_covariates(
     if verbose:
         print("\n[1/9] Loading and preparing target data...")
 
+    # Handle data input - fetch_data handles both CSV and DataFrame
     if data is None:
-        data = fetch_data()
+        if verbose:
+            print("  Fetching data from CSV...")
+        data = fetch_data(timezone=timezone)
+    else:
+        if verbose:
+            print("  Using provided dataframe...")
+        data = fetch_data(filename=data, timezone=timezone)
+    
     target_columns = data.columns.tolist()
 
     if verbose:
