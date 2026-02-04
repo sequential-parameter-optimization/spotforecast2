@@ -928,34 +928,6 @@
 
               
             
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../../processing/quick_reference_persistence/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Quick Reference
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
           </ul>
         </nav>
       
@@ -4581,11 +4553,7 @@ or if 'sample_weight' is present (it gets removed).</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>src/spotforecast2/utils/forecaster_config.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">265</span>
 <span class="normal">266</span>
 <span class="normal">267</span>
 <span class="normal">268</span>
@@ -4664,7 +4632,11 @@ or if 'sample_weight' is present (it gets removed).</p>
 <span class="normal">341</span>
 <span class="normal">342</span>
 <span class="normal">343</span>
-<span class="normal">344</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_select_fit_kwargs</span><span class="p">(</span><span class="n">estimator</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">fit_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="normal">344</span>
+<span class="normal">345</span>
+<span class="normal">346</span>
+<span class="normal">347</span>
+<span class="normal">348</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">check_select_fit_kwargs</span><span class="p">(</span><span class="n">estimator</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">fit_kwargs</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">dict</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Check if `fit_kwargs` is a dict and select only keys used by estimator&#39;s `fit`.</span>
 
@@ -5566,7 +5538,11 @@ or if series_weights is not a dict.</p>
 <span class="normal">255</span>
 <span class="normal">256</span>
 <span class="normal">257</span>
-<span class="normal">258</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">initialize_weights</span><span class="p">(</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">initialize_weights</span><span class="p">(</span>
     <span class="n">forecaster_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">estimator</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">weight_func</span><span class="p">:</span> <span class="n">Any</span><span class="p">,</span> <span class="n">series_weights</span><span class="p">:</span> <span class="n">Any</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Any</span><span class="p">,</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]],</span> <span class="n">Any</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -5667,14 +5643,18 @@ or if series_weights is not a dict.</p>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">weight_func</span><span class="p">:</span>
                 <span class="k">try</span><span class="p">:</span>
                     <span class="n">source_code_weight_func</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">weight_func</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
-                <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+                <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                    <span class="c1"># OSError: source not available, TypeError: callable class instance</span>
                     <span class="n">source_code_weight_func</span><span class="p">[</span><span class="n">key</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span>
                         <span class="sa">f</span><span class="s2">&quot;&lt;source unavailable: </span><span class="si">{</span><span class="n">weight_func</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span>
                     <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="n">source_code_weight_func</span> <span class="o">=</span> <span class="n">inspect</span><span class="o">.</span><span class="n">getsource</span><span class="p">(</span><span class="n">weight_func</span><span class="p">)</span>
-            <span class="k">except</span> <span class="ne">OSError</span><span class="p">:</span>
+            <span class="k">except</span> <span class="p">(</span><span class="ne">OSError</span><span class="p">,</span> <span class="ne">TypeError</span><span class="p">):</span>
+                <span class="c1"># OSError: source not available (e.g., built-in, lambda in REPL)</span>
+                <span class="c1"># TypeError: callable class instance (e.g., WeightFunction)</span>
+                <span class="c1"># In these cases, we can&#39;t get source but the object can still be pickled</span>
                 <span class="n">source_code_weight_func</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;&lt;source unavailable: </span><span class="si">{</span><span class="n">weight_func</span><span class="si">!r}</span><span class="s2">&gt;&quot;</span>
 
         <span class="k">if</span> <span class="s2">&quot;sample_weight&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">inspect</span><span class="o">.</span><span class="n">signature</span><span class="p">(</span><span class="n">estimator</span><span class="o">.</span><span class="n">fit</span><span class="p">)</span><span class="o">.</span><span class="n">parameters</span><span class="p">:</span>
