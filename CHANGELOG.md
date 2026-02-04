@@ -1,3 +1,10 @@
+## [0.2.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.0...v0.2.1) (2026-02-04)
+
+
+### Bug Fixes
+
+* Add timezone handling for input dataframe ([0263e94](https://github.com/sequential-parameter-optimization/spotforecast2/commit/0263e94400942944410fecbcfbc8c628b16359d4))
+
 ## [0.2.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.1.1...v0.2.0) (2026-02-04)
 
 
