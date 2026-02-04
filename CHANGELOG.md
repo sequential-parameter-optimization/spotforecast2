@@ -1,3 +1,15 @@
+## [0.2.4](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.3...v0.2.4) (2026-02-04)
+
+
+### Bug Fixes
+
+* plotting functions (plotly) updated ([8e5e1fb](https://github.com/sequential-parameter-optimization/spotforecast2/commit/8e5e1fb29cc68017b2cd8b48f9c3742048ca04ff))
+
+
+### Documentation
+
+* minor edit ([d06719a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/d06719a27377988a997b8875913b9d6ec46c9469))
+
 ## [0.2.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.2...v0.2.3) (2026-02-04)
 
 
