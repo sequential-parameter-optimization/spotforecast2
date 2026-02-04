@@ -1,3 +1,16 @@
+## [0.2.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.1.1...v0.2.0) (2026-02-04)
+
+
+### Features
+
+* add optional data parameter to forecasting functions ([a7c53c0](https://github.com/sequential-parameter-optimization/spotforecast2/commit/a7c53c068428eb2c4abad8cd5e6f618b821a049f))
+* add optional data parameter to forecasting functions ([2d9d9a2](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2d9d9a211e6780585a6c20f9688da9de2eb77453))
+
+
+### Bug Fixes
+
+* add data parameter documentation to n_to_1_with_covariates function docstring ([0edd501](https://github.com/sequential-parameter-optimization/spotforecast2/commit/0edd5012c7458982bad8441f21edd17e81d4f3a1))
+
 ## [0.1.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.1.0...v0.1.1) (2026-02-04)
 
 
