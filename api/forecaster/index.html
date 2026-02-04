@@ -8328,7 +8328,41 @@ of estimator. Defaults to None.</p>
 <span class="normal">1064</span>
 <span class="normal">1065</span>
 <span class="normal">1066</span>
-<span class="normal">1067</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ForecasterRecursive</span><span class="p">(</span><span class="n">ForecasterBase</span><span class="p">):</span>
+<span class="normal">1067</span>
+<span class="normal">1068</span>
+<span class="normal">1069</span>
+<span class="normal">1070</span>
+<span class="normal">1071</span>
+<span class="normal">1072</span>
+<span class="normal">1073</span>
+<span class="normal">1074</span>
+<span class="normal">1075</span>
+<span class="normal">1076</span>
+<span class="normal">1077</span>
+<span class="normal">1078</span>
+<span class="normal">1079</span>
+<span class="normal">1080</span>
+<span class="normal">1081</span>
+<span class="normal">1082</span>
+<span class="normal">1083</span>
+<span class="normal">1084</span>
+<span class="normal">1085</span>
+<span class="normal">1086</span>
+<span class="normal">1087</span>
+<span class="normal">1088</span>
+<span class="normal">1089</span>
+<span class="normal">1090</span>
+<span class="normal">1091</span>
+<span class="normal">1092</span>
+<span class="normal">1093</span>
+<span class="normal">1094</span>
+<span class="normal">1095</span>
+<span class="normal">1096</span>
+<span class="normal">1097</span>
+<span class="normal">1098</span>
+<span class="normal">1099</span>
+<span class="normal">1100</span>
+<span class="normal">1101</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ForecasterRecursive</span><span class="p">(</span><span class="n">ForecasterBase</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Recursive autoregressive forecaster for scikit-learn compatible estimators.</span>
 
@@ -8756,6 +8790,23 @@ of estimator. Defaults to None.</p>
         <span class="n">X_as_pandas</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="n">train_index</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">Optional</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]],</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create lagged predictors and aligned target values.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            y: Target values used to build lag features. Expected shape is</span>
+<span class="sd">                (n_samples,) or (n_samples, 1).</span>
+<span class="sd">            X_as_pandas: If True, returns lagged features as a pandas DataFrame.</span>
+<span class="sd">            train_index: Index to use for the lagged feature DataFrame when</span>
+<span class="sd">                `X_as_pandas` is True.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple containing:</span>
+<span class="sd">                - X_data: Lagged predictors with shape (n_rows, n_lags) or None</span>
+<span class="sd">                  if no lags are configured.</span>
+<span class="sd">                - y_data: Target values aligned to the lagged predictors with</span>
+<span class="sd">                  shape (n_rows,).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">X_data</span> <span class="o">=</span> <span class="kc">None</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lags</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># y = y.ravel() # Assuming y is already raveled</span>
@@ -8780,6 +8831,23 @@ of estimator. Defaults to None.</p>
         <span class="n">train_index</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Index</span><span class="p">,</span>
         <span class="n">X_as_pandas</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]],</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Generate window features from the target series.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            y: Target series used to compute window features. Must be a pandas</span>
+<span class="sd">                Series with an index aligned to `train_index` after trimming.</span>
+<span class="sd">            train_index: Index for the training rows to align the window features.</span>
+<span class="sd">            X_as_pandas: If True, keeps each window feature matrix as a pandas</span>
+<span class="sd">                DataFrame; otherwise converts to NumPy arrays.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Tuple containing:</span>
+<span class="sd">                - X_train_window_features: List of window feature matrices, one</span>
+<span class="sd">                  per window feature transformer.</span>
+<span class="sd">                - X_train_window_features_names_out_: List of feature names for</span>
+<span class="sd">                  all generated window features.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
 
         <span class="n">len_train_index</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">train_index</span><span class="p">)</span>
         <span class="n">X_train_window_features</span> <span class="o">=</span> <span class="p">[]</span>
