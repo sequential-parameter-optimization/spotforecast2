@@ -1,0 +1,1642 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="Forecasting with spot">
+      
+      
+        <meta name="author" content="bartzbeielstein">
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.1">
+    
+    
+      
+        <title>Outlier Detection and Visualization - spotforecast2</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#outlier-detection-and-visualization" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="spotforecast2" class="md-header__button md-logo" aria-label="spotforecast2" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            spotforecast2
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Outlier Detection and Visualization
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: light)" data-md-color-scheme="default" data-md-color-primary="teal" data-md-color-accent="purple"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="(prefers-color-scheme: dark)" data-md-color-scheme="slate" data-md-color-primary="teal" data-md-color-accent="lime"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../api/data/" class="md-tabs__link">
+          
+  
+  
+  API Reference
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../processing/model_persistence/" class="md-tabs__link">
+          
+  
+  
+  Processing Guides
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="spotforecast2" class="md-nav__button md-logo" aria-label="spotforecast2" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    spotforecast2
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    API Reference
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/data/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Data
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/preprocessing/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Preprocessing
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/forecaster/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Forecaster
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/model_selection/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Selection
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/utils/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Utils
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/weather/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Weather
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Processing Guides
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Processing Guides
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../processing/model_persistence/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Model Persistence
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Overview
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installation
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Quick Start
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Quick Start">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#basic-outlier-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Basic Outlier Detection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#histogram-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Histogram Visualization
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interactive-plotly-visualization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interactive Plotly Visualization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API Reference
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="API Reference">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#get_outliers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_outliers()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visualize_outliers_hist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        visualize_outliers_hist()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#visualize_outliers_plotly_scatter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        visualize_outliers_plotly_scatter()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#complete-workflow-example" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Complete Workflow Example
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#parameters-and-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Parameters and Configuration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Parameters and Configuration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#contamination-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        contamination parameter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#random_state-parameter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        random_state parameter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#matplotlib-histogram-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Matplotlib histogram options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plotly-layout-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Plotly layout options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#algorithm-details" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Details
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Details">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#isolation-forest" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Isolation Forest
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#best-practices" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Best Practices
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Best Practices">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-preprocessing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Preprocessing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-contamination-estimation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Contamination Estimation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-visual-inspection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Visual Inspection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-validation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Validation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#troubleshooting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Troubleshooting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Troubleshooting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#issue-no-outliers-detected" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue: No outliers detected
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-too-many-false-positives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue: Too many false positives
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#issue-importerror-for-plotly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Issue: ImportError for plotly
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#see-also" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        See Also
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="outlier-detection-and-visualization">Outlier Detection and Visualization</h1>
+<p>This module provides comprehensive tools for detecting and visualizing outliers in time series data using the Isolation Forest algorithm.</p>
+<h2 id="overview">Overview</h2>
+<p>The outlier detection module includes three main functions:</p>
+<ul>
+<li><strong><code>get_outliers()</code></strong> - Detect outliers using Isolation Forest</li>
+<li><strong><code>visualize_outliers_hist()</code></strong> - Visualize outliers with static histograms</li>
+<li><strong><code>visualize_outliers_plotly_scatter()</code></strong> - Visualize outliers with interactive Plotly scatter plots</li>
+</ul>
+<p>These functions work together to provide a complete workflow for outlier analysis in time series data.</p>
+<h2 id="installation">Installation</h2>
+<p>The outlier visualization functions require <code>matplotlib</code> for histograms and <code>plotly</code> for interactive scatter plots.</p>
+<p>Using pip:</p>
+<pre><code class="language-bash">pip install matplotlib plotly
+</code></pre>
+<p>Using uv:</p>
+<pre><code class="language-bash">uv pip install matplotlib plotly
+</code></pre>
+<h2 id="quick-start">Quick Start</h2>
+<h3 id="basic-outlier-detection">Basic Outlier Detection</h3>
+<pre><code class="language-python">import pandas as pd
+import numpy as np
+from spotforecast2.preprocessing.outlier import get_outliers
+
+# Create sample data with outliers
+np.random.seed(42)
+data = pd.DataFrame({
+    'temperature': np.concatenate([
+        np.random.normal(20, 5, 100),
+        [50, 60, 70]  # outliers
+    ]),
+    'humidity': np.concatenate([
+        np.random.normal(60, 10, 100),
+        [95, 98, 99]  # outliers
+    ])
+})
+
+# Detect outliers
+outliers = get_outliers(data, contamination=0.03)
+
+for col, outlier_vals in outliers.items():
+    print(f&quot;{col}: {len(outlier_vals)} outliers detected&quot;)
+</code></pre>
+<h3 id="histogram-visualization">Histogram Visualization</h3>
+<pre><code class="language-python">from spotforecast2.preprocessing.outlier import visualize_outliers_hist
+
+# Create sample data
+np.random.seed(42)
+data_original = pd.DataFrame({
+    'temperature': np.concatenate([
+        np.random.normal(20, 5, 100),
+        [50, 60, 70]  # outliers
+    ])
+})
+
+data_cleaned = data_original.copy()
+
+# Visualize outliers
+visualize_outliers_hist(
+    data_cleaned,
+    data_original,
+    contamination=0.03,
+    figsize=(12, 5),
+    alpha=0.7
+)
+</code></pre>
+<h3 id="interactive-plotly-visualization">Interactive Plotly Visualization</h3>
+<pre><code class="language-python">from spotforecast2.preprocessing.outlier import visualize_outliers_plotly_scatter
+
+# Create time series data
+dates = pd.date_range('2024-01-01', periods=103, freq='h')
+data_original = pd.DataFrame({
+    'temperature': np.concatenate([
+        np.random.normal(20, 5, 100),
+        [50, 60, 70]  # outliers
+    ])
+}, index=dates)
+
+data_cleaned = data_original.copy()
+
+# Visualize outliers with interactive plot
+visualize_outliers_plotly_scatter(
+    data_cleaned,
+    data_original,
+    contamination=0.03,
+    template='plotly_white'
+)
+</code></pre>
+<h2 id="api-reference">API Reference</h2>
+<h3 id="get_outliers">get_outliers()</h3>
+<p>Detect outliers in each column using Isolation Forest.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-python">def get_outliers(
+    data: pd.DataFrame,
+    data_original: Optional[pd.DataFrame] = None,
+    contamination: float = 0.01,
+    random_state: int = 1234,
+) -&gt; Dict[str, pd.Series]
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td>DataFrame</td>
+<td>Required</td>
+<td>The input DataFrame to check for outliers</td>
+</tr>
+<tr>
+<td><code>data_original</code></td>
+<td>DataFrame</td>
+<td>None</td>
+<td>Optional original DataFrame before outlier detection. If provided, helps identify which values became NaN due to outlier detection</td>
+</tr>
+<tr>
+<td><code>contamination</code></td>
+<td>float</td>
+<td>0.01</td>
+<td>The estimated proportion of outliers in the dataset (between 0 and 1)</td>
+</tr>
+<tr>
+<td><code>random_state</code></td>
+<td>int</td>
+<td>1234</td>
+<td>Random seed for reproducibility</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<p>A dictionary mapping column names to pandas Series of outlier values.</p>
+<p><strong>Raises:</strong></p>
+<ul>
+<li><code>ValueError</code> - If data is empty or contains no columns</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">import pandas as pd
+import numpy as np
+from spotforecast2.preprocessing.outlier import get_outliers
+
+# Create sample data
+np.random.seed(42)
+data = pd.DataFrame({
+    'A': np.concatenate([np.random.normal(0, 1, 100), [10, 11, 12]]),
+    'B': np.concatenate([np.random.normal(5, 2, 100), [100, 110, 120]])
+})
+
+# Detect outliers
+outliers = get_outliers(data, contamination=0.03)
+for col, outlier_vals in outliers.items():
+    print(f&quot;{col}: {len(outlier_vals)} outliers detected&quot;)
+</code></pre>
+<h3 id="visualize_outliers_hist">visualize_outliers_hist()</h3>
+<p>Visualize outliers using stacked histograms.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-python">def visualize_outliers_hist(
+    data: pd.DataFrame,
+    data_original: pd.DataFrame,
+    columns: Optional[list[str]] = None,
+    contamination: float = 0.01,
+    random_state: int = 1234,
+    figsize: tuple[int, int] = (10, 5),
+    bins: int = 50,
+    **kwargs: Any,
+) -&gt; None
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td>DataFrame</td>
+<td>Required</td>
+<td>The DataFrame with cleaned data (outliers may be NaN)</td>
+</tr>
+<tr>
+<td><code>data_original</code></td>
+<td>DataFrame</td>
+<td>Required</td>
+<td>The original DataFrame before outlier detection</td>
+</tr>
+<tr>
+<td><code>columns</code></td>
+<td>list[str]</td>
+<td>None</td>
+<td>List of column names to visualize. If None, all columns are used</td>
+</tr>
+<tr>
+<td><code>contamination</code></td>
+<td>float</td>
+<td>0.01</td>
+<td>The estimated proportion of outliers in the dataset</td>
+</tr>
+<tr>
+<td><code>random_state</code></td>
+<td>int</td>
+<td>1234</td>
+<td>Random seed for reproducibility</td>
+</tr>
+<tr>
+<td><code>figsize</code></td>
+<td>tuple[int, int]</td>
+<td>(10, 5)</td>
+<td>Figure size as (width, height)</td>
+</tr>
+<tr>
+<td><code>bins</code></td>
+<td>int</td>
+<td>50</td>
+<td>Number of histogram bins</td>
+</tr>
+<tr>
+<td><code>**kwargs</code></td>
+<td>Any</td>
+<td>-</td>
+<td>Additional keyword arguments passed to plt.hist() (e.g., color, alpha, edgecolor)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<p>None. Displays matplotlib figures.</p>
+<p><strong>Raises:</strong></p>
+<ul>
+<li><code>ValueError</code> - If data or data_original is empty, or if specified columns don't exist</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">import pandas as pd
+import numpy as np
+from spotforecast2.preprocessing.outlier import visualize_outliers_hist
+
+# Create sample data
+np.random.seed(42)
+data_original = pd.DataFrame({
+    'temperature': np.concatenate([
+        np.random.normal(20, 5, 100),
+        [50, 60, 70]  # outliers
+    ]),
+    'humidity': np.concatenate([
+        np.random.normal(60, 10, 100),
+        [95, 98, 99]  # outliers
+    ])
+})
+
+data_cleaned = data_original.copy()
+
+# Visualize outliers
+visualize_outliers_hist(
+    data_cleaned,
+    data_original,
+    contamination=0.03,
+    figsize=(12, 5),
+    alpha=0.7,
+    edgecolor='black'
+)
+</code></pre>
+<h3 id="visualize_outliers_plotly_scatter">visualize_outliers_plotly_scatter()</h3>
+<p>Visualize outliers using interactive Plotly scatter plots.</p>
+<p><strong>Signature:</strong></p>
+<pre><code class="language-python">def visualize_outliers_plotly_scatter(
+    data: pd.DataFrame,
+    data_original: pd.DataFrame,
+    columns: Optional[list[str]] = None,
+    contamination: float = 0.01,
+    random_state: int = 1234,
+    **kwargs: Any,
+) -&gt; None
+</code></pre>
+<p><strong>Parameters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Type</th>
+<th>Default</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data</code></td>
+<td>DataFrame</td>
+<td>Required</td>
+<td>The DataFrame with cleaned data (outliers may be NaN)</td>
+</tr>
+<tr>
+<td><code>data_original</code></td>
+<td>DataFrame</td>
+<td>Required</td>
+<td>The original DataFrame before outlier detection</td>
+</tr>
+<tr>
+<td><code>columns</code></td>
+<td>list[str]</td>
+<td>None</td>
+<td>List of column names to visualize. If None, all columns are used</td>
+</tr>
+<tr>
+<td><code>contamination</code></td>
+<td>float</td>
+<td>0.01</td>
+<td>The estimated proportion of outliers in the dataset</td>
+</tr>
+<tr>
+<td><code>random_state</code></td>
+<td>int</td>
+<td>1234</td>
+<td>Random seed for reproducibility</td>
+</tr>
+<tr>
+<td><code>**kwargs</code></td>
+<td>Any</td>
+<td>-</td>
+<td>Additional keyword arguments passed to go.Figure.update_layout() (e.g., template, height)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Returns:</strong></p>
+<p>None. Displays Plotly figures.</p>
+<p><strong>Raises:</strong></p>
+<ul>
+<li><code>ValueError</code> - If data or data_original is empty, or if specified columns don't exist</li>
+<li><code>ImportError</code> - If plotly is not installed</li>
+</ul>
+<p><strong>Example:</strong></p>
+<pre><code class="language-python">import pandas as pd
+import numpy as np
+from spotforecast2.preprocessing.outlier import visualize_outliers_plotly_scatter
+
+# Create time series data
+np.random.seed(42)
+dates = pd.date_range('2024-01-01', periods=103, freq='h')
+data_original = pd.DataFrame({
+    'temperature': np.concatenate([
+        np.random.normal(20, 5, 100),
+        [50, 60, 70]  # outliers
+    ]),
+    'humidity': np.concatenate([
+        np.random.normal(60, 10, 100),
+        [95, 98, 99]  # outliers
+    ])
+}, index=dates)
+
+data_cleaned = data_original.copy()
+
+# Visualize outliers
+visualize_outliers_plotly_scatter(
+    data_cleaned,
+    data_original,
+    contamination=0.03,
+    template='plotly_white',
+    height=600
+)
+</code></pre>
+<h2 id="complete-workflow-example">Complete Workflow Example</h2>
+<p>Here's a complete example showing the typical workflow for outlier detection and visualization:</p>
+<pre><code class="language-python">import pandas as pd
+import numpy as np
+from spotforecast2.preprocessing.outlier import (
+    get_outliers,
+    visualize_outliers_hist,
+    visualize_outliers_plotly_scatter,
+)
+
+# Create realistic time series data with outliers
+np.random.seed(42)
+dates = pd.date_range('2024-01-01', periods=200, freq='h')
+data_original = pd.DataFrame({
+    'temperature': np.concatenate([
+        np.random.normal(20, 5, 197),
+        [50, 60, 70]  # outliers
+    ]),
+    'humidity': np.concatenate([
+        np.random.normal(60, 10, 197),
+        [95, 98, 99]  # outliers
+    ]),
+    'pressure': np.concatenate([
+        np.random.normal(1013, 10, 197),
+        [800, 1200, 950]  # outliers
+    ])
+}, index=dates)
+
+# Make a copy for cleaning
+data_cleaned = data_original.copy()
+
+# Step 1: Detect outliers
+print(&quot;=== Outlier Detection ===&quot;)
+outliers = get_outliers(
+    data_original,
+    contamination=0.015
+)
+
+for col, outlier_vals in outliers.items():
+    pct = (len(outlier_vals) / len(data_original)) * 100
+    print(f&quot;{col}: {len(outlier_vals)} outliers ({pct:.2f}%)&quot;)
+
+# Step 2: Visualize with histograms
+print(&quot;\n=== Histogram Visualization ===&quot;)
+visualize_outliers_hist(
+    data_cleaned,
+    data_original,
+    contamination=0.015,
+    figsize=(14, 4),
+    alpha=0.7
+)
+
+# Step 3: Visualize with Plotly (interactive)
+print(&quot;\n=== Interactive Plotly Visualization ===&quot;)
+visualize_outliers_plotly_scatter(
+    data_cleaned,
+    data_original,
+    contamination=0.015,
+    template='plotly_white'
+)
+
+# Step 4: Selective column visualization
+print(&quot;\n=== Selective Column Analysis ===&quot;)
+visualize_outliers_hist(
+    data_cleaned,
+    data_original,
+    columns=['temperature', 'humidity'],
+    contamination=0.015
+)
+</code></pre>
+<h2 id="parameters-and-configuration">Parameters and Configuration</h2>
+<h3 id="contamination-parameter">contamination parameter</h3>
+<p>The <code>contamination</code> parameter controls the expected proportion of outliers in the dataset:</p>
+<ul>
+<li><strong>0.01</strong> (1%) - Conservative, detects severe outliers only</li>
+<li><strong>0.02</strong> (2%) - Moderate, typical for most applications</li>
+<li><strong>0.05</strong> (5%) - Liberal, detects more potential anomalies</li>
+</ul>
+<p>Choose based on your domain knowledge and data characteristics.</p>
+<h3 id="random_state-parameter">random_state parameter</h3>
+<p>The <code>random_state</code> parameter ensures reproducibility:</p>
+<pre><code class="language-python"># Same random_state produces consistent results
+outliers1 = get_outliers(data, random_state=42)
+outliers2 = get_outliers(data, random_state=42)
+# outliers1 == outliers2
+</code></pre>
+<h3 id="matplotlib-histogram-options">Matplotlib histogram options</h3>
+<p>When using <code>visualize_outliers_hist()</code>, you can pass additional matplotlib histogram options:</p>
+<pre><code class="language-python">visualize_outliers_hist(
+    data_cleaned,
+    data_original,
+    bins=100,           # More granular bins
+    alpha=0.5,          # Transparency
+    edgecolor='black',  # Border around bars
+    linewidth=0.5       # Border thickness
+)
+</code></pre>
+<h3 id="plotly-layout-options">Plotly layout options</h3>
+<p>When using <code>visualize_outliers_plotly_scatter()</code>, you can customize the Plotly figure:</p>
+<pre><code class="language-python">visualize_outliers_plotly_scatter(
+    data_cleaned,
+    data_original,
+    template='plotly_dark',    # Dark theme
+    height=700,                 # Figure height
+    width=1200                  # Figure width
+)
+</code></pre>
+<h2 id="algorithm-details">Algorithm Details</h2>
+<h3 id="isolation-forest">Isolation Forest</h3>
+<p>The underlying algorithm uses scikit-learn's <code>IsolationForest</code>, which:</p>
+<ol>
+<li>Randomly selects features and split values</li>
+<li>Isolates anomalies by exploiting their rarity</li>
+<li>Assigns anomaly scores based on path lengths</li>
+<li>Marks points with scores exceeding the contamination threshold as outliers</li>
+</ol>
+<p><strong>Key characteristics:</strong></p>
+<ul>
+<li>No distance computation needed (efficient for high dimensions)</li>
+<li>Scales well with number of features</li>
+<li>Robust to varying scales</li>
+<li>No hyperparameter tuning required beyond contamination</li>
+</ul>
+<h2 id="best-practices">Best Practices</h2>
+<h3 id="1-preprocessing">1. Preprocessing</h3>
+<p>Clean your data before outlier detection:</p>
+<pre><code class="language-python"># Remove missing values
+data_clean = data.dropna()
+
+# Standardize if needed
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+data_scaled = pd.DataFrame(
+    scaler.fit_transform(data),
+    index=data.index,
+    columns=data.columns
+)
+</code></pre>
+<h3 id="2-contamination-estimation">2. Contamination Estimation</h3>
+<p>Estimate contamination based on domain knowledge:</p>
+<pre><code class="language-python"># For known outlier percentage
+contamination = n_outliers / len(data)
+
+# For exploratory analysis, try multiple values
+for cont in [0.01, 0.02, 0.05]:
+    outliers = get_outliers(data, contamination=cont)
+    print(f&quot;Contamination {cont}: {len(outliers)} outliers&quot;)
+</code></pre>
+<h3 id="3-visual-inspection">3. Visual Inspection</h3>
+<p>Always visualize results:</p>
+<pre><code class="language-python"># Histogram for distribution analysis
+visualize_outliers_hist(data_cleaned, data_original)
+
+# Time series plot for temporal patterns
+visualize_outliers_plotly_scatter(data_cleaned, data_original)
+</code></pre>
+<h3 id="4-validation">4. Validation</h3>
+<p>Verify outliers make sense in context:</p>
+<pre><code class="language-python">outliers = get_outliers(data, contamination=0.02)
+
+for col, vals in outliers.items():
+    print(f&quot;\n{col}:&quot;)
+    print(f&quot;  Regular range: {data[col].min():.2f} - {data[col].max():.2f}&quot;)
+    print(f&quot;  Outlier values: {sorted(vals.unique())}&quot;)
+    print(f&quot;  Outlier indices: {list(vals.index)}&quot;)
+</code></pre>
+<h2 id="troubleshooting">Troubleshooting</h2>
+<h3 id="issue-no-outliers-detected">Issue: No outliers detected</h3>
+<p><strong>Solution:</strong> Increase the <code>contamination</code> parameter:</p>
+<pre><code class="language-python"># Try higher contamination
+outliers = get_outliers(data, contamination=0.05)
+</code></pre>
+<h3 id="issue-too-many-false-positives">Issue: Too many false positives</h3>
+<p><strong>Solution:</strong> Decrease the <code>contamination</code> parameter:</p>
+<pre><code class="language-python"># Be more conservative
+outliers = get_outliers(data, contamination=0.01)
+</code></pre>
+<h3 id="issue-importerror-for-plotly">Issue: ImportError for plotly</h3>
+<p><strong>Solution:</strong> Install plotly:</p>
+<pre><code class="language-bash">pip install plotly
+</code></pre>
+<p>Or use histogram visualization instead:</p>
+<pre><code class="language-python">visualize_outliers_hist(data_cleaned, data_original)
+</code></pre>
+<h2 id="see-also">See Also</h2>
+<ul>
+<li><a href="https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.IsolationForest.html">Isolation Forest Algorithm</a></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.tabs", "navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
