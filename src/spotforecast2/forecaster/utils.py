@@ -142,7 +142,7 @@ def prepare_steps_direct(
         steps: int, list, None, default None
             Predict n steps. The value of `steps` must be less than or equal to the
             value of steps defined when initializing the forecaster. Starts at 1.
-            
+
             - If `int`: Only steps within the range of 1 to int are predicted.
             - If `list`: List of ints. Only the steps contained in the list
               are predicted.

@@ -48,3 +48,5 @@ nav:
       - Model Selection: api/model_selection.md
       - Utils: api/utils.md
       - Weather: api/weather.md
+  - Processing Guides:
+      - Model Persistence: processing/model_persistence.md

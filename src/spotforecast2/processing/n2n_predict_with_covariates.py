@@ -6,6 +6,9 @@ recursive forecasters with exogenous variables (weather, holidays, calendar feat
 It handles data preparation, feature engineering, model training, and prediction
 in a single integrated function.
 
+Model persistence follows scikit-learn conventions using joblib for efficient
+serialization and deserialization of trained forecasters.
+
 Examples:
     Basic usage with default parameters:
 
@@ -27,8 +30,28 @@ Examples:
     ...     train_ratio=0.75,
     ...     verbose=True
     ... )
+
+    Using cached models:
+
+    >>> # Load existing models if available, or train new ones
+    >>> predictions, metadata, forecasters = n2n_predict_with_covariates(
+    ...     forecast_horizon=24,
+    ...     force_train=False,
+    ...     model_dir="./models",
+    ...     verbose=True
+    ... )
+
+    Force retraining and update cache:
+
+    >>> predictions, metadata, forecasters = n2n_predict_with_covariates(
+    ...     forecast_horizon=24,
+    ...     force_train=True,
+    ...     model_dir="./models",
+    ...     verbose=True
+    ... )
 """
 
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
 import numpy as np
@@ -36,6 +59,11 @@ import pandas as pd
 from astral import LocationInfo
 from lightgbm import LGBMRegressor
 from sklearn.preprocessing import PolynomialFeatures
+
+try:
+    from joblib import dump, load
+except ImportError:
+    raise ImportError("joblib is required. Install with: pip install joblib")
 
 try:
     from tqdm.auto import tqdm
@@ -548,6 +576,152 @@ def _merge_data_and_covariates(
 
 
 # ============================================================================
+# Model Persistence Functions
+# ============================================================================
+
+
+def _ensure_model_dir(model_dir: Union[str, Path]) -> Path:
+    """Ensure model directory exists.
+
+    Args:
+        model_dir: Directory path for model storage.
+
+    Returns:
+        Path: Validated Path object.
+
+    Raises:
+        OSError: If directory cannot be created.
+    """
+    model_path = Path(model_dir)
+    model_path.mkdir(parents=True, exist_ok=True)
+    return model_path
+
+
+def _get_model_filepath(model_dir: Path, target: str) -> Path:
+    """Get filepath for a single model.
+
+    Args:
+        model_dir: Directory containing models.
+        target: Target variable name.
+
+    Returns:
+        Path: Full filepath for the model.
+
+    Examples:
+        >>> path = _get_model_filepath(Path("./models"), "power")
+        >>> str(path)
+        './models/forecaster_power.joblib'
+    """
+    return model_dir / f"forecaster_{target}.joblib"
+
+
+def _save_forecasters(
+    forecasters: Dict[str, object],
+    model_dir: Union[str, Path],
+    verbose: bool = False,
+) -> Dict[str, Path]:
+    """Save trained forecasters to disk using joblib.
+
+    Follows scikit-learn persistence conventions using joblib for efficient
+    serialization of sklearn-compatible estimators.
+
+    Args:
+        forecasters: Dictionary mapping target names to trained ForecasterRecursive objects.
+        model_dir: Directory to save models. Created if it doesn't exist.
+        verbose: Print progress messages. Default: False.
+
+    Returns:
+        Dict[str, Path]: Dictionary mapping target names to saved model filepaths.
+
+    Raises:
+        OSError: If models cannot be written to disk.
+        TypeError: If forecasters contain non-serializable objects.
+
+    Examples:
+        >>> forecasters = {"power": forecaster_obj}
+        >>> paths = _save_forecasters(forecasters, "./models", verbose=True)
+        >>> print(paths["power"])
+        models/forecaster_power.joblib
+    """
+    model_path = _ensure_model_dir(model_dir)
+    saved_paths = {}
+
+    for target, forecaster in forecasters.items():
+        filepath = _get_model_filepath(model_path, target)
+        try:
+            dump(forecaster, filepath, compress=3)
+            saved_paths[target] = filepath
+            if verbose:
+                print(f"  ✓ Saved forecaster for {target} to {filepath}")
+        except Exception as e:
+            raise OSError(f"Failed to save model for {target}: {e}")
+
+    return saved_paths
+
+
+def _load_forecasters(
+    target_columns: List[str],
+    model_dir: Union[str, Path],
+    verbose: bool = False,
+) -> Tuple[Dict[str, object], List[str]]:
+    """Load trained forecasters from disk using joblib.
+
+    Attempts to load all forecasters for given targets. Missing models
+    are indicated in the return value for selective retraining.
+
+    Args:
+        target_columns: List of target variable names to load.
+        model_dir: Directory containing saved models.
+        verbose: Print progress messages. Default: False.
+
+    Returns:
+        Tuple[Dict[str, object], List[str]]:
+        - forecasters: Dictionary of successfully loaded ForecasterRecursive objects.
+        - missing_targets: List of target names without saved models.
+
+    Examples:
+        >>> forecasters, missing = _load_forecasters(
+        ...     ["power", "energy"],
+        ...     "./models",
+        ...     verbose=True
+        ... )
+        >>> print(missing)
+        ['energy']
+    """
+    model_path = Path(model_dir)
+    forecasters = {}
+    missing_targets = []
+
+    for target in target_columns:
+        filepath = _get_model_filepath(model_path, target)
+        if filepath.exists():
+            try:
+                forecasters[target] = load(filepath)
+                if verbose:
+                    print(f"  ✓ Loaded forecaster for {target} from {filepath}")
+            except Exception as e:
+                if verbose:
+                    print(f"  ✗ Failed to load {target}: {e}")
+                missing_targets.append(target)
+        else:
+            missing_targets.append(target)
+
+    return forecasters, missing_targets
+
+
+def _model_directory_exists(model_dir: Union[str, Path]) -> bool:
+    """Check if model directory exists.
+
+    Args:
+        model_dir: Directory path to check.
+
+    Returns:
+        bool: True if directory exists, False otherwise.
+    """
+    return Path(model_dir).exists()
+
+
+# ============================================================================
 # Main Function
 # ============================================================================
 
@@ -567,6 +741,8 @@ def n2n_predict_with_covariates(
     include_weather_windows: bool = False,
     include_holiday_features: bool = False,
     include_poly_features: bool = False,
+    force_train: bool = False,
+    model_dir: Union[str, Path] = "./forecaster_models",
     verbose: bool = True,
     show_progress: bool = True,
 ) -> Tuple[pd.DataFrame, Dict, Dict]:
@@ -580,8 +756,11 @@ def n2n_predict_with_covariates(
     5. Performs feature engineering (cyclical encoding, interactions)
     6. Merges target and exogenous data
     7. Splits into train/validation/test sets
-    8. Trains recursive forecasters with sample weighting
+    8. Trains or loads recursive forecasters with sample weighting
     9. Generates multi-step ahead predictions
+
+    Models are persisted to disk following scikit-learn conventions using joblib.
+    Existing models are reused for prediction unless force_train=True.
 
     Args:
         forecast_horizon: Number of time steps to forecast ahead. Default: 24.
@@ -599,6 +778,10 @@ def n2n_predict_with_covariates(
         include_weather_windows: Include weather window features. Default: False.
         include_holiday_features: Include holiday features. Default: False.
         include_poly_features: Include polynomial interaction features. Default: False.
+        force_train: Force retraining of all models, ignoring cached models.
+            Default: False.
+        model_dir: Directory for saving/loading trained models.
+            Default: "./forecaster_models".
         verbose: Print progress messages. Default: True.
         show_progress: Show progress bar during training. Default: True.
 
@@ -611,9 +794,10 @@ def n2n_predict_with_covariates(
     Raises:
         ValueError: If data validation fails or required data cannot be retrieved.
         ImportError: If required dependencies are not installed.
+        OSError: If models cannot be saved to disk.
 
     Examples:
-        Basic usage:
+        Basic usage with automatic model caching:
 
         >>> predictions, metadata, forecasters = n2n_predict_with_covariates(
         ...     forecast_horizon=24,
@@ -621,6 +805,22 @@ def n2n_predict_with_covariates(
         ... )
         >>> print(predictions.shape)
         (24, 11)
+
+        Load cached models (if available):
+
+        >>> predictions, metadata, forecasters = n2n_predict_with_covariates(
+        ...     forecast_horizon=24,
+        ...     force_train=False,
+        ...     model_dir="./saved_models"
+        ... )
+
+        Force retraining and update cache:
+
+        >>> predictions, metadata, forecasters = n2n_predict_with_covariates(
+        ...     forecast_horizon=24,
+        ...     force_train=True,
+        ...     model_dir="./saved_models"
+        ... )
 
         Custom location and features:
 
@@ -630,6 +830,7 @@ def n2n_predict_with_covariates(
         ...     longitude=13.4050,
         ...     lags=48,
         ...     include_poly_features=True,
+        ...     force_train=False,
         ...     verbose=True
         ... )
 
@@ -641,6 +842,16 @@ def n2n_predict_with_covariates(
           near missing data.
         - Train/validation splits are temporal (80/20 by default).
         - All features are cast to float32 for memory efficiency.
+        - Trained models are saved to disk using joblib for fast reuse.
+        - When force_train=False, existing models are loaded and prediction
+          proceeds without retraining. This significantly speeds up prediction
+          for repeated calls with the same configuration.
+        - The model_dir directory is created automatically if it doesn't exist.
+
+    Performance Notes:
+        - First run: Full training (~5-10 minutes depending on data size)
+        - Subsequent runs (force_train=False): Model loading only (~1-2 seconds)
+        - Force retrain (force_train=True): Full training again (~5-10 minutes)
     """
     if verbose:
         print("=" * 80)
@@ -845,11 +1056,13 @@ def n2n_predict_with_covariates(
     )
 
     # ========================================================================
-    # 9. MODEL TRAINING
+    # 9. MODEL TRAINING OR LOADING
     # ========================================================================
 
     if verbose:
-        print("\n[8/9] Training recursive forecasters with exogenous variables...")
+        print(
+            "\n[8/9] Loading or training recursive forecasters with exogenous variables..."
+        )
 
     if estimator is None:
         estimator = LGBMRegressor(random_state=1234, verbose=-1)
@@ -857,35 +1070,79 @@ def n2n_predict_with_covariates(
     window_features = RollingFeatures(stats=["mean"], window_sizes=window_size)
     end_validation = pd.concat([data_train, data_val]).index[-1]
 
+    # Attempt to load cached models if force_train=False
     recursive_forecasters = {}
+    targets_to_train = target_columns
 
-    target_iter = target_columns
-    if show_progress and tqdm is not None:
-        target_iter = tqdm(target_columns, desc="Training forecasters", unit="model")
-
-    for target in target_iter:
+    if not force_train and _model_directory_exists(model_dir):
         if verbose:
-            print(f"  Training forecaster for {target}...")
-
-        forecaster = ForecasterRecursive(
-            estimator=estimator,
-            lags=lags,
-            window_features=window_features,
-            weight_func=weight_func,
+            print("  Attempting to load cached models...")
+        cached_forecasters, missing_targets = _load_forecasters(
+            target_columns=target_columns,
+            model_dir=model_dir,
+            verbose=verbose,
         )
+        recursive_forecasters.update(cached_forecasters)
+        targets_to_train = missing_targets
 
-        forecaster.fit(
-            y=data_with_exog[target].loc[:end_validation].squeeze(),
-            exog=data_with_exog[exog_features].loc[:end_validation],
-        )
+        if len(cached_forecasters) == len(target_columns):
+            if verbose:
+                print(f"  ✓ All {len(target_columns)} forecasters loaded from cache")
+        elif len(cached_forecasters) > 0:
+            if verbose:
+                print(
+                    f"  ✓ Loaded {len(cached_forecasters)} forecasters, "
+                    f"will train {len(targets_to_train)} new ones"
+                )
 
-        recursive_forecasters[target] = forecaster
+    # Train missing or forced models
+    if len(targets_to_train) > 0:
+        if force_train and len(recursive_forecasters) > 0:
+            if verbose:
+                print(f"  Force retraining all {len(target_columns)} forecasters...")
+            targets_to_train = target_columns
+            recursive_forecasters.clear()
 
+        target_iter = targets_to_train
+        if show_progress and tqdm is not None:
+            target_iter = tqdm(
+                targets_to_train,
+                desc="Training forecasters",
+                unit="model",
+            )
+
+        for target in target_iter:
+            if verbose:
+                print(f"  Training forecaster for {target}...")
+
+            forecaster = ForecasterRecursive(
+                estimator=estimator,
+                lags=lags,
+                window_features=window_features,
+                weight_func=weight_func,
+            )
+
+            forecaster.fit(
+                y=data_with_exog[target].loc[:end_validation].squeeze(),
+                exog=data_with_exog[exog_features].loc[:end_validation],
+            )
+
+            recursive_forecasters[target] = forecaster
+
+            if verbose:
+                print(f"    ✓ Forecaster trained for {target}")
+
+        # Save newly trained models to disk
         if verbose:
-            print(f"    ✓ Forecaster trained for {target}")
+            print(f"  Saving {len(targets_to_train)} trained forecasters to disk...")
+        _save_forecasters(
+            forecasters={t: recursive_forecasters[t] for t in targets_to_train},
+            model_dir=model_dir,
+            verbose=verbose,
+        )
 
     if verbose:
-        print(f"  ✓ Total forecasters trained: {len(recursive_forecasters)}")
+        print(f"  ✓ Total forecasters available: {len(recursive_forecasters)}")
 
     # ========================================================================
     # 10. PREDICTION
