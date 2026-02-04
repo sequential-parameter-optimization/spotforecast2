@@ -145,7 +145,7 @@ def main() -> None:
     print("--- Starting task_demo: baseline and covariates ---")
 
     # --- Baseline predictions ---
-    baseline_predictions = n2n_predict(
+    baseline_predictions, _ = n2n_predict(
         columns=None,
         forecast_horizon=FORECAST_HORIZON,
         contamination=CONTAMINATION,
@@ -168,6 +168,21 @@ def main() -> None:
     )
 
     covariates_combined = agg_predict(cov_predictions, weights=WEIGHTS)
+
+    # --- Debug output ---
+    print("\n=== DEBUG INFO ===")
+    print(f"Baseline combined shape: {baseline_combined.shape}")
+    print(f"Baseline index: {baseline_combined.index[0]} to {baseline_combined.index[-1]}")
+    print(f"Baseline values (first 5): {baseline_combined.head().values}")
+    print(f"\nCovariates combined shape: {covariates_combined.shape}")
+    print(f"Covariates index: {covariates_combined.index[0]} to {covariates_combined.index[-1]}")
+    print(f"Covariates values (first 5): {covariates_combined.head().values}")
+    print(f"\nAre indices aligned? {(baseline_combined.index == covariates_combined.index).all()}")
+    print(f"Are values identical? {(baseline_combined.values == covariates_combined.values).all()}")
+    if not (baseline_combined.values == covariates_combined.values).all():
+        diff = baseline_combined - covariates_combined
+        print(f"Difference stats:\n{diff.describe()}")
+    print("==================\n")
 
     # --- Ground truth ---
     columns = list(baseline_predictions.columns)

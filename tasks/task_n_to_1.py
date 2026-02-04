@@ -17,7 +17,7 @@ def main():
 
     # --- Prediction ---
     # Fetch, Preprocess, Train, Evaluate, Predict
-    predictions = n2n_predict(
+    predictions, _ = n2n_predict(
         columns=None,
         forecast_horizon=FORECAST_HORIZON,
         contamination=CONTAMINATION,

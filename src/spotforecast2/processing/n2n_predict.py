@@ -215,7 +215,7 @@ def n2n_predict(
     contamination: float = 0.01,
     window_size: int = 72,
     force_train: bool = False,
-    model_dir: Union[str, Path] = "./forecaster_models",
+    model_dir: Union[str, Path] = "./models_baseline",
     verbose: bool = True,
     show_progress: bool = True,
 ) -> Tuple[pd.DataFrame, Dict]:
@@ -241,7 +241,7 @@ def n2n_predict(
         force_train: Force retraining of all models, ignoring cached models.
             Default: False.
         model_dir: Directory for saving/loading trained models.
-            Default: "./forecaster_models".
+            Default: "./models_baseline".
         verbose: Print progress messages. Default: True.
         show_progress: Show progress bar during training and prediction. Default: True.
 

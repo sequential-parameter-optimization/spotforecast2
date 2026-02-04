@@ -744,7 +744,7 @@ def n2n_predict_with_covariates(
     force_train: bool = False,
     model_dir: Union[str, Path] = "./forecaster_models",
     verbose: bool = True,
-    show_progress: bool = True,
+    show_progress: bool = False,
 ) -> Tuple[pd.DataFrame, Dict, Dict]:
     """End-to-end recursive forecasting with exogenous covariates.
 
@@ -781,9 +781,9 @@ def n2n_predict_with_covariates(
         force_train: Force retraining of all models, ignoring cached models.
             Default: False.
         model_dir: Directory for saving/loading trained models.
-            Default: "./forecaster_models".
+            Default: "./models_covariates".
         verbose: Print progress messages. Default: True.
-        show_progress: Show progress bar during training. Default: True.
+        show_progress: Show progress bar during training. Default: False.
 
     Returns:
         Tuple containing:
@@ -912,6 +912,10 @@ def n2n_predict_with_covariates(
     def weight_func(index):
         """Return sample weights for given index."""
         return custom_weights(index, weights_series)
+
+    # Note: weight_func is a local function and cannot be pickled.
+    # Model persistence is disabled when using weight_func.
+    use_model_persistence = False
 
     # ========================================================================
     # 4. EXOGENOUS FEATURES ENGINEERING
@@ -1070,11 +1074,11 @@ def n2n_predict_with_covariates(
     window_features = RollingFeatures(stats=["mean"], window_sizes=window_size)
     end_validation = pd.concat([data_train, data_val]).index[-1]
 
-    # Attempt to load cached models if force_train=False
+    # Attempt to load cached models if force_train=False and persistence is enabled
     recursive_forecasters = {}
     targets_to_train = target_columns
 
-    if not force_train and _model_directory_exists(model_dir):
+    if use_model_persistence and not force_train and _model_directory_exists(model_dir):
         if verbose:
             print("  Attempting to load cached models...")
         cached_forecasters, missing_targets = _load_forecasters(
@@ -1132,14 +1136,20 @@ def n2n_predict_with_covariates(
             if verbose:
                 print(f"    ✓ Forecaster trained for {target}")
 
-        # Save newly trained models to disk
-        if verbose:
-            print(f"  Saving {len(targets_to_train)} trained forecasters to disk...")
-        _save_forecasters(
-            forecasters={t: recursive_forecasters[t] for t in targets_to_train},
-            model_dir=model_dir,
-            verbose=verbose,
-        )
+        # Save newly trained models to disk (only if persistence is enabled)
+        if use_model_persistence:
+            if verbose:
+                print(
+                    f"  Saving {len(targets_to_train)} trained forecasters to disk..."
+                )
+            _save_forecasters(
+                forecasters={t: recursive_forecasters[t] for t in targets_to_train},
+                model_dir=model_dir,
+                verbose=verbose,
+            )
+        else:
+            if verbose:
+                print("  ⚠ Model persistence disabled (weight_func cannot be pickled)")
 
     if verbose:
         print(f"  ✓ Total forecasters available: {len(recursive_forecasters)}")
