@@ -1,4 +1,8 @@
- # spotforecast2
+<div align="left">
+  <img src="logo/spotlogo.png" alt="spotforecast2 Logo" width="300">
+</div>
+
+# spotforecast2
 
 [![Python Version](https://img.shields.io/badge/python-3.13%2B-blue)](https://www.python.org/downloads/)
 [![PyPI Version](https://img.shields.io/pypi/v/spotforecast2)](https://pypi.org/project/spotforecast2/)

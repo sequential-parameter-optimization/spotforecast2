@@ -671,10 +671,10 @@ def set_skforecast_warnings(suppress_warnings: bool, action: str = "ignore") -> 
     Suppress spotforecast warnings.
 
     Args:
-        suppress_warnings : bool
+        suppress_warnings: bool
             If True, spotforecast warnings will be suppressed.
-        action : str, default 'ignore'
-        Action to take regarding the warnings.
+        action: str, default 'ignore'
+            Action to take regarding the warnings.
     """
     if suppress_warnings:
         for category in warn_skforecast_categories:

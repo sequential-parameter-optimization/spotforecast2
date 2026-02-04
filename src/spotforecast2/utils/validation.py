@@ -407,50 +407,50 @@ def check_predict_input(
     trained.
 
     Args:
-        forecaster_name : str
+        forecaster_name: str
             Forecaster name.
-        steps : int, list
+        steps: int, list
             Number of future steps predicted.
         is_fitted: bool
             Tag to identify if the estimator has been fitted (trained).
-        exog_in_ : bool
+        exog_in_: bool
             If the forecaster has been trained using exogenous variable/s.
-        index_type_ : type
+        index_type_: type
             Type of index of the input used in training.
-        index_freq_ : str
+        index_freq_: str
             Frequency of Index of the input used in training.
         window_size: int
             Size of the window needed to create the predictors. It is equal to
             `max_lag`.
-        last_window : pandas Series, pandas DataFrame, None
+        last_window: pandas Series, pandas DataFrame, None
             Values of the series used to create the predictors (lags) need in the
             first iteration of prediction (t + 1).
-        last_window_exog : pandas Series, pandas DataFrame, default None
+        last_window_exog: pandas Series, pandas DataFrame, default None
             Values of the exogenous variables aligned with `last_window` in
             ForecasterStats predictions.
-        exog : pandas Series, pandas DataFrame, dict, default None
+        exog: pandas Series, pandas DataFrame, dict, default None
             Exogenous variable/s included as predictor/s.
-        exog_names_in_ : list, default None
+        exog_names_in_: list, default None
             Names of the exogenous variables used during training.
-        interval : list, tuple, default None
+        interval: list, tuple, default None
             Confidence of the prediction interval estimated. Sequence of percentiles
             to compute, which must be between 0 and 100 inclusive. For example,
             interval of 95% should be as `interval = [2.5, 97.5]`.
-        alpha : float, default None
+        alpha: float, default None
             The confidence intervals used in ForecasterStats are (1 - alpha) %.
         max_step: int, default None
             Maximum number of steps allowed (`ForecasterDirect` and
             `ForecasterDirectMultiVariate`).
-        levels : str, list, default None
+        levels: str, list, default None
             Time series to be predicted (`ForecasterRecursiveMultiSeries`
             and `ForecasterRnn).
-        levels_forecaster : str, list, default None
+        levels_forecaster: str, list, default None
             Time series used as output data of a multiseries problem in a RNN problem
             (`ForecasterRnn`).
-        series_names_in_ : list, default None
+        series_names_in_: list, default None
             Names of the columns used during fit (`ForecasterRecursiveMultiSeries`,
             `ForecasterDirectMultiVariate` and `ForecasterRnn`).
-        encoding : str, default None
+        encoding: str, default None
             Encoding used to identify the different series (`ForecasterRecursiveMultiSeries`).
 
     Returns:
