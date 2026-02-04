@@ -141,6 +141,9 @@ def n_to_1_with_covariates(
     4. Aggregates predictions using weighted combination
 
     Args:
+        data (Optional[pd.DataFrame]): Optional DataFrame with target time series data.
+            If None, fetches data automatically. Default: None.
+
         forecast_horizon (int): Number of forecast steps ahead.
             Determines how many time steps to predict into the future.
             Typical values: 24 (1 day), 48 (2 days), 168 (1 week). Default: 24.
