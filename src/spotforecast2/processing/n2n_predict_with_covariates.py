@@ -855,9 +855,9 @@ def n2n_predict_with_covariates(
           customized via the SPOTFORECAST2_CACHE environment variable.
 
     Performance Notes:
-        - First run: Full training (~5-10 minutes depending on data size)
-        - Subsequent runs (force_train=False): Model loading only (~1-2 seconds)
-        - Force retrain (force_train=True): Full training again (~5-10 minutes)
+        - First run: Full training 
+        - Subsequent runs (force_train=False): Model loading only
+        - Force retrain (force_train=True): Full training again
     """
     # Set default model_dir if not provided
     if model_dir is None:
