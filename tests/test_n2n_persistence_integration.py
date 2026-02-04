@@ -62,7 +62,8 @@ class TestModelDirParameter:
         import inspect
 
         sig = inspect.signature(n2n_predict_with_covariates)
-        assert sig.parameters["model_dir"].default == "./forecaster_models"
+        # Default should be None, which triggers get_cache_home() usage
+        assert sig.parameters["model_dir"].default is None
 
 
 # ============================================================================
@@ -84,8 +85,8 @@ class TestForceTrainParameter:
         sig = inspect.signature(n2n_predict_with_covariates)
         assert "force_train" in sig.parameters
 
-    def test_force_train_default_is_false(self):
-        """Test that force_train defaults to False."""
+    def test_force_train_default_is_true(self):
+        """Test that force_train defaults to True."""
         from spotforecast2.processing.n2n_predict_with_covariates import (
             n2n_predict_with_covariates,
         )
@@ -93,7 +94,7 @@ class TestForceTrainParameter:
         import inspect
 
         sig = inspect.signature(n2n_predict_with_covariates)
-        assert sig.parameters["force_train"].default is False
+        assert sig.parameters["force_train"].default is True
 
 
 # ============================================================================

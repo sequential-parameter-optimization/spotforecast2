@@ -43,6 +43,61 @@ def get_data_home(data_home: Optional[Union[str, Path]] = None) -> Path:
     return data_home
 
 
+def get_cache_home(cache_home: Optional[Union[str, Path]] = None) -> Path:
+    """Return the location where persistent models are to be cached.
+
+    By default the cache directory is set to a folder named 'spotforecast2_cache' in the
+    user home folder. Alternatively, it can be set by the 'SPOTFORECAST2_CACHE' environment
+    variable or programmatically by giving an explicit folder path. The '~' symbol is
+    expanded to the user home folder. If the folder does not already exist, it is
+    automatically created.
+
+    This directory is used to store pickled trained models for quick reuse across
+    forecasting runs, following scikit-learn model persistence conventions.
+
+    Args:
+        cache_home (str or pathlib.Path, optional):
+            The path to spotforecast cache directory. If `None`, the default path
+            is `~/spotforecast2_cache`.
+
+    Returns:
+        pathlib.Path:
+            The path to the spotforecast cache directory.
+
+    Raises:
+        OSError: If the directory cannot be created due to permission issues.
+
+    Examples:
+        >>> from spotforecast2.data.fetch_data import get_cache_home
+        >>> cache_dir = get_cache_home()
+        >>> cache_dir.name
+        'spotforecast2_cache'
+
+        >>> # Custom cache location
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> custom_cache = get_cache_home(Path('/tmp/my_cache'))
+        >>> custom_cache.exists()
+        True
+
+        >>> # Using environment variable
+        >>> import os
+        >>> os.environ['SPOTFORECAST2_CACHE'] = '/var/cache/spotforecast2'
+        >>> cache_dir = get_cache_home()
+        >>> cache_dir.as_posix()
+        '/var/cache/spotforecast2'
+    """
+    if cache_home is None:
+        cache_home = environ.get(
+            "SPOTFORECAST2_CACHE", Path.home() / "spotforecast2_cache"
+        )
+    # Ensure cache_home is a Path() object pointing to an absolute path
+    cache_home = Path(cache_home).expanduser().absolute()
+    # Create cache directory if it does not exist
+    cache_home.mkdir(parents=True, exist_ok=True)
+    return cache_home
+
+
 def fetch_data(
     filename: Optional[str] = None,
     dataframe: Optional[pd.DataFrame] = None,
@@ -56,7 +111,7 @@ def fetch_data(
 
     Args:
         filename (str, optional):
-            Filename of the CSV file containing the dataset. Must be located in the 
+            Filename of the CSV file containing the dataset. Must be located in the
             data home directory. If both filename and dataframe are None, defaults to "data_in.csv".
         dataframe (pd.DataFrame, optional):
             A pandas DataFrame to process. If provided, it will be processed with
@@ -87,13 +142,13 @@ def fetch_data(
         >>> data = fetch_data(columns=["col1", "col2"])
         >>> data.head()
                         Header1  Header2  Header3
-        
+
         Load from specific CSV:
         >>> data = fetch_data(filename="custom_data.csv")
-        
+
         Process a DataFrame:
         >>> import pandas as pd
-        >>> df = pd.DataFrame({"value": [1, 2, 3]}, 
+        >>> df = pd.DataFrame({"value": [1, 2, 3]},
         ...                   index=pd.date_range("2024-01-01", periods=3, freq="h"))
         >>> data = fetch_data(dataframe=df, timezone="Europe/Berlin")
         >>> data.index.tz
@@ -101,9 +156,11 @@ def fetch_data(
     """
     if columns is not None and len(columns) == 0:
         raise ValueError("columns must be specified and cannot be empty.")
-    
+
     if filename is not None and dataframe is not None:
-        raise ValueError("Cannot specify both filename and dataframe. Please provide only one.")
+        raise ValueError(
+            "Cannot specify both filename and dataframe. Please provide only one."
+        )
 
     # Process DataFrame if provided
     if dataframe is not None:

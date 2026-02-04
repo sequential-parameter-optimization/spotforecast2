@@ -222,14 +222,18 @@ def initialize_weights(
             for key in weight_func:
                 try:
                     source_code_weight_func[key] = inspect.getsource(weight_func[key])
-                except OSError:
+                except (OSError, TypeError):
+                    # OSError: source not available, TypeError: callable class instance
                     source_code_weight_func[key] = (
                         f"<source unavailable: {weight_func[key]!r}>"
                     )
         else:
             try:
                 source_code_weight_func = inspect.getsource(weight_func)
-            except OSError:
+            except (OSError, TypeError):
+                # OSError: source not available (e.g., built-in, lambda in REPL)
+                # TypeError: callable class instance (e.g., WeightFunction)
+                # In these cases, we can't get source but the object can still be pickled
                 source_code_weight_func = f"<source unavailable: {weight_func!r}>"
 
         if "sample_weight" not in inspect.signature(estimator.fit).parameters:

@@ -19,7 +19,7 @@ Examples:
 from __future__ import annotations
 
 import warnings
-from typing import List, Optional, Tuple
+from typing import List
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -152,6 +152,7 @@ def main() -> None:
         window_size=WINDOW_SIZE,
         verbose=VERBOSE,
         show_progress=SHOW_PROGRESS,
+        force_train=True
     )
 
     baseline_combined = agg_predict(baseline_predictions, weights=WEIGHTS)
@@ -165,6 +166,7 @@ def main() -> None:
         train_ratio=TRAIN_RATIO,
         verbose=VERBOSE,
         show_progress=SHOW_PROGRESS,
+        force_train=True
     )
 
     covariates_combined = agg_predict(cov_predictions, weights=WEIGHTS)

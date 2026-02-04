@@ -85,7 +85,7 @@ from spotforecast2.preprocessing.curate_data import (
     curate_weather,
     get_start_end,
 )
-from spotforecast2.preprocessing.imputation import custom_weights, get_missing_weights
+from spotforecast2.preprocessing.imputation import get_missing_weights
 from spotforecast2.preprocessing.outlier import mark_outliers
 from spotforecast2.preprocessing.split import split_rel_train_val_test
 
@@ -742,8 +742,8 @@ def n2n_predict_with_covariates(
     include_weather_windows: bool = False,
     include_holiday_features: bool = False,
     include_poly_features: bool = False,
-    force_train: bool = False,
-    model_dir: Union[str, Path] = "./forecaster_models",
+    force_train: bool = True,
+    model_dir: Optional[Union[str, Path]] = None,
     verbose: bool = True,
     show_progress: bool = False,
 ) -> Tuple[pd.DataFrame, Dict, Dict]:
@@ -761,7 +761,7 @@ def n2n_predict_with_covariates(
     9. Generates multi-step ahead predictions
 
     Models are persisted to disk following scikit-learn conventions using joblib.
-    Existing models are reused for prediction unless force_train=True.
+    By default, models are retrained (force_train=True). Set force_train=False to reuse existing cached models.
 
     Args:
         data: Optional DataFrame with target time series data. If None, fetches data automatically.
@@ -782,9 +782,10 @@ def n2n_predict_with_covariates(
         include_holiday_features: Include holiday features. Default: False.
         include_poly_features: Include polynomial interaction features. Default: False.
         force_train: Force retraining of all models, ignoring cached models.
-            Default: False.
-        model_dir: Directory for saving/loading trained models.
-            Default: "./models_covariates".
+            Default: True.
+        model_dir: Directory for saving/loading trained models. If None, uses the
+            spotforecast2 cache directory (~/spotforecast2_cache by default, or
+            SPOTFORECAST2_CACHE environment variable). Default: None.
         verbose: Print progress messages. Default: True.
         show_progress: Show progress bar during training. Default: False.
 
@@ -850,12 +851,20 @@ def n2n_predict_with_covariates(
           proceeds without retraining. This significantly speeds up prediction
           for repeated calls with the same configuration.
         - The model_dir directory is created automatically if it doesn't exist.
+        - By default, models are cached in ~/spotforecast2_cache, which can be
+          customized via the SPOTFORECAST2_CACHE environment variable.
 
     Performance Notes:
         - First run: Full training (~5-10 minutes depending on data size)
         - Subsequent runs (force_train=False): Model loading only (~1-2 seconds)
         - Force retrain (force_train=True): Full training again (~5-10 minutes)
     """
+    # Set default model_dir if not provided
+    if model_dir is None:
+        from spotforecast2.data.fetch_data import get_cache_home
+
+        model_dir = get_cache_home() / "forecasters"
+
     if verbose:
         print("=" * 80)
         print("N2N Recursive Forecasting with Exogenous Covariates")
@@ -877,7 +886,7 @@ def n2n_predict_with_covariates(
         if verbose:
             print("  Using provided dataframe...")
         data = fetch_data(dataframe=data, timezone=timezone)
-    
+
     target_columns = data.columns.tolist()
 
     if verbose:
@@ -921,13 +930,13 @@ def n2n_predict_with_covariates(
     # Invert missing_mask: True (missing) -> 0 (weight), False (valid) -> 1 (weight)
     weights_series = (~missing_mask).astype(float)
 
-    def weight_func(index):
-        """Return sample weights for given index."""
-        return custom_weights(index, weights_series)
+    # Use WeightFunction class which is picklable (unlike local functions with closures)
+    from spotforecast2.preprocessing import WeightFunction
 
-    # Note: weight_func is a local function and cannot be pickled.
-    # Model persistence is disabled when using weight_func.
-    use_model_persistence = False
+    weight_func = WeightFunction(weights_series)
+
+    # Model persistence enabled: WeightFunction instances can be pickled
+    use_model_persistence = True
 
     # ========================================================================
     # 4. EXOGENOUS FEATURES ENGINEERING

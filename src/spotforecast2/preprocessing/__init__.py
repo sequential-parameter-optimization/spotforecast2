@@ -6,7 +6,7 @@ from .curate_data import (
     agg_and_resample_data,
 )
 from .outlier import mark_outliers, manual_outlier_removal
-from .imputation import custom_weights, get_missing_weights
+from .imputation import custom_weights, get_missing_weights, WeightFunction
 from .split import split_abs_train_val_test, split_rel_train_val_test
 from ._differentiator import TimeSeriesDifferentiator
 from ._binner import QuantileBinner
@@ -22,6 +22,7 @@ __all__ = [
     "manual_outlier_removal",
     "custom_weights",
     "get_missing_weights",
+    "WeightFunction",
     "split_abs_train_val_test",
     "split_rel_train_val_test",
     "TimeSeriesDifferentiator",

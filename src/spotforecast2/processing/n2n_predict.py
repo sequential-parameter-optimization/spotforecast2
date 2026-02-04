@@ -215,8 +215,8 @@ def n2n_predict(
     forecast_horizon: int = 24,
     contamination: float = 0.01,
     window_size: int = 72,
-    force_train: bool = False,
-    model_dir: Union[str, Path] = "./models_baseline",
+    force_train: bool = True,
+    model_dir: Optional[Union[str, Path]] = None,
     verbose: bool = True,
     show_progress: bool = True,
 ) -> Tuple[pd.DataFrame, Dict]:
@@ -231,7 +231,7 @@ def n2n_predict(
     6. Generates multi-step ahead predictions
 
     Models are persisted to disk following scikit-learn conventions using joblib.
-    Existing models are reused for prediction unless force_train=True.
+    By default, models are retrained (force_train=True). Set force_train=False to reuse existing cached models.
 
     Args:
         data: Optional DataFrame with target time series data. If None, fetches data automatically.
@@ -242,9 +242,8 @@ def n2n_predict(
         contamination: Contamination parameter for outlier detection. Default: 0.01.
         window_size: Rolling window size for gap detection. Default: 72.
         force_train: Force retraining of all models, ignoring cached models.
-            Default: False.
-        model_dir: Directory for saving/loading trained models.
-            Default: "./models_baseline".
+            Default: True.
+        model_dir: Directory for saving/loading trained models. If None, uses cache directory from get_cache_home(). Default: None (uses ~/spotforecast2_cache/forecasters).
         verbose: Print progress messages. Default: True.
         show_progress: Show progress bar during training and prediction. Default: True.
 
@@ -301,6 +300,8 @@ def n2n_predict(
           proceeds without retraining. This significantly speeds up prediction
           for repeated calls with the same configuration.
         - The model_dir directory is created automatically if it doesn't exist.
+        - Default model_dir uses get_cache_home() which respects the
+          SPOTFORECAST2_CACHE environment variable.
 
     Performance Notes:
         - First run: Full training (~2-5 minutes depending on data size)
@@ -314,6 +315,12 @@ def n2n_predict(
 
     if verbose:
         print("--- Starting n2n_predict ---")
+
+    # Set default model_dir if not provided
+    if model_dir is None:
+        from spotforecast2.data.fetch_data import get_cache_home
+
+        model_dir = get_cache_home() / "forecasters"
 
     # Handle data input - fetch_data handles both CSV and DataFrame
     if data is not None:
