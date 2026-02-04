@@ -225,3 +225,4 @@ forecaster_models/forecaster_col_1.joblib
 /forecaster_models
 /models_baseline
 uv.lock
+data/weather_cache.parquet

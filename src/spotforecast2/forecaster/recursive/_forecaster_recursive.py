@@ -36,8 +36,136 @@ except ImportError:
 
 class ForecasterRecursive(ForecasterBase):
     """
+    Recursive autoregressive forecaster for scikit-learn compatible estimators.
+
     This class turns any estimator compatible with the scikit-learn API into a
-    recursive autoregressive (multi-step) forecaster.
+    recursive autoregressive (multi-step) forecaster. The forecaster learns to predict
+    future values by using lagged values of the target variable and optional exogenous
+    features. Predictions are made iteratively, where each step uses previous predictions
+    as input for the next step (recursive strategy).
+
+    Args:
+        estimator: Scikit-learn compatible estimator for regression. If None, a default
+            estimator will be initialized. Can also be passed via regressor parameter.
+        lags: Lagged values of the target variable to use as predictors. Can be an
+            integer (uses lags from 1 to lags), list of integers, numpy array, or range.
+            At least one of lags or window_features must be provided. Defaults to None.
+        window_features: List of window feature objects to compute features from the
+            target variable. Each object must implement transform_batch() method.
+            At least one of lags or window_features must be provided. Defaults to None.
+        transformer_y: Transformer object for the target variable. Must implement fit()
+            and transform() methods. Applied before training and predictions.
+            Defaults to None.
+        transformer_exog: Transformer object for exogenous variables. Must implement
+            fit() and transform() methods. Applied before training and predictions.
+            Defaults to None.
+        weight_func: Function to compute sample weights for training. Must accept an
+            index and return an array of weights. Defaults to None.
+        differentiation: Order of differencing to apply to the target variable.
+            Must be a positive integer. Differencing is applied before creating lags.
+            Defaults to None.
+        fit_kwargs: Dictionary of additional keyword arguments to pass to the estimator's
+            fit() method. Defaults to None.
+        binner_kwargs: Dictionary of keyword arguments for QuantileBinner used in
+            probabilistic predictions. Defaults to {'n_bins': 10, 'method': 'linear'}.
+        forecaster_id: Identifier for the forecaster instance. Can be a string or
+            integer. Used for tracking and logging purposes. Defaults to None.
+        regressor: Alternative parameter name for estimator. If provided, used instead
+            of estimator. Defaults to None.
+
+    Attributes:
+        estimator: Fitted scikit-learn estimator.
+        lags: Lag indices used in the model.
+        lags_names: Names of lag features (e.g., ['lag_1', 'lag_2']).
+        window_features: List of window feature transformers.
+        window_features_names: Names of window features.
+        window_size: Maximum window size needed (max of lags and window features).
+        transformer_y: Transformer for target variable.
+        transformer_exog: Transformer for exogenous variables.
+        weight_func: Function for sample weighting.
+        differentiation: Order of differencing applied.
+        differentiator: TimeSeriesDifferentiator instance if differencing is used.
+        is_fitted: Boolean indicating if forecaster has been fitted.
+        fit_date: Timestamp of the last fit operation.
+        last_window_: Last window_size observations from training data.
+        index_type_: Type of index in training data (RangeIndex or DatetimeIndex).
+        index_freq_: Frequency of DatetimeIndex if applicable.
+        training_range_: First and last index values of training data.
+        series_name_in_: Name of the target series.
+        exog_in_: Boolean indicating if exogenous variables were used in training.
+        exog_names_in_: Names of exogenous variables.
+        exog_type_in_: Type of exogenous input (Series or DataFrame).
+        X_train_features_names_out_: Names of all training features.
+        in_sample_residuals_: Residuals from training set.
+        in_sample_residuals_by_bin_: Residuals grouped by bins for probabilistic pred.
+        forecaster_id: Identifier for the forecaster instance.
+
+    Note:
+        - Either lags or window_features (or both) must be provided during initialization.
+        - The forecaster uses a recursive strategy where each multi-step prediction
+          depends on previous predictions within the same forecast horizon.
+        - Exogenous variables must have the same index as the target variable and must
+          be available for the entire prediction horizon.
+        - The forecaster supports point predictions, prediction intervals, bootstrapping,
+          quantile predictions, and probabilistic forecasts via conformal methods.
+
+    Examples:
+        Create a basic forecaster with lags:
+
+        >>> import numpy as np
+        >>> from sklearn.linear_model import LinearRegression
+        >>> from spotforecast2.forecaster.recursive import ForecasterRecursive
+        >>> y = np.random.randn(100)
+        >>> forecaster = ForecasterRecursive(
+        ...     estimator=LinearRegression(),
+        ...     lags=10
+        ... )
+        >>> forecaster.fit(y)
+        >>> predictions = forecaster.predict(steps=5)
+
+        Create a forecaster with window features and transformations:
+
+        >>> from sklearn.ensemble import RandomForestRegressor
+        >>> from sklearn.preprocessing import StandardScaler
+        >>> from spotforecast2.preprocessing import RollingMeanWindow
+        >>> y = np.random.randn(100)
+        >>> forecaster = ForecasterRecursive(
+        ...     estimator=RandomForestRegressor(n_estimators=100),
+        ...     lags=[1, 7, 30],
+        ...     window_features=[RollingMeanWindow(window=7)],
+        ...     transformer_y=StandardScaler(),
+        ...     differentiation=1
+        ... )
+        >>> forecaster.fit(y)
+        >>> predictions = forecaster.predict(steps=10)
+
+        Create a forecaster with exogenous variables:
+
+        >>> import pandas as pd
+        >>> from sklearn.linear_model import Ridge
+        >>> y = pd.Series(np.random.randn(100), name='target')
+        >>> exog = pd.DataFrame({'temp': np.random.randn(100)})
+        >>> forecaster = ForecasterRecursive(
+        ...     estimator=Ridge(),
+        ...     lags=7,
+        ...     forecaster_id='my_forecaster'
+        ... )
+        >>> forecaster.fit(y, exog)
+        >>> exog_future = pd.DataFrame({'temp': np.random.randn(5)})
+        >>> predictions = forecaster.predict(steps=5, exog=exog_future)
+
+        Create a forecaster with probabilistic prediction configuration:
+
+        >>> from sklearn.ensemble import GradientBoostingRegressor
+        >>> y = np.random.randn(100)
+        >>> forecaster = ForecasterRecursive(
+        ...     estimator=GradientBoostingRegressor(),
+        ...     lags=14,
+        ...     binner_kwargs={'n_bins': 15, 'method': 'quantile'}
+        ... )
+        >>> forecaster.fit(y, store_in_sample_residuals=True)
+        >>> # Get probabilistic predictions with prediction intervals
+        >>> predictions = forecaster.predict(steps=5, prediction_interval=True, level=0.95)
     """
 
     def __init__(

@@ -418,7 +418,6 @@ class ForecasterEquivalentDate:
         The number of residuals stored per bin is limited to
         `10_000 // self.binner.n_bins_`. The total number of residuals stored is
         `10_000`.
-        **New in version 0.17.0**
 
         Args:
             y (pandas Series): Training time series.

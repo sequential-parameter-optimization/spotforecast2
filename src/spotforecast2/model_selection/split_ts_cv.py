@@ -14,51 +14,52 @@ from .split_base import BaseFold
 
 
 class TimeSeriesFold(BaseFold):
-    """
-    Class to split time series data into train and test folds.
+    """Class to split time series data into train and test folds.
+
     When used within a backtesting or hyperparameter search, the arguments
     'initial_train_size', 'window_size' and 'differentiation' are not required
     as they are automatically set by the backtesting or hyperparameter search
     functions.
 
     Args:
-        steps (int): Number of observations used to be predicted in each fold.
+        steps: Number of observations used to be predicted in each fold.
             This is also commonly referred to as the forecast horizon or test size.
-        initial_train_size (int | str | pd.Timestamp, optional): Number of observations
-            used for initial training.
+        initial_train_size: Number of observations used for initial training.
 
             - If `None` or 0, the initial forecaster is not trained in the first fold.
             - If an integer, the number of observations used for initial training.
             - If a date string or pandas Timestamp, it is the last date included in
               the initial training set.
+
             Defaults to None.
-        fold_stride (int, optional): Number of observations that the start of the test
-            set advances between consecutive folds.
+        fold_stride: Number of observations that the start of the test set
+            advances between consecutive folds.
 
             - If `None`, it defaults to the same value as `steps`, meaning that folds
               are placed back-to-back without overlap.
             - If `fold_stride < steps`, test sets overlap and multiple forecasts will
               be generated for the same observations.
             - If `fold_stride > steps`, gaps are left between consecutive test sets.
-            **New in version 0.18.0**
+
             Defaults to None.
-        window_size (int, optional): Number of observations needed to generate the
+        window_size: Number of observations needed to generate the
             autoregressive predictors. Defaults to None.
-        differentiation (int, optional): Number of observations to use for differentiation.
+        differentiation: Number of observations to use for differentiation.
             This is used to extend the `last_window` as many observations as the
             differentiation order. Defaults to None.
-        refit (bool | int, optional): Whether to refit the forecaster in each fold.
+        refit: Whether to refit the forecaster in each fold.
 
             - If `True`, the forecaster is refitted in each fold.
             - If `False`, the forecaster is trained only in the first fold.
             - If an integer, the forecaster is trained in the first fold and then refitted
               every `refit` folds.
+
             Defaults to False.
-        fixed_train_size (bool, optional): Whether the training size is fixed or increases
+        fixed_train_size: Whether the training size is fixed or increases
             in each fold. Defaults to True.
-        gap (int, optional): Number of observations between the end of the training set
+        gap: Number of observations between the end of the training set
             and the start of the test set. Defaults to 0.
-        skip_folds (int | list, optional): Number of folds to skip.
+        skip_folds: Number of folds to skip.
 
             - If an integer, every 'skip_folds'-th is returned.
             - If a list, the indexes of the folds to skip.
@@ -66,36 +67,81 @@ class TimeSeriesFold(BaseFold):
             For example, if `skip_folds=3` and there are 10 folds, the returned folds are
             0, 3, 6, and 9. If `skip_folds=[1, 2, 3]`, the returned folds are 0, 4, 5, 6, 7,
             8, and 9. Defaults to None.
-        allow_incomplete_fold (bool, optional): Whether to allow the last fold to include
+        allow_incomplete_fold: Whether to allow the last fold to include
             fewer observations than `steps`. If `False`, the last fold is excluded if it
             is incomplete. Defaults to True.
-        return_all_indexes (bool, optional): Whether to return all indexes or only the
+        return_all_indexes: Whether to return all indexes or only the
             start and end indexes of each fold. Defaults to False.
-        verbose (bool, optional): Whether to print information about generated folds.
+        verbose: Whether to print information about generated folds.
             Defaults to True.
 
     Attributes:
-        steps (int): Number of observations used to be predicted in each fold.
-        initial_train_size (int): Number of observations used for initial training.
+        steps: Number of observations used to be predicted in each fold.
+        initial_train_size: Number of observations used for initial training.
             If `None` or 0, the initial forecaster is not trained in the first fold.
-        fold_stride (int): Number of observations that the start of the test set
+        fold_stride: Number of observations that the start of the test set
             advances between consecutive folds.
-        overlapping_folds (bool): Whether the folds overlap.
-        window_size (int): Number of observations needed to generate the
+        overlapping_folds: Whether the folds overlap.
+        window_size: Number of observations needed to generate the
             autoregressive predictors.
-        differentiation (int): Number of observations to use for differentiation.
+        differentiation: Number of observations to use for differentiation.
             This is used to extend the `last_window` as many observations as the
             differentiation order.
-        refit (bool | int): Whether to refit the forecaster in each fold.
-        fixed_train_size (bool): Whether the training size is fixed or increases in each fold.
-        gap (int): Number of observations between the end of the training set and the
+        refit: Whether to refit the forecaster in each fold.
+        fixed_train_size: Whether the training size is fixed or increases in each fold.
+        gap: Number of observations between the end of the training set and the
             start of the test set.
-        skip_folds (int | list): Number of folds to skip.
-        allow_incomplete_fold (bool): Whether to allow the last fold to include fewer
+        skip_folds: Number of folds to skip.
+        allow_incomplete_fold: Whether to allow the last fold to include fewer
             observations than `steps`.
-        return_all_indexes (bool): Whether to return all indexes or only the start
+        return_all_indexes: Whether to return all indexes or only the start
             and end indexes of each fold.
-        verbose (bool): Whether to print information about generated folds.
+        verbose: Whether to print information about generated folds.
+
+    Examples:
+        Basic usage with fixed train size:
+        >>> import pandas as pd
+        >>> import numpy as np
+        >>> from spotforecast2.model_selection import TimeSeriesFold
+        >>> # Create sample time series data
+        >>> dates = pd.date_range('2020-01-01', periods=100, freq='D')
+        >>> y = pd.Series(np.arange(100), index=dates)
+        >>> # Create fold splitter
+        >>> cv = TimeSeriesFold(
+        ...     steps=10,
+        ...     initial_train_size=50,
+        ...     refit=True,
+        ...     fixed_train_size=True
+        ... )
+        >>> # Get folds
+        >>> folds = cv.split(y)
+        >>> print(f"Number of folds: {len(folds)}")
+        Number of folds: 4
+
+        Overlapping folds with custom stride:
+        >>> cv = TimeSeriesFold(
+        ...     steps=30,
+        ...     initial_train_size=50,
+        ...     fold_stride=7,
+        ...     fixed_train_size=False
+        ... )
+        >>> folds = cv.split(y)
+        >>> # First test fold covers [50, 80), second [57, 87), etc.
+
+        Return as pandas DataFrame:
+        >>> cv = TimeSeriesFold(steps=10, initial_train_size=50)
+        >>> folds_df = cv.split(y, as_pandas=True)
+        >>> print(folds_df.columns.tolist())
+        ['fold', 'train_start', 'train_end', 'last_window_start', 'last_window_end', 'test_start', 'test_end', 'test_start_with_gap', 'test_end_with_gap', 'fit_forecaster']
+
+        Skip folds for faster evaluation:
+        >>> cv = TimeSeriesFold(
+        ...     steps=5,
+        ...     initial_train_size=50,
+        ...     skip_folds=2
+        ... )
+        >>> folds = cv.split(y)
+        >>> # Returns folds 0, 2, 4, 6, ...
 
     Note:
         Returned values are the positions of the observations and not the actual values of
@@ -164,8 +210,10 @@ class TimeSeriesFold(BaseFold):
         self.allow_incomplete_fold = allow_incomplete_fold
 
     def __repr__(self) -> str:
-        """
-        Information displayed when printed.
+        """Information displayed when printed.
+
+        Returns:
+            String representation of the TimeSeriesFold object.
         """
 
         info = (
@@ -190,9 +238,12 @@ class TimeSeriesFold(BaseFold):
         return info
 
     def _repr_html_(self) -> str:
-        """
-        HTML representation of the object.
+        """HTML representation of the object.
+
         The "General Information" section is expanded by default.
+
+        Returns:
+            HTML string representation for Jupyter notebooks.
         """
 
         style, unique_id = get_style_repr_html()
@@ -226,41 +277,41 @@ class TimeSeriesFold(BaseFold):
         X: pd.Series | pd.DataFrame | pd.Index | dict[str, pd.Series | pd.DataFrame],
         as_pandas: bool = False,
     ) -> list | pd.DataFrame:
-        """
-        Split the time series data into train and test folds.
+        """Split the time series data into train and test folds.
 
         Args:
-            X (pd.Series | pd.DataFrame | pd.Index | dict): Time series data or index to split.
-            as_pandas (bool, optional): If True, the folds are returned as a DataFrame.
-                This is useful to visualize the folds in a more interpretable way.
-                Defaults to False.
+            X: Time series data or index to split. Can be a pandas Series, DataFrame,
+                Index, or a dictionary of Series/DataFrames.
+            as_pandas: If True, the folds are returned as a DataFrame. This is useful
+                to visualize the folds in a more interpretable way. Defaults to False.
 
         Returns:
-            list | pd.DataFrame: A list of lists containing the indices (position) for
-            each fold. Each list contains 4 lists and a boolean with the following
-            information:
+            A list of lists containing the indices (position) for each fold, or a
+            DataFrame if `as_pandas=True`. Each list contains 4 lists and a boolean
+            with the following information:
 
-            - fold: fold number.
-            - [train_start, train_end]: list with the start and end positions of the
-                training set.
-            - [last_window_start, last_window_end]: list with the start and end positions
-                of the last window seen by the forecaster during training. The last window
-                is used to generate the lags use as predictors. If `differentiation` is
-                included, the interval is extended as many observations as the
-                differentiation order. If the argument `window_size` is `None`, this list is
-                empty.
-            - [test_start, test_end]: list with the start and end positions of the test
-                set. These are the observations used to evaluate the forecaster.
-            - [test_start_with_gap, test_end_with_gap]: list with the start and end
-                positions of the test set including the gap. The gap is the number of
-                observations between the end of the training set and the start of the test
-                set.
-            - fit_forecaster: boolean indicating whether the forecaster should be fitted
-                in this fold.
+            - **fold**: fold number.
+            - **[train_start, train_end]**: list with the start and end positions of
+                    the training set.
+            - **[last_window_start, last_window_end]**: list with the start and end
+                    positions of the last window seen by the forecaster during training.
+                    The last window is used to generate the lags use as predictors. If
+                    `differentiation` is included, the interval is extended as many
+                    observations as the differentiation order. If the argument `window_size`
+                    is `None`, this list is empty.
+            - **[test_start, test_end]**: list with the start and end positions of
+                    the test set. These are the observations used to evaluate the forecaster.
+            - **[test_start_with_gap, test_end_with_gap]**: list with the start and
+                    end positions of the test set including the gap. The gap is the number
+                    of observations between the end of the training set and the start of
+                    the test set.
+            - **fit_forecaster**: boolean indicating whether the forecaster should be
+                    fitted in this fold.
 
-            It is important to note that the returned values are the positions of the
-            observations and not the actual values of the index, so they can be used to
-            slice the data directly using iloc.
+        Note:
+            The returned values are the positions of the observations and not the
+            actual values of the index, so they can be used to slice the data directly
+            using iloc.
 
             If `as_pandas` is `True`, the folds are returned as a DataFrame with the
             following columns: 'fold', 'train_start', 'train_end', 'last_window_start',
@@ -531,15 +582,14 @@ class TimeSeriesFold(BaseFold):
         n_removed_folds: int,
         index_to_skip: list[int],
     ) -> None:
-        """
-        Print information about folds.
+        """Print information about folds.
 
         Args:
-            index (pd.Index): Index of the time series data.
-            folds (list): A list of lists containing the indices (position) for each fold.
-            externally_fitted (bool): Whether an already trained forecaster is to be used.
-            n_removed_folds (int): Number of folds removed.
-            index_to_skip (list): Number of folds skipped.
+            index: Index of the time series data.
+            folds: A list of lists containing the indices (position) for each fold.
+            externally_fitted: Whether an already trained forecaster is to be used.
+            n_removed_folds: Number of folds removed.
+            index_to_skip: Number of folds skipped.
         """
 
         print("Information of folds")
