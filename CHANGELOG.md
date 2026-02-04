@@ -1,3 +1,15 @@
+## [0.0.5](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.0.4...v0.0.5) (2026-02-04)
+
+
+### Bug Fixes
+
+* docstring bullet points und parameter formatierung ([b0fbb4a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b0fbb4aff3ced78f6a421ec7f8bae784bc4afb47))
+
+
+### Documentation
+
+* merge und cleanup ([4d890cf](https://github.com/sequential-parameter-optimization/spotforecast2/commit/4d890cf471a8a6568e0201161fd38dfbe8776657))
+
 ## [0.0.4](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.0.3...v0.0.4) (2026-02-04)
 
 
