@@ -42,16 +42,16 @@ def exog_to_direct(
     forecasting.
 
     Args:
-        exog : pandas Series, pandas DataFrame
+        exog: pandas Series, pandas DataFrame
             Exogenous variables.
-        steps : int
+        steps: int
             Number of steps that will be predicted using exog.
 
     Returns:
         tuple[pd.DataFrame, list[str]]:
-            exog_direct : pandas DataFrame
+            exog_direct: pandas DataFrame
                 Exogenous variables transformed.
-            exog_direct_names : list
+            exog_direct_names: list
                 Names of the columns of the exogenous variables transformed. Only
                 created if `exog` is a pandas Series or DataFrame.
     """
@@ -90,17 +90,17 @@ def exog_to_direct_numpy(
     forecasting.
 
     Args:
-        exog : numpy ndarray, pandas Series, pandas DataFrame
+        exog: numpy ndarray, pandas Series, pandas DataFrame
             Exogenous variables, shape(samples,). If exog is a pandas format, the
             direct exog names are created.
-        steps : int
+        steps: int
             Number of steps that will be predicted using exog.
 
     Returns:
         tuple[np.ndarray, list[str] | None]:
-            exog_direct : numpy ndarray
+            exog_direct: numpy ndarray
                 Exogenous variables transformed.
-            exog_direct_names : list, None
+            exog_direct_names: list, None
                 Names of the columns of the exogenous variables transformed. Only
                 created if `exog` is a pandas Series or DataFrame.
     """
@@ -136,18 +136,18 @@ def prepare_steps_direct(
     Prepare list of steps to be predicted in Direct Forecasters.
 
     Args:
-        max_step : int, list, numpy ndarray
+        max_step: int, list, numpy ndarray
             Maximum number of future steps the forecaster will predict
             when using predict methods.
-        steps : int, list, None, default None
+        steps: int, list, None, default None
             Predict n steps. The value of `steps` must be less than or equal to the
-        value of steps defined when initializing the forecaster. Starts at 1.
-
-        - If `int`: Only steps within the range of 1 to int are predicted.
-        - If `list`: List of ints. Only the steps contained in the list
-        are predicted.
-        - If `None`: As many steps are predicted as were defined at
-        initialization.
+            value of steps defined when initializing the forecaster. Starts at 1.
+            
+            - If `int`: Only steps within the range of 1 to int are predicted.
+            - If `list`: List of ints. Only the steps contained in the list
+              are predicted.
+            - If `None`: As many steps are predicted as were defined at
+              initialization.
 
     Returns:
         list[int]:
@@ -188,14 +188,14 @@ def transform_numpy(
     have inverse_transform method.
 
     Args:
-        array : numpy ndarray
+        array: numpy ndarray
             Array to be transformed.
-        transformer : scikit-learn alike transformer, preprocessor, or ColumnTransformer.
+        transformer: scikit-learn alike transformer, preprocessor, or ColumnTransformer.
             Scikit-learn alike transformer (preprocessor) with methods: fit, transform,
             fit_transform and inverse_transform.
-    fit : bool, default False
+    fit: bool, default False
         Train the transformer before applying it.
-    inverse_transform : bool, default False
+    inverse_transform: bool, default False
         Transform back the data to the original representation. This is not available
         when using transformers of class scikit-learn ColumnTransformers.
 
@@ -565,25 +565,25 @@ def check_residuals_input(
     Check residuals input arguments in Forecasters.
 
     Args:
-        forecaster_name : str
+        forecaster_name: str
             Forecaster name.
-        use_in_sample_residuals : bool
+        use_in_sample_residuals: bool
             Indicates if in sample or out sample residuals are used.
-        in_sample_residuals_ : numpy ndarray, dict
+        in_sample_residuals_: numpy ndarray, dict
             Residuals of the model when predicting training data.
-        out_sample_residuals_ : numpy ndarray, dict
+        out_sample_residuals_: numpy ndarray, dict
             Residuals of the model when predicting non training data.
-        use_binned_residuals : bool
+        use_binned_residuals: bool
             Indicates if residuals are binned.
-        in_sample_residuals_by_bin_ : dict
+        in_sample_residuals_by_bin_: dict
             In sample residuals binned according to the predicted value each residual
             is associated with.
-        out_sample_residuals_by_bin_ : dict
+        out_sample_residuals_by_bin_: dict
             Out of sample residuals binned according to the predicted value each residual
             is associated with.
-        levels : list, default None
+        levels: list, default None
             Names of the series (levels) to be predicted (Forecasters multiseries).
-        encoding : str, default None
+        encoding: str, default None
             Encoding used to identify the different series (ForecasterRecursiveMultiSeries).
 
     Returns:
@@ -673,23 +673,23 @@ def date_to_index_position(
     represents the position of the datetime in the index.
 
     Args:
-        index : pandas Index
+        index: pandas Index
             Original datetime index (must be a pandas DatetimeIndex if `date_input`
             is not an int).
-    date_input : int, str, pandas Timestamp
-        Datetime to transform to integer.
+        date_input: int, str, pandas Timestamp
+            Datetime to transform to integer.
 
-        + If int, returns the same integer.
-        + If str or pandas Timestamp, it is converted and expanded into the index.
-    method : str, default 'prediction'
-        Can be 'prediction' or 'validation'.
+            - If int, returns the same integer.
+            - If str or pandas Timestamp, it is converted and expanded into the index.
+        method: str, default 'prediction'
+            Can be 'prediction' or 'validation'.
 
-        + If 'prediction', the date must be later than the last date in the index.
-        + If 'validation', the date must be within the index range.
-    date_literal : str, default 'steps'
-        Variable name used in error messages.
-    kwargs_pd_to_datetime : dict, default {}
-        Additional keyword arguments to pass to `pd.to_datetime()`.
+            - If 'prediction', the date must be later than the last date in the index.
+            - If 'validation', the date must be within the index range.
+        date_literal: str, default 'steps'
+            Variable name used in error messages.
+        kwargs_pd_to_datetime: dict, default {}
+            Additional keyword arguments to pass to `pd.to_datetime()`.
 
     Returns:
         int:
@@ -758,11 +758,11 @@ def initialize_estimator(
     Returns the valid estimator object.
 
     Args:
-        estimator : estimator or pipeline compatible with the scikit-learn API, default None
+        estimator: estimator or pipeline compatible with the scikit-learn API, default None
             An instance of a estimator or pipeline compatible with the scikit-learn API.
-    regressor : estimator or pipeline compatible with the scikit-learn API, default None
-        Deprecated. An instance of a estimator or pipeline compatible with the
-        scikit-learn API.
+        regressor: estimator or pipeline compatible with the scikit-learn API, default None
+            Deprecated. An instance of a estimator or pipeline compatible with the
+            scikit-learn API.
 
     Returns:
         estimator or pipeline compatible with the scikit-learn API
