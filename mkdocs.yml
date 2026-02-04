@@ -50,4 +50,7 @@ nav:
       - Weather: api/weather.md
   - Processing Guides:
       - Model Persistence: processing/model_persistence.md
+  - Preprocessing Guides:
+      - Outlier Detection: preprocessing/outliers.md
+      - Time Series Visualization: preprocessing/time_series_visualization.md
 
