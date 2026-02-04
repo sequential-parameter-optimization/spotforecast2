@@ -727,6 +727,7 @@ def _model_directory_exists(model_dir: Union[str, Path]) -> bool:
 
 
 def n2n_predict_with_covariates(
+    data: Optional[pd.DataFrame] = None,
     forecast_horizon: int = 24,
     contamination: float = 0.01,
     window_size: int = 72,
@@ -763,6 +764,8 @@ def n2n_predict_with_covariates(
     Existing models are reused for prediction unless force_train=True.
 
     Args:
+        data: Optional DataFrame with target time series data. If None, fetches data automatically.
+            Default: None.
         forecast_horizon: Number of time steps to forecast ahead. Default: 24.
         contamination: Contamination parameter for outlier detection. Default: 0.01.
         window_size: Rolling window size for gap detection. Default: 72.
@@ -865,7 +868,8 @@ def n2n_predict_with_covariates(
     if verbose:
         print("\n[1/9] Loading and preparing target data...")
 
-    data = fetch_data()
+    if data is None:
+        data = fetch_data()
     target_columns = data.columns.tolist()
 
     if verbose:
