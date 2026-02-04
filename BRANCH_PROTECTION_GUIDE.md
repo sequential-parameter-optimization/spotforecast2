@@ -79,10 +79,7 @@ Scrolle nach unten und aktiviere diese **Checkboxen**:
    Status checks that must pass (Scrolle unten!)
    ┌────────────────────────────────────────────────┐
    │ ☑️ Test on Python 3.13  ← MUSS AKTIVIERT sein │
-   │ ☑️ Test on Python 3.12                         │
-   │ ☑️ Test on Python 3.11                         │
-   │ ☑️ Test on Python 3.10                         │
-   │ ☑️ Test on Python 3.9                          │
+   │ ☑️ Test on Python 3.14                         │
    │ ☑️ Code Quality                                │
    │ ☑️ Security Scan                               │
    └────────────────────────────────────────────────┘
