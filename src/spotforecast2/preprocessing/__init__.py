@@ -5,7 +5,13 @@ from .curate_data import (
     basic_ts_checks,
     agg_and_resample_data,
 )
-from .outlier import mark_outliers, manual_outlier_removal
+from .outlier import (
+    mark_outliers,
+    manual_outlier_removal,
+    get_outliers,
+    visualize_outliers_hist,
+    visualize_outliers_plotly_scatter,
+)
 from .imputation import custom_weights, get_missing_weights, WeightFunction
 from .split import split_abs_train_val_test, split_rel_train_val_test
 from ._differentiator import TimeSeriesDifferentiator
@@ -20,6 +26,9 @@ __all__ = [
     "agg_and_resample_data",
     "mark_outliers",
     "manual_outlier_removal",
+    "get_outliers",
+    "visualize_outliers_hist",
+    "visualize_outliers_plotly_scatter",
     "custom_weights",
     "get_missing_weights",
     "WeightFunction",
