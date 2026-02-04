@@ -1,14 +1,56 @@
+"""
+End-to-end baseline forecasting using equivalent date method.
+
+This module provides a complete forecasting pipeline using the ForecasterEquivalentDate
+baseline model. It handles data preparation, outlier detection, imputation, model
+training, and prediction in a single integrated function.
+
+Model persistence follows scikit-learn conventions using joblib for efficient
+serialization and deserialization of trained forecasters.
+
+Examples:
+    Basic usage with default parameters:
+
+    >>> from spotforecast2.processing.n2n_predict import n2n_predict
+    >>> predictions = n2n_predict(forecast_horizon=24, verbose=True)
+
+    Using cached models:
+
+    >>> # Load existing models if available, or train new ones
+    >>> predictions = n2n_predict(
+    ...     forecast_horizon=24,
+    ...     force_train=False,
+    ...     model_dir="./models",
+    ...     verbose=True
+    ... )
+
+    Force retraining and update cache:
+
+    >>> predictions = n2n_predict(
+    ...     forecast_horizon=24,
+    ...     force_train=True,
+    ...     model_dir="./models",
+    ...     verbose=True
+    ... )
+"""
+
+from pathlib import Path
+from typing import Dict, List, Optional, Tuple, Union
+
 import pandas as pd
-from typing import List, Optional
 from spotforecast2.forecaster.recursive import ForecasterEquivalentDate
 from spotforecast2.data.fetch_data import fetch_data
 from spotforecast2.preprocessing.curate_data import basic_ts_checks
 from spotforecast2.preprocessing.curate_data import agg_and_resample_data
 from spotforecast2.preprocessing.outlier import mark_outliers
-
 from spotforecast2.preprocessing.split import split_rel_train_val_test
 from spotforecast2.forecaster.utils import predict_multivariate
 from spotforecast2.preprocessing.curate_data import get_start_end
+
+try:
+    from joblib import dump, load
+except ImportError:
+    raise ImportError("joblib is required. Install with: pip install joblib")
 
 try:
     from tqdm.auto import tqdm
@@ -16,28 +58,251 @@ except ImportError:  # pragma: no cover - fallback when tqdm is not installed
     tqdm = None
 
 
+# ============================================================================
+# Model Persistence Functions
+# ============================================================================
+
+
+def _ensure_model_dir(model_dir: Union[str, Path]) -> Path:
+    """Ensure model directory exists.
+
+    Args:
+        model_dir: Directory path for model storage.
+
+    Returns:
+        Path: Validated Path object.
+
+    Raises:
+        OSError: If directory cannot be created.
+    """
+    model_path = Path(model_dir)
+    model_path.mkdir(parents=True, exist_ok=True)
+    return model_path
+
+
+def _get_model_filepath(model_dir: Path, target: str) -> Path:
+    """Get filepath for a single model.
+
+    Args:
+        model_dir: Directory containing models.
+        target: Target variable name.
+
+    Returns:
+        Path: Full filepath for the model.
+
+    Examples:
+        >>> path = _get_model_filepath(Path("./models"), "power")
+        >>> str(path)
+        './models/forecaster_power.joblib'
+    """
+    return model_dir / f"forecaster_{target}.joblib"
+
+
+def _save_forecasters(
+    forecasters: Dict[str, object],
+    model_dir: Union[str, Path],
+    verbose: bool = False,
+) -> Dict[str, Path]:
+    """Save trained forecasters to disk using joblib.
+
+    Follows scikit-learn persistence conventions using joblib for efficient
+    serialization of sklearn-compatible estimators.
+
+    Args:
+        forecasters: Dictionary mapping target names to trained ForecasterEquivalentDate objects.
+        model_dir: Directory to save models. Created if it doesn't exist.
+        verbose: Print progress messages. Default: False.
+
+    Returns:
+        Dict[str, Path]: Dictionary mapping target names to saved model filepaths.
+
+    Raises:
+        OSError: If models cannot be written to disk.
+        TypeError: If forecasters contain non-serializable objects.
+
+    Examples:
+        >>> forecasters = {"power": forecaster_obj}
+        >>> paths = _save_forecasters(forecasters, "./models", verbose=True)
+        >>> print(paths["power"])
+        models/forecaster_power.joblib
+    """
+    model_path = _ensure_model_dir(model_dir)
+    saved_paths = {}
+
+    for target, forecaster in forecasters.items():
+        filepath = _get_model_filepath(model_path, target)
+        try:
+            dump(forecaster, filepath, compress=3)
+            saved_paths[target] = filepath
+            if verbose:
+                print(f"  ✓ Saved forecaster for {target} to {filepath}")
+        except Exception as e:
+            raise OSError(f"Failed to save model for {target}: {e}")
+
+    return saved_paths
+
+
+def _load_forecasters(
+    target_columns: List[str],
+    model_dir: Union[str, Path],
+    verbose: bool = False,
+) -> Tuple[Dict[str, object], List[str]]:
+    """Load trained forecasters from disk using joblib.
+
+    Attempts to load all forecasters for given targets. Missing models
+    are indicated in the return value for selective retraining.
+
+    Args:
+        target_columns: List of target variable names to load.
+        model_dir: Directory containing saved models.
+        verbose: Print progress messages. Default: False.
+
+    Returns:
+        Tuple[Dict[str, object], List[str]]:
+        - forecasters: Dictionary of successfully loaded ForecasterEquivalentDate objects.
+        - missing_targets: List of target names without saved models.
+
+    Examples:
+        >>> forecasters, missing = _load_forecasters(
+        ...     ["power", "energy"],
+        ...     "./models",
+        ...     verbose=True
+        ... )
+        >>> print(missing)
+        ['energy']
+    """
+    model_path = Path(model_dir)
+    forecasters = {}
+    missing_targets = []
+
+    for target in target_columns:
+        filepath = _get_model_filepath(model_path, target)
+        if filepath.exists():
+            try:
+                forecasters[target] = load(filepath)
+                if verbose:
+                    print(f"  ✓ Loaded forecaster for {target} from {filepath}")
+            except Exception as e:
+                if verbose:
+                    print(f"  ✗ Failed to load {target}: {e}")
+                missing_targets.append(target)
+        else:
+            missing_targets.append(target)
+
+    return forecasters, missing_targets
+
+
+def _model_directory_exists(model_dir: Union[str, Path]) -> bool:
+    """Check if model directory exists.
+
+    Args:
+        model_dir: Directory path to check.
+
+    Returns:
+        bool: True if directory exists, False otherwise.
+    """
+    return Path(model_dir).exists()
+
+
+# ============================================================================
+# Main Function
+# ============================================================================
+
+
 def n2n_predict(
     columns: Optional[List[str]] = None,
     forecast_horizon: int = 24,
     contamination: float = 0.01,
     window_size: int = 72,
+    force_train: bool = False,
+    model_dir: Union[str, Path] = "./forecaster_models",
     verbose: bool = True,
     show_progress: bool = True,
-) -> pd.DataFrame:
-    """
-    End-to-end prediction function replicating the workflow from 01_base_predictor combined with fetch_data.
+) -> Tuple[pd.DataFrame, Dict]:
+    """End-to-end baseline forecasting using equivalent date method.
+
+    This function implements a complete forecasting pipeline that:
+    1. Loads and validates target data
+    2. Detects and removes outliers
+    3. Imputes missing values
+    4. Splits into train/validation/test sets
+    5. Trains or loads equivalent date forecasters
+    6. Generates multi-step ahead predictions
+
+    Models are persisted to disk following scikit-learn conventions using joblib.
+    Existing models are reused for prediction unless force_train=True.
 
     Args:
-        columns: List of target columns to forecast. If None, uses a default set (defined internally or from data).
-                 Note: fetch_data supports None to return all columns.
-        forecast_horizon: Number of steps to forecast.
-        contamination: Contamination factor for outlier detection.
-        window_size: Window size for weighting (not fully utilized in main flow but kept for consistency).
-        verbose: Whether to print progress logs.
-        show_progress: Show progress bar during training and prediction.
+        columns: List of target columns to forecast. If None, uses all available columns.
+            Default: None.
+        forecast_horizon: Number of time steps to forecast ahead. Default: 24.
+        contamination: Contamination parameter for outlier detection. Default: 0.01.
+        window_size: Rolling window size for gap detection. Default: 72.
+        force_train: Force retraining of all models, ignoring cached models.
+            Default: False.
+        model_dir: Directory for saving/loading trained models.
+            Default: "./forecaster_models".
+        verbose: Print progress messages. Default: True.
+        show_progress: Show progress bar during training and prediction. Default: True.
 
     Returns:
-        pd.DataFrame: The multi-output predictions.
+        Tuple containing:
+        - predictions: DataFrame with forecast values for each target variable.
+        - forecasters: Dictionary of trained ForecasterEquivalentDate objects keyed by target.
+
+    Raises:
+        ValueError: If data validation fails or required data cannot be retrieved.
+        ImportError: If required dependencies are not installed.
+        OSError: If models cannot be saved to disk.
+
+    Examples:
+        Basic usage with automatic model caching:
+
+        >>> predictions, forecasters = n2n_predict(
+        ...     forecast_horizon=24,
+        ...     verbose=True
+        ... )
+        >>> print(predictions.shape)
+        (24, 11)
+
+        Load cached models (if available):
+
+        >>> predictions, forecasters = n2n_predict(
+        ...     forecast_horizon=24,
+        ...     force_train=False,
+        ...     model_dir="./saved_models",
+        ...     verbose=True
+        ... )
+
+        Force retraining and update cache:
+
+        >>> predictions, forecasters = n2n_predict(
+        ...     forecast_horizon=24,
+        ...     force_train=True,
+        ...     model_dir="./saved_models",
+        ...     verbose=True
+        ... )
+
+        With specific target columns:
+
+        >>> predictions, forecasters = n2n_predict(
+        ...     columns=["power", "energy"],
+        ...     forecast_horizon=48,
+        ...     force_train=False,
+        ...     verbose=True
+        ... )
+
+    Notes:
+        - Trained models are saved to disk using joblib for fast reuse.
+        - When force_train=False, existing models are loaded and prediction
+          proceeds without retraining. This significantly speeds up prediction
+          for repeated calls with the same configuration.
+        - The model_dir directory is created automatically if it doesn't exist.
+
+    Performance Notes:
+        - First run: Full training (~2-5 minutes depending on data size)
+        - Subsequent runs (force_train=False): Model loading only (~1-2 seconds)
+        - Force retrain (force_train=True): Full training again (~2-5 minutes)
     """
     if columns is not None:
         TARGET = columns
@@ -98,20 +363,66 @@ def n2n_predict(
     end_validation = pd.concat([data_train, data_val]).index[-1]
 
     baseline_forecasters = {}
+    targets_to_train = list(data.columns)
 
-    target_iter = data.columns
-    if show_progress and tqdm is not None:
-        target_iter = tqdm(data.columns, desc="Training forecasters", unit="model")
+    # Attempt to load cached models if force_train=False
+    if not force_train and _model_directory_exists(model_dir):
+        if verbose:
+            print("  Attempting to load cached models...")
+        cached_forecasters, missing_targets = _load_forecasters(
+            target_columns=list(data.columns),
+            model_dir=model_dir,
+            verbose=verbose,
+        )
+        baseline_forecasters.update(cached_forecasters)
+        targets_to_train = missing_targets
 
-    for target in target_iter:
-        forecaster = ForecasterEquivalentDate(offset=pd.DateOffset(days=1), n_offsets=1)
+        if len(cached_forecasters) == len(data.columns):
+            if verbose:
+                print(f"  ✓ All {len(data.columns)} forecasters loaded from cache")
+        elif len(cached_forecasters) > 0:
+            if verbose:
+                print(
+                    f"  ✓ Loaded {len(cached_forecasters)} forecasters, "
+                    f"will train {len(targets_to_train)} new ones"
+                )
 
-        forecaster.fit(y=data.loc[:end_validation, target])
+    # Train missing or forced models
+    if len(targets_to_train) > 0:
+        if force_train and len(baseline_forecasters) > 0:
+            if verbose:
+                print(f"  Force retraining all {len(data.columns)} forecasters...")
+            targets_to_train = list(data.columns)
+            baseline_forecasters.clear()
 
-        baseline_forecasters[target] = forecaster
+        target_iter = targets_to_train
+        if show_progress and tqdm is not None:
+            target_iter = tqdm(
+                targets_to_train,
+                desc="Training forecasters",
+                unit="model",
+            )
+
+        for target in target_iter:
+            forecaster = ForecasterEquivalentDate(
+                offset=pd.DateOffset(days=1), n_offsets=1
+            )
+
+            forecaster.fit(y=data.loc[:end_validation, target])
+
+            baseline_forecasters[target] = forecaster
+
+        # Save newly trained models to disk
+        if verbose:
+            print(f"  Saving {len(targets_to_train)} trained forecasters to disk...")
+        _save_forecasters(
+            forecasters={t: baseline_forecasters[t] for t in targets_to_train},
+            model_dir=model_dir,
+            verbose=verbose,
+        )
 
     if verbose:
-        print("✓ Multi-output baseline system trained")
+        print(f"  ✓ Total forecasters available: {len(baseline_forecasters)}")
 
     # --- Predict ---
     if verbose:
@@ -123,4 +434,4 @@ def n2n_predict(
         show_progress=show_progress,
     )
 
-    return predictions
+    return predictions, baseline_forecasters

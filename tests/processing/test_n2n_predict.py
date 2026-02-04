@@ -3,6 +3,9 @@ from unittest.mock import patch, MagicMock
 from spotforecast2.processing.n2n_predict import n2n_predict
 
 
+@patch("spotforecast2.processing.n2n_predict._model_directory_exists", return_value=False)
+@patch("spotforecast2.processing.n2n_predict.dump")
+@patch("spotforecast2.processing.n2n_predict.load")
 @patch("spotforecast2.processing.n2n_predict.fetch_data")
 @patch("spotforecast2.processing.n2n_predict.get_start_end")
 @patch("spotforecast2.processing.n2n_predict.basic_ts_checks")
@@ -20,6 +23,9 @@ def test_n2n_predict_flow(
     mock_checks,
     mock_start_end,
     mock_fetch_data,
+    mock_load,
+    mock_dump,
+    mock_dir_exists,
 ):
     # --- Setup Mocks ---
 
@@ -50,7 +56,7 @@ def test_n2n_predict_flow(
 
     # --- Run Function ---
     columns = ["col_1", "col_2"]
-    predictions = n2n_predict(
+    predictions, forecasters = n2n_predict(
         columns=columns, forecast_horizon=2, verbose=False
     )
 
@@ -77,8 +83,12 @@ def test_n2n_predict_flow(
 
     # Verify output
     pd.testing.assert_frame_equal(predictions, mock_predictions)
+    assert len(forecasters) == 2  # Should have forecasters for both columns
 
 
+@patch("spotforecast2.processing.n2n_predict._model_directory_exists", return_value=False)
+@patch("spotforecast2.processing.n2n_predict.dump")
+@patch("spotforecast2.processing.n2n_predict.load")
 @patch("spotforecast2.processing.n2n_predict.fetch_data")
 @patch("spotforecast2.processing.n2n_predict.get_start_end")
 @patch("spotforecast2.processing.n2n_predict.basic_ts_checks")
@@ -96,6 +106,9 @@ def test_n2n_predict_combined_calculation(
     mock_checks,
     mock_start_end,
     mock_fetch_data,
+    mock_load,
+    mock_dump,
+    mock_dir_exists,
 ):
     # Test that combined prediction is calculated if all required columns are present in output
 
@@ -117,7 +130,8 @@ def test_n2n_predict_combined_calculation(
     mock_predict_multivariate.return_value = mock_predictions
 
     # Run
-    predictions = n2n_predict(columns=["dummy"], verbose=False)
+    predictions, forecasters = n2n_predict(columns=["dummy"], verbose=False)
 
     # Check that predictions are returned correctly (combined not calculated here anymore)
     assert predictions.equals(mock_predictions)
+    assert isinstance(forecasters, dict)  # Should return forecasters dictionary
