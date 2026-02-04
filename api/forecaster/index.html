@@ -9976,9 +9976,10 @@ trained.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>forecaster_name </code>
+                <code>forecaster_name</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -9992,9 +9993,10 @@ Forecaster name.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>steps </code>
+                <code>steps</code>
             </td>
             <td>
+                  <code><span title="typing.Union">Union</span>[<span title="int">int</span>, <span title="typing.List">List</span>[<span title="int">int</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10025,9 +10027,10 @@ Tag to identify if the estimator has been fitted (trained).</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>exog_in_ </code>
+                <code>exog_in_</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10041,9 +10044,10 @@ If the forecaster has been trained using exogenous variable/s.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>index_type_ </code>
+                <code>index_type_</code>
             </td>
             <td>
+                  <code><span title="type">type</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10057,9 +10061,10 @@ Type of index of the input used in training.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>index_freq_ </code>
+                <code>index_freq_</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10091,9 +10096,10 @@ Size of the window needed to create the predictors. It is equal to
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>last_window </code>
+                <code>last_window</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="pandas.Series">Series</span>, <span title="pandas.DataFrame">DataFrame</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10108,9 +10114,10 @@ first iteration of prediction (t + 1).</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>last_window_exog </code>
+                <code>last_window_exog</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="pandas.Series">Series</span>, <span title="pandas.DataFrame">DataFrame</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10120,14 +10127,15 @@ ForecasterStats predictions.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>exog </code>
+                <code>exog</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="pandas.Series">Series</span>, <span title="pandas.DataFrame">DataFrame</span>, <span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="typing.Union">Union</span>[<span title="pandas.Series">Series</span>, <span title="pandas.DataFrame">DataFrame</span>]]]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10136,14 +10144,15 @@ Exogenous variable/s included as predictor/s.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>exog_names_in_ </code>
+                <code>exog_names_in_</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<span title="str">str</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10152,14 +10161,15 @@ Names of the exogenous variables used during training.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>interval </code>
+                <code>interval</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<span title="float">float</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10170,14 +10180,15 @@ interval of 95% should be as <code>interval = [2.5, 97.5]</code>.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>alpha </code>
+                <code>alpha</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="float">float</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10186,7 +10197,7 @@ The confidence intervals used in ForecasterStats are (1 - alpha) %.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -10209,9 +10220,10 @@ Maximum number of steps allowed (<code>ForecasterDirect</code> and
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>levels </code>
+                <code>levels</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="typing.List">List</span>[<span title="str">str</span>]]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10221,14 +10233,15 @@ and `ForecasterRnn).</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>levels_forecaster </code>
+                <code>levels_forecaster</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="typing.List">List</span>[<span title="str">str</span>]]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10238,14 +10251,15 @@ Time series used as output data of a multiseries problem in a RNN problem
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>series_names_in_ </code>
+                <code>series_names_in_</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<span title="str">str</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10255,14 +10269,15 @@ Names of the columns used during fit (<code>ForecasterRecursiveMultiSeries</code
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>encoding </code>
+                <code>encoding</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10271,7 +10286,7 @@ Encoding used to identify the different series (<code>ForecasterRecursiveMultiSe
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -10518,50 +10533,50 @@ Encoding used to identify the different series (<code>ForecasterRecursiveMultiSe
 <span class="sd">    trained.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        forecaster_name : str</span>
+<span class="sd">        forecaster_name: str</span>
 <span class="sd">            Forecaster name.</span>
-<span class="sd">        steps : int, list</span>
+<span class="sd">        steps: int, list</span>
 <span class="sd">            Number of future steps predicted.</span>
 <span class="sd">        is_fitted: bool</span>
 <span class="sd">            Tag to identify if the estimator has been fitted (trained).</span>
-<span class="sd">        exog_in_ : bool</span>
+<span class="sd">        exog_in_: bool</span>
 <span class="sd">            If the forecaster has been trained using exogenous variable/s.</span>
-<span class="sd">        index_type_ : type</span>
+<span class="sd">        index_type_: type</span>
 <span class="sd">            Type of index of the input used in training.</span>
-<span class="sd">        index_freq_ : str</span>
+<span class="sd">        index_freq_: str</span>
 <span class="sd">            Frequency of Index of the input used in training.</span>
 <span class="sd">        window_size: int</span>
 <span class="sd">            Size of the window needed to create the predictors. It is equal to</span>
 <span class="sd">            `max_lag`.</span>
-<span class="sd">        last_window : pandas Series, pandas DataFrame, None</span>
+<span class="sd">        last_window: pandas Series, pandas DataFrame, None</span>
 <span class="sd">            Values of the series used to create the predictors (lags) need in the</span>
 <span class="sd">            first iteration of prediction (t + 1).</span>
-<span class="sd">        last_window_exog : pandas Series, pandas DataFrame, default None</span>
+<span class="sd">        last_window_exog: pandas Series, pandas DataFrame, default None</span>
 <span class="sd">            Values of the exogenous variables aligned with `last_window` in</span>
 <span class="sd">            ForecasterStats predictions.</span>
-<span class="sd">        exog : pandas Series, pandas DataFrame, dict, default None</span>
+<span class="sd">        exog: pandas Series, pandas DataFrame, dict, default None</span>
 <span class="sd">            Exogenous variable/s included as predictor/s.</span>
-<span class="sd">        exog_names_in_ : list, default None</span>
+<span class="sd">        exog_names_in_: list, default None</span>
 <span class="sd">            Names of the exogenous variables used during training.</span>
-<span class="sd">        interval : list, tuple, default None</span>
+<span class="sd">        interval: list, tuple, default None</span>
 <span class="sd">            Confidence of the prediction interval estimated. Sequence of percentiles</span>
 <span class="sd">            to compute, which must be between 0 and 100 inclusive. For example,</span>
 <span class="sd">            interval of 95% should be as `interval = [2.5, 97.5]`.</span>
-<span class="sd">        alpha : float, default None</span>
+<span class="sd">        alpha: float, default None</span>
 <span class="sd">            The confidence intervals used in ForecasterStats are (1 - alpha) %.</span>
 <span class="sd">        max_step: int, default None</span>
 <span class="sd">            Maximum number of steps allowed (`ForecasterDirect` and</span>
 <span class="sd">            `ForecasterDirectMultiVariate`).</span>
-<span class="sd">        levels : str, list, default None</span>
+<span class="sd">        levels: str, list, default None</span>
 <span class="sd">            Time series to be predicted (`ForecasterRecursiveMultiSeries`</span>
 <span class="sd">            and `ForecasterRnn).</span>
-<span class="sd">        levels_forecaster : str, list, default None</span>
+<span class="sd">        levels_forecaster: str, list, default None</span>
 <span class="sd">            Time series used as output data of a multiseries problem in a RNN problem</span>
 <span class="sd">            (`ForecasterRnn`).</span>
-<span class="sd">        series_names_in_ : list, default None</span>
+<span class="sd">        series_names_in_: list, default None</span>
 <span class="sd">            Names of the columns used during fit (`ForecasterRecursiveMultiSeries`,</span>
 <span class="sd">            `ForecasterDirectMultiVariate` and `ForecasterRnn`).</span>
-<span class="sd">        encoding : str, default None</span>
+<span class="sd">        encoding: str, default None</span>
 <span class="sd">            Encoding used to identify the different series (`ForecasterRecursiveMultiSeries`).</span>
 
 <span class="sd">    Returns:</span>
@@ -10711,9 +10726,10 @@ Encoding used to identify the different series (<code>ForecasterRecursiveMultiSe
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>forecaster_name </code>
+                <code>forecaster_name</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10727,9 +10743,10 @@ Forecaster name.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>use_in_sample_residuals </code>
+                <code>use_in_sample_residuals</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10743,9 +10760,10 @@ Indicates if in sample or out sample residuals are used.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>in_sample_residuals_ </code>
+                <code>in_sample_residuals_</code>
             </td>
             <td>
+                  <code><span title="numpy.ndarray">ndarray</span> | <span title="dict">dict</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10759,9 +10777,10 @@ Residuals of the model when predicting training data.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>out_sample_residuals_ </code>
+                <code>out_sample_residuals_</code>
             </td>
             <td>
+                  <code><span title="numpy.ndarray">ndarray</span> | <span title="dict">dict</span>[<span title="str">str</span>, <span title="numpy.ndarray">ndarray</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10775,9 +10794,10 @@ Residuals of the model when predicting non training data.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>use_binned_residuals </code>
+                <code>use_binned_residuals</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10791,9 +10811,10 @@ Indicates if residuals are binned.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>in_sample_residuals_by_bin_ </code>
+                <code>in_sample_residuals_by_bin_</code>
             </td>
             <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span> | <span title="int">int</span>, <span title="numpy.ndarray">ndarray</span> | <span title="dict">dict</span>[<span title="int">int</span>, <span title="numpy.ndarray">ndarray</span>]] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10808,9 +10829,10 @@ is associated with.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>out_sample_residuals_by_bin_ </code>
+                <code>out_sample_residuals_by_bin_</code>
             </td>
             <td>
+                  <code><span title="dict">dict</span>[<span title="str">str</span> | <span title="int">int</span>, <span title="numpy.ndarray">ndarray</span> | <span title="dict">dict</span>[<span title="int">int</span>, <span title="numpy.ndarray">ndarray</span>]] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10825,9 +10847,10 @@ is associated with.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>levels </code>
+                <code>levels</code>
             </td>
             <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10836,14 +10859,15 @@ Names of the series (levels) to be predicted (Forecasters multiseries).</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>encoding </code>
+                <code>encoding</code>
             </td>
             <td>
+                  <code><span title="str">str</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -10852,7 +10876,7 @@ Encoding used to identify the different series (ForecasterRecursiveMultiSeries).
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -11015,25 +11039,25 @@ Encoding used to identify the different series (ForecasterRecursiveMultiSeries).
 <span class="sd">    Check residuals input arguments in Forecasters.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        forecaster_name : str</span>
+<span class="sd">        forecaster_name: str</span>
 <span class="sd">            Forecaster name.</span>
-<span class="sd">        use_in_sample_residuals : bool</span>
+<span class="sd">        use_in_sample_residuals: bool</span>
 <span class="sd">            Indicates if in sample or out sample residuals are used.</span>
-<span class="sd">        in_sample_residuals_ : numpy ndarray, dict</span>
+<span class="sd">        in_sample_residuals_: numpy ndarray, dict</span>
 <span class="sd">            Residuals of the model when predicting training data.</span>
-<span class="sd">        out_sample_residuals_ : numpy ndarray, dict</span>
+<span class="sd">        out_sample_residuals_: numpy ndarray, dict</span>
 <span class="sd">            Residuals of the model when predicting non training data.</span>
-<span class="sd">        use_binned_residuals : bool</span>
+<span class="sd">        use_binned_residuals: bool</span>
 <span class="sd">            Indicates if residuals are binned.</span>
-<span class="sd">        in_sample_residuals_by_bin_ : dict</span>
+<span class="sd">        in_sample_residuals_by_bin_: dict</span>
 <span class="sd">            In sample residuals binned according to the predicted value each residual</span>
 <span class="sd">            is associated with.</span>
-<span class="sd">        out_sample_residuals_by_bin_ : dict</span>
+<span class="sd">        out_sample_residuals_by_bin_: dict</span>
 <span class="sd">            Out of sample residuals binned according to the predicted value each residual</span>
 <span class="sd">            is associated with.</span>
-<span class="sd">        levels : list, default None</span>
+<span class="sd">        levels: list, default None</span>
 <span class="sd">            Names of the series (levels) to be predicted (Forecasters multiseries).</span>
-<span class="sd">        encoding : str, default None</span>
+<span class="sd">        encoding: str, default None</span>
 <span class="sd">            Encoding used to identify the different series (ForecasterRecursiveMultiSeries).</span>
 
 <span class="sd">    Returns:</span>
@@ -11694,9 +11718,10 @@ represents the position of the datetime in the index.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>index </code>
+                <code>index</code>
             </td>
             <td>
+                  <code><span title="pandas.Index">Index</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -11709,22 +11734,84 @@ is not an int).</p>
                 <em>required</em>
             </td>
           </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>date_input</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span> | <span title="str">str</span> | <span title="pandas.Timestamp">Timestamp</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>int, str, pandas Timestamp
+Datetime to transform to integer.</p>
+<ul>
+<li>If int, returns the same integer.</li>
+<li>If str or pandas Timestamp, it is converted and expanded into the index.</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>method</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>str, default 'prediction'
+Can be 'prediction' or 'validation'.</p>
+<ul>
+<li>If 'prediction', the date must be later than the last date in the index.</li>
+<li>If 'validation', the date must be within the index range.</li>
+</ul>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;prediction&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>date_literal</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>str, default 'steps'
+Variable name used in error messages.</p>
+              </div>
+            </td>
+            <td>
+                  <code>&#39;steps&#39;</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>kwargs_pd_to_datetime</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>dict, default {}
+Additional keyword arguments to pass to <code>pd.to_datetime()</code>.</p>
+              </div>
+            </td>
+            <td>
+                  <code>{}</code>
+            </td>
+          </tr>
       </tbody>
     </table>
-        <p>date_input : int, str, pandas Timestamp
-    Datetime to transform to integer.</p>
-<pre><code>+ If int, returns the same integer.
-+ If str or pandas Timestamp, it is converted and expanded into the index.
-</code></pre>
-<p>method : str, default 'prediction'
-    Can be 'prediction' or 'validation'.</p>
-<pre><code>+ If 'prediction', the date must be later than the last date in the index.
-+ If 'validation', the date must be within the index range.
-</code></pre>
-<p>date_literal : str, default 'steps'
-    Variable name used in error messages.
-kwargs_pd_to_datetime : dict, default {}
-    Additional keyword arguments to pass to <code>pd.to_datetime()</code>.</p>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -11916,23 +12003,23 @@ kwargs_pd_to_datetime : dict, default {}
 <span class="sd">    represents the position of the datetime in the index.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        index : pandas Index</span>
+<span class="sd">        index: pandas Index</span>
 <span class="sd">            Original datetime index (must be a pandas DatetimeIndex if `date_input`</span>
 <span class="sd">            is not an int).</span>
-<span class="sd">    date_input : int, str, pandas Timestamp</span>
-<span class="sd">        Datetime to transform to integer.</span>
+<span class="sd">        date_input: int, str, pandas Timestamp</span>
+<span class="sd">            Datetime to transform to integer.</span>
 
-<span class="sd">        + If int, returns the same integer.</span>
-<span class="sd">        + If str or pandas Timestamp, it is converted and expanded into the index.</span>
-<span class="sd">    method : str, default &#39;prediction&#39;</span>
-<span class="sd">        Can be &#39;prediction&#39; or &#39;validation&#39;.</span>
+<span class="sd">            - If int, returns the same integer.</span>
+<span class="sd">            - If str or pandas Timestamp, it is converted and expanded into the index.</span>
+<span class="sd">        method: str, default &#39;prediction&#39;</span>
+<span class="sd">            Can be &#39;prediction&#39; or &#39;validation&#39;.</span>
 
-<span class="sd">        + If &#39;prediction&#39;, the date must be later than the last date in the index.</span>
-<span class="sd">        + If &#39;validation&#39;, the date must be within the index range.</span>
-<span class="sd">    date_literal : str, default &#39;steps&#39;</span>
-<span class="sd">        Variable name used in error messages.</span>
-<span class="sd">    kwargs_pd_to_datetime : dict, default {}</span>
-<span class="sd">        Additional keyword arguments to pass to `pd.to_datetime()`.</span>
+<span class="sd">            - If &#39;prediction&#39;, the date must be later than the last date in the index.</span>
+<span class="sd">            - If &#39;validation&#39;, the date must be within the index range.</span>
+<span class="sd">        date_literal: str, default &#39;steps&#39;</span>
+<span class="sd">            Variable name used in error messages.</span>
+<span class="sd">        kwargs_pd_to_datetime: dict, default {}</span>
+<span class="sd">            Additional keyword arguments to pass to `pd.to_datetime()`.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        int:</span>
@@ -12025,9 +12112,10 @@ forecasting.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>exog </code>
+                <code>exog</code>
             </td>
             <td>
+                  <code><span title="pandas.Series">Series</span> | <span title="pandas.DataFrame">DataFrame</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -12041,9 +12129,10 @@ Exogenous variables.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>steps </code>
+                <code>steps</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -12075,9 +12164,9 @@ Number of steps that will be predicted using exog.</p>
             <td>
               <div class="doc-md-description">
                 <p>tuple[pd.DataFrame, list[str]]:
-exog_direct : pandas DataFrame
+exog_direct: pandas DataFrame
     Exogenous variables transformed.
-exog_direct_names : list
+exog_direct_names: list
     Names of the columns of the exogenous variables transformed. Only
     created if <code>exog</code> is a pandas Series or DataFrame.</p>
               </div>
@@ -12142,16 +12231,16 @@ exog_direct_names : list
 <span class="sd">    forecasting.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        exog : pandas Series, pandas DataFrame</span>
+<span class="sd">        exog: pandas Series, pandas DataFrame</span>
 <span class="sd">            Exogenous variables.</span>
-<span class="sd">        steps : int</span>
+<span class="sd">        steps: int</span>
 <span class="sd">            Number of steps that will be predicted using exog.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple[pd.DataFrame, list[str]]:</span>
-<span class="sd">            exog_direct : pandas DataFrame</span>
+<span class="sd">            exog_direct: pandas DataFrame</span>
 <span class="sd">                Exogenous variables transformed.</span>
-<span class="sd">            exog_direct_names : list</span>
+<span class="sd">            exog_direct_names: list</span>
 <span class="sd">                Names of the columns of the exogenous variables transformed. Only</span>
 <span class="sd">                created if `exog` is a pandas Series or DataFrame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -12214,9 +12303,10 @@ forecasting.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>exog </code>
+                <code>exog</code>
             </td>
             <td>
+                  <code><span title="numpy.ndarray">ndarray</span> | <span title="pandas.Series">Series</span> | <span title="pandas.DataFrame">DataFrame</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -12231,9 +12321,10 @@ direct exog names are created.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>steps </code>
+                <code>steps</code>
             </td>
             <td>
+                  <code><span title="int">int</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -12265,9 +12356,9 @@ Number of steps that will be predicted using exog.</p>
             <td>
               <div class="doc-md-description">
                 <p>tuple[np.ndarray, list[str] | None]:
-exog_direct : numpy ndarray
+exog_direct: numpy ndarray
     Exogenous variables transformed.
-exog_direct_names : list, None
+exog_direct_names: list, None
     Names of the columns of the exogenous variables transformed. Only
     created if <code>exog</code> is a pandas Series or DataFrame.</p>
               </div>
@@ -12331,17 +12422,17 @@ exog_direct_names : list, None
 <span class="sd">    forecasting.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        exog : numpy ndarray, pandas Series, pandas DataFrame</span>
+<span class="sd">        exog: numpy ndarray, pandas Series, pandas DataFrame</span>
 <span class="sd">            Exogenous variables, shape(samples,). If exog is a pandas format, the</span>
 <span class="sd">            direct exog names are created.</span>
-<span class="sd">        steps : int</span>
+<span class="sd">        steps: int</span>
 <span class="sd">            Number of steps that will be predicted using exog.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        tuple[np.ndarray, list[str] | None]:</span>
-<span class="sd">            exog_direct : numpy ndarray</span>
+<span class="sd">            exog_direct: numpy ndarray</span>
 <span class="sd">                Exogenous variables transformed.</span>
-<span class="sd">            exog_direct_names : list, None</span>
+<span class="sd">            exog_direct_names: list, None</span>
 <span class="sd">                Names of the columns of the exogenous variables transformed. Only</span>
 <span class="sd">                created if `exog` is a pandas Series or DataFrame.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
@@ -13057,9 +13148,10 @@ Returns the valid estimator object.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>estimator </code>
+                <code>estimator</code>
             </td>
             <td>
+                  <code><span title="object">object</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -13068,14 +13160,29 @@ An instance of a estimator or pipeline compatible with the scikit-learn API.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>regressor</code>
+            </td>
+            <td>
+                  <code><span title="object">object</span> | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>estimator or pipeline compatible with the scikit-learn API, default None
+Deprecated. An instance of a estimator or pipeline compatible with the
+scikit-learn API.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
     </table>
-        <p>regressor : estimator or pipeline compatible with the scikit-learn API, default None
-    Deprecated. An instance of a estimator or pipeline compatible with the
-    scikit-learn API.</p>
 
 
     <p><span class="doc-section-title">Returns:</span></p>
@@ -13145,11 +13252,11 @@ The valid estimator object.</p>
 <span class="sd">    Returns the valid estimator object.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        estimator : estimator or pipeline compatible with the scikit-learn API, default None</span>
+<span class="sd">        estimator: estimator or pipeline compatible with the scikit-learn API, default None</span>
 <span class="sd">            An instance of a estimator or pipeline compatible with the scikit-learn API.</span>
-<span class="sd">    regressor : estimator or pipeline compatible with the scikit-learn API, default None</span>
-<span class="sd">        Deprecated. An instance of a estimator or pipeline compatible with the</span>
-<span class="sd">        scikit-learn API.</span>
+<span class="sd">        regressor: estimator or pipeline compatible with the scikit-learn API, default None</span>
+<span class="sd">            Deprecated. An instance of a estimator or pipeline compatible with the</span>
+<span class="sd">            scikit-learn API.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        estimator or pipeline compatible with the scikit-learn API</span>
@@ -15520,9 +15627,10 @@ per target forecaster. Default: False.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>max_step </code>
+                <code>max_step</code>
             </td>
             <td>
+                  <code><span title="int">int</span> | <span title="list">list</span>[<span title="int">int</span>] | <span title="numpy.ndarray">ndarray</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -15537,63 +15645,27 @@ when using predict methods.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>steps </code>
+                <code>steps</code>
             </td>
             <td>
+                  <code><span title="int">int</span> | <span title="list">list</span>[<span title="int">int</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
                 <p>int, list, None, default None
-Predict n steps. The value of <code>steps</code> must be less than or equal to the</p>
+Predict n steps. The value of <code>steps</code> must be less than or equal to the
+value of steps defined when initializing the forecaster. Starts at 1.</p>
+<ul>
+<li>If <code>int</code>: Only steps within the range of 1 to int are predicted.</li>
+<li>If <code>list</code>: List of ints. Only the steps contained in the list
+  are predicted.</li>
+<li>If <code>None</code>: As many steps are predicted as were defined at
+  initialization.</li>
+</ul>
               </div>
             </td>
             <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>- If `int`</code>
-            </td>
-            <td>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Only steps within the range of 1 to int are predicted.</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>- If `list`</code>
-            </td>
-            <td>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>List of ints. Only the steps contained in the list</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>- If `None`</code>
-            </td>
-            <td>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>As many steps are predicted as were defined at</p>
-              </div>
-            </td>
-            <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -15675,18 +15747,18 @@ Steps to be predicted.</p>
 <span class="sd">    Prepare list of steps to be predicted in Direct Forecasters.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        max_step : int, list, numpy ndarray</span>
+<span class="sd">        max_step: int, list, numpy ndarray</span>
 <span class="sd">            Maximum number of future steps the forecaster will predict</span>
 <span class="sd">            when using predict methods.</span>
-<span class="sd">        steps : int, list, None, default None</span>
+<span class="sd">        steps: int, list, None, default None</span>
 <span class="sd">            Predict n steps. The value of `steps` must be less than or equal to the</span>
-<span class="sd">        value of steps defined when initializing the forecaster. Starts at 1.</span>
+<span class="sd">            value of steps defined when initializing the forecaster. Starts at 1.</span>
 
-<span class="sd">        - If `int`: Only steps within the range of 1 to int are predicted.</span>
-<span class="sd">        - If `list`: List of ints. Only the steps contained in the list</span>
-<span class="sd">        are predicted.</span>
-<span class="sd">        - If `None`: As many steps are predicted as were defined at</span>
-<span class="sd">        initialization.</span>
+<span class="sd">            - If `int`: Only steps within the range of 1 to int are predicted.</span>
+<span class="sd">            - If `list`: List of ints. Only the steps contained in the list</span>
+<span class="sd">              are predicted.</span>
+<span class="sd">            - If `None`: As many steps are predicted as were defined at</span>
+<span class="sd">              initialization.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        list[int]:</span>
@@ -15779,9 +15851,10 @@ Steps to be predicted.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>suppress_warnings </code>
+                <code>suppress_warnings</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -15795,17 +15868,19 @@ If True, spotforecast warnings will be suppressed.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>action </code>
+                <code>action</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>str, default 'ignore'</p>
+                <p>str, default 'ignore'
+Action to take regarding the warnings.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>&#39;ignore&#39;</code>
             </td>
           </tr>
       </tbody>
@@ -15831,10 +15906,10 @@ If True, spotforecast warnings will be suppressed.</p>
 <span class="sd">    Suppress spotforecast warnings.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        suppress_warnings : bool</span>
+<span class="sd">        suppress_warnings: bool</span>
 <span class="sd">            If True, spotforecast warnings will be suppressed.</span>
-<span class="sd">        action : str, default &#39;ignore&#39;</span>
-<span class="sd">        Action to take regarding the warnings.</span>
+<span class="sd">        action: str, default &#39;ignore&#39;</span>
+<span class="sd">            Action to take regarding the warnings.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="n">suppress_warnings</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">warn_skforecast_categories</span><span class="p">:</span>
@@ -16171,9 +16246,10 @@ have inverse_transform method.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>array </code>
+                <code>array</code>
             </td>
             <td>
+                  <code><span title="numpy.ndarray">ndarray</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -16187,9 +16263,10 @@ Array to be transformed.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>transformer </code>
+                <code>transformer</code>
             </td>
             <td>
+                  <code><span title="object">object</span> | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -16204,9 +16281,9 @@ fit_transform and inverse_transform.</p>
           </tr>
       </tbody>
     </table>
-        <p>fit : bool, default False
+        <p>fit: bool, default False
     Train the transformer before applying it.
-inverse_transform : bool, default False
+inverse_transform: bool, default False
     Transform back the data to the original representation. This is not available
     when using transformers of class scikit-learn ColumnTransformers.</p>
 <h5 id="spotforecast2.forecaster.utils.transform_numpy--returns">Returns</h5>
@@ -16314,14 +16391,14 @@ inverse_transform : bool, default False
 <span class="sd">    have inverse_transform method.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        array : numpy ndarray</span>
+<span class="sd">        array: numpy ndarray</span>
 <span class="sd">            Array to be transformed.</span>
-<span class="sd">        transformer : scikit-learn alike transformer, preprocessor, or ColumnTransformer.</span>
+<span class="sd">        transformer: scikit-learn alike transformer, preprocessor, or ColumnTransformer.</span>
 <span class="sd">            Scikit-learn alike transformer (preprocessor) with methods: fit, transform,</span>
 <span class="sd">            fit_transform and inverse_transform.</span>
-<span class="sd">    fit : bool, default False</span>
+<span class="sd">    fit: bool, default False</span>
 <span class="sd">        Train the transformer before applying it.</span>
-<span class="sd">    inverse_transform : bool, default False</span>
+<span class="sd">    inverse_transform: bool, default False</span>
 <span class="sd">        Transform back the data to the original representation. This is not available</span>
 <span class="sd">        when using transformers of class scikit-learn ColumnTransformers.</span>
 

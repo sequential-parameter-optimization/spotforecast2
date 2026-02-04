@@ -2235,9 +2235,10 @@ trained.</p>
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>forecaster_name </code>
+                <code>forecaster_name</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2251,9 +2252,10 @@ Forecaster name.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>steps </code>
+                <code>steps</code>
             </td>
             <td>
+                  <code><span title="typing.Union">Union</span>[<span title="int">int</span>, <span title="typing.List">List</span>[<span title="int">int</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2284,9 +2286,10 @@ Tag to identify if the estimator has been fitted (trained).</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>exog_in_ </code>
+                <code>exog_in_</code>
             </td>
             <td>
+                  <code><span title="bool">bool</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2300,9 +2303,10 @@ If the forecaster has been trained using exogenous variable/s.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>index_type_ </code>
+                <code>index_type_</code>
             </td>
             <td>
+                  <code><span title="type">type</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2316,9 +2320,10 @@ Type of index of the input used in training.</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>index_freq_ </code>
+                <code>index_freq_</code>
             </td>
             <td>
+                  <code><span title="str">str</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2350,9 +2355,10 @@ Size of the window needed to create the predictors. It is equal to
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>last_window </code>
+                <code>last_window</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="pandas.Series">Series</span>, <span title="pandas.DataFrame">DataFrame</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2367,9 +2373,10 @@ first iteration of prediction (t + 1).</p>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>last_window_exog </code>
+                <code>last_window_exog</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="pandas.Series">Series</span>, <span title="pandas.DataFrame">DataFrame</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2379,14 +2386,15 @@ ForecasterStats predictions.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>exog </code>
+                <code>exog</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="pandas.Series">Series</span>, <span title="pandas.DataFrame">DataFrame</span>, <span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="typing.Union">Union</span>[<span title="pandas.Series">Series</span>, <span title="pandas.DataFrame">DataFrame</span>]]]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2395,14 +2403,15 @@ Exogenous variable/s included as predictor/s.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>exog_names_in_ </code>
+                <code>exog_names_in_</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<span title="str">str</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2411,14 +2420,15 @@ Names of the exogenous variables used during training.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>interval </code>
+                <code>interval</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<span title="float">float</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2429,14 +2439,15 @@ interval of 95% should be as <code>interval = [2.5, 97.5]</code>.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>alpha </code>
+                <code>alpha</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="float">float</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2445,7 +2456,7 @@ The confidence intervals used in ForecasterStats are (1 - alpha) %.</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -2468,9 +2479,10 @@ Maximum number of steps allowed (<code>ForecasterDirect</code> and
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>levels </code>
+                <code>levels</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="typing.List">List</span>[<span title="str">str</span>]]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2480,14 +2492,15 @@ and `ForecasterRnn).</p>
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>levels_forecaster </code>
+                <code>levels_forecaster</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.Union">Union</span>[<span title="str">str</span>, <span title="typing.List">List</span>[<span title="str">str</span>]]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2497,14 +2510,15 @@ Time series used as output data of a multiseries problem in a RNN problem
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>series_names_in_ </code>
+                <code>series_names_in_</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="typing.List">List</span>[<span title="str">str</span>]]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2514,14 +2528,15 @@ Names of the columns used during fit (<code>ForecasterRecursiveMultiSeries</code
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
             <td>
-                <code>encoding </code>
+                <code>encoding</code>
             </td>
             <td>
+                  <code><span title="typing.Optional">Optional</span>[<span title="str">str</span>]</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2530,7 +2545,7 @@ Encoding used to identify the different series (<code>ForecasterRecursiveMultiSe
               </div>
             </td>
             <td>
-                <em>required</em>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -2777,50 +2792,50 @@ Encoding used to identify the different series (<code>ForecasterRecursiveMultiSe
 <span class="sd">    trained.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        forecaster_name : str</span>
+<span class="sd">        forecaster_name: str</span>
 <span class="sd">            Forecaster name.</span>
-<span class="sd">        steps : int, list</span>
+<span class="sd">        steps: int, list</span>
 <span class="sd">            Number of future steps predicted.</span>
 <span class="sd">        is_fitted: bool</span>
 <span class="sd">            Tag to identify if the estimator has been fitted (trained).</span>
-<span class="sd">        exog_in_ : bool</span>
+<span class="sd">        exog_in_: bool</span>
 <span class="sd">            If the forecaster has been trained using exogenous variable/s.</span>
-<span class="sd">        index_type_ : type</span>
+<span class="sd">        index_type_: type</span>
 <span class="sd">            Type of index of the input used in training.</span>
-<span class="sd">        index_freq_ : str</span>
+<span class="sd">        index_freq_: str</span>
 <span class="sd">            Frequency of Index of the input used in training.</span>
 <span class="sd">        window_size: int</span>
 <span class="sd">            Size of the window needed to create the predictors. It is equal to</span>
 <span class="sd">            `max_lag`.</span>
-<span class="sd">        last_window : pandas Series, pandas DataFrame, None</span>
+<span class="sd">        last_window: pandas Series, pandas DataFrame, None</span>
 <span class="sd">            Values of the series used to create the predictors (lags) need in the</span>
 <span class="sd">            first iteration of prediction (t + 1).</span>
-<span class="sd">        last_window_exog : pandas Series, pandas DataFrame, default None</span>
+<span class="sd">        last_window_exog: pandas Series, pandas DataFrame, default None</span>
 <span class="sd">            Values of the exogenous variables aligned with `last_window` in</span>
 <span class="sd">            ForecasterStats predictions.</span>
-<span class="sd">        exog : pandas Series, pandas DataFrame, dict, default None</span>
+<span class="sd">        exog: pandas Series, pandas DataFrame, dict, default None</span>
 <span class="sd">            Exogenous variable/s included as predictor/s.</span>
-<span class="sd">        exog_names_in_ : list, default None</span>
+<span class="sd">        exog_names_in_: list, default None</span>
 <span class="sd">            Names of the exogenous variables used during training.</span>
-<span class="sd">        interval : list, tuple, default None</span>
+<span class="sd">        interval: list, tuple, default None</span>
 <span class="sd">            Confidence of the prediction interval estimated. Sequence of percentiles</span>
 <span class="sd">            to compute, which must be between 0 and 100 inclusive. For example,</span>
 <span class="sd">            interval of 95% should be as `interval = [2.5, 97.5]`.</span>
-<span class="sd">        alpha : float, default None</span>
+<span class="sd">        alpha: float, default None</span>
 <span class="sd">            The confidence intervals used in ForecasterStats are (1 - alpha) %.</span>
 <span class="sd">        max_step: int, default None</span>
 <span class="sd">            Maximum number of steps allowed (`ForecasterDirect` and</span>
 <span class="sd">            `ForecasterDirectMultiVariate`).</span>
-<span class="sd">        levels : str, list, default None</span>
+<span class="sd">        levels: str, list, default None</span>
 <span class="sd">            Time series to be predicted (`ForecasterRecursiveMultiSeries`</span>
 <span class="sd">            and `ForecasterRnn).</span>
-<span class="sd">        levels_forecaster : str, list, default None</span>
+<span class="sd">        levels_forecaster: str, list, default None</span>
 <span class="sd">            Time series used as output data of a multiseries problem in a RNN problem</span>
 <span class="sd">            (`ForecasterRnn`).</span>
-<span class="sd">        series_names_in_ : list, default None</span>
+<span class="sd">        series_names_in_: list, default None</span>
 <span class="sd">            Names of the columns used during fit (`ForecasterRecursiveMultiSeries`,</span>
 <span class="sd">            `ForecasterDirectMultiVariate` and `ForecasterRnn`).</span>
-<span class="sd">        encoding : str, default None</span>
+<span class="sd">        encoding: str, default None</span>
 <span class="sd">            Encoding used to identify the different series (`ForecasterRecursiveMultiSeries`).</span>
 
 <span class="sd">    Returns:</span>
