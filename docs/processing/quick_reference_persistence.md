@@ -60,9 +60,6 @@ predictions, metadata, forecasters = n2n_predict_with_covariates(
 - `tests/test_model_persistence.py` (35 unit tests)
 - `tests/test_n2n_persistence_integration.py` (12 integration tests)
 
-**Documentation**:
-- `IMPLEMENTATION_SUMMARY.md` - Technical details
-- `COMPLETION_STATUS.md` - Project status
 
 ## Testing
 
@@ -183,16 +180,4 @@ Saving 10 trained forecasters to disk...
 - ✅ No breaking changes
 - ✅ Works with existing configurations
 
-## Test Results
 
-```
-Unit Tests:        35/35 PASSED ✅
-Integration Tests: 12/12 PASSED ✅
-Project Tests:    322/322 PASSED ✅
-─────────────────────────────────
-Total:            369/369 PASSED ✅
-```
-
----
-
-For detailed technical information, see [IMPLEMENTATION_SUMMARY.md](IMPLEMENTATION_SUMMARY.md)

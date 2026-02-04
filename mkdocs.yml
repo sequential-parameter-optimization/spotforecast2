@@ -50,3 +50,4 @@ nav:
       - Weather: api/weather.md
   - Processing Guides:
       - Model Persistence: processing/model_persistence.md
+      - Quick Reference: processing/quick_reference_persistence.md
