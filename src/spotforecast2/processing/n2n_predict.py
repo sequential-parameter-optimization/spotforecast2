@@ -210,6 +210,7 @@ def _model_directory_exists(model_dir: Union[str, Path]) -> bool:
 
 
 def n2n_predict(
+    data: Optional[pd.DataFrame] = None,
     columns: Optional[List[str]] = None,
     forecast_horizon: int = 24,
     contamination: float = 0.01,
@@ -233,6 +234,8 @@ def n2n_predict(
     Existing models are reused for prediction unless force_train=True.
 
     Args:
+        data: Optional DataFrame with target time series data. If None, fetches data automatically.
+            Default: None.
         columns: List of target columns to forecast. If None, uses all available columns.
             Default: None.
         forecast_horizon: Number of time steps to forecast ahead. Default: 24.
@@ -314,7 +317,11 @@ def n2n_predict(
         print("Fetching data...")
 
     # Fetch data
-    data = fetch_data(columns=TARGET)
+    if data is not None:
+        if TARGET is not None:
+            data = data[TARGET]
+    else:
+        data = fetch_data(columns=TARGET)
 
     START, END, COV_START, COV_END = get_start_end(
         data=data,
