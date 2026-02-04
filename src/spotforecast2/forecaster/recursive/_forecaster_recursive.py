@@ -462,6 +462,23 @@ class ForecasterRecursive(ForecasterBase):
         X_as_pandas: bool = False,
         train_index: Optional[pd.Index] = None,
     ) -> Tuple[Optional[Union[np.ndarray, pd.DataFrame]], np.ndarray]:
+        """
+        Create lagged predictors and aligned target values.
+
+        Args:
+            y: Target values used to build lag features. Expected shape is
+                (n_samples,) or (n_samples, 1).
+            X_as_pandas: If True, returns lagged features as a pandas DataFrame.
+            train_index: Index to use for the lagged feature DataFrame when
+                `X_as_pandas` is True.
+
+        Returns:
+            Tuple containing:
+                - X_data: Lagged predictors with shape (n_rows, n_lags) or None
+                  if no lags are configured.
+                - y_data: Target values aligned to the lagged predictors with
+                  shape (n_rows,).
+        """
         X_data = None
         if self.lags is not None:
             # y = y.ravel() # Assuming y is already raveled
@@ -486,6 +503,23 @@ class ForecasterRecursive(ForecasterBase):
         train_index: pd.Index,
         X_as_pandas: bool = False,
     ) -> Tuple[List[Union[np.ndarray, pd.DataFrame]], List[str]]:
+        """
+        Generate window features from the target series.
+
+        Args:
+            y: Target series used to compute window features. Must be a pandas
+                Series with an index aligned to `train_index` after trimming.
+            train_index: Index for the training rows to align the window features.
+            X_as_pandas: If True, keeps each window feature matrix as a pandas
+                DataFrame; otherwise converts to NumPy arrays.
+
+        Returns:
+            Tuple containing:
+                - X_train_window_features: List of window feature matrices, one
+                  per window feature transformer.
+                - X_train_window_features_names_out_: List of feature names for
+                  all generated window features.
+        """
 
         len_train_index = len(train_index)
         X_train_window_features = []

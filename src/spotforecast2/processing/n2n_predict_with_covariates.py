@@ -855,7 +855,7 @@ def n2n_predict_with_covariates(
           customized via the SPOTFORECAST2_CACHE environment variable.
 
     Performance Notes:
-        - First run: Full training 
+        - First run: Full training
         - Subsequent runs (force_train=False): Model loading only
         - Force retrain (force_train=True): Full training again
     """
