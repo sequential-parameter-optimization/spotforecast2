@@ -1,3 +1,10 @@
+## [0.2.5](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.4...v0.2.5) (2026-02-05)
+
+
+### Bug Fixes
+
+* task_demo with force_train ([5328d97](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5328d9777d2667335efd88a2758afa194a865c39))
+
 ## [0.2.4](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.3...v0.2.4) (2026-02-04)
 
 
