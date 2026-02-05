@@ -14,10 +14,15 @@ Examples:
     Run the demo:
 
     >>> python tasks/task_demo.py
+
+    Force training (case-insensitive boolean):
+
+    >>> python tasks/task_demo.py --force_train false
 """
 
 from __future__ import annotations
 
+import argparse
 import warnings
 from typing import List
 
@@ -31,6 +36,18 @@ from spotforecast2.processing.n2n_predict_with_covariates import (
 )
 
 warnings.simplefilter("ignore")
+
+
+def _parse_bool(value: str) -> bool:
+    """Parse case-insensitive boolean strings for CLI arguments."""
+    normalized = value.strip().lower()
+    if normalized in {"true", "t"}:
+        return True
+    if normalized in {"false", "f"}:
+        return False
+    raise argparse.ArgumentTypeError(
+        "Expected a boolean value: true/false (case-insensitive)."
+    )
 
 
 def _load_actual_combined(
@@ -117,7 +134,7 @@ def _plot_actual_vs_predicted(
     fig.show()
 
 
-def main() -> None:
+def main(force_train: bool = True) -> None:
     """Run the demo, compute predictions, and plot actual vs predicted."""
     DATA_PATH = "~/spotforecast2_data/data_test.csv"
     FORECAST_HORIZON = 24
@@ -127,6 +144,7 @@ def main() -> None:
     TRAIN_RATIO = 0.8
     VERBOSE = True
     SHOW_PROGRESS = True
+    FORCE_TRAIN = force_train
 
     WEIGHTS = [
         1.0,
@@ -152,7 +170,8 @@ def main() -> None:
         window_size=WINDOW_SIZE,
         verbose=VERBOSE,
         show_progress=SHOW_PROGRESS,
-        force_train=True
+        force_train=FORCE_TRAIN,
+        model_dir="~/spotforecast2_models/task_demo_baseline",
     )
 
     baseline_combined = agg_predict(baseline_predictions, weights=WEIGHTS)
@@ -166,7 +185,8 @@ def main() -> None:
         train_ratio=TRAIN_RATIO,
         verbose=VERBOSE,
         show_progress=SHOW_PROGRESS,
-        force_train=True
+        force_train=FORCE_TRAIN,
+        model_dir="~/spotforecast2_models/task_demo_covariates",
     )
 
     covariates_combined = agg_predict(cov_predictions, weights=WEIGHTS)
@@ -207,4 +227,12 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="Run the spotforecast2 demo task.")
+    parser.add_argument(
+        "--force_train",
+        type=_parse_bool,
+        default=True,
+        help="Force training (true/false, case-insensitive).",
+    )
+    args = parser.parse_args()
+    main(force_train=args.force_train)

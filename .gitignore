@@ -226,3 +226,4 @@ forecaster_models/forecaster_col_1.joblib
 /models_baseline
 uv.lock
 data/weather_cache.parquet
+/~/spotforecast2_models
