@@ -1,14 +1,16 @@
 """
-Task demo: compare baseline vs covariate forecasts against ground truth.
+Task demo: compare baseline, covariate, and custom LightGBM forecasts against ground truth.
 
-This script executes the baseline N-to-1 task and the covariate-enhanced N-to-1
-pipeline, then loads the ground truth from ~/spotforecast2_data/data_test.csv
-and plots Actual vs Predicted using Plotly.
+This script executes the baseline N-to-1 task, the covariate-enhanced N-to-1
+pipeline, and a custom LightGBM model with optimized hyperparameters, then loads
+the ground truth from ~/spotforecast2_data/data_test.csv and plots Actual vs
+Predicted using Plotly.
 
 The plot includes:
     - Actual combined values (ground truth)
     - Baseline combined prediction (n2n_predict)
-    - Covariate combined prediction (n2n_predict_with_covariates)
+    - Covariate combined prediction (n2n_predict_with_covariates, default LGBM)
+    - Custom LightGBM combined prediction (optimized hyperparameters, Europe/Berlin tz)
 
 Examples:
     Run the demo:
@@ -18,16 +20,25 @@ Examples:
     Force training (case-insensitive boolean):
 
     >>> python tasks/task_demo.py --force_train false
+
+    Save the plot as a single HTML file (default: task_demo_plot.html):
+
+    >>> python tasks/task_demo.py --html
+
+    Save to a specific path:
+
+    >>> python tasks/task_demo.py --html results/plot.html
 """
 
 from __future__ import annotations
 
 import argparse
 import warnings
-from typing import List
+from typing import List, Optional
 
 import pandas as pd
 import plotly.graph_objects as go
+from lightgbm import LGBMRegressor
 
 from spotforecast2.processing.agg_predict import agg_predict
 from spotforecast2.processing.n2n_predict import n2n_predict
@@ -76,6 +87,8 @@ def _plot_actual_vs_predicted(
     actual_combined: pd.Series,
     baseline_combined: pd.Series,
     covariates_combined: pd.Series,
+    custom_lgbm_combined: pd.Series,
+    html_path: Optional[str] = None,
 ) -> None:
     """Plot actual vs predicted combined values.
 
@@ -83,6 +96,8 @@ def _plot_actual_vs_predicted(
         actual_combined: Ground truth combined series.
         baseline_combined: Baseline combined prediction series.
         covariates_combined: Covariate-enhanced combined prediction series.
+        custom_lgbm_combined: Custom LightGBM (optimized params) combined prediction series.
+        html_path: If set, save the plot as a single self-contained HTML file to this path.
     """
     fig = go.Figure()
 
@@ -119,6 +134,17 @@ def _plot_actual_vs_predicted(
         )
     )
 
+    fig.add_trace(
+        go.Scatter(
+            x=custom_lgbm_combined.index,
+            y=custom_lgbm_combined.values,
+            mode="lines+markers",
+            name="Predicted (Custom LightGBM)",
+            line=dict(color="orange", width=2, dash="dashdot"),
+            marker=dict(size=6),
+        )
+    )
+
     fig.update_layout(
         title="Combined Values: Actual vs. Predicted",
         xaxis_title="Time",
@@ -131,11 +157,18 @@ def _plot_actual_vs_predicted(
         legend=dict(x=0.01, y=0.99),
     )
 
+    if html_path:
+        fig.write_html(html_path)
+        print(f"Plot saved to {html_path}")
+
     fig.show()
 
 
-def main(force_train: bool = True) -> None:
-    """Run the demo, compute predictions, and plot actual vs predicted."""
+def main(
+    force_train: bool = True,
+    html_path: Optional[str] = None,
+) -> None:
+    """Run the demo, compute predictions for three models, and plot actual vs predicted."""
     DATA_PATH = "~/spotforecast2_data/data_test.csv"
     FORECAST_HORIZON = 24
     CONTAMINATION = 0.01
@@ -160,7 +193,7 @@ def main(force_train: bool = True) -> None:
         1.0,
     ]
 
-    print("--- Starting task_demo: baseline and covariates ---")
+    print("--- Starting task_demo: baseline, covariates, and custom LightGBM ---")
 
     # --- Baseline predictions ---
     baseline_predictions, _ = n2n_predict(
@@ -191,6 +224,32 @@ def main(force_train: bool = True) -> None:
 
     covariates_combined = agg_predict(cov_predictions, weights=WEIGHTS)
 
+    # --- Custom LightGBM predictions (optimized hyperparameters) ---
+    custom_lgbm = LGBMRegressor(
+        n_estimators=1059,
+        learning_rate=0.04191323446625026,
+        num_leaves=212,
+        min_child_samples=54,
+        subsample=0.5014650987802548,
+        colsample_bytree=0.6080926628683118,
+        random_state=42,
+        verbose=-1,
+    )
+    custom_lgbm_predictions, _, _ = n2n_predict_with_covariates(
+        forecast_horizon=FORECAST_HORIZON,
+        contamination=CONTAMINATION,
+        window_size=WINDOW_SIZE,
+        lags=LAGS,
+        train_ratio=TRAIN_RATIO,
+        timezone="UTC",
+        estimator=custom_lgbm,
+        verbose=VERBOSE,
+        show_progress=SHOW_PROGRESS,
+        force_train=FORCE_TRAIN,
+        model_dir="~/spotforecast2_models/task_demo_custom_lgbm",
+    )
+    custom_lgbm_combined = agg_predict(custom_lgbm_predictions, weights=WEIGHTS)
+
     # --- Debug output ---
     print("\n=== DEBUG INFO ===")
     print(f"Baseline combined shape: {baseline_combined.shape}")
@@ -199,11 +258,19 @@ def main(force_train: bool = True) -> None:
     print(f"\nCovariates combined shape: {covariates_combined.shape}")
     print(f"Covariates index: {covariates_combined.index[0]} to {covariates_combined.index[-1]}")
     print(f"Covariates values (first 5): {covariates_combined.head().values}")
+    print(f"\nCustom LightGBM combined shape: {custom_lgbm_combined.shape}")
+    print(f"Custom LightGBM index: {custom_lgbm_combined.index[0]} to {custom_lgbm_combined.index[-1]}")
+    print(f"Custom LightGBM values (first 5): {custom_lgbm_combined.head().values}")
     print(f"\nAre indices aligned? {(baseline_combined.index == covariates_combined.index).all()}")
-    print(f"Are values identical? {(baseline_combined.values == covariates_combined.values).all()}")
+    print(f"Baseline vs Covariates identical? {(baseline_combined.values == covariates_combined.values).all()}")
+    print(f"Baseline vs Custom LightGBM identical? {(baseline_combined.values == custom_lgbm_combined.values).all()}")
+    print(f"Covariates vs Custom LightGBM identical? {(covariates_combined.values == custom_lgbm_combined.values).all()}")
     if not (baseline_combined.values == covariates_combined.values).all():
         diff = baseline_combined - covariates_combined
-        print(f"Difference stats:\n{diff.describe()}")
+        print(f"Baseline - Covariates diff stats:\n{diff.describe()}")
+    if not (covariates_combined.values == custom_lgbm_combined.values).all():
+        diff_lgbm = covariates_combined - custom_lgbm_combined
+        print(f"Covariates - Custom LightGBM diff stats:\n{diff_lgbm.describe()}")
     print("==================\n")
 
     # --- Ground truth ---
@@ -223,6 +290,8 @@ def main(force_train: bool = True) -> None:
         actual_combined=actual_combined,
         baseline_combined=baseline_combined,
         covariates_combined=covariates_combined,
+        custom_lgbm_combined=custom_lgbm_combined,
+        html_path=html_path,
     )
 
 
@@ -234,5 +303,13 @@ if __name__ == "__main__":
         default=True,
         help="Force training (true/false, case-insensitive).",
     )
+    parser.add_argument(
+        "--html",
+        nargs="?",
+        const="task_demo_plot.html",
+        default=None,
+        metavar="PATH",
+        help="Save the plot as a single self-contained HTML file. Default path: task_demo_plot.html",
+    )
     args = parser.parse_args()
-    main(force_train=args.force_train)
+    main(force_train=args.force_train, html_path=args.html)
