@@ -427,7 +427,7 @@ class ForecasterBase(ABC):
         self.__dict__.update(state)
 
     @property
-    def regressor(self):
+    def regressor(self) -> Any:
         """Deprecated property. Use estimator instead.
 
         Returns:

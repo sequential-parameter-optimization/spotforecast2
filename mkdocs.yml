@@ -1,6 +1,17 @@
 site_name: spotforecast2
 site_description: Forecasting with spot
 site_author: bartzbeielstein
+site_url: https://sequential-parameter-optimization.github.io/spotforecast2/
+repo_url: https://github.com/sequential-parameter-optimization/spotforecast2
+repo_name: spotforecast2
+copyright: Copyright &copy; 2024-2026 bartzbeielstein
+
+extra:
+  version:
+    provider: mike
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/sequential-parameter-optimization/spotforecast2
 
 theme:
   name: material
@@ -9,6 +20,9 @@ theme:
     - navigation.sections
     - navigation.expand
     - content.code.copy
+    - content.code.annotate
+    - navigation.top
+    - navigation.footer
   palette:
     # Palette toggle for light mode
     - media: "(prefers-color-scheme: light)"
@@ -28,6 +42,16 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
 
+markdown_extensions:
+  - attr_list
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - admonition
+  - pymdownx.details
+
 plugins:
   - search
   - mkdocstrings:
@@ -44,10 +68,13 @@ nav:
   - API Reference:
       - Data: api/data.md
       - Preprocessing: api/preprocessing.md
+      - Processing: api/processing.md
       - Forecaster: api/forecaster.md
       - Model Selection: api/model_selection.md
+      - Stats: api/stats.md
       - Utils: api/utils.md
       - Weather: api/weather.md
+      - Exceptions: api/exceptions.md
   - Processing Guides:
       - Model Persistence: processing/model_persistence.md
   - Preprocessing Guides:

@@ -127,11 +127,11 @@ class OneStepAheadFold(BaseFold):
 
             - fold: fold number.
             - [train_start, train_end]: list with the start and end positions of the
-              training set.
+                training set.
             - [test_start, test_end]: list with the start and end positions of the test
-              set. These are the observations used to evaluate the forecaster.
+                set. These are the observations used to evaluate the forecaster.
             - fit_forecaster: boolean indicating whether the forecaster should be fitted
-              in this fold.
+                in this fold.
 
             It is important to note that the returned values are the positions of the
             observations and not the actual values of the index, so they can be used to

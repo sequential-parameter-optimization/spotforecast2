@@ -8,6 +8,7 @@ using numpy.percentile with optimized performance using numpy.searchsorted.
 from __future__ import annotations
 import warnings
 import numpy as np
+from typing import Any
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.exceptions import NotFittedError
 
@@ -319,7 +320,7 @@ class QuantileBinner(BaseEstimator, TransformerMixin):
         self.fit(X, y)
         return self.transform(X, y)
 
-    def get_params(self, deep=True):
+    def get_params(self, deep: bool = True) -> dict[str, Any]:
         """
         Get parameters of the quantile binner.
 
@@ -349,7 +350,7 @@ class QuantileBinner(BaseEstimator, TransformerMixin):
             "random_state": self.random_state,
         }
 
-    def set_params(self, **params):
+    def set_params(self, **params: Any) -> "QuantileBinner":
         """
         Set parameters of the QuantileBinner.
 
@@ -357,7 +358,7 @@ class QuantileBinner(BaseEstimator, TransformerMixin):
             **params: Parameter names and values to set as keyword arguments.
 
         Returns:
-            None
+            self: Returns the updated QuantileBinner instance.
 
         Examples:
             >>> import numpy as np

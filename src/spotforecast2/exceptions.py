@@ -38,7 +38,7 @@ def runtime_deprecated(
     replacement: str = None,
     version: str = None,
     removal: str = None,
-    category=FutureWarning,
+    category: type[Warning] = FutureWarning,
 ) -> object:
     """Decorator to mark functions or classes as deprecated.
 

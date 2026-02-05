@@ -27,6 +27,8 @@ def agg_predict(
         ValueError: If weights is a list/array and its length does not match the number of columns in predictions.
 
     Examples:
+        >>> from spotforecast2.processing import agg_predict
+        >>> import pandas as pd
         >>> df = pd.DataFrame({"A": [1, 2], "B": [3, 4]})
         >>> agg_predict(df, weights={"A": 1.0, "B": -1.0})
         0   -2.0

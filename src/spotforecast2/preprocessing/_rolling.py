@@ -167,7 +167,7 @@ class RollingFeatures:
                     s_name = s if isinstance(s, str) else s.__name__
                     self.features_names.append(f"roll_{s_name}_{ws}")
 
-    def fit(self, X, y=None):
+    def fit(self, X: Any, y: Any = None) -> "RollingFeatures":
         """
         Fit the rolling features transformer (no-op).
 
