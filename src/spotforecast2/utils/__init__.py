@@ -20,7 +20,6 @@ from spotforecast2.utils.forecaster_config import (
     initialize_weights,
     check_select_fit_kwargs,
 )
-from spotforecast2.utils.convert_to_utc import convert_to_utc
 from spotforecast2.utils.generate_holiday import create_holiday_df
 
 __all__ = [
@@ -38,6 +37,5 @@ __all__ = [
     "check_exog_dtypes",
     "check_predict_input",
     "transform_dataframe",
-    "convert_to_utc",
     "create_holiday_df",
 ]

@@ -34,10 +34,6 @@
 
 ::: spotforecast2.utils.forecaster_config.check_select_fit_kwargs
 
-## Convert to UTC
-
-::: spotforecast2.utils.convert_to_utc.convert_to_utc
-
 ## Generate Holiday
 
 ::: spotforecast2.utils.generate_holiday.create_holiday_df

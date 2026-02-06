@@ -6,7 +6,7 @@ from typing import List, Optional
 
 import pandas as pd
 
-from spotforecast2.utils.convert_to_utc import convert_to_utc
+from spotforecast2_safe.utils.convert_to_utc import convert_to_utc
 
 
 @dataclass
