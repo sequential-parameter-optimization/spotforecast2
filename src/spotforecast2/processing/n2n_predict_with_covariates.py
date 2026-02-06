@@ -86,7 +86,7 @@ from spotforecast2.preprocessing.curate_data import (
     get_start_end,
 )
 from spotforecast2.preprocessing.imputation import get_missing_weights
-from spotforecast2.preprocessing.outlier import mark_outliers
+from spotforecast2_safe.preprocessing.outlier import mark_outliers
 from spotforecast2.preprocessing.split import split_rel_train_val_test
 
 try:

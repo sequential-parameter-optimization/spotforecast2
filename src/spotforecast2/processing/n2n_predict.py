@@ -42,7 +42,7 @@ from spotforecast2.forecaster.recursive import ForecasterEquivalentDate
 from spotforecast2.data.fetch_data import fetch_data
 from spotforecast2.preprocessing.curate_data import basic_ts_checks
 from spotforecast2.preprocessing.curate_data import agg_and_resample_data
-from spotforecast2.preprocessing.outlier import mark_outliers
+from spotforecast2_safe.preprocessing.outlier import mark_outliers
 from spotforecast2.preprocessing.split import split_rel_train_val_test
 from spotforecast2.forecaster.utils import predict_multivariate
 from spotforecast2.preprocessing.curate_data import get_start_end

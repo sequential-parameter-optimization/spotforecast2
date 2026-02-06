@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from spotforecast2.preprocessing import outlier as outlier_module
+import spotforecast2_safe.preprocessing.outlier as outlier_module
 
 
 class DummyIForest:
@@ -35,7 +35,7 @@ def test_mark_outliers_marks_first_row_nan(monkeypatch):
         dummy.random_state = random_state
         return dummy
 
-    monkeypatch.setattr(outlier_module, "IsolationForest", _factory)
+    monkeypatch.setattr("spotforecast2_safe.preprocessing.outlier.IsolationForest", _factory)
 
     cleaned, labels = outlier_module.mark_outliers(
         data.copy(), contamination=0.2, random_state=42, verbose=False
@@ -61,7 +61,7 @@ def test_mark_outliers_verbose_prints(monkeypatch, capsys):
     def _factory(contamination=0.1, random_state=1234):
         return dummy
 
-    monkeypatch.setattr(outlier_module, "IsolationForest", _factory)
+    monkeypatch.setattr("spotforecast2_safe.preprocessing.outlier.IsolationForest", _factory)
 
     outlier_module.mark_outliers(data.copy(), verbose=True)
     captured = capsys.readouterr().out
@@ -92,7 +92,7 @@ def test_mark_outliers_returns_last_column_labels(monkeypatch):
     def _factory(contamination=0.1, random_state=1234):
         return sequence
 
-    monkeypatch.setattr(outlier_module, "IsolationForest", _factory)
+    monkeypatch.setattr("spotforecast2_safe.preprocessing.outlier.IsolationForest", _factory)
 
     _, labels = outlier_module.mark_outliers(data.copy())
     assert labels.tolist() == [-1, 1, 1]

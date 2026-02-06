@@ -14,15 +14,15 @@
 
 ## Outlier Detection
 
-::: spotforecast2.preprocessing.outlier.mark_outliers
+::: spotforecast2_safe.preprocessing.outlier.mark_outliers
 
-::: spotforecast2.preprocessing.outlier.manual_outlier_removal
+::: spotforecast2_safe.preprocessing.outlier.manual_outlier_removal
 
-::: spotforecast2.preprocessing.outlier.get_outliers
+::: spotforecast2_safe.preprocessing.outlier.get_outliers
 
-::: spotforecast2.preprocessing.outlier.visualize_outliers_hist
+::: spotforecast2.preprocessing.outlier_plots.visualize_outliers_hist
 
-::: spotforecast2.preprocessing.outlier.visualize_outliers_plotly_scatter
+::: spotforecast2.preprocessing.outlier_plots.visualize_outliers_plotly_scatter
 
 ## Time Series Visualization
 

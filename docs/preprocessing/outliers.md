@@ -33,7 +33,7 @@ uv pip install matplotlib plotly
 ```python
 import pandas as pd
 import numpy as np
-from spotforecast2.preprocessing.outlier import get_outliers
+from spotforecast2_safe.preprocessing.outlier import get_outliers
 
 # Create sample data with outliers
 np.random.seed(42)
@@ -58,7 +58,7 @@ for col, outlier_vals in outliers.items():
 ### Histogram Visualization
 
 ```python
-from spotforecast2.preprocessing.outlier import visualize_outliers_hist
+from spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist
 
 # Create sample data
 np.random.seed(42)
@@ -84,7 +84,7 @@ visualize_outliers_hist(
 ### Interactive Plotly Visualization
 
 ```python
-from spotforecast2.preprocessing.outlier import visualize_outliers_plotly_scatter
+from spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter
 
 # Create time series data
 dates = pd.date_range('2024-01-01', periods=103, freq='h')
@@ -144,7 +144,7 @@ A dictionary mapping column names to pandas Series of outlier values.
 ```python
 import pandas as pd
 import numpy as np
-from spotforecast2.preprocessing.outlier import get_outliers
+from spotforecast2_safe.preprocessing.outlier import get_outliers
 
 # Create sample data
 np.random.seed(42)
@@ -203,7 +203,7 @@ None. Displays matplotlib figures.
 ```python
 import pandas as pd
 import numpy as np
-from spotforecast2.preprocessing.outlier import visualize_outliers_hist
+from spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist
 
 # Create sample data
 np.random.seed(42)
@@ -272,7 +272,7 @@ None. Displays Plotly figures.
 ```python
 import pandas as pd
 import numpy as np
-from spotforecast2.preprocessing.outlier import visualize_outliers_plotly_scatter
+from spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter
 
 # Create time series data
 np.random.seed(42)
@@ -307,11 +307,10 @@ Here's a complete example showing the typical workflow for outlier detection and
 ```python
 import pandas as pd
 import numpy as np
-from spotforecast2.preprocessing.outlier import (
-    get_outliers,
+from spotforecast2_safe.preprocessing.outlier import get_outliers
+from spotforecast2.preprocessing.outlier_plots import (
     visualize_outliers_hist,
-    visualize_outliers_plotly_scatter,
-)
+    visualize_outliers_plotly_scatter)
 
 # Create realistic time series data with outliers
 np.random.seed(42)

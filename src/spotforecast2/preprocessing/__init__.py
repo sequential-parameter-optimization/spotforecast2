@@ -5,10 +5,7 @@ from .curate_data import (
     basic_ts_checks,
     agg_and_resample_data,
 )
-from .outlier import (
-    mark_outliers,
-    manual_outlier_removal,
-    get_outliers,
+from .outlier_plots import (
     visualize_outliers_hist,
     visualize_outliers_plotly_scatter,
 )
@@ -28,9 +25,6 @@ __all__ = [
     "curate_weather",
     "basic_ts_checks",
     "agg_and_resample_data",
-    "mark_outliers",
-    "manual_outlier_removal",
-    "get_outliers",
     "visualize_outliers_hist",
     "visualize_outliers_plotly_scatter",
     "visualize_ts_plotly",
