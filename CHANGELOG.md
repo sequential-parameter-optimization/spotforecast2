@@ -1,3 +1,10 @@
+## [0.2.9](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.8...v0.2.9) (2026-02-06)
+
+
+### Code Refactoring
+
+* import from _safe (base.py) ([73f1d7b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/73f1d7b01d47e9c1b76c8632b3bd001a296adfb5))
+
 ## [0.2.8](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.7...v0.2.8) (2026-02-06)
 
 
