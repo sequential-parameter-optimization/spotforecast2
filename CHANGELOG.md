@@ -1,3 +1,15 @@
+## [0.2.6](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.5...v0.2.6) (2026-02-06)
+
+
+### Bug Fixes
+
+* correct imports from _safe ([c292326](https://github.com/sequential-parameter-optimization/spotforecast2/commit/c2923265ea0b0a5a76746dec42577296a65b0a29))
+
+
+### Documentation
+
+* mkdocs missing docs added ([2831fd2](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2831fd2b0a645988087de8aec26fec7c3ac974d0))
+
 ## [0.2.5](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.4...v0.2.5) (2026-02-05)
 
 
