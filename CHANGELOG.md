@@ -1,3 +1,10 @@
+## [0.2.8](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.7...v0.2.8) (2026-02-06)
+
+
+### Bug Fixes
+
+* mkdocs generation ([faf8a6d](https://github.com/sequential-parameter-optimization/spotforecast2/commit/faf8a6d7c741d166e253f1765be85f44f99992c6))
+
 ## [0.2.7](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.6...v0.2.7) (2026-02-06)
 
 
