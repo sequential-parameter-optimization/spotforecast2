@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from copy import copy
 
-from spotforecast2.forecaster.base import ForecasterBase
+from spotforecast2_safe.forecaster.base import ForecasterBase
 from spotforecast2.preprocessing import TimeSeriesDifferentiator, QuantileBinner
 from spotforecast2.utils import (
     check_y,

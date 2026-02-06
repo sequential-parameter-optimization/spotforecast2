@@ -1,8 +1,5 @@
 # Forecaster Module
 
-## Base
-
-::: spotforecast2.forecaster.base.ForecasterBase
 
 ## Recursive
 
