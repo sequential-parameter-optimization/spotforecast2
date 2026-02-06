@@ -22,10 +22,8 @@
 
 ## About spotforecast2
 
-`spotforecast2` is a Python library for time series forecasting.
+`spotforecast2` is an extension of the `spotforecast-safe` Python library for time series forecasting in safety-critical applications.
 
-Parts of the code are ported from `skforecast` to reduce external dependencies.
-Many thanks to the [skforecast team](https://skforecast.org/0.20.0/more/about-skforecast.html) for their great work!
 
 ## Documentation
 
@@ -36,7 +34,19 @@ Many thanks to the [skforecast team](https://skforecast.org/0.20.0/more/about-sk
 `spotforecast2` software: [BSD-3-Clause License](https://github.com/sequential-parameter-optimization/spotforecast2?tab=BSD-3-Clause-1-ov-file)
 
 
+## Attributions
+
+Parts of the code are ported from `skforecast` to reduce external dependencies.
+Many thanks to the [skforecast team](https://skforecast.org/0.20.0/more/about-skforecast.html) for their great work!
+
+
+
 # References
+
+## spotforecast2-safe
+
+* [spotforecast2-safe documentation](https://sequential-parameter-optimization.github.io/spotforecast2-safe/)
+* [spotforecast2-safe GitHub](https://github.com/sequential-parameter-optimization/spotforecast2-safe)
 
 ## skforecast: 
 
