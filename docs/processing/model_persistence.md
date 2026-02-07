@@ -126,6 +126,22 @@ forecaster = ForecasterRecursive(
 )
 ```
 
+**Calling WeightFunction**:
+
+```python
+import pandas as pd
+from spotforecast2.preprocessing import WeightFunction
+
+weights = pd.Series([1.0, 0.9, 0.8], index=[0, 1, 2])
+weight_func = WeightFunction(weights)
+
+# For single index value
+weight = weight_func(0)  # Returns: 1.0
+
+# For multiple index values
+weights = weight_func(pd.Index([0, 1, 2]))  # Returns: array([1.0, 0.9, 0.8])
+```
+
 **Benefits**:
 - ✅ Fully picklable (works with joblib)
 - ✅ No external dependencies
@@ -242,18 +258,23 @@ predictions, metadata, forecasters = n2n_predict_with_covariates(
 # Run persistence tests
 uv run pytest tests/test_model_persistence.py -v
 
+# Run documentation example tests
+uv run pytest tests/test_docs_model_persistence_examples.py -v
+
 # Run integration tests
 uv run pytest tests/test_n2n_persistence_integration.py -v
 
-# Run cache home tests
-uv run pytest tests/test_cache_home.py -v
+# Run weight function pickling tests
+uv run pytest tests/test_weight_function_pickle.py -v
 
-# Run all tests
-uv run pytest tests/ -v
+# Run all persistence-related tests
+uv run pytest tests/test_model_persistence.py tests/test_docs_model_persistence_examples.py tests/test_n2n_persistence_integration.py tests/test_weight_function_pickle.py -v
 
-# Quick check
-uv run pytest tests/test_model_persistence.py tests/test_n2n_persistence_integration.py --tb=no -q
+# Quick check (all tests should pass)
+uv run pytest tests/test_model_persistence.py tests/test_docs_model_persistence_examples.py tests/test_n2n_persistence_integration.py tests/test_weight_function_pickle.py --tb=no -q
 ```
+
+**Documentation validation**: All examples in this guide are validated by [test_docs_model_persistence_examples.py](../../tests/test_docs_model_persistence_examples.py) with 43 comprehensive pytest cases.
 
 ## Troubleshooting
 
