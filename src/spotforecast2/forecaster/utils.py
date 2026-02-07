@@ -373,8 +373,7 @@ def initialize_window_features(
 
         link_to_docs = (
             "\nVisit the documentation for more information about how to create "
-            "custom window features:\n"
-            "https://skforecast.org/latest/user_guides/window-features-and-custom-features.html#create-your-custom-window-features"
+            "custom window features\n"
         )
 
         max_window_sizes = []
