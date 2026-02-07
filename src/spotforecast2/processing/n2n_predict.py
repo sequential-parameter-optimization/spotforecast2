@@ -38,7 +38,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
 import pandas as pd
-from spotforecast2.forecaster.recursive import ForecasterEquivalentDate
+from spotforecast2_safe.forecaster.recursive import ForecasterEquivalentDate
 from spotforecast2.data.fetch_data import fetch_data
 from spotforecast2.preprocessing.curate_data import basic_ts_checks
 from spotforecast2.preprocessing.curate_data import agg_and_resample_data

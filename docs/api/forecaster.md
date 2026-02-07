@@ -1,9 +1,6 @@
 # Forecaster Module
 
 
-## Recursive
-
-::: spotforecast2.forecaster.recursive.ForecasterEquivalentDate
 
 ## Metrics
 

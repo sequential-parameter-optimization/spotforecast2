@@ -1,7 +1,7 @@
 import pytest
 import numpy as np
 import pandas as pd
-from spotforecast2.forecaster.recursive import ForecasterEquivalentDate
+from spotforecast2_safe.forecaster.recursive import ForecasterEquivalentDate
 from spotforecast2.exceptions import MissingValuesWarning
 
 
