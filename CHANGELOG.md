@@ -1,3 +1,16 @@
+## [0.2.15](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.14...v0.2.15) (2026-02-07)
+
+
+### Bug Fixes
+
+* import OneStepAheadFold from spotforecast2_safe ([aa6ba62](https://github.com/sequential-parameter-optimization/spotforecast2/commit/aa6ba62137fec12a599a6c7ccc5c3d613b41d24b))
+
+
+### Documentation
+
+* model_selection ([8cb4243](https://github.com/sequential-parameter-optimization/spotforecast2/commit/8cb424373902d083b978415c49c6704ed2f1e272))
+* validation ([8a49be3](https://github.com/sequential-parameter-optimization/spotforecast2/commit/8a49be341752261406d41f9084c5b667b9d9ec59))
+
 ## [0.2.14](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.13...v0.2.14) (2026-02-07)
 
 
