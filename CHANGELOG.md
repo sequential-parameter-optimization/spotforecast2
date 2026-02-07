@@ -1,3 +1,10 @@
+## [0.2.14](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.13...v0.2.14) (2026-02-07)
+
+
+### Bug Fixes
+
+* validation.py (import from _safe) ([4c62126](https://github.com/sequential-parameter-optimization/spotforecast2/commit/4c6212638277c509eaab11518c235058aab0579a))
+
 ## [0.2.13](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.12...v0.2.13) (2026-02-07)
 
 
