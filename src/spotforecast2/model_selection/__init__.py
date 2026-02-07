@@ -1,5 +1,8 @@
-from .split_ts_cv import TimeSeriesFold
+# Import from spotforecast2_safe (consolidated)
+from spotforecast2_safe.model_selection import (
+    TimeSeriesFold,
+    backtesting_forecaster,
+)
 from .split_one_step import OneStepAheadFold
-from .validation import backtesting_forecaster
 
 __all__ = ["TimeSeriesFold", "OneStepAheadFold", "backtesting_forecaster"]

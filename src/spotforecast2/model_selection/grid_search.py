@@ -24,7 +24,7 @@ from spotforecast2.forecaster.metrics import add_y_train_argument, _get_metric
 from spotforecast2.model_selection.utils_metrics import (
     _calculate_metrics_one_step_ahead,
 )
-from spotforecast2.model_selection.validation import _backtesting_forecaster
+from spotforecast2_safe.model_selection import _backtesting_forecaster
 from spotforecast2.forecaster.utils import set_skforecast_warnings
 
 
