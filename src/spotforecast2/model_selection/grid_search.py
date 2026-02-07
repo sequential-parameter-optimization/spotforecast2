@@ -13,7 +13,7 @@ from spotforecast2.exceptions import (
     IgnoredArgumentWarning,
 )
 from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
-from spotforecast2.model_selection.split_one_step import OneStepAheadFold
+from spotforecast2_safe.model_selection import OneStepAheadFold
 from spotforecast2.model_selection.utils_common import (
     initialize_lags_grid,
     check_backtesting_input,

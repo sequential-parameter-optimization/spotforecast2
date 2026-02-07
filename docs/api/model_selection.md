@@ -665,9 +665,357 @@ Key overlapping fold elements:
 3. Increased evaluation density: More data points for statistical significance
 4. Computational cost: Proportional to number of folds (trade-off consideration)
 
-## One Step Ahead Fold
+## One Step Ahead Fold: Simplified Validation for Specific Use Cases
 
-::: spotforecast2.model_selection.split_one_step.OneStepAheadFold
+The OneStepAheadFold class provides a streamlined validation approach for one-step-ahead forecasting scenarios. Unlike TimeSeriesFold which creates multiple temporal folds, OneStepAheadFold creates a single train/test split optimized for evaluating models on all remaining data after initial training.
+
+::: spotforecast2_safe.model_selection.OneStepAheadFold
+
+### Design Philosophy for Safety-Critical Validation
+
+OneStepAheadFold serves as a complementary validation strategy to TimeSeriesFold, particularly valuable in safety-critical contexts where:
+
+1. Rapid Model Assessment: Quick validation without multiple retraining cycles reduces time-to-deployment
+2. Maximum Test Coverage: Uses all post-training data for evaluation, maximizing statistical power
+3. Computational Efficiency: Single training run minimizes resource consumption in constrained environments
+4. Baseline Establishment: Provides fast baseline performance metrics before more expensive cross-validation
+
+### OneStepAheadFold as a Fallback Mechanism
+
+The OneStepAheadFold class serves critical roles in a layered validation strategy:
+
+- Fast Sanity Check: Quick validation before committing to expensive multi-fold cross-validation
+- Computational Fallback: When TimeSeriesFold is too expensive, OneStepAheadFold provides rapid assessment
+- Maximum Data Utilization: Evaluates on all available post-training data without gaps
+- Model Comparison Baseline: Establishes performance floor before testing retraining strategies
+- Emergency Validation: When production issues require immediate model assessment with minimal computation
+
+### When to Use OneStepAheadFold vs TimeSeriesFold
+
+Choose OneStepAheadFold when:
+
+1. Computational resources are severely constrained
+2. You need rapid initial model assessment
+3. The model will not be retrained in production (static deployment)
+4. You want to maximize test set size for statistical significance
+5. Establishing a performance baseline before more complex validation
+
+Choose TimeSeriesFold when:
+
+1. The model will be retrained in production (requires realistic refit simulation)
+2. You need to assess model degradation over time
+3. Computational resources allow multiple training runs
+4. You want to test different retraining strategies
+5. Production deployment involves rolling forecasts with periodic updates
+
+### Understanding the Single Split Strategy
+
+OneStepAheadFold creates exactly one fold:
+
+- Training Set: First `initial_train_size` observations
+- Test Set: All remaining observations after training set
+- No Retraining: Model trained once, evaluated on all subsequent data
+- No Gaps: Immediate evaluation after training period ends
+
+This differs fundamentally from TimeSeriesFold's multiple overlapping or sequential folds with configurable retraining.
+
+### Complete Examples
+
+#### Example 1: Rapid Model Screening for Safety-Critical Deployment
+
+This example demonstrates using OneStepAheadFold for fast initial screening of multiple model candidates before committing to expensive cross-validation.
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.linear_model import Ridge, Lasso
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2.model_selection import backtesting_forecaster, OneStepAheadFold
+
+# Simulate critical infrastructure monitoring (water pressure)
+rng = np.random.default_rng(321)
+dates = pd.date_range("2024-01-01", periods=365 * 24, freq="h")
+
+# Pressure with daily cycle and gradual degradation
+hour_of_day = dates.hour
+daily_cycle = 5 * np.sin(2 * np.pi * hour_of_day / 24)
+baseline_pressure = 50  # PSI
+degradation = -0.01 * np.arange(len(dates))  # Gradual pressure loss
+noise = rng.normal(0, 1, len(dates))
+
+y = pd.Series(
+    baseline_pressure + daily_cycle + degradation + noise,
+    index=dates,
+    name="pressure_psi",
+)
+
+# Define candidate models for rapid screening
+model_candidates = {
+    "Ridge": Ridge(alpha=1.0),
+    "Lasso": Lasso(alpha=0.1),
+    "RandomForest": RandomForestRegressor(n_estimators=50, random_state=321),
+    "GradientBoosting": GradientBoostingRegressor(n_estimators=50, random_state=321),
+}
+
+# OneStepAheadFold: Fast screening with single train/test split
+cv = OneStepAheadFold(
+    initial_train_size=180 * 24,  # 6 months training
+    verbose=True,
+)
+
+# Inspect the single fold structure
+folds_df = cv.split(y, as_pandas=True)
+print("OneStepAheadFold Structure:")
+print(folds_df)
+print(f"\nTraining observations: {folds_df['train_end'].iloc[0] - folds_df['train_start'].iloc[0]}")
+print(f"Test observations: {folds_df['test_end'].iloc[0] - folds_df['test_start'].iloc[0]}")
+
+# Rapid screening of all candidates
+results = {}
+print("\nRapid Model Screening Results:")
+print("=" * 60)
+
+for name, estimator in model_candidates.items():
+    forecaster = ForecasterRecursive(
+        estimator=estimator,
+        lags=24 * 7,  # One week of hourly data
+    )
+    
+    metric_values, predictions = backtesting_forecaster(
+        forecaster=forecaster,
+        y=y,
+        cv=cv,
+        metric="mean_absolute_error",
+        verbose=False,
+        show_progress=False,
+    )
+    
+    mae = metric_values["mean_absolute_error"].iloc[0]
+    results[name] = mae
+    print(f"{name:20s}: MAE = {mae:.3f} PSI")
+
+# Select best model for further validation
+best_model = min(results, key=results.get)
+print(f"\n✓ Best model for detailed validation: {best_model}")
+print(f"  MAE: {results[best_model]:.3f} PSI")
+print(f"  Next step: Run TimeSeriesFold cross-validation on {best_model}")
+
+# Safety check: Verify best model meets minimum requirements
+max_acceptable_mae = 2.0  # PSI
+if results[best_model] <= max_acceptable_mae:
+    print(f"✓ Best model meets safety threshold ({max_acceptable_mae} PSI)")
+else:
+    print(f"✗ WARNING: Best model exceeds safety threshold")
+    print(f"  Consider additional feature engineering or model development")
+```
+
+Key rapid screening elements:
+
+1. Single split: Minimal computation for fast iteration
+2. Multiple candidates: Screen many models quickly
+3. Maximum test data: Uses all post-training data for robust assessment
+4. Safety gates: Immediate feedback on viability
+5. Workflow integration: Identifies candidates for deeper validation
+
+#### Example 2: Static Model Deployment Validation
+
+This example demonstrates validating a model that will be deployed without retraining, making OneStepAheadFold the appropriate validation strategy.
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import GradientBoostingRegressor
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2.model_selection import backtesting_forecaster, OneStepAheadFold
+
+# Simulate embedded sensor system (temperature) with limited compute for retraining
+rng = np.random.default_rng(654)
+dates = pd.date_range("2024-01-01", periods=730, freq="D")  # 2 years
+
+# Seasonal temperature pattern
+day_of_year = np.arange(len(dates)) % 365
+seasonal = 15 * np.sin(2 * np.pi * day_of_year / 365)
+baseline_temp = 20
+noise = rng.normal(0, 2, len(dates))
+
+y = pd.Series(baseline_temp + seasonal + noise, index=dates, name="temperature_c")
+
+# Embedded system: Model will be deployed statically (no retraining capability)
+forecaster = ForecasterRecursive(
+    estimator=GradientBoostingRegressor(n_estimators=100, random_state=654),
+    lags=30,  # Last 30 days
+)
+
+# OneStepAheadFold: Matches static deployment (train once, predict forever)
+cv = OneStepAheadFold(
+    initial_train_size=365,  # Train on first year
+    verbose=True,
+)
+
+print("Static Deployment Validation:")
+print("=" * 60)
+
+# Validate on entire second year (simulates production behavior)
+metric_values, predictions = backtesting_forecaster(
+    forecaster=forecaster,
+    y=y,
+    cv=cv,
+    metric=["mean_absolute_error", "mean_squared_error"],
+    interval=0.90,  # 90% prediction interval
+    interval_method="conformal",
+    use_in_sample_residuals=True,
+    verbose=False,
+    show_progress=True,
+)
+
+print(f"\nStatic Model Performance (Year 2):")
+print(f"Mean Absolute Error: {metric_values['mean_absolute_error'].iloc[0]:.2f} °C")
+print(f"RMSE: {np.sqrt(metric_values['mean_squared_error'].iloc[0]):.2f} °C")
+
+# Temporal degradation analysis: Check if performance degrades over time
+# Split test period into quarters
+test_predictions = predictions.copy()
+n_test = len(test_predictions)
+quarter_size = n_test // 4
+
+quarterly_mae = []
+for i in range(4):
+    start_idx = i * quarter_size
+    end_idx = (i + 1) * quarter_size if i < 3 else n_test
+    quarter_preds = test_predictions.iloc[start_idx:end_idx]
+    quarter_actual = y.loc[quarter_preds.index]
+    quarter_mae = (quarter_actual - quarter_preds["pred"]).abs().mean()
+    quarterly_mae.append(quarter_mae)
+    print(f"Quarter {i+1} MAE: {quarter_mae:.2f} °C")
+
+# Degradation check: Is performance stable over time?
+mae_trend = np.polyfit(range(4), quarterly_mae, 1)[0]
+if mae_trend > 0.1:
+    print(f"\n⚠ WARNING: Performance degrading over time (trend: +{mae_trend:.3f} °C/quarter)")
+    print("  Consider implementing periodic retraining capability")
+else:
+    print(f"\n✓ Performance stable over time (trend: {mae_trend:+.3f} °C/quarter)")
+    print("  Static deployment validated for production")
+
+# Coverage stability check
+coverage = (
+    (y.loc[predictions.index] >= predictions["lower_bound"])
+    & (y.loc[predictions.index] <= predictions["upper_bound"])
+).mean()
+print(f"\nPrediction Interval Coverage: {coverage:.1%} (target: 90%)")
+```
+
+Key static deployment elements:
+
+1. Single training: Matches production constraint (no retraining)
+2. Long test period: Validates sustained performance
+3. Temporal degradation analysis: Detects performance decay
+4. Coverage stability: Ensures uncertainty estimates remain calibrated
+5. Deployment decision: Clear criteria for static vs dynamic deployment
+
+#### Example 3: Emergency Production Validation
+
+This example demonstrates using OneStepAheadFold for rapid validation when production issues require immediate model assessment.
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2.model_selection import backtesting_forecaster, OneStepAheadFold
+import time
+
+# Simulate production scenario: Model performance suddenly degraded
+# Need to quickly validate if rolling back to previous model version helps
+rng = np.random.default_rng(987)
+dates = pd.date_range("2024-01-01", periods=90, freq="D")
+
+# Simulated production data with recent distribution shift
+baseline = 100
+trend = 0.1 * np.arange(len(dates))
+# Distribution shift in last 30 days
+shift = np.where(np.arange(len(dates)) > 60, 10, 0)
+noise = rng.normal(0, 5, len(dates))
+
+y = pd.Series(baseline + trend + shift + noise, index=dates, name="metric")
+
+# Emergency scenario: Current model failing, test rollback candidate quickly
+rollback_model = ForecasterRecursive(
+    estimator=RandomForestRegressor(n_estimators=30, random_state=987),  # Faster
+    lags=7,
+)
+
+# OneStepAheadFold: Fastest possible validation
+cv = OneStepAheadFold(
+    initial_train_size=60,  # Train on pre-shift data
+    verbose=False,  # Suppress output for speed
+)
+
+print("Emergency Production Validation:")
+print("=" * 60)
+print("Scenario: Production model failing, testing rollback candidate...")
+
+# Time the validation
+start_time = time.time()
+
+metric_values, predictions = backtesting_forecaster(
+    forecaster=rollback_model,
+    y=y,
+    cv=cv,
+    metric="mean_absolute_error",
+    verbose=False,
+    show_progress=False,
+)
+
+validation_time = time.time() - start_time
+
+print(f"\nValidation completed in {validation_time:.2f} seconds")
+print(f"Rollback Model MAE: {metric_values['mean_absolute_error'].iloc[0]:.2f}")
+
+# Compare to current production model performance (simulated)
+current_production_mae = 15.0  # Degraded performance
+rollback_mae = metric_values["mean_absolute_error"].iloc[0]
+
+print(f"\nProduction Comparison:")
+print(f"Current Model MAE:  {current_production_mae:.2f}")
+print(f"Rollback Model MAE: {rollback_mae:.2f}")
+print(f"Improvement:        {current_production_mae - rollback_mae:.2f} ({(1 - rollback_mae/current_production_mae)*100:.1f}%)")
+
+# Emergency decision criteria
+if rollback_mae < current_production_mae * 0.8:  # 20% improvement threshold
+    print(f"\n✓ RECOMMENDATION: APPROVE rollback")
+    print(f"  Significant improvement detected")
+    print(f"  Proceed with rollback to restore service")
+else:
+    print(f"\n✗ RECOMMENDATION: REJECT rollback")
+    print(f"  Insufficient improvement")
+    print(f"  Investigate root cause instead of rollback")
+
+# Quick diagnostic: Where is the rollback model failing?
+errors = (y.loc[predictions.index] - predictions["pred"]).abs()
+worst_period_start = errors.idxmax()
+print(f"\nWorst prediction period: {worst_period_start}")
+print(f"Error magnitude: {errors.max():.2f}")
+```
+
+Key emergency validation elements:
+
+1. Speed priority: Minimal computation for rapid decision
+2. Rollback testing: Quick assessment of previous model version
+3. Clear decision criteria: Quantitative thresholds for action
+4. Diagnostic information: Identifies failure modes
+5. Production context: Balances speed vs thoroughness appropriately
+
+### Computational Efficiency Comparison
+
+OneStepAheadFold vs TimeSeriesFold computational cost:
+
+- OneStepAheadFold: 1 model training + 1 prediction pass
+- TimeSeriesFold (10 folds, refit=True): 10 model trainings + 10 prediction passes
+- TimeSeriesFold (10 folds, refit=False): 1 model training + 10 prediction passes
+
+For expensive models or large datasets, OneStepAheadFold can be 10-100x faster than TimeSeriesFold with refit=True.
 
 ## Grid Search
 
