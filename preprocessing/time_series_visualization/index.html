@@ -1263,6 +1263,67 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-validation-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Validation Command
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-examples-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Examples Tested
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#see-also" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1648,6 +1709,67 @@
     <span class="md-ellipsis">
       
         Issue: Missing Data in Visualization
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#testing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Testing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Testing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#running-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Running Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-coverage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Coverage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#test-validation-command" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Test Validation Command
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#documentation-examples-tested" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Documentation Examples Tested
       
     </span>
   </a>
@@ -2156,6 +2278,40 @@
 <a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a><span class="n">df_filled</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;ffill&#39;</span><span class="p">)</span>
 <a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="n">visualize_ts_plotly</span><span class="p">({</span><span class="s1">&#39;Data&#39;</span><span class="p">:</span> <span class="n">df_filled</span><span class="p">})</span>
 </code></pre></div>
+<h2 id="testing">Testing</h2>
+<p>This module includes comprehensive pytest tests validating all documentation examples and API functionality. Tests are located in <code>tests/test_docs_time_series_visualization_examples.py</code>.</p>
+<h3 id="running-tests">Running Tests</h3>
+<p>Run all time series visualization tests:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_docs_time_series_visualization_examples.py<span class="w"> </span>-v
+</code></pre></div>
+<p>Run specific test class:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_docs_time_series_visualization_examples.py::TestVisualizeTimeSeriesPlotlyBasic<span class="w"> </span>-v
+</code></pre></div>
+<h3 id="test-coverage">Test Coverage</h3>
+<p>The test suite includes <strong>50 comprehensive tests</strong> covering:</p>
+<ul>
+<li><strong>Basic Visualization</strong> (9 tests): Single/multiple dataset visualization, column selection, custom parameters</li>
+<li><strong>Comparison Functionality</strong> (6 tests): Dataset comparison, statistical overlays, customization</li>
+<li><strong>Complete Workflows</strong> (3 tests): Train/val/test split visualization, multi-dataset comparison, dynamic datasets</li>
+<li><strong>Parameters &amp; Configuration</strong> (8 tests): figsize options, template variations, color customization</li>
+<li><strong>Best Practices</strong> (4 tests): Datetime index handling, consistent shapes, subsampling for large datasets</li>
+<li><strong>Edge Cases</strong> (7 tests): Single value, constant values, NaN handling, negative/large values, many columns</li>
+<li><strong>API Examples</strong> (5 tests): Quick start examples, API function validation</li>
+<li><strong>Data Integrity</strong> (3 tests): Index preservation, data value preservation, dataset independence</li>
+<li><strong>Safety-Critical</strong> (5 tests): Error handling, empty input validation, determinism</li>
+</ul>
+<h3 id="test-validation-command">Test Validation Command</h3>
+<p>Verify all time series visualization tests pass:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_docs_time_series_visualization_examples.py<span class="w"> </span>--tb<span class="o">=</span>short<span class="w"> </span>-q
+</code></pre></div>
+<p>Expected output: <code>50 passed</code></p>
+<h3 id="documentation-examples-tested">Documentation Examples Tested</h3>
+<p>All code examples in this documentation have been validated with pytest:
+- Quick start examples (all variants)
+- Complete workflow examples (train/val/test split, comparison, dynamic)
+- Parameter configuration examples (figsize, templates, colors)
+- Best practices examples (datetime index, consistent shapes, large datasets)
+- Troubleshooting examples (overlapping datasets, memory issues, missing data)</p>
 <h2 id="see-also">See Also</h2>
 <ul>
 <li><a href="../outliers/">Outlier Detection and Visualization</a></li>
