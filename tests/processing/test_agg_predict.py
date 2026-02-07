@@ -1,6 +1,6 @@
 import pytest
 import pandas as pd
-from spotforecast2.processing.agg_predict import agg_predict
+from spotforecast2_safe.processing.agg_predict import agg_predict
 
 
 class TestAggPredict:
