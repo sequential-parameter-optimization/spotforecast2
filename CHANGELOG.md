@@ -1,3 +1,15 @@
+## [0.2.10](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.9...v0.2.10) (2026-02-07)
+
+
+### Documentation
+
+* (utoils.py) ([9274374](https://github.com/sequential-parameter-optimization/spotforecast2/commit/9274374eb030928a210caefff302e963d311cf17))
+
+
+### Code Refactoring
+
+* (agg_predict) from _safe ([6b16bb3](https://github.com/sequential-parameter-optimization/spotforecast2/commit/6b16bb325f7626db4d40880c2873754ddee01a05))
+
 ## [0.2.9](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.8...v0.2.9) (2026-02-06)
 
 
