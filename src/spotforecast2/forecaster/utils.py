@@ -20,6 +20,7 @@ from spotforecast2.utils import (
     transform_dataframe,
 )
 from spotforecast2.exceptions import set_skforecast_warnings, UnknownLevelWarning
+from spotforecast2_safe.forecaster.utils import check_preprocess_series
 
 try:
     from tqdm.auto import tqdm
@@ -39,8 +40,9 @@ optional_dependencies = {
 }
 
 
-def check_preprocess_series(series):
-    pass
+# TODO: Remove this function, because it is imported from spotforecast2_safe
+# def check_preprocess_series(series):
+#     pass
 
 
 def check_preprocess_exog_multiseries(exog):
