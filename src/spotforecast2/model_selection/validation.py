@@ -602,7 +602,7 @@ def backtesting_forecaster(
     Examples:
         >>> import pandas as pd
         >>> from sklearn.ensemble import RandomForestRegressor
-        >>> from spotforecast2.forecaster.recursive import ForecasterRecursive
+        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
         >>> from spotforecast2.model_selection import backtesting_forecaster, TimeSeriesFold
         >>> y = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
         >>> forecaster = ForecasterRecursive(

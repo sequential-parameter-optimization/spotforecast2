@@ -75,7 +75,7 @@ from spotforecast2.data.fetch_data import (
     fetch_holiday_data,
     fetch_weather_data,
 )
-from spotforecast2.forecaster.recursive import ForecasterRecursive
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2.forecaster.utils import predict_multivariate
 from spotforecast2.preprocessing import RollingFeatures
 from spotforecast2.preprocessing.curate_data import (

@@ -88,7 +88,7 @@ def random_search_forecaster(
         >>> import numpy as np
         >>> from sklearn.linear_model import Ridge
         >>> from scipy.stats import uniform
-        >>> from spotforecast2.forecaster.recursive import ForecasterRecursive
+        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
         >>> from spotforecast2.model_selection import TimeSeriesFold
         >>> from spotforecast2.model_selection.random_search import random_search_forecaster
         >>>

@@ -823,7 +823,7 @@ def predict_multivariate(
     Examples:
         >>> import pandas as pd
         >>> from sklearn.linear_model import LinearRegression
-        >>> from spotforecast2.forecaster.recursive import ForecasterRecursive
+        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
         >>> from spotforecast2.forecaster.utils import predict_multivariate
         >>> y1 = pd.Series([1, 2, 3, 4, 5])
         >>> y2 = pd.Series([2, 4, 6, 8, 10])

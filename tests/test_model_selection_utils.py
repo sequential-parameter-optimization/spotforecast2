@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
-from spotforecast2.forecaster.recursive import ForecasterRecursive
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 
 from spotforecast2.model_selection.utils_common import (
     initialize_lags_grid,

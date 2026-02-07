@@ -2,7 +2,7 @@ import pytest
 import pandas as pd
 import numpy as np
 from sklearn.linear_model import LinearRegression
-from spotforecast2.forecaster.recursive import ForecasterRecursive
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2.forecaster.utils import predict_multivariate
 
 

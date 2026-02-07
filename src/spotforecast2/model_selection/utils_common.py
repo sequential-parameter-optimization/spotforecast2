@@ -46,7 +46,7 @@ def initialize_lags_grid(
 
     Examples:
         >>> from spotforecast2.model_selection.utils_common import initialize_lags_grid
-        >>> from spotforecast2.forecaster.recursive import ForecasterRecursive
+        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
         >>> from sklearn.linear_model import LinearRegression
         >>> forecaster = ForecasterRecursive(LinearRegression(), lags=2)
         >>> lags_grid = [2, 4]
@@ -163,7 +163,7 @@ def check_backtesting_input(
     Examples:
         >>> import pandas as pd
         >>> from spotforecast2.model_selection.utils_common import check_backtesting_input
-        >>> from spotforecast2.forecaster.recursive import ForecasterRecursive
+        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
         >>> from spotforecast2.model_selection import TimeSeriesFold
         >>> from sklearn.linear_model import LinearRegression
         >>> from sklearn.metrics import mean_squared_error
@@ -496,7 +496,7 @@ def check_one_step_ahead_input(
     Examples:
         >>> import pandas as pd
         >>> from spotforecast2.model_selection.utils_common import check_one_step_ahead_input
-        >>> from spotforecast2.forecaster.recursive import ForecasterRecursive
+        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
         >>> from spotforecast2.model_selection import OneStepAheadFold
         >>> from sklearn.linear_model import LinearRegression
         >>> from sklearn.metrics import mean_squared_error
@@ -673,7 +673,7 @@ def select_n_jobs_backtesting(forecaster: object, refit: bool | int) -> int:
 
     Examples:
         >>> from spotforecast2.model_selection.utils_common import select_n_jobs_backtesting
-        >>> from spotforecast2.forecaster.recursive import ForecasterRecursive
+        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
         >>> from sklearn.linear_model import LinearRegression
         >>> forecaster = ForecasterRecursive(LinearRegression(), lags=2)
         >>> select_n_jobs_backtesting(forecaster, refit=True)

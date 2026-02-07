@@ -3,8 +3,6 @@
 
 ## Recursive
 
-::: spotforecast2.forecaster.recursive.ForecasterRecursive
-
 ::: spotforecast2.forecaster.recursive.ForecasterEquivalentDate
 
 ## Metrics

@@ -39,7 +39,7 @@ def _calculate_metrics_one_step_ahead(
         >>> import numpy as np
         >>> from sklearn.linear_model import LinearRegression
         >>> from sklearn.metrics import mean_squared_error
-        >>> from spotforecast2.forecaster.recursive import ForecasterRecursive
+        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
         >>> from spotforecast2.model_selection.utils_metrics import _calculate_metrics_one_step_ahead
         >>>
         >>> forecaster = ForecasterRecursive(LinearRegression(), lags=2)

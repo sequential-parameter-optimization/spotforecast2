@@ -9,7 +9,7 @@ import tempfile
 import os
 
 from spotforecast2.preprocessing import WeightFunction, custom_weights
-from spotforecast2.forecaster.recursive import ForecasterRecursive
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from sklearn.ensemble import RandomForestRegressor
 
 
