@@ -1,8 +1,43 @@
 # Model Selection Module
 
-## Validation
+## Model Selection for Safety-Critical Forecasting
+
+The model selection module provides robust validation and cross-validation tools designed for production environments where forecast reliability is paramount. These tools enable rigorous model evaluation through time series backtesting, ensuring models perform consistently across different temporal conditions.
+
+## Validation: Backtesting Forecaster
 
 ::: spotforecast2_safe.model_selection.backtesting_forecaster
+
+### Design Philosophy for Safety-Critical Systems
+
+In safety-critical environments (energy grid management, medical monitoring, industrial control systems), forecast failures can have severe consequences. The backtesting_forecaster function implements several defensive design patterns:
+
+1. Temporal Integrity: Strict enforcement of temporal ordering prevents data leakage that could mask model weaknesses
+2. Refit Strategy Control: Configurable refit intervals allow balancing between model freshness and computational cost
+3. Probabilistic Quantification: Prediction intervals provide uncertainty estimates essential for risk management
+4. Parallel Execution Safety: Careful handling of stateful operations during parallelization prevents race conditions
+
+### Fallback Mechanisms in Production
+
+The backtesting framework serves as a critical fallback validation layer:
+
+- Pre-deployment Validation: Comprehensive backtesting before model deployment catches issues that unit tests miss
+- Continuous Monitoring: Regular backtesting on recent data detects model degradation
+- A/B Testing Foundation: Provides fair comparison framework for evaluating model updates
+- Rollback Decision Support: Quantitative metrics guide decisions to revert problematic model changes
+
+### Understanding Probabilistic Forecasting
+
+When forecasting in safety-critical contexts, point predictions alone are insufficient. Prediction intervals quantify uncertainty, enabling downstream systems to make risk-aware decisions. The backtesting_forecaster supports two interval estimation methods:
+
+1. Bootstrapping: Resamples residuals to generate empirical prediction distributions
+2. Conformal Prediction: Provides distribution-free coverage guarantees under mild assumptions
+
+Both methods require residuals (forecast errors) for interval construction:
+
+- In-sample residuals: Computed from training data (default, always available)
+- Out-of-sample residuals: Computed from held-out calibration data (more reliable, requires setup)
+- Binned residuals: Stratified by prediction magnitude for heteroscedastic errors (recommended)
 
 ### Probabilistic Forecasting with Residuals
 
@@ -15,6 +50,102 @@ When using probabilistic forecasting methods (`interval` parameter), the forecas
 - Binned residuals: When `use_binned_residuals=True` (default), residuals are selected based on predicted values for improved interval accuracy. This requires the forecaster to have a binner configured during initialization.
 
 For conformal prediction (`interval_method='conformal'`), the method automatically uses the appropriate residuals based on the `use_in_sample_residuals` setting.
+
+### Complete Examples
+
+#### Example 0: Safety-Critical Energy Grid Forecasting
+
+This comprehensive example demonstrates model validation for a production energy grid management system where forecast reliability is mission-critical. The example shows defensive programming practices, uncertainty quantification, and deployment decision support.
+
+```python
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+from sklearn.ensemble import GradientBoostingRegressor
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2.model_selection import backtesting_forecaster, TimeSeriesFold
+
+# Simulate realistic energy load data with daily and weekly patterns
+rng = np.random.default_rng(42)
+dates = pd.date_range("2023-01-01", periods=365 * 24, freq="h")
+
+# Base load + daily pattern + weekly pattern + noise
+hour_of_day = dates.hour
+day_of_week = dates.dayofweek
+base_load = 5000
+daily_pattern = 2000 * np.sin(2 * np.pi * hour_of_day / 24)
+weekly_pattern = 500 * (day_of_week < 5).astype(float)  # Weekday boost
+noise = rng.normal(0, 200, len(dates))
+trend = np.linspace(0, 500, len(dates))  # Gradual load increase
+
+y = pd.Series(
+    base_load + daily_pattern + weekly_pattern + trend + noise,
+    index=dates,
+    name="grid_load_mw",
+)
+
+# Safety-critical configuration: Conservative forecaster with uncertainty quantification
+forecaster = ForecasterRecursive(
+    estimator=GradientBoostingRegressor(
+        n_estimators=100, max_depth=5, learning_rate=0.1, random_state=42
+    ),
+    lags=24 * 7,  # One week of hourly data
+    binner_kwargs={"n_bins": 10},  # Enable binned residuals for better intervals
+)
+
+# Cross-validation strategy: Realistic evaluation with weekly retraining
+cv = TimeSeriesFold(
+    steps=24,  # Forecast 24 hours ahead
+    initial_train_size=24 * 30 * 6,  # 6 months initial training
+    refit=24 * 7,  # Retrain weekly (safety-critical: fresh models)
+    fixed_train_size=False,  # Expanding window (use all available data)
+    fold_stride=24 * 7,  # Evaluate weekly
+    gap=0,  # No gap (immediate forecasting)
+)
+
+# Perform backtesting with probabilistic forecasts
+metric_values, predictions = backtesting_forecaster(
+    forecaster=forecaster,
+    y=y,
+    cv=cv,
+    metric=["mean_absolute_error", "mean_squared_error"],
+    interval=0.95,  # 95% prediction interval for risk management
+    interval_method="conformal",  # Distribution-free guarantees
+    use_in_sample_residuals=True,
+    use_binned_residuals=True,  # Account for heteroscedasticity
+    n_jobs=1,  # Sequential for safety (avoid race conditions)
+    verbose=True,
+    show_progress=True,
+)
+
+# Safety metrics: Evaluate forecast reliability
+print("Safety-Critical Performance Metrics:")
+print(f"Mean Absolute Error: {metric_values['mean_absolute_error'].mean():.2f} MW")
+print(f"RMSE: {np.sqrt(metric_values['mean_squared_error'].mean()):.2f} MW")
+
+# Coverage analysis: Critical for safety applications
+actual_coverage = (
+    (y.loc[predictions.index] >= predictions["lower_bound"])
+    & (y.loc[predictions.index] <= predictions["upper_bound"])
+).mean()
+print(f"Prediction Interval Coverage: {actual_coverage:.1%} (target: 95.0%)")
+
+# Decision support: Model deployment recommendation
+if actual_coverage >= 0.93:
+    print("✓ RECOMMENDATION: APPROVE for production deployment")
+else:
+    print("✗ RECOMMENDATION: REJECT - Coverage below safety threshold")
+```
+
+Key safety-critical design elements:
+
+1. Expanding training window: Uses all historical data for maximum information
+2. Regular retraining: Weekly updates prevent model staleness
+3. Conformal intervals: Provides distribution-free coverage guarantees
+4. Binned residuals: Accounts for heteroscedastic errors (variance changes with load level)
+5. Sequential execution: Avoids parallelization race conditions in critical systems
+6. Coverage monitoring: Validates that uncertainty estimates are calibrated
+7. Deployment gates: Quantitative criteria for production approval
 
 #### Example 1: Bootstrapping Method
 
@@ -245,9 +376,294 @@ print(f"MAPE: {metric_values['mean_absolute_percentage_error'].values[0]:.3f}")
 ```
 
 
-## Time Series Cross-Validation
+## Time Series Cross-Validation: TimeSeriesFold
+
+The TimeSeriesFold class provides a robust framework for splitting time series data into training and validation folds while respecting temporal ordering. This is critical for safety-critical systems where data leakage from future observations could create dangerously optimistic performance estimates.
 
 ::: spotforecast2.model_selection.split_ts_cv.TimeSeriesFold
+
+### Design Philosophy for Safety-Critical Validation
+
+In safety-critical forecasting (medical devices, autonomous systems, financial trading), improper validation can lead to catastrophic failures in production. TimeSeriesFold implements several defensive patterns:
+
+1. Temporal Integrity Enforcement: Strict chronological ordering prevents look-ahead bias that would invalidate safety assessments
+2. Realistic Retraining Simulation: Configurable refit strategies mirror actual production deployment patterns
+3. Gap Handling: Models the delay between data availability and prediction requirements
+4. Incomplete Fold Management: Handles edge cases at data boundaries that could cause production failures
+
+### TimeSeriesFold as a Fallback Mechanism
+
+The TimeSeriesFold class serves multiple roles in a defense-in-depth validation strategy:
+
+- Primary Validation Layer: Provides the fundamental train/test split infrastructure for all model evaluation
+- Degradation Detection: Regular backtesting with fixed fold configurations detects model performance decay over time
+- A/B Test Infrastructure: Consistent fold generation ensures fair comparison between model versions
+- Rollback Validation: Enables testing whether reverting to an older model would improve performance
+- Stress Testing Framework: Configurable parameters allow testing models under various temporal conditions
+
+### Understanding Fold Configuration Parameters
+
+The fold configuration directly impacts validation realism and computational cost. Key tradeoffs:
+
+1. initial_train_size: Larger values provide more stable models but reduce validation data
+2. refit frequency: More frequent refitting increases realism but multiplies computational cost
+3. fixed_train_size vs expanding window: Fixed mimics resource-constrained systems, expanding uses all available information
+4. fold_stride: Smaller strides provide more evaluation points but increase overlap and computation
+5. gap: Models real-world delays between data collection and prediction deployment
+
+### Safety-Critical Configuration Patterns
+
+Different safety-critical applications require different validation strategies:
+
+1. High-Frequency Trading: Small gaps (seconds), frequent refit, fixed window to match production constraints
+2. Medical Monitoring: Expanding window (use all patient history), moderate refit, strict temporal gaps
+3. Energy Grid Management: Daily/weekly refit cycles, expanding window, minimal gaps for immediate response
+4. Autonomous Vehicles: Very frequent refit (continuous learning), small fixed windows for real-time constraints
+
+### Complete Examples
+
+#### Example 1: Medical Device Validation - Expanding Window Strategy
+
+This example demonstrates validation for a medical monitoring system where patient safety depends on reliable predictions. The expanding window strategy uses all available patient history.
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestRegressor
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2.model_selection import backtesting_forecaster, TimeSeriesFold
+
+# Simulate patient vital signs monitoring (heart rate)
+rng = np.random.default_rng(123)
+dates = pd.date_range("2024-01-01", periods=30 * 24 * 60, freq="min")  # 30 days, 1-minute intervals
+
+# Baseline heart rate with circadian rhythm and random variations
+hour_of_day = dates.hour + dates.minute / 60
+circadian_pattern = 10 * np.sin(2 * np.pi * (hour_of_day - 6) / 24)  # Peak afternoon
+baseline_hr = 70
+noise = rng.normal(0, 3, len(dates))
+# Simulate gradual patient deterioration
+deterioration = np.linspace(0, 15, len(dates))
+
+y = pd.Series(
+    baseline_hr + circadian_pattern + deterioration + noise,
+    index=dates,
+    name="heart_rate_bpm",
+)
+
+# Medical device configuration: Conservative, expanding window
+forecaster = ForecasterRecursive(
+    estimator=RandomForestRegressor(n_estimators=50, random_state=123),
+    lags=60,  # Last 60 minutes of data
+)
+
+# Validation strategy: Expanding window to use all patient history
+cv = TimeSeriesFold(
+    steps=30,  # Predict 30 minutes ahead
+    initial_train_size=7 * 24 * 60,  # 7 days initial training
+    refit=24 * 60,  # Retrain daily (balance freshness vs computation)
+    fixed_train_size=False,  # Expanding: use all patient history
+    fold_stride=24 * 60,  # Evaluate daily
+    gap=5,  # 5-minute processing delay (realistic constraint)
+    allow_incomplete_fold=True,  # Don't discard recent data
+    verbose=True,
+)
+
+# Inspect fold structure before running expensive backtesting
+folds_df = cv.split(y, as_pandas=True)
+print("Fold Structure for Medical Device Validation:")
+print(folds_df[["fold", "train_start", "train_end", "test_start", "test_end"]])
+print(f"\nTotal folds: {len(folds_df)}")
+print(f"Training data grows from {folds_df.iloc[0]['train_end'] - folds_df.iloc[0]['train_start']} "
+      f"to {folds_df.iloc[-1]['train_end'] - folds_df.iloc[-1]['train_start']} observations")
+
+# Run backtesting with the configured folds
+metric_values, predictions = backtesting_forecaster(
+    forecaster=forecaster,
+    y=y,
+    cv=cv,
+    metric="mean_absolute_error",
+    verbose=False,
+    show_progress=True,
+)
+
+print(f"\nMedical Device Validation Results:")
+print(f"Mean Absolute Error: {metric_values['mean_absolute_error'].mean():.2f} BPM")
+print(f"Max Error: {(y.loc[predictions.index] - predictions['pred']).abs().max():.2f} BPM")
+
+# Safety check: Verify no catastrophic errors
+max_acceptable_error = 10.0  # BPM
+catastrophic_errors = (y.loc[predictions.index] - predictions['pred']).abs() > max_acceptable_error
+if catastrophic_errors.any():
+    print(f"⚠ WARNING: {catastrophic_errors.sum()} predictions exceed {max_acceptable_error} BPM threshold")
+else:
+    print(f"✓ All predictions within {max_acceptable_error} BPM safety threshold")
+```
+
+Key medical device validation elements:
+
+1. Expanding window: Uses complete patient history for maximum information
+2. Daily retraining: Balances model freshness with computational constraints
+3. Gap parameter: Models realistic processing delays in medical devices
+4. Incomplete folds allowed: Ensures most recent data is evaluated
+5. Safety thresholds: Explicit error bounds for clinical acceptability
+
+#### Example 2: High-Frequency Trading - Fixed Window Strategy
+
+This example demonstrates validation for a high-frequency trading system where computational resources are constrained and only recent data is relevant.
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import Ridge
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2.model_selection import backtesting_forecaster, TimeSeriesFold
+
+# Simulate high-frequency price data
+rng = np.random.default_rng(456)
+dates = pd.date_range("2024-01-01 09:30", periods=6.5 * 60 * 60, freq="s")  # Trading day, 1-second bars
+
+# Price with mean reversion and volatility clustering
+price = 100.0
+prices = [price]
+for i in range(len(dates) - 1):
+    # Mean reversion + random walk
+    drift = -0.0001 * (price - 100.0)
+    volatility = 0.01 * (1 + 0.5 * abs(rng.normal()))
+    price += drift + rng.normal(0, volatility)
+    prices.append(price)
+
+y = pd.Series(prices, index=dates, name="price_usd")
+
+# HFT configuration: Fast, fixed window
+forecaster = ForecasterRecursive(
+    estimator=Ridge(alpha=0.1),  # Fast linear model
+    lags=60,  # Last 60 seconds
+)
+
+# Validation strategy: Fixed window mimicking production constraints
+cv = TimeSeriesFold(
+    steps=10,  # Predict 10 seconds ahead
+    initial_train_size=3600,  # 1 hour initial training
+    refit=300,  # Retrain every 5 minutes (production-realistic)
+    fixed_train_size=True,  # Fixed: only use recent data (memory constraint)
+    fold_stride=300,  # Evaluate every 5 minutes
+    gap=1,  # 1-second execution delay
+    allow_incomplete_fold=False,  # Strict: only complete folds
+    verbose=True,
+)
+
+# Inspect fold structure
+folds_df = cv.split(y, as_pandas=True)
+print("Fold Structure for HFT Validation:")
+print(folds_df[["fold", "train_start", "train_end", "test_start", "test_end"]].head(10))
+print(f"\nTotal folds: {len(folds_df)}")
+print(f"Training window size: {folds_df.iloc[0]['train_end'] - folds_df.iloc[0]['train_start']} observations (constant)")
+
+# Run backtesting
+metric_values, predictions = backtesting_forecaster(
+    forecaster=forecaster,
+    y=y,
+    cv=cv,
+    metric="mean_absolute_error",
+    verbose=False,
+    show_progress=True,
+)
+
+print(f"\nHFT Validation Results:")
+print(f"Mean Absolute Error: {metric_values['mean_absolute_error'].mean():.4f} USD")
+
+# Profitability check: Can we beat transaction costs?
+transaction_cost = 0.001  # $0.001 per trade
+prediction_accuracy = metric_values['mean_absolute_error'].mean()
+if prediction_accuracy < transaction_cost:
+    print(f"✓ Prediction accuracy ({prediction_accuracy:.4f}) beats transaction costs ({transaction_cost:.4f})")
+else:
+    print(f"✗ Prediction accuracy ({prediction_accuracy:.4f}) exceeds transaction costs ({transaction_cost:.4f})")
+    print("  Strategy not viable for production deployment")
+```
+
+Key HFT validation elements:
+
+1. Fixed window: Mimics production memory constraints and recency bias
+2. Frequent retraining: Matches realistic production update cycles
+3. Small gap: Models minimal execution delay
+4. No incomplete folds: Ensures all evaluations use complete test sets
+5. Transaction cost analysis: Economic viability check before deployment
+
+#### Example 3: Overlapping Folds for Robust Evaluation
+
+This example demonstrates using overlapping folds to increase evaluation density without changing the forecast horizon.
+
+```python
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import GradientBoostingRegressor
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2.model_selection import backtesting_forecaster, TimeSeriesFold
+
+# Simulate industrial sensor data (temperature)
+rng = np.random.default_rng(789)
+dates = pd.date_range("2024-01-01", periods=365, freq="D")
+
+# Seasonal pattern + trend + noise
+day_of_year = np.arange(len(dates))
+seasonal = 10 * np.sin(2 * np.pi * day_of_year / 365)
+trend = 0.01 * day_of_year
+noise = rng.normal(0, 2, len(dates))
+
+y = pd.Series(20 + seasonal + trend + noise, index=dates, name="temperature_c")
+
+# Industrial monitoring configuration
+forecaster = ForecasterRecursive(
+    estimator=GradientBoostingRegressor(n_estimators=50, random_state=789),
+    lags=30,  # Last 30 days
+)
+
+# Overlapping folds: More evaluation points for robust assessment
+cv = TimeSeriesFold(
+    steps=7,  # Predict 7 days ahead
+    initial_train_size=180,  # 6 months initial training
+    refit=7,  # Retrain weekly
+    fixed_train_size=False,  # Expanding window
+    fold_stride=1,  # Advance 1 day at a time (creates overlap!)
+    gap=0,
+    allow_incomplete_fold=True,
+    verbose=True,
+)
+
+# Inspect overlapping structure
+folds_df = cv.split(y, as_pandas=True)
+print("Overlapping Fold Structure:")
+print(folds_df[["fold", "test_start", "test_end"]].head(15))
+print(f"\nTotal folds: {len(folds_df)}")
+print(f"Overlap: Each observation appears in up to {cv.steps} different test sets")
+
+# Run backtesting
+metric_values, predictions = backtesting_forecaster(
+    forecaster=forecaster,
+    y=y,
+    cv=cv,
+    metric="mean_absolute_error",
+    verbose=False,
+    show_progress=True,
+)
+
+print(f"\nIndustrial Monitoring Validation Results:")
+print(f"Mean Absolute Error: {metric_values['mean_absolute_error'].mean():.2f} °C")
+print(f"Number of predictions: {len(predictions)}")
+print(f"Number of unique timestamps: {len(predictions.index.unique())}")
+
+# Note: With overlapping folds, some timestamps have multiple predictions
+# This provides multiple independent forecasts for the same period
+```
+
+Key overlapping fold elements:
+
+1. fold_stride < steps: Creates overlapping test sets
+2. Multiple forecasts per timestamp: Provides ensemble-like robustness assessment
+3. Increased evaluation density: More data points for statistical significance
+4. Computational cost: Proportional to number of folds (trade-off consideration)
 
 ## One Step Ahead Fold
 
