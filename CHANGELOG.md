@@ -1,3 +1,10 @@
+## [0.2.12](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.11...v0.2.12) (2026-02-07)
+
+
+### Code Refactoring
+
+* ForecasterEquivalentDate ([e285782](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e285782185fdac3974eb5de98bcfeaf62383dfbc))
+
 ## [0.2.11](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.10...v0.2.11) (2026-02-07)
 
 
