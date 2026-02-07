@@ -2,7 +2,7 @@
 
 ## Validation
 
-::: spotforecast2.model_selection.validation.backtesting_forecaster
+::: spotforecast2_safe.model_selection.backtesting_forecaster
 
 ### Probabilistic Forecasting with Residuals
 
