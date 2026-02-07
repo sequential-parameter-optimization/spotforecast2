@@ -1,3 +1,10 @@
+## [0.2.11](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.10...v0.2.11) (2026-02-07)
+
+
+### Code Refactoring
+
+* ForecasterRecursive from _safe ([1f0a601](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1f0a601430ae18b912d8999fd5c099a90572bbf6))
+
 ## [0.2.10](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.9...v0.2.10) (2026-02-07)
 
 
