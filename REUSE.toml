@@ -1,0 +1,52 @@
+version = 1
+SPDX-PackageName = "spotforecast2"
+SPDX-PackageSupplier = "bartzbeielstein <32470350+bartzbeielstein@users.noreply.github.com>"
+SPDX-PackageDownloadLocation = "https://github.com/sequential-parameter-optimization/spotforecast2"
+
+[[annotations]]
+path = [".flake8", ".gitignore", ".python-version", ".releaserc.json", ".semantic-release-init", "mkdocs.yml", "pyproject.toml", "uv.lock"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 bartzbeielstein"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = [".github/**", ".pre-commit-config.yaml"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 bartzbeielstein"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = ["docs/**", "README.md", "CHANGELOG.md", "COMPLETION_STATUS.md", "IMPLEMENTATION_SUMMARY.md", "IMPLEMENTATION_SUMMARY_MODEL_PERSISTENCE.md"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 bartzbeielstein"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = "logo/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 bartzbeielstein"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = ["examples/**", "notebooks/**", "models_baseline/**", "forecaster_models/**", "data/**", "local/**", "site/**"]
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 bartzbeielstein"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = "scripts/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 bartzbeielstein"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = "tasks/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 bartzbeielstein"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+[[annotations]]
+path = "tests/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2026 bartzbeielstein"
+SPDX-License-Identifier = "AGPL-3.0-or-later"

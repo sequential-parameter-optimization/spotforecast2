@@ -7,7 +7,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.13%2B-blue)](https://www.python.org/downloads/)
 [![PyPI Version](https://img.shields.io/pypi/v/spotforecast2)](https://pypi.org/project/spotforecast2/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/spotforecast2)](https://pypi.org/project/spotforecast2/)
-[![License](https://img.shields.io/badge/license-BSD--3--Clause-blue)](https://github.com/sequential-parameter-optimization/spotforecast2/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/sequential-parameter-optimization/spotforecast2)](LICENSE)
 
 **Testing & Quality**
 
@@ -31,7 +31,7 @@
 
 ## License
 
-`spotforecast2` software: [BSD-3-Clause License](https://github.com/sequential-parameter-optimization/spotforecast2?tab=BSD-3-Clause-1-ov-file)
+`spotforecast2` software: [AGPL-3.0-or-later License](LICENSE)
 
 
 ## Attributions

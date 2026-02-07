@@ -1,3 +1,8 @@
+"""Utility script to compare prediction results."""
+
+# SPDX-FileCopyrightText: 2026 bartzbeielstein
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 import os
 print("Checking for new model directories:")
 if os.path.exists("models_baseline"):

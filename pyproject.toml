@@ -3,6 +3,10 @@ name = "spotforecast2"
 version = "0.2.15"
 description = "Forecasting with spot"
 readme = "README.md"
+license = { text = "AGPL-3.0-or-later" }
+classifiers = [
+    "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
+]
 authors = [
     { name = "bartzbeielstein", email = "32470350+bartzbeielstein@users.noreply.github.com" }
 ]

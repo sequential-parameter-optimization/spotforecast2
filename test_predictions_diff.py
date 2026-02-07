@@ -1,3 +1,8 @@
+"""Utility script to diff prediction outputs."""
+
+# SPDX-FileCopyrightText: 2026 bartzbeielstein
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
 """Quick test to compare baseline vs covariate predictions."""
 
 import warnings
