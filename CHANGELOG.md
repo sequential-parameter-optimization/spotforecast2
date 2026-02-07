@@ -1,3 +1,10 @@
+## [0.2.13](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.12...v0.2.13) (2026-02-07)
+
+
+### Code Refactoring
+
+* (check_preprocessing_series) import from _safe ([d3dd1e1](https://github.com/sequential-parameter-optimization/spotforecast2/commit/d3dd1e165954ec2ee11be4bde515b4053988a0c5))
+
 ## [0.2.12](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.11...v0.2.12) (2026-02-07)
 
 
