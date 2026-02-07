@@ -186,9 +186,9 @@ metric_values, predictions = backtesting_forecaster(
     y=y,
     cv=cv,
     metric="mean_absolute_error",
-    interval="bootstrapping",  # Returns all bootstrap samples
+    interval="bootstrapping",  # Use bootstrapping for uncertainty quantification
     interval_method="bootstrapping",
-    n_boot=50,
+    n_boot=50,  # Generate 50 bootstrap samples
     use_in_sample_residuals=True,
     random_state=123
 )
@@ -198,14 +198,12 @@ fig, ax = plt.subplots(figsize=(12, 6))
 ax.plot(y.index, y.values, label="Actual", color="black", linewidth=2)
 ax.plot(predictions.index, predictions["pred"], label="Prediction", color="blue", linewidth=2)
 
-# Plot bootstrap samples for uncertainty visualization
-boot_cols = [col for col in predictions.columns if col.startswith("pred_boot_")]
-for col in boot_cols[:10]:  # Plot first 10 bootstrap samples
-    ax.plot(predictions.index, predictions[col], alpha=0.1, color="gray")
+# Bootstrap samples are available when using interval="bootstrapping"
+# These provide empirical prediction distributions
 
 ax.set_xlabel("Date")
 ax.set_ylabel("Value")
-ax.set_title("Bootstrapping Method: Predictions with Bootstrap Samples")
+ax.set_title("Bootstrapping Method: Predictions with Uncertainty")
 ax.legend()
 ax.grid(True, alpha=0.3)
 plt.tight_layout()
