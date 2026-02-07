@@ -458,6 +458,57 @@ df_filled = df.fillna(method='ffill')
 visualize_ts_plotly({'Data': df_filled})
 ```
 
+## Testing
+
+This module includes comprehensive pytest tests validating all documentation examples and API functionality. Tests are located in `tests/test_docs_time_series_visualization_examples.py`.
+
+### Running Tests
+
+Run all time series visualization tests:
+
+```bash
+uv run pytest tests/test_docs_time_series_visualization_examples.py -v
+```
+
+Run specific test class:
+
+```bash
+uv run pytest tests/test_docs_time_series_visualization_examples.py::TestVisualizeTimeSeriesPlotlyBasic -v
+```
+
+### Test Coverage
+
+The test suite includes **50 comprehensive tests** covering:
+
+- **Basic Visualization** (9 tests): Single/multiple dataset visualization, column selection, custom parameters
+- **Comparison Functionality** (6 tests): Dataset comparison, statistical overlays, customization
+- **Complete Workflows** (3 tests): Train/val/test split visualization, multi-dataset comparison, dynamic datasets
+- **Parameters & Configuration** (8 tests): figsize options, template variations, color customization
+- **Best Practices** (4 tests): Datetime index handling, consistent shapes, subsampling for large datasets
+- **Edge Cases** (7 tests): Single value, constant values, NaN handling, negative/large values, many columns
+- **API Examples** (5 tests): Quick start examples, API function validation
+- **Data Integrity** (3 tests): Index preservation, data value preservation, dataset independence
+- **Safety-Critical** (5 tests): Error handling, empty input validation, determinism
+
+### Test Validation Command
+
+Verify all time series visualization tests pass:
+
+```bash
+uv run pytest tests/test_docs_time_series_visualization_examples.py --tb=short -q
+```
+
+Expected output: `50 passed`
+
+### Documentation Examples Tested
+
+All code examples in this documentation have been validated with pytest:
+- Quick start examples (all variants)
+- Complete workflow examples (train/val/test split, comparison, dynamic)
+- Parameter configuration examples (figsize, templates, colors)
+- Best practices examples (datetime index, consistent shapes, large datasets)
+- Troubleshooting examples (overlapping datasets, memory issues, missing data)
+
 ## See Also
 
 - [Outlier Detection and Visualization](outliers.md)

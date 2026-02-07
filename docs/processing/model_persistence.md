@@ -274,7 +274,7 @@ uv run pytest tests/test_model_persistence.py tests/test_docs_model_persistence_
 uv run pytest tests/test_model_persistence.py tests/test_docs_model_persistence_examples.py tests/test_n2n_persistence_integration.py tests/test_weight_function_pickle.py --tb=no -q
 ```
 
-**Documentation validation**: All examples in this guide are validated by [test_docs_model_persistence_examples.py](../../tests/test_docs_model_persistence_examples.py) with 43 comprehensive pytest cases.
+**Documentation validation**: All examples in this guide are validated by `tests/test_docs_model_persistence_examples.py` with 43 comprehensive pytest cases.
 
 ## Troubleshooting
 

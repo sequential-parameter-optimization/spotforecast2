@@ -503,6 +503,30 @@ for col, vals in outliers.items():
     print(f"  Outlier indices: {list(vals.index)}")
 ```
 
+## Testing
+
+All examples in this guide are validated by `tests/test_docs_outliers_examples.py` with 43 comprehensive pytest cases covering:
+
+- Basic outlier detection functionality
+- Contamination parameter variations (0.01, 0.02, 0.05)
+- Random state reproducibility
+- Data integrity and value validation
+- Complete workflow integration
+- Edge cases (small/large datasets, extreme values, NaN handling)
+- Timeseries data with DatetimeIndex
+- API examples and return types
+- Safety-critical behavior validation
+
+Run the tests:
+
+```bash
+# Run outliers documentation tests
+uv run pytest tests/test_docs_outliers_examples.py -v
+
+# Quick check
+uv run pytest tests/test_docs_outliers_examples.py --tb=no -q
+```
+
 ## Troubleshooting
 
 ### Issue: No outliers detected
