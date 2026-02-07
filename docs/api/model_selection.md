@@ -1021,6 +1021,10 @@ For expensive models or large datasets, OneStepAheadFold can be 10-100x faster t
 
 ::: spotforecast2.model_selection.grid_search
 
+## spotoptim Search
+
+::: spotforecast2.model_selection.spotoptim_search
+
 ## Bayesian Search
 
 ::: spotforecast2.model_selection.bayesian_search
