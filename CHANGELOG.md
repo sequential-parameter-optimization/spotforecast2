@@ -1,3 +1,10 @@
+## [0.2.28](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.27...v0.2.28) (2026-02-08)
+
+
+### Code Refactoring
+
+* DataTransformationWarning, ResidualsUsageWarning ([32989c8](https://github.com/sequential-parameter-optimization/spotforecast2/commit/32989c86331ab88e54a97d0ef8260e81a75275d6))
+
 ## [0.2.27](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.26...v0.2.27) (2026-02-08)
 
 
