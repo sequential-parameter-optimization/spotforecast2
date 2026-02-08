@@ -1,3 +1,10 @@
+## [0.2.25](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.24...v0.2.25) (2026-02-08)
+
+
+### Code Refactoring
+
+* exceptions.py duplicate removed, imported from _safe ([cf36e3e](https://github.com/sequential-parameter-optimization/spotforecast2/commit/cf36e3e43e81e5abd1c871eac1889bf4513a9057))
+
 ## [0.2.24](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.23...v0.2.24) (2026-02-08)
 
 
