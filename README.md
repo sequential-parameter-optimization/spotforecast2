@@ -7,6 +7,7 @@
 [![Python Version](https://img.shields.io/badge/python-3.13%2B-blue)](https://www.python.org/downloads/)
 [![PyPI Version](https://img.shields.io/pypi/v/spotforecast2)](https://pypi.org/project/spotforecast2/)
 [![PyPI Downloads](https://img.shields.io/pypi/dm/spotforecast2)](https://pypi.org/project/spotforecast2/)
+[![Total Downloads](https://static.pepy.tech/badge/spotforecast2)](https://pepy.tech/project/spotforecast2)
 [![License](https://img.shields.io/github/license/sequential-parameter-optimization/spotforecast2)](LICENSE)
 
 **Testing & Quality**
