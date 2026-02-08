@@ -220,7 +220,7 @@ if _model_directory_exists(model_dir):
 
 ```python
 import os
-from spotforecast2.data import get_cache_home
+from spotforecast2_safe.data import get_cache_home
 
 # Get default cache location
 cache_dir = get_cache_home()
@@ -243,7 +243,6 @@ predictions, metadata, forecasters = n2n_predict_with_covariates(
 - `src/spotforecast2/processing/n2n_predict_with_covariates.py` - Main forecasting function with persistence
 - `src/spotforecast2/preprocessing/imputation.py` - WeightFunction class
 - `src/spotforecast2/utils/forecaster_config.py` - Weight function initialization
-- `src/spotforecast2/data/fetch_data.py` - Cache directory management (`get_cache_home()`)
 
 **Test Files**:
 - `tests/test_model_persistence.py` (35 unit tests)

@@ -103,7 +103,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from spotforecast2.data.fetch_data import fetch_data
+from spotforecast2_safe.data.fetch_data import fetch_data
 from spotforecast2_safe.processing.agg_predict import agg_predict
 from spotforecast2_safe.processing.n2n_predict_with_covariates import (
     n2n_predict_with_covariates,

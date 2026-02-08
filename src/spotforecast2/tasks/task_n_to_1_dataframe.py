@@ -4,7 +4,7 @@
 import warnings
 from spotforecast2_safe.processing.n2n_predict import n2n_predict
 from spotforecast2_safe.processing.agg_predict import agg_predict
-from spotforecast2.data.fetch_data import fetch_data
+from spotforecast2_safe.data.fetch_data import fetch_data
 
 warnings.simplefilter("ignore")
 

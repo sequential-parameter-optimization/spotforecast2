@@ -22,12 +22,12 @@ import pandas as pd
 import pytest
 
 from spotforecast2.preprocessing import WeightFunction
-from spotforecast2_safe.processing.n2n_predict_with_covariates import (
+from spotforecast2_safe.manager.persistence import (
     _ensure_model_dir,
     _get_model_filepath,
     _model_directory_exists,
 )
-from spotforecast2.data import get_cache_home
+from spotforecast2_safe.data.fetch_data import get_cache_home
 
 
 # ============================================================================
