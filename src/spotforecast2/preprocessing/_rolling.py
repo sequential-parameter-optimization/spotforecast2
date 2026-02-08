@@ -5,7 +5,7 @@
 import numpy as np
 import pandas as pd
 from typing import List, Any
-from ._common import (
+from spotforecast2_safe.preprocessing._common import (
     _np_mean_jit,
     _np_std_jit,
     _np_min_jit,
