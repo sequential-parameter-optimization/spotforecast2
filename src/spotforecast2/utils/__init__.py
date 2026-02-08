@@ -11,13 +11,13 @@ from spotforecast2.utils.validation import (
     MissingValuesWarning,
     DataTypeWarning,
     check_exog_dtypes,
-    check_predict_input,
 )
+from spotforecast2_safe.utils.validation import check_predict_input
 from spotforecast2.utils.data_transform import (
     input_to_frame,
     expand_index,
-    transform_dataframe,
 )
+from spotforecast2_safe.utils.data_transform import transform_dataframe
 from spotforecast2.utils.forecaster_config import (
     initialize_lags,
     initialize_weights,

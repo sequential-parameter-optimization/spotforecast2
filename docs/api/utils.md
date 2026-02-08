@@ -12,7 +12,7 @@
 
 ::: spotforecast2.utils.validation.check_interval
 
-::: spotforecast2.utils.validation.check_predict_input
+::: spotforecast2.utils.check_predict_input
 
 ::: spotforecast2.utils.validation.MissingValuesWarning
 
@@ -24,7 +24,7 @@
 
 ::: spotforecast2.utils.data_transform.expand_index
 
-::: spotforecast2.utils.data_transform.transform_dataframe
+::: spotforecast2.utils.transform_dataframe
 
 ## Forecaster Config
 

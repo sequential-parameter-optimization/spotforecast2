@@ -12,8 +12,9 @@ from spotforecast2.utils.validation import (
     # MissingValuesWarning, # Imported locally in function if needed, or from exceptions
     check_exog_dtypes,
     # DataTypeWarning, # Imported locally or from exceptions
-    check_predict_input,
 )
+from spotforecast2.utils import check_predict_input
+
 from spotforecast2.exceptions import MissingValuesWarning, DataTypeWarning
 
 
