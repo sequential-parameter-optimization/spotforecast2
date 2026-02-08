@@ -3,59 +3,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later AND BSD-3-Clause
 
 import pandas as pd
-from typing import Union
-import numpy as np
-
-
-class WeightFunction:
-    """Callable class for sample weights that can be pickled.
-
-    This class wraps the weights_series and provides a callable interface
-    compatible with ForecasterRecursive's weight_func parameter. Unlike
-    local functions with closures, instances of this class can be pickled
-    using standard pickle/joblib.
-
-    Args:
-        weights_series: Series containing weight values for each index.
-
-    Examples:
-        >>> import pandas as pd
-        >>> import pickle
-        >>> weights = pd.Series([1.0, 0.9, 0.8], index=[0, 1, 2])
-        >>> weight_func = WeightFunction(weights)
-        >>> weight_func(pd.Index([0, 1]))
-        array([1. , 0.9])
-        >>> # Can be pickled
-        >>> pickled = pickle.dumps(weight_func)
-        >>> unpickled = pickle.loads(pickled)
-        >>> unpickled(pd.Index([0, 1]))
-        array([1. , 0.9])
-    """
-
-    def __init__(self, weights_series: pd.Series):
-        """Initialize with a weights series.
-
-        Args:
-            weights_series: Series containing weight values for each index.
-        """
-        self.weights_series = weights_series
-
-    def __call__(
-        self, index: Union[pd.Index, np.ndarray, list]
-    ) -> Union[float, np.ndarray]:
-        """Return sample weights for given index.
-
-        Args:
-            index: Index or indices to get weights for.
-
-        Returns:
-            Weight value(s) corresponding to the index.
-        """
-        return custom_weights(index, self.weights_series)
-
-    def __repr__(self):
-        """String representation."""
-        return f"WeightFunction(weights_series with {len(self.weights_series)} entries)"
 
 
 def custom_weights(index, weights_series: pd.Series) -> float:

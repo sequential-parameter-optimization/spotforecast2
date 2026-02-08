@@ -15,14 +15,9 @@ from sklearn.linear_model._base import LinearModel, LinearClassifierMixin
 from sklearn.pipeline import Pipeline
 
 from spotforecast2.forecaster.utils import check_interval, date_to_index_position
-
-
-class OneStepAheadValidationWarning(UserWarning):
-    """
-    Warning used when validation is performed with one-step-ahead predictions.
-    """
-
-    pass
+from spotforecast2_safe.model_selection.utils_common import (
+    OneStepAheadValidationWarning,
+)
 
 
 def initialize_lags_grid(

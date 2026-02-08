@@ -36,7 +36,7 @@
 
 ::: spotforecast2.preprocessing.imputation.get_missing_weights
 
-::: spotforecast2.preprocessing.imputation.WeightFunction
+::: spotforecast2.preprocessing.WeightFunction
 
 ## Split
 
