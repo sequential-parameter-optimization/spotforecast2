@@ -8,7 +8,7 @@
 import warnings
 warnings.simplefilter("ignore")
 
-from spotforecast2.processing.n2n_predict import n2n_predict
+from spotforecast2_safe.processing.n2n_predict import n2n_predict
 from spotforecast2.processing.n2n_predict_with_covariates import n2n_predict_with_covariates
 from spotforecast2_safe.processing.agg_predict import agg_predict
 

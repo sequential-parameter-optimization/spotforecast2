@@ -241,7 +241,6 @@ predictions, metadata, forecasters = n2n_predict_with_covariates(
 
 **Core Implementation**:
 - `src/spotforecast2/processing/n2n_predict_with_covariates.py` - Main forecasting function with persistence
-- `src/spotforecast2/processing/n2n_predict.py` - Baseline forecasting with persistence
 - `src/spotforecast2/preprocessing/imputation.py` - WeightFunction class
 - `src/spotforecast2/utils/forecaster_config.py` - Weight function initialization
 - `src/spotforecast2/data/fetch_data.py` - Cache directory management (`get_cache_home()`)
