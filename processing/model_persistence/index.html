@@ -514,34 +514,6 @@
   
   
     <li class="md-nav__item">
-      <a href="../../api/processing/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Processing
-  
-
-    
-  </span>
-  
-  
-
-      </a>
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
       <a href="../../api/forecaster/" class="md-nav__link">
         
   
@@ -1857,7 +1829,7 @@
 <p>No additional installation needed! The implementation uses joblib (already in requirements) and the built-in <code>WeightFunction</code> class.</p>
 <h2 id="quick-start">Quick Start</h2>
 <h3 id="first-run-training-and-caching">First Run - Training and Caching</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">spotforecast2.processing.n2n_predict_with_covariates</span><span class="w"> </span><span class="kn">import</span> <span class="n">n2n_predict_with_covariates</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">spotforecast2_safe.processing.n2n_predict_with_covariates</span><span class="w"> </span><span class="kn">import</span> <span class="n">n2n_predict_with_covariates</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="c1"># Models are trained and cached automatically</span>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">predictions</span><span class="p">,</span> <span class="n">metadata</span><span class="p">,</span> <span class="n">forecasters</span> <span class="o">=</span> <span class="n">n2n_predict_with_covariates</span><span class="p">(</span>
@@ -2019,7 +1991,7 @@
 <h2 id="working-with-models">Working with Models</h2>
 <h3 id="helper-functions-advanced-usage">Helper Functions (Advanced Usage)</h3>
 <p>For advanced use cases, you can directly use the persistence helper functions:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">spotforecast2.processing.n2n_predict_with_covariates</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">spotforecast2_safe.processing.n2n_predict_with_covariates</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
 <a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>    <span class="n">_ensure_model_dir</span><span class="p">,</span>
 <a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>    <span class="n">_get_model_filepath</span><span class="p">,</span>
 <a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">_save_forecasters</span><span class="p">,</span>
