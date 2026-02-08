@@ -1,3 +1,10 @@
+## [0.2.26](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.25...v0.2.26) (2026-02-08)
+
+
+### Code Refactoring
+
+* metrics.py ([e4966a5](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e4966a59837042273678b174c463e4ba27fdb96a))
+
 ## [0.2.25](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.24...v0.2.25) (2026-02-08)
 
 
