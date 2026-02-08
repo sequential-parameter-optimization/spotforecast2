@@ -1,3 +1,10 @@
+## [0.2.20](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.19...v0.2.20) (2026-02-08)
+
+
+### Bug Fixes
+
+* duplicate n2n_predict removed. import from _safe ([402deed](https://github.com/sequential-parameter-optimization/spotforecast2/commit/402deedea2d432023828933c4798a00272ae6d89))
+
 ## [0.2.19](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.18...v0.2.19) (2026-02-08)
 
 
