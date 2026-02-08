@@ -1,3 +1,10 @@
+## [0.2.24](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.23...v0.2.24) (2026-02-08)
+
+
+### Code Refactoring
+
+* plotter ([5ba7f3d](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5ba7f3d5459645fea365bd77035885ad7fb5f25e))
+
 ## [0.2.23](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.22...v0.2.23) (2026-02-08)
 
 
