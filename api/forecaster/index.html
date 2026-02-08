@@ -1967,30 +1967,8 @@
 
         <p>Metrics for evaluating forecasting models.</p>
 <p>This module provides various metric functions for evaluating forecasting performance,
-including custom metrics like MASE, RMSSE, and probabilistic metrics like CRPS.</p>
-
-
-<p><span class="doc-section-title">Examples:</span></p>
-    <p>Using standard metrics::</p>
-<div class="highlight"><pre><span></span><code>import numpy as np
-from spotforecast2.forecaster.metrics import _get_metric
-
-y_true = np.array([1, 2, 3, 4, 5])
-y_pred = np.array([1.1, 1.9, 3.2, 3.8, 5.1])
-
-# Get a metric function
-mse = _get_metric(&#39;mean_squared_error&#39;)
-error = mse(y_true, y_pred)
-</code></pre></div>
-<p>Using scaled metrics::</p>
-<div class="highlight"><pre><span></span><code>from spotforecast2.forecaster.metrics import mean_absolute_scaled_error
-
-y_train = np.array([1, 2, 3, 4, 5, 6, 7, 8])
-y_true = np.array([9, 10, 11])
-y_pred = np.array([8.8, 10.2, 10.9])
-
-mase = mean_absolute_scaled_error(y_true, y_pred, y_train)
-</code></pre></div>
+including custom metrics like MASE, RMSSE, and probabilistic metrics like CRPS.
+These metrics are imported from the spotforecast2_safe package.</p>
 
 
 
@@ -2090,7 +2068,7 @@ mase = mean_absolute_scaled_error(y_true, y_pred, y_train)
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/spotforecast2/forecaster/metrics.py</code></summary>
+              <summary>Source code in <code>spotforecast2_safe/forecaster/metrics.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-116">116</a></span>
 <span class="normal"><a href="#__codelineno-0-117">117</a></span>
 <span class="normal"><a href="#__codelineno-0-118">118</a></span>
@@ -2277,7 +2255,7 @@ mase = mean_absolute_scaled_error(y_true, y_pred, y_train)
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/spotforecast2/forecaster/metrics.py</code></summary>
+              <summary>Source code in <code>spotforecast2_safe/forecaster/metrics.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-404">404</a></span>
 <span class="normal"><a href="#__codelineno-0-405">405</a></span>
 <span class="normal"><a href="#__codelineno-0-406">406</a></span>
@@ -2460,7 +2438,7 @@ Must be between 0 and 1, inclusive.</p>
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/spotforecast2/forecaster/metrics.py</code></summary>
+              <summary>Source code in <code>spotforecast2_safe/forecaster/metrics.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-453">453</a></span>
 <span class="normal"><a href="#__codelineno-0-454">454</a></span>
 <span class="normal"><a href="#__codelineno-0-455">455</a></span>
@@ -2622,7 +2600,7 @@ forecasted values for a single observation.</p>
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/spotforecast2/forecaster/metrics.py</code></summary>
+              <summary>Source code in <code>spotforecast2_safe/forecaster/metrics.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-294">294</a></span>
 <span class="normal"><a href="#__codelineno-0-295">295</a></span>
 <span class="normal"><a href="#__codelineno-0-296">296</a></span>
@@ -2818,7 +2796,7 @@ between the predicted quantiles.</p>
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/spotforecast2/forecaster/metrics.py</code></summary>
+              <summary>Source code in <code>spotforecast2_safe/forecaster/metrics.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-334">334</a></span>
 <span class="normal"><a href="#__codelineno-0-335">335</a></span>
 <span class="normal"><a href="#__codelineno-0-336">336</a></span>
@@ -3082,7 +3060,7 @@ in the training set for each time series.</p>
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/spotforecast2/forecaster/metrics.py</code></summary>
+              <summary>Source code in <code>spotforecast2_safe/forecaster/metrics.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-152">152</a></span>
 <span class="normal"><a href="#__codelineno-0-153">153</a></span>
 <span class="normal"><a href="#__codelineno-0-154">154</a></span>
@@ -3350,7 +3328,7 @@ in the training set for each time series.</p>
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/spotforecast2/forecaster/metrics.py</code></summary>
+              <summary>Source code in <code>spotforecast2_safe/forecaster/metrics.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-224">224</a></span>
 <span class="normal"><a href="#__codelineno-0-225">225</a></span>
 <span class="normal"><a href="#__codelineno-0-226">226</a></span>
@@ -3592,7 +3570,7 @@ by zero by averaging the absolute values of actual and predicted values.</p>
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/spotforecast2/forecaster/metrics.py</code></summary>
+              <summary>Source code in <code>spotforecast2_safe/forecaster/metrics.py</code></summary>
               <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-484">484</a></span>
 <span class="normal"><a href="#__codelineno-0-485">485</a></span>
 <span class="normal"><a href="#__codelineno-0-486">486</a></span>
