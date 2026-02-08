@@ -306,6 +306,25 @@
   
 
       
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../../tasks/" class="md-tabs__link">
+        
+  
+  
+    
+  
+  Tasks
+
+      </a>
+    </li>
+  
+
+      
     </ul>
   </div>
 </nav>
@@ -1152,6 +1171,33 @@
           </ul>
         </nav>
       
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tasks/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Tasks
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -3681,11 +3727,7 @@ missing values, so the Forecaster's <code>fit' and</code>predict' methods may fa
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>spotforecast2_safe/exceptions.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-344">344</a></span>
-<span class="normal"><a href="#__codelineno-0-345">345</a></span>
-<span class="normal"><a href="#__codelineno-0-346">346</a></span>
-<span class="normal"><a href="#__codelineno-0-347">347</a></span>
-<span class="normal"><a href="#__codelineno-0-348">348</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-348">348</a></span>
 <span class="normal"><a href="#__codelineno-0-349">349</a></span>
 <span class="normal"><a href="#__codelineno-0-350">350</a></span>
 <span class="normal"><a href="#__codelineno-0-351">351</a></span>
@@ -3705,31 +3747,35 @@ missing values, so the Forecaster's <code>fit' and</code>predict' methods may fa
 <span class="normal"><a href="#__codelineno-0-365">365</a></span>
 <span class="normal"><a href="#__codelineno-0-366">366</a></span>
 <span class="normal"><a href="#__codelineno-0-367">367</a></span>
-<span class="normal"><a href="#__codelineno-0-368">368</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-344" name="__codelineno-0-344"></a><span class="k">class</span><span class="w"> </span><span class="nc">MissingValuesWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-<a id="__codelineno-0-345" name="__codelineno-0-345"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for missing values in data.</span>
-<a id="__codelineno-0-346" name="__codelineno-0-346"></a>
-<a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="sd">    Used to indicate that there are missing values in the data. This</span>
-<a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">    warning occurs when the input data contains missing values, or the training</span>
-<a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="sd">    matrix generates missing values. Most machine learning models do not accept</span>
-<a id="__codelineno-0-350" name="__codelineno-0-350"></a><span class="sd">    missing values, so the Forecaster&#39;s `fit&#39; and `predict&#39; methods may fail.</span>
-<a id="__codelineno-0-351" name="__codelineno-0-351"></a>
-<a id="__codelineno-0-352" name="__codelineno-0-352"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-353" name="__codelineno-0-353"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
-<a id="__codelineno-0-354" name="__codelineno-0-354"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
-<a id="__codelineno-0-355" name="__codelineno-0-355"></a><span class="sd">        ...     &quot;Missing values detected in input data.&quot;,</span>
-<a id="__codelineno-0-356" name="__codelineno-0-356"></a><span class="sd">        ...     MissingValuesWarning</span>
-<a id="__codelineno-0-357" name="__codelineno-0-357"></a><span class="sd">        ... )  # doctest: +SKIP</span>
-<a id="__codelineno-0-358" name="__codelineno-0-358"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-359" name="__codelineno-0-359"></a>
-<a id="__codelineno-0-360" name="__codelineno-0-360"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-<a id="__codelineno-0-361" name="__codelineno-0-361"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-<a id="__codelineno-0-362" name="__codelineno-0-362"></a>
-<a id="__codelineno-0-363" name="__codelineno-0-363"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-364" name="__codelineno-0-364"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-365" name="__codelineno-0-365"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
-<a id="__codelineno-0-366" name="__codelineno-0-366"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=MissingValuesWarning)&quot;</span>
-<a id="__codelineno-0-367" name="__codelineno-0-367"></a>        <span class="p">)</span>
-<a id="__codelineno-0-368" name="__codelineno-0-368"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
+<span class="normal"><a href="#__codelineno-0-368">368</a></span>
+<span class="normal"><a href="#__codelineno-0-369">369</a></span>
+<span class="normal"><a href="#__codelineno-0-370">370</a></span>
+<span class="normal"><a href="#__codelineno-0-371">371</a></span>
+<span class="normal"><a href="#__codelineno-0-372">372</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="k">class</span><span class="w"> </span><span class="nc">MissingValuesWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for missing values in data.</span>
+<a id="__codelineno-0-350" name="__codelineno-0-350"></a>
+<a id="__codelineno-0-351" name="__codelineno-0-351"></a><span class="sd">    Used to indicate that there are missing values in the data. This</span>
+<a id="__codelineno-0-352" name="__codelineno-0-352"></a><span class="sd">    warning occurs when the input data contains missing values, or the training</span>
+<a id="__codelineno-0-353" name="__codelineno-0-353"></a><span class="sd">    matrix generates missing values. Most machine learning models do not accept</span>
+<a id="__codelineno-0-354" name="__codelineno-0-354"></a><span class="sd">    missing values, so the Forecaster&#39;s `fit&#39; and `predict&#39; methods may fail.</span>
+<a id="__codelineno-0-355" name="__codelineno-0-355"></a>
+<a id="__codelineno-0-356" name="__codelineno-0-356"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-357" name="__codelineno-0-357"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
+<a id="__codelineno-0-358" name="__codelineno-0-358"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
+<a id="__codelineno-0-359" name="__codelineno-0-359"></a><span class="sd">        ...     &quot;Missing values detected in input data.&quot;,</span>
+<a id="__codelineno-0-360" name="__codelineno-0-360"></a><span class="sd">        ...     MissingValuesWarning</span>
+<a id="__codelineno-0-361" name="__codelineno-0-361"></a><span class="sd">        ... )  # doctest: +SKIP</span>
+<a id="__codelineno-0-362" name="__codelineno-0-362"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-363" name="__codelineno-0-363"></a>
+<a id="__codelineno-0-364" name="__codelineno-0-364"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<a id="__codelineno-0-365" name="__codelineno-0-365"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+<a id="__codelineno-0-366" name="__codelineno-0-366"></a>
+<a id="__codelineno-0-367" name="__codelineno-0-367"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-368" name="__codelineno-0-368"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-369" name="__codelineno-0-369"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
+<a id="__codelineno-0-370" name="__codelineno-0-370"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=MissingValuesWarning)&quot;</span>
+<a id="__codelineno-0-371" name="__codelineno-0-371"></a>        <span class="p">)</span>
+<a id="__codelineno-0-372" name="__codelineno-0-372"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3794,11 +3840,7 @@ accept other data types, therefore the forecaster <code>fit</code> and <code>pre
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>spotforecast2_safe/exceptions.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-144">144</a></span>
-<span class="normal"><a href="#__codelineno-0-145">145</a></span>
-<span class="normal"><a href="#__codelineno-0-146">146</a></span>
-<span class="normal"><a href="#__codelineno-0-147">147</a></span>
-<span class="normal"><a href="#__codelineno-0-148">148</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-148">148</a></span>
 <span class="normal"><a href="#__codelineno-0-149">149</a></span>
 <span class="normal"><a href="#__codelineno-0-150">150</a></span>
 <span class="normal"><a href="#__codelineno-0-151">151</a></span>
@@ -3817,30 +3859,34 @@ accept other data types, therefore the forecaster <code>fit</code> and <code>pre
 <span class="normal"><a href="#__codelineno-0-164">164</a></span>
 <span class="normal"><a href="#__codelineno-0-165">165</a></span>
 <span class="normal"><a href="#__codelineno-0-166">166</a></span>
-<span class="normal"><a href="#__codelineno-0-167">167</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-144" name="__codelineno-0-144"></a><span class="k">class</span><span class="w"> </span><span class="nc">DataTypeWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-<a id="__codelineno-0-145" name="__codelineno-0-145"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for incompatible data types in exogenous data.</span>
-<a id="__codelineno-0-146" name="__codelineno-0-146"></a>
-<a id="__codelineno-0-147" name="__codelineno-0-147"></a><span class="sd">    Used to notify there are dtypes in the exogenous data that are not</span>
-<a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="sd">    &#39;int&#39;, &#39;float&#39;, &#39;bool&#39; or &#39;category&#39;. Most machine learning models do not</span>
-<a id="__codelineno-0-149" name="__codelineno-0-149"></a><span class="sd">    accept other data types, therefore the forecaster `fit` and `predict` may fail.</span>
+<span class="normal"><a href="#__codelineno-0-167">167</a></span>
+<span class="normal"><a href="#__codelineno-0-168">168</a></span>
+<span class="normal"><a href="#__codelineno-0-169">169</a></span>
+<span class="normal"><a href="#__codelineno-0-170">170</a></span>
+<span class="normal"><a href="#__codelineno-0-171">171</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-148" name="__codelineno-0-148"></a><span class="k">class</span><span class="w"> </span><span class="nc">DataTypeWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<a id="__codelineno-0-149" name="__codelineno-0-149"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for incompatible data types in exogenous data.</span>
 <a id="__codelineno-0-150" name="__codelineno-0-150"></a>
-<a id="__codelineno-0-151" name="__codelineno-0-151"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-152" name="__codelineno-0-152"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
-<a id="__codelineno-0-153" name="__codelineno-0-153"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
-<a id="__codelineno-0-154" name="__codelineno-0-154"></a><span class="sd">        ...     &quot;Exogenous data contains unsupported dtypes.&quot;,</span>
-<a id="__codelineno-0-155" name="__codelineno-0-155"></a><span class="sd">        ...     DataTypeWarning</span>
-<a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="sd">        ... )  # doctest: +SKIP</span>
-<a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-158" name="__codelineno-0-158"></a>
-<a id="__codelineno-0-159" name="__codelineno-0-159"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-<a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-<a id="__codelineno-0-161" name="__codelineno-0-161"></a>
-<a id="__codelineno-0-162" name="__codelineno-0-162"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-163" name="__codelineno-0-163"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-164" name="__codelineno-0-164"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
-<a id="__codelineno-0-165" name="__codelineno-0-165"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=DataTypeWarning)&quot;</span>
-<a id="__codelineno-0-166" name="__codelineno-0-166"></a>        <span class="p">)</span>
-<a id="__codelineno-0-167" name="__codelineno-0-167"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
+<a id="__codelineno-0-151" name="__codelineno-0-151"></a><span class="sd">    Used to notify there are dtypes in the exogenous data that are not</span>
+<a id="__codelineno-0-152" name="__codelineno-0-152"></a><span class="sd">    &#39;int&#39;, &#39;float&#39;, &#39;bool&#39; or &#39;category&#39;. Most machine learning models do not</span>
+<a id="__codelineno-0-153" name="__codelineno-0-153"></a><span class="sd">    accept other data types, therefore the forecaster `fit` and `predict` may fail.</span>
+<a id="__codelineno-0-154" name="__codelineno-0-154"></a>
+<a id="__codelineno-0-155" name="__codelineno-0-155"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-156" name="__codelineno-0-156"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
+<a id="__codelineno-0-157" name="__codelineno-0-157"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
+<a id="__codelineno-0-158" name="__codelineno-0-158"></a><span class="sd">        ...     &quot;Exogenous data contains unsupported dtypes.&quot;,</span>
+<a id="__codelineno-0-159" name="__codelineno-0-159"></a><span class="sd">        ...     DataTypeWarning</span>
+<a id="__codelineno-0-160" name="__codelineno-0-160"></a><span class="sd">        ... )  # doctest: +SKIP</span>
+<a id="__codelineno-0-161" name="__codelineno-0-161"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-162" name="__codelineno-0-162"></a>
+<a id="__codelineno-0-163" name="__codelineno-0-163"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<a id="__codelineno-0-164" name="__codelineno-0-164"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+<a id="__codelineno-0-165" name="__codelineno-0-165"></a>
+<a id="__codelineno-0-166" name="__codelineno-0-166"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-167" name="__codelineno-0-167"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-168" name="__codelineno-0-168"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
+<a id="__codelineno-0-169" name="__codelineno-0-169"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=DataTypeWarning)&quot;</span>
+<a id="__codelineno-0-170" name="__codelineno-0-170"></a>        <span class="p">)</span>
+<a id="__codelineno-0-171" name="__codelineno-0-171"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
