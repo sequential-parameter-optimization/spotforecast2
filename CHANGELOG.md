@@ -1,3 +1,10 @@
+## [0.2.30](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.29...v0.2.30) (2026-02-08)
+
+
+### Code Refactoring
+
+* utils ([3ba6039](https://github.com/sequential-parameter-optimization/spotforecast2/commit/3ba6039f4abf69f7e8cabca94a88532df80f75cd))
+
 ## [0.2.29](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.28...v0.2.29) (2026-02-08)
 
 
