@@ -1,6 +1,6 @@
 # Welcome to spotforecast2
 
-[![Version](https://img.shields.io/badge/version-0.2.5-blue.svg)](https://github.com/sequential-parameter-optimization/spotforecast2/releases)
+[![Version](https://img.shields.io/badge/version-{{ version_badge }}-blue.svg)](https://github.com/sequential-parameter-optimization/spotforecast2/releases)
 [![GitHub](https://img.shields.io/badge/GitHub-spotforecast2-181717?logo=github)](https://github.com/sequential-parameter-optimization/spotforecast2)
 [![Python](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 
@@ -10,7 +10,7 @@
 
 - 📦 [GitHub Repository](https://github.com/sequential-parameter-optimization/spotforecast2)
 - 📚 [API Reference](api/data.md)
-- 🚀 Current Version: **0.2.5**
+- 🚀 Current Version: **{{ version }}**
 
 ## Installation
 
