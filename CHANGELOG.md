@@ -1,3 +1,10 @@
+## [0.2.29](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.28...v0.2.29) (2026-02-08)
+
+
+### Code Refactoring
+
+* WeatherClient, WeatherService ([f632fac](https://github.com/sequential-parameter-optimization/spotforecast2/commit/f632facc229f2a8c66da2a834dc45b979f82f845))
+
 ## [0.2.28](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.27...v0.2.28) (2026-02-08)
 
 
