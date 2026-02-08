@@ -11,8 +11,10 @@ system operations. This module includes additional utilities.
 
 from . import metrics
 from . import utils
+from . import recursive
 
 __all__ = [
     "metrics",
     "utils",
+    "recursive",
 ]

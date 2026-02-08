@@ -2,19 +2,9 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later AND BSD-3-Clause
 
+from spotforecast2_safe.forecaster.recursive._warnings import (
+    DataTransformationWarning,
+    ResidualsUsageWarning,
+)
 
-class DataTransformationWarning(UserWarning):
-    """
-    Warning used when data transformation is not possible or changes the data in
-    an unexpected way.
-    """
-
-    pass
-
-
-class ResidualsUsageWarning(UserWarning):
-    """
-    Warning used when the residuals are used in a way that is not recommended.
-    """
-
-    pass
+__all__ = ["DataTransformationWarning", "ResidualsUsageWarning"]
