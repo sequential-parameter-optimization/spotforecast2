@@ -12,6 +12,7 @@ Additional utilities and convenience classes are provided here.
 __version__ = "0.1.0"
 
 from . import forecaster
+from . import manager
 from . import model_selection
 from . import preprocessing
 from . import stats
@@ -20,6 +21,7 @@ from . import weather
 
 __all__ = [
     "forecaster",
+    "manager",
     "model_selection",
     "preprocessing",
     "stats",

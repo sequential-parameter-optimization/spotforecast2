@@ -47,8 +47,6 @@ import warnings
 from pathlib import Path
 from typing import Optional
 
-import pandas as pd
-import plotly.graph_objects as go
 from lightgbm import LGBMRegressor
 
 from spotforecast2_safe.processing.agg_predict import agg_predict
@@ -58,89 +56,9 @@ from spotforecast2_safe.processing.n2n_predict_with_covariates import (
 )
 from spotforecast2_safe.manager.tools import _parse_bool
 from spotforecast2_safe.manager.datasets import DemoConfig, load_actual_combined
+from spotforecast2.manager.plotter import plot_actual_vs_predicted
 
 warnings.simplefilter("ignore")
-
-
-def _plot_actual_vs_predicted(
-    actual_combined: pd.Series,
-    baseline_combined: pd.Series,
-    covariates_combined: pd.Series,
-    custom_lgbm_combined: pd.Series,
-    html_path: Optional[str] = None,
-) -> None:
-    """Plot actual vs predicted combined values.
-
-    Args:
-        actual_combined: Ground truth combined series.
-        baseline_combined: Baseline combined prediction series.
-        covariates_combined: Covariate-enhanced combined prediction series.
-        custom_lgbm_combined: Custom LightGBM (optimized params) combined prediction series.
-        html_path: If set, save the plot as a single self-contained HTML file to this path.
-    """
-    fig = go.Figure()
-
-    fig.add_trace(
-        go.Scatter(
-            x=actual_combined.index,
-            y=actual_combined.values,
-            mode="lines+markers",
-            name="Actual",
-            line=dict(color="green", width=2),
-            marker=dict(size=6),
-        )
-    )
-
-    fig.add_trace(
-        go.Scatter(
-            x=baseline_combined.index,
-            y=baseline_combined.values,
-            mode="lines+markers",
-            name="Predicted (Baseline)",
-            line=dict(color="red", width=2, dash="dash"),
-            marker=dict(size=6),
-        )
-    )
-
-    fig.add_trace(
-        go.Scatter(
-            x=covariates_combined.index,
-            y=covariates_combined.values,
-            mode="lines+markers",
-            name="Predicted (Covariates)",
-            line=dict(color="blue", width=2, dash="dot"),
-            marker=dict(size=6),
-        )
-    )
-
-    fig.add_trace(
-        go.Scatter(
-            x=custom_lgbm_combined.index,
-            y=custom_lgbm_combined.values,
-            mode="lines+markers",
-            name="Predicted (Custom LightGBM)",
-            line=dict(color="orange", width=2, dash="dashdot"),
-            marker=dict(size=6),
-        )
-    )
-
-    fig.update_layout(
-        title="Combined Values: Actual vs. Predicted",
-        xaxis_title="Time",
-        yaxis_title="Combined Value",
-        width=1000,
-        height=500,
-        margin=dict(l=50, r=50, t=50, b=50),
-        hovermode="x unified",
-        template="plotly_white",
-        legend=dict(x=0.01, y=0.99),
-    )
-
-    if html_path:
-        fig.write_html(html_path)
-        print(f"Plot saved to {html_path}")
-
-    fig.show()
 
 
 def main(
@@ -281,7 +199,7 @@ def main(
     actual_combined = actual_combined.reindex(baseline_combined.index)
 
     # --- Plot ---
-    _plot_actual_vs_predicted(
+    plot_actual_vs_predicted(
         actual_combined=actual_combined,
         baseline_combined=baseline_combined,
         covariates_combined=covariates_combined,

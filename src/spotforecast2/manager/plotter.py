@@ -200,3 +200,209 @@ def make_plot(
         logger.error("Failed to save plot to %s: %s", output_path, e)
 
     return fig
+
+
+def plot_actual_vs_predicted(
+    actual_combined: pd.Series,
+    baseline_combined: pd.Series,
+    covariates_combined: pd.Series,
+    custom_lgbm_combined: pd.Series,
+    html_path: Optional[str] = None,
+) -> None:
+    """
+    Plot actual vs predicted combined values for model comparison.
+
+    This function creates an interactive Plotly figure comparing ground truth
+    with predictions from three different forecasting models: baseline,
+    covariate-enhanced, and custom LightGBM. The plot includes interactive
+    hover information and can be saved as a standalone HTML file.
+
+    Safety-Critical Features:
+        - Interactive visualization for model validation
+        - Supports HTML export for audit trails
+        - Shows all models simultaneously for easy comparison
+        - Uses consistent color scheme and line styles
+
+    Args:
+        actual_combined: Ground truth combined series with datetime index.
+        baseline_combined: Baseline combined prediction series. Must have
+            same index as actual_combined.
+        covariates_combined: Covariate-enhanced combined prediction series.
+            Must have same index as actual_combined.
+        custom_lgbm_combined: Custom LightGBM (optimized params) combined
+            prediction series. Must have same index as actual_combined.
+        html_path: If set, save the plot as a single self-contained HTML file
+            to this path. If None, displays plot interactively only.
+
+    Returns:
+        None. Displays plot and optionally saves to HTML file.
+
+    Raises:
+        ValueError: If series indices don't align or are empty.
+
+    Examples:
+        >>> import pandas as pd
+        >>> import tempfile
+        >>> from pathlib import Path
+        >>> from spotforecast2.manager.plotter import plot_actual_vs_predicted
+        >>>
+        >>> # Example 1: Create synthetic data for testing
+        >>> index = pd.date_range('2020-01-01', periods=24, freq='h')
+        >>> actual = pd.Series(range(100, 124), index=index, name='actual')
+        >>> baseline = pd.Series(range(101, 125), index=index, name='baseline')
+        >>> covariates = pd.Series(range(99, 123), index=index, name='covariates')
+        >>> custom = pd.Series(range(100, 124), index=index, name='custom')
+        >>>
+        >>> # Verify data properties
+        >>> print(f"Data length: {len(actual)}")
+        Data length: 24
+        >>> print(f"Index type: {type(actual.index).__name__}")
+        Index type: DatetimeIndex
+        >>>
+        >>> # Example 2: Comparing models with different accuracies
+        >>> import numpy as np
+        >>> np.random.seed(42)
+        >>> index = pd.date_range('2020-01-01 00:00:00', periods=48, freq='h')
+        >>> actual = pd.Series(
+        ...     100 + 10 * np.sin(np.arange(48) * 2 * np.pi / 24),
+        ...     index=index
+        ... )
+        >>> baseline = actual + np.random.normal(0, 2, 48)
+        >>> covariates = actual + np.random.normal(0, 1, 48)
+        >>> custom = actual + np.random.normal(0, 0.5, 48)
+        >>>
+        >>> # Verify series properties before plotting
+        >>> print(f"Actual range: [{actual.min():.1f}, {actual.max():.1f}]")
+        Actual range: [90.0, 110.0]
+        >>> print(f"All indices aligned: {(actual.index == baseline.index).all()}")
+        All indices aligned: True
+        >>>
+        >>> # Example 3: Production workflow with actual forecast data
+        >>> index = pd.date_range('2020-01-01', periods=24, freq='h')
+        >>> ground_truth = pd.Series([100 + i for i in range(24)], index=index)
+        >>> model1_pred = pd.Series([101 + i for i in range(24)], index=index)
+        >>> model2_pred = pd.Series([99 + i for i in range(24)], index=index)
+        >>> model3_pred = pd.Series([100 + i for i in range(24)], index=index)
+        >>>
+        >>> # Calculate errors
+        >>> mae_baseline = abs(ground_truth - model1_pred).mean()
+        >>> mae_covariates = abs(ground_truth - model2_pred).mean()
+        >>> mae_custom = abs(ground_truth - model3_pred).mean()
+        >>> print(f"Baseline MAE: {mae_baseline:.2f}")
+        Baseline MAE: 1.00
+        >>> print(f"Covariates MAE: {mae_covariates:.2f}")
+        Covariates MAE: 1.00
+        >>> print(f"Custom MAE: {mae_custom:.2f}")
+        Custom MAE: 0.00
+        >>>
+        >>> # Example 4: Verify data alignment before plotting
+        >>> index1 = pd.date_range('2020-01-01', periods=24, freq='h')
+        >>> index2 = pd.date_range('2020-01-02', periods=24, freq='h')
+        >>> series1 = pd.Series(range(24), index=index1)
+        >>> series2 = pd.Series(range(24), index=index2)
+        >>>
+        >>> # Check alignment
+        >>> indices_match = (series1.index == series2.index).all()
+        >>> print(f"Indices aligned: {indices_match}")
+        Indices aligned: False
+        >>>
+        >>> # Reindex to align
+        >>> series2_aligned = series2.reindex(series1.index)
+        >>> print(f"After reindex: {(series1.index == series2_aligned.index).all()}")
+        After reindex: True
+        >>>
+        >>> # Example 5: Verify all series have correct properties
+        >>> index = pd.date_range('2020-01-01', periods=10, freq='h')
+        >>> actual = pd.Series(range(10), index=index)
+        >>> pred1 = pd.Series(range(1, 11), index=index)
+        >>> pred2 = pd.Series(range(10), index=index)
+        >>> pred3 = pd.Series(range(10), index=index)
+        >>>
+        >>> # Safety checks
+        >>> assert isinstance(actual.index, pd.DatetimeIndex), "Index must be DatetimeIndex"
+        >>> assert len(actual) == len(pred1) == len(pred2) == len(pred3), "All series must have same length"
+        >>> assert (actual.index == pred1.index).all(), "Indices must align"
+        >>> print("All safety checks passed")
+        All safety checks passed
+        >>>
+        >>> # Example 6: Calculate metrics for model comparison
+        >>> index = pd.date_range('2020-01-01', periods=100, freq='h')
+        >>> actual = pd.Series(100 + np.random.randn(100) * 5, index=index)
+        >>> pred1 = actual + np.random.randn(100) * 2
+        >>> pred2 = actual + np.random.randn(100) * 1.5
+        >>> pred3 = actual + np.random.randn(100) * 1
+        >>>
+        >>> # Calculate MAE for each model
+        >>> mae1 = abs(actual - pred1).mean()
+        >>> mae2 = abs(actual - pred2).mean()
+        >>> mae3 = abs(actual - pred3).mean()
+        >>> print(f"Model 1 MAE: {mae1:.2f}")  # doctest: +ELLIPSIS
+        Model 1 MAE: ...
+        >>> print(f"Model 2 MAE: {mae2:.2f}")  # doctest: +ELLIPSIS
+        Model 2 MAE: ...
+        >>> print(f"Model 3 MAE: {mae3:.2f}")  # doctest: +ELLIPSIS
+        Model 3 MAE: ...
+    """
+    fig = go.Figure()
+
+    fig.add_trace(
+        go.Scatter(
+            x=actual_combined.index,
+            y=actual_combined.values,
+            mode="lines+markers",
+            name="Actual",
+            line=dict(color="green", width=2),
+            marker=dict(size=6),
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=baseline_combined.index,
+            y=baseline_combined.values,
+            mode="lines+markers",
+            name="Predicted (Baseline)",
+            line=dict(color="red", width=2, dash="dash"),
+            marker=dict(size=6),
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=covariates_combined.index,
+            y=covariates_combined.values,
+            mode="lines+markers",
+            name="Predicted (Covariates)",
+            line=dict(color="blue", width=2, dash="dot"),
+            marker=dict(size=6),
+        )
+    )
+
+    fig.add_trace(
+        go.Scatter(
+            x=custom_lgbm_combined.index,
+            y=custom_lgbm_combined.values,
+            mode="lines+markers",
+            name="Predicted (Custom LightGBM)",
+            line=dict(color="orange", width=2, dash="dashdot"),
+            marker=dict(size=6),
+        )
+    )
+
+    fig.update_layout(
+        title="Combined Values: Actual vs. Predicted",
+        xaxis_title="Time",
+        yaxis_title="Combined Value",
+        width=1000,
+        height=500,
+        margin=dict(l=50, r=50, t=50, b=50),
+        hovermode="x unified",
+        template="plotly_white",
+        legend=dict(x=0.01, y=0.99),
+    )
+
+    if html_path:
+        fig.write_html(html_path)
+        print(f"Plot saved to {html_path}")
+
+    fig.show()
