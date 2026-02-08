@@ -99,8 +99,6 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import pandas as pd
-from lightgbm import LGBMRegressor
-
 
 from spotforecast2.data.fetch_data import fetch_data
 from spotforecast2_safe.processing.agg_predict import agg_predict
@@ -317,12 +315,11 @@ def n_to_1_with_covariates(
     if weights is None:
         weights = [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0]
 
-
     if verbose:
         print("=" * 80)
         print("N-to-1 Forecasting with Exogenous Covariates")
         print("=" * 80)
-        print(f"\nConfiguration:")
+        print("\nConfiguration:")
         print(f"  Forecast Horizon: {forecast_horizon} steps")
         print(f"  Contamination Level: {contamination}")
         print(f"  Window Size: {window_size}")
@@ -332,7 +329,7 @@ def n_to_1_with_covariates(
         print(f"  Timezone: {timezone}")
         print(f"  Country Code: {country_code}, State: {state}")
         print(f"  Estimator: {estimator}")
-        print(f"  Feature Engineering:")
+        print("  Feature Engineering:")
         print(f"    - Weather Windows: {include_weather_windows}")
         print(f"    - Holiday Features: {include_holiday_features}")
         print(f"    - Polynomial Features: {include_poly_features}")
@@ -372,7 +369,6 @@ def n_to_1_with_covariates(
         **forecast_kwargs
     )
 
-
     if verbose:
         print(f"\nMulti-output predictions shape: {predictions.shape}")
         print(f"Output columns: {list(predictions.columns)}")
@@ -384,13 +380,12 @@ def n_to_1_with_covariates(
 
     combined_prediction = agg_predict(predictions, weights=weights)
 
-
     if verbose:
         print(f"Combined prediction shape: {combined_prediction.shape}")
-        print(f"\nAggregation Summary:")
-        print(f"  Combined Prediction Head:")
+        print("\nAggregation Summary:")
+        print("  Combined Prediction Head:")
         print(combined_prediction.head())
-        print(f"\n  Combined Prediction Statistics:")
+        print("\n  Combined Prediction Statistics:")
         print(f"    Mean: {combined_prediction.mean():.4f}")
         print(f"    Std:  {combined_prediction.std():.4f}")
         print(f"    Min:  {combined_prediction.min():.4f}")

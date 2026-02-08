@@ -80,4 +80,5 @@ nav:
   - Preprocessing Guides:
       - Outlier Detection: preprocessing/outliers.md
       - Time Series Visualization: preprocessing/time_series_visualization.md
+  - Tasks: tasks.md
 

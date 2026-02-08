@@ -253,18 +253,32 @@ def main(
     # --- Debug output ---
     print("\n=== DEBUG INFO ===")
     print(f"Baseline combined shape: {baseline_combined.shape}")
-    print(f"Baseline index: {baseline_combined.index[0]} to {baseline_combined.index[-1]}")
+    print(
+        f"Baseline index: {baseline_combined.index[0]} to {baseline_combined.index[-1]}"
+    )
     print(f"Baseline values (first 5): {baseline_combined.head().values}")
     print(f"\nCovariates combined shape: {covariates_combined.shape}")
-    print(f"Covariates index: {covariates_combined.index[0]} to {covariates_combined.index[-1]}")
+    print(
+        f"Covariates index: {covariates_combined.index[0]} to {covariates_combined.index[-1]}"
+    )
     print(f"Covariates values (first 5): {covariates_combined.head().values}")
     print(f"\nCustom LightGBM combined shape: {custom_lgbm_combined.shape}")
-    print(f"Custom LightGBM index: {custom_lgbm_combined.index[0]} to {custom_lgbm_combined.index[-1]}")
+    print(
+        f"Custom LightGBM index: {custom_lgbm_combined.index[0]} to {custom_lgbm_combined.index[-1]}"
+    )
     print(f"Custom LightGBM values (first 5): {custom_lgbm_combined.head().values}")
-    print(f"\nAre indices aligned? {(baseline_combined.index == covariates_combined.index).all()}")
-    print(f"Baseline vs Covariates identical? {(baseline_combined.values == covariates_combined.values).all()}")
-    print(f"Baseline vs Custom LightGBM identical? {(baseline_combined.values == custom_lgbm_combined.values).all()}")
-    print(f"Covariates vs Custom LightGBM identical? {(covariates_combined.values == custom_lgbm_combined.values).all()}")
+    print(
+        f"\nAre indices aligned? {(baseline_combined.index == covariates_combined.index).all()}"
+    )
+    print(
+        f"Baseline vs Covariates identical? {(baseline_combined.values == covariates_combined.values).all()}"
+    )
+    print(
+        f"Baseline vs Custom LightGBM identical? {(baseline_combined.values == custom_lgbm_combined.values).all()}"
+    )
+    print(
+        f"Covariates vs Custom LightGBM identical? {(covariates_combined.values == custom_lgbm_combined.values).all()}"
+    )
     if not (baseline_combined.values == covariates_combined.values).all():
         diff = baseline_combined - covariates_combined
         print(f"Baseline - Covariates diff stats:\n{diff.describe()}")
