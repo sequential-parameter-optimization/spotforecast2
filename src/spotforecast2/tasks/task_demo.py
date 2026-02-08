@@ -6,7 +6,8 @@ Task demo: compare baseline, covariate, and custom LightGBM forecasts against gr
 
 This script executes the baseline N-to-1 task, the covariate-enhanced N-to-1
 pipeline, and a custom LightGBM model with optimized hyperparameters, then loads
-the ground truth from ~/spotforecast2_data/data_test.csv and plots Actual vs
+the ground truth from ~/spotforecast2_data/data_test.csv using the safety-critical
+load_actual_combined function from spotforecast2_safe, and plots Actual vs
 Predicted using Plotly.
 
 The plot includes:
@@ -14,6 +15,12 @@ The plot includes:
     - Baseline combined prediction (n2n_predict)
     - Covariate combined prediction (n2n_predict_with_covariates, default LGBM)
     - Custom LightGBM combined prediction (optimized hyperparameters, Europe/Berlin tz)
+
+Safety-Critical Features:
+    - Uses load_actual_combined from spotforecast2_safe for validated data loading
+    - DemoConfig provides immutable configuration with sensible defaults
+    - Path objects ensure cross-platform compatibility
+    - Comprehensive error handling with file existence checks
 
 Examples:
     Run the demo:
@@ -37,7 +44,8 @@ from __future__ import annotations
 
 import argparse
 import warnings
-from typing import List, Optional
+from pathlib import Path
+from typing import Optional
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -48,42 +56,10 @@ from spotforecast2_safe.processing.n2n_predict import n2n_predict
 from spotforecast2_safe.processing.n2n_predict_with_covariates import (
     n2n_predict_with_covariates,
 )
+from spotforecast2_safe.manager.tools import _parse_bool
+from spotforecast2_safe.manager.datasets import DemoConfig, load_actual_combined
 
 warnings.simplefilter("ignore")
-
-
-def _parse_bool(value: str) -> bool:
-    """Parse case-insensitive boolean strings for CLI arguments."""
-    normalized = value.strip().lower()
-    if normalized in {"true", "t"}:
-        return True
-    if normalized in {"false", "f"}:
-        return False
-    raise argparse.ArgumentTypeError(
-        "Expected a boolean value: true/false (case-insensitive)."
-    )
-
-
-def _load_actual_combined(
-    data_path: str,
-    columns: List[str],
-    weights: List[float],
-    forecast_horizon: int,
-) -> pd.Series:
-    """Load ground truth and compute combined actual series.
-
-    Args:
-        data_path: Path to the data_test.csv file.
-        columns: Column names to use for aggregation.
-        weights: Weight list aligned with columns.
-        forecast_horizon: Number of steps to take from the start of test data.
-
-    Returns:
-        Combined actual values as a Series.
-    """
-    data_test = pd.read_csv(data_path, index_col=0, parse_dates=True)
-    actual_df = data_test[columns].iloc[:forecast_horizon]
-    return agg_predict(actual_df, weights=weights)
 
 
 def _plot_actual_vs_predicted(
@@ -292,11 +268,13 @@ def main(
 
     # --- Ground truth ---
     columns = list(baseline_predictions.columns)
-    actual_combined = _load_actual_combined(
-        data_path=DATA_PATH,
+    # Use load_actual_combined from spotforecast2_safe with minimal config
+    config = DemoConfig(data_path=Path(DATA_PATH).expanduser())
+    actual_combined = load_actual_combined(
+        config=config,
         columns=columns,
-        weights=WEIGHTS,
         forecast_horizon=FORECAST_HORIZON,
+        weights=WEIGHTS,
     )
 
     # Align indices to predictions for clean plotting
