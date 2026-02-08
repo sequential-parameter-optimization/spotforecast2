@@ -1,3 +1,18 @@
+## [0.2.16](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.15...v0.2.16) (2026-02-08)
+
+
+### Documentation
+
+* model_selection ([7f1755f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/7f1755f7bf9f2d5d45448d1ca79606242520f533))
+* persistence ([3139c4b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/3139c4baf589101b1b1c349632ac4316abc458e1))
+* pytests for examples in docs consilidated ([d2a576c](https://github.com/sequential-parameter-optimization/spotforecast2/commit/d2a576c82978ff9c0e316c9633ec9cddf1e6d780))
+* **tests:** add comprehensive pytest tests for model_selection documentation examples ([19e5b05](https://github.com/sequential-parameter-optimization/spotforecast2/commit/19e5b0531d4c440f8eed599b9a049784136eb9e0))
+
+
+### Code Refactoring
+
+* tasks mv to src ([070df9b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/070df9b77be8158e8c575000e29ad6c41ce62ddb))
+
 ## [0.2.15](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.14...v0.2.15) (2026-02-07)
 
 
