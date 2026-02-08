@@ -65,3 +65,9 @@ spotforecast-n2o1 = "spotforecast2.tasks.task_n_to_1:main"
 spotforecast-n2o1-df = "spotforecast2.tasks.task_n_to_1_dataframe:main"
 spotforecast-n2o1-cov = "spotforecast2.tasks.task_n_to_1_with_covariates:main"
 spotforecast-n2o1-cov-df = "spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
