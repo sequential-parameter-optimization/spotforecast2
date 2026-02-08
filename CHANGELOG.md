@@ -1,3 +1,10 @@
+## [0.2.19](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.18...v0.2.19) (2026-02-08)
+
+
+### Bug Fixes
+
+* add mkdocs-macros-plugin to docs CI workflow ([0163fe5](https://github.com/sequential-parameter-optimization/spotforecast2/commit/0163fe5d96f731af29fe7eae69c5277805333821))
+
 ## [0.2.18](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.17...v0.2.18) (2026-02-08)
 
 
