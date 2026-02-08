@@ -1,3 +1,10 @@
+## [0.2.33](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.32...v0.2.33) (2026-02-08)
+
+
+### Code Refactoring
+
+* rm duplicate pytests ([5f19992](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5f1999233c5b2324cd117ee25dd2448fb4c6ee42))
+
 ## [0.2.32](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.31...v0.2.32) (2026-02-08)
 
 
