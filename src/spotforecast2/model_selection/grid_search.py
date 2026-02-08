@@ -28,7 +28,7 @@ from spotforecast2.model_selection.utils_metrics import (
     _calculate_metrics_one_step_ahead,
 )
 from spotforecast2_safe.model_selection import _backtesting_forecaster
-from spotforecast2.forecaster.utils import set_skforecast_warnings
+from spotforecast2_safe.exceptions import set_skforecast_warnings
 
 
 def _evaluate_grid_hyperparameters(

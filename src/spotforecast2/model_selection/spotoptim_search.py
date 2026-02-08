@@ -38,9 +38,9 @@ from spotforecast2.model_selection.utils_metrics import (
 from spotforecast2.forecaster.utils import (
     initialize_lags,
     date_to_index_position,
-    set_skforecast_warnings,
 )
 from spotforecast2.exceptions import IgnoredArgumentWarning
+from spotforecast2_safe.exceptions import set_skforecast_warnings
 
 
 def _parse_lags_from_string(lags_str: str) -> int | list:

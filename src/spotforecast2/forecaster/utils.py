@@ -23,7 +23,7 @@ from spotforecast2.utils import (
     expand_index,
     transform_dataframe,
 )
-from spotforecast2.exceptions import set_skforecast_warnings, UnknownLevelWarning
+from spotforecast2_safe.exceptions import set_skforecast_warnings, UnknownLevelWarning
 from spotforecast2_safe.forecaster.utils import check_preprocess_series
 
 try:
