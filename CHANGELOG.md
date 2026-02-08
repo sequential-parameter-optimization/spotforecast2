@@ -1,3 +1,10 @@
+## [0.2.31](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.30...v0.2.31) (2026-02-08)
+
+
+### Code Refactoring
+
+* _common, _differentiator, _rolling ([e7216d9](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e7216d94410436b2b74beb48d0cc56c332466ac2))
+
 ## [0.2.30](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.29...v0.2.30) (2026-02-08)
 
 
