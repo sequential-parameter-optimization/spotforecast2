@@ -14,7 +14,6 @@ __version__ = "0.1.0"
 from . import forecaster
 from . import model_selection
 from . import preprocessing
-from . import processing
 from . import stats
 from . import utils
 from . import weather
@@ -23,7 +22,6 @@ __all__ = [
     "forecaster",
     "model_selection",
     "preprocessing",
-    "processing",
     "stats",
     "utils",
     "weather",

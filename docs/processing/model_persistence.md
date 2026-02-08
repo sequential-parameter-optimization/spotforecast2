@@ -14,7 +14,7 @@ No additional installation needed! The implementation uses joblib (already in re
 
 ### First Run - Training and Caching
 ```python
-from spotforecast2.processing.n2n_predict_with_covariates import n2n_predict_with_covariates
+from spotforecast2_safe.processing.n2n_predict_with_covariates import n2n_predict_with_covariates
 
 # Models are trained and cached automatically
 predictions, metadata, forecasters = n2n_predict_with_covariates(
@@ -181,7 +181,7 @@ The system implements intelligent selective retraining:
 For advanced use cases, you can directly use the persistence helper functions:
 
 ```python
-from spotforecast2.processing.n2n_predict_with_covariates import (
+from spotforecast2_safe.processing.n2n_predict_with_covariates import (
     _ensure_model_dir,
     _get_model_filepath,
     _save_forecasters,

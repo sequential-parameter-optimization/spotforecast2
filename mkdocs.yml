@@ -70,7 +70,6 @@ nav:
   - API Reference:
       - Data: api/data.md
       - Preprocessing: api/preprocessing.md
-      - Processing: api/processing.md
       - Forecaster: api/forecaster.md
       - Model Selection: api/model_selection.md
       - Stats: api/stats.md
