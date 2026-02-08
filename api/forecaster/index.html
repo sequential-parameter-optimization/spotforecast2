@@ -11865,32 +11865,32 @@ Action to take regarding the warnings.</p>
 
 
             <details class="mkdocstrings-source">
-              <summary>Source code in <code>src/spotforecast2/exceptions.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-346">346</a></span>
-<span class="normal"><a href="#__codelineno-0-347">347</a></span>
-<span class="normal"><a href="#__codelineno-0-348">348</a></span>
-<span class="normal"><a href="#__codelineno-0-349">349</a></span>
-<span class="normal"><a href="#__codelineno-0-350">350</a></span>
-<span class="normal"><a href="#__codelineno-0-351">351</a></span>
-<span class="normal"><a href="#__codelineno-0-352">352</a></span>
-<span class="normal"><a href="#__codelineno-0-353">353</a></span>
-<span class="normal"><a href="#__codelineno-0-354">354</a></span>
-<span class="normal"><a href="#__codelineno-0-355">355</a></span>
-<span class="normal"><a href="#__codelineno-0-356">356</a></span>
-<span class="normal"><a href="#__codelineno-0-357">357</a></span>
-<span class="normal"><a href="#__codelineno-0-358">358</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-346" name="__codelineno-0-346"></a><span class="k">def</span><span class="w"> </span><span class="nf">set_skforecast_warnings</span><span class="p">(</span><span class="n">suppress_warnings</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ignore&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-347" name="__codelineno-0-347"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="sd">    Suppress spotforecast warnings.</span>
-<a id="__codelineno-0-349" name="__codelineno-0-349"></a>
-<a id="__codelineno-0-350" name="__codelineno-0-350"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-351" name="__codelineno-0-351"></a><span class="sd">        suppress_warnings: bool</span>
-<a id="__codelineno-0-352" name="__codelineno-0-352"></a><span class="sd">            If True, spotforecast warnings will be suppressed.</span>
-<a id="__codelineno-0-353" name="__codelineno-0-353"></a><span class="sd">        action: str, default &#39;ignore&#39;</span>
-<a id="__codelineno-0-354" name="__codelineno-0-354"></a><span class="sd">            Action to take regarding the warnings.</span>
-<a id="__codelineno-0-355" name="__codelineno-0-355"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-356" name="__codelineno-0-356"></a>    <span class="k">if</span> <span class="n">suppress_warnings</span><span class="p">:</span>
-<a id="__codelineno-0-357" name="__codelineno-0-357"></a>        <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">warn_skforecast_categories</span><span class="p">:</span>
-<a id="__codelineno-0-358" name="__codelineno-0-358"></a>            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
+              <summary>Source code in <code>spotforecast2_safe/exceptions.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-673">673</a></span>
+<span class="normal"><a href="#__codelineno-0-674">674</a></span>
+<span class="normal"><a href="#__codelineno-0-675">675</a></span>
+<span class="normal"><a href="#__codelineno-0-676">676</a></span>
+<span class="normal"><a href="#__codelineno-0-677">677</a></span>
+<span class="normal"><a href="#__codelineno-0-678">678</a></span>
+<span class="normal"><a href="#__codelineno-0-679">679</a></span>
+<span class="normal"><a href="#__codelineno-0-680">680</a></span>
+<span class="normal"><a href="#__codelineno-0-681">681</a></span>
+<span class="normal"><a href="#__codelineno-0-682">682</a></span>
+<span class="normal"><a href="#__codelineno-0-683">683</a></span>
+<span class="normal"><a href="#__codelineno-0-684">684</a></span>
+<span class="normal"><a href="#__codelineno-0-685">685</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-673" name="__codelineno-0-673"></a><span class="k">def</span><span class="w"> </span><span class="nf">set_skforecast_warnings</span><span class="p">(</span><span class="n">suppress_warnings</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span> <span class="n">action</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ignore&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-674" name="__codelineno-0-674"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-675" name="__codelineno-0-675"></a><span class="sd">    Suppress spotforecast warnings.</span>
+<a id="__codelineno-0-676" name="__codelineno-0-676"></a>
+<a id="__codelineno-0-677" name="__codelineno-0-677"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-678" name="__codelineno-0-678"></a><span class="sd">        suppress_warnings: bool</span>
+<a id="__codelineno-0-679" name="__codelineno-0-679"></a><span class="sd">            If True, spotforecast warnings will be suppressed.</span>
+<a id="__codelineno-0-680" name="__codelineno-0-680"></a><span class="sd">        action: str, default &#39;ignore&#39;</span>
+<a id="__codelineno-0-681" name="__codelineno-0-681"></a><span class="sd">            Action to take regarding the warnings.</span>
+<a id="__codelineno-0-682" name="__codelineno-0-682"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-683" name="__codelineno-0-683"></a>    <span class="k">if</span> <span class="n">suppress_warnings</span><span class="p">:</span>
+<a id="__codelineno-0-684" name="__codelineno-0-684"></a>        <span class="k">for</span> <span class="n">category</span> <span class="ow">in</span> <span class="n">warn_skforecast_categories</span><span class="p">:</span>
+<a id="__codelineno-0-685" name="__codelineno-0-685"></a>            <span class="n">warnings</span><span class="o">.</span><span class="n">simplefilter</span><span class="p">(</span><span class="n">action</span><span class="p">,</span> <span class="n">category</span><span class="o">=</span><span class="n">category</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
