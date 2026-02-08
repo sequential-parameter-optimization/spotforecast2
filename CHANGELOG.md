@@ -1,3 +1,10 @@
+## [0.2.22](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.21...v0.2.22) (2026-02-08)
+
+
+### Code Refactoring
+
+* fetch_data, data ([911ca75](https://github.com/sequential-parameter-optimization/spotforecast2/commit/911ca7501204e48b225152fbb83cfc11a952cfcd))
+
 ## [0.2.21](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.20...v0.2.21) (2026-02-08)
 
 
