@@ -2,11 +2,10 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later AND BSD-3-Clause
 
-from typing import Any, List, Optional, Tuple, Union
+from typing import Any, List, Optional, Tuple
 import pandas as pd
 import numpy as np
 import warnings
-import uuid
 from importlib.util import find_spec
 from sklearn.compose import ColumnTransformer
 from spotforecast2.utils import (
@@ -24,7 +23,13 @@ from spotforecast2.utils import (
     transform_dataframe,
 )
 from spotforecast2_safe.exceptions import set_skforecast_warnings, UnknownLevelWarning
-from spotforecast2_safe.forecaster.utils import check_preprocess_series
+from spotforecast2_safe.forecaster.utils import (
+    check_preprocess_series,
+    check_preprocess_exog_multiseries,
+    exog_to_direct,
+    check_extract_values_and_index,
+    get_style_repr_html,
+)
 
 try:
     from tqdm.auto import tqdm
@@ -47,58 +52,6 @@ optional_dependencies = {
 # TODO: Remove this function, because it is imported from spotforecast2_safe
 # def check_preprocess_series(series):
 #     pass
-
-
-def check_preprocess_exog_multiseries(exog):
-    pass
-
-
-def exog_to_direct(
-    exog: pd.Series | pd.DataFrame, steps: int
-) -> tuple[pd.DataFrame, list[str]]:
-    """
-    Transforms `exog` to a pandas DataFrame with the shape needed for Direct
-    forecasting.
-
-    Args:
-        exog: pandas Series, pandas DataFrame
-            Exogenous variables.
-        steps: int
-            Number of steps that will be predicted using exog.
-
-    Returns:
-        tuple[pd.DataFrame, list[str]]:
-            exog_direct: pandas DataFrame
-                Exogenous variables transformed.
-            exog_direct_names: list
-                Names of the columns of the exogenous variables transformed. Only
-                created if `exog` is a pandas Series or DataFrame.
-    """
-
-    if not isinstance(exog, (pd.Series, pd.DataFrame)):
-        raise TypeError(
-            f"`exog` must be a pandas Series or DataFrame. Got {type(exog)}."
-        )
-
-    if isinstance(exog, pd.Series):
-        exog = exog.to_frame()
-
-    n_rows = len(exog)
-    exog_idx = exog.index
-    exog_cols = exog.columns
-    exog_direct = []
-    for i in range(steps):
-        exog_step = exog.iloc[i : n_rows - (steps - 1 - i),]
-        exog_step.index = pd.RangeIndex(len(exog_step))
-        exog_step.columns = [f"{col}_step_{i + 1}" for col in exog_cols]
-        exog_direct.append(exog_step)
-
-    exog_direct = pd.concat(exog_direct, axis=1) if steps > 1 else exog_direct[0]
-
-    exog_direct_names = exog_direct.columns.to_list()
-    exog_direct.index = exog_idx[-len(exog_direct) :]
-
-    return exog_direct, exog_direct_names
 
 
 def exog_to_direct_numpy(
@@ -448,120 +401,6 @@ def initialize_window_features(
             )
 
     return window_features, window_features_names, max_size_window_features
-
-
-def check_extract_values_and_index(
-    data: Union[pd.Series, pd.DataFrame],
-    data_label: str = "`y`",
-    ignore_freq: bool = False,
-    return_values: bool = True,
-) -> Tuple[Optional[np.ndarray], pd.Index]:
-    """Extract values and index from a pandas Series or DataFrame, ensuring they are valid.
-
-    Validates that the input data has a proper DatetimeIndex or RangeIndex and extracts
-    its values and index for use in forecasting operations. Optionally checks for
-    index frequency consistency.
-
-    Args:
-        data: Input data (pandas Series or DataFrame) to extract values and index from.
-        data_label: Label used in exception messages for better error reporting.
-            Defaults to "`y`".
-        ignore_freq: If True, the frequency of the index is not checked.
-            Defaults to False.
-        return_values: If True, the values of the data are returned.
-            Defaults to True.
-
-    Returns:
-        tuple: A tuple containing:
-            - values (numpy.ndarray or None): Values of the data as numpy array,
-              or None if return_values is False.
-            - index (pandas.Index): Index of the data.
-
-    Raises:
-        TypeError: If data is not a pandas Series or DataFrame.
-        TypeError: If data index is not a DatetimeIndex or RangeIndex.
-
-    Warnings:
-        UserWarning: If DatetimeIndex has no frequency (inferred automatically).
-
-    Examples:
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> dates = pd.date_range('2020-01-01', periods=10, freq='D')
-        >>> series = pd.Series(np.arange(10), index=dates)
-        >>> values, index = check_extract_values_and_index(series)
-        >>> print(values.shape)
-        (10,)
-        >>> print(type(index))
-        <class 'pandas.core.indexes.datetimes.DatetimeIndex'>
-
-        Extract index only:
-        >>> _, index = check_extract_values_and_index(series, return_values=False)
-        >>> print(index[0])
-        2020-01-01 00:00:00
-    """
-
-    if not isinstance(data, (pd.Series, pd.DataFrame)):
-        raise TypeError(f"{data_label} must be a pandas Series or DataFrame.")
-
-    if not isinstance(data.index, (pd.DatetimeIndex, pd.RangeIndex)):
-        raise TypeError(f"{data_label} must have a pandas DatetimeIndex or RangeIndex.")
-
-    if isinstance(data.index, pd.DatetimeIndex) and not ignore_freq:
-        if data.index.freq is None:
-            warnings.warn(
-                f"{data_label} has a DatetimeIndex but no frequency. "
-                "The frequency has been inferred from the index.",
-                UserWarning,
-            )
-
-    values = data.to_numpy() if return_values else None
-
-    return values, data.index
-
-
-def get_style_repr_html(is_fitted: bool = False) -> Tuple[str, str]:
-    """Generate CSS style for HTML representation of the Forecaster.
-
-    Creates a unique CSS style block with a container ID for rendering
-    forecaster objects in Jupyter notebooks or HTML documents. The styling
-    provides a clean, monospace display with a light gray background.
-
-    Args:
-        is_fitted: Parameter to indicate if the Forecaster has been fitted.
-            Currently not used in styling but reserved for future extensions.
-
-    Returns:
-        tuple: A tuple containing:
-            - style (str): CSS style block as a string with unique container class.
-            - unique_id (str): Unique 8-character ID for the container element.
-
-    Examples:
-        >>> style, uid = get_style_repr_html(is_fitted=True)
-        >>> print(f"Container ID: {uid}")
-        Container ID: a1b2c3d4
-        >>> print(f"Style contains CSS: {'container-' in style}")
-        Style contains CSS: True
-
-        Using in HTML rendering:
-        >>> style, uid = get_style_repr_html(is_fitted=False)
-        >>> html = f"{style}<div class='container-{uid}'>Forecaster Info</div>"
-        >>> print("background-color" in html)
-        True
-    """
-
-    unique_id = str(uuid.uuid4())[:8]
-    style = f"""
-    <style>
-        .container-{unique_id} {{
-            font-family: monospace;
-            background-color: #f0f0f0;
-            padding: 10px;
-            border-radius: 5px;
-        }}
-    </style>
-    """
-    return style, unique_id
 
 
 def check_residuals_input(
