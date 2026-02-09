@@ -28,8 +28,12 @@ uv run spotforecast-entsoe download --api-key YOUR_API_KEY 202301010000
 # Train a model (lgbm or xgb)
 uv run spotforecast-entsoe train lgbm --force
 
-# Generate predictions and plot
+# Generate predictions and plot (defaults to lgbm)
 uv run spotforecast-entsoe predict --plot
+
+# Generate predictions with explicit model selection
+uv run spotforecast-entsoe predict lgbm --plot
+uv run spotforecast-entsoe predict xgb --plot
 
 # Merge raw data files
 uv run spotforecast-entsoe merge
@@ -39,6 +43,7 @@ uv run spotforecast-entsoe merge
     Store your ENTSO-E API key in the `ENTSOE_API_KEY` environment variable to avoid passing it on every command:
     ```bash
     export ENTSOE_API_KEY="your-api-key-here"
+    echo $ENTSOE_API_KEY
     uv run spotforecast-entsoe download 202301010000
     ```
 
@@ -120,3 +125,47 @@ Trained models are saved to `~/spotforecast2_models/<task_name>/` by default. Th
 
 !!! warning "Safety-Critical Consideration"
     In production environments, always verify model checksums and training timestamps before deployment.
+
+---
+
+## Testing
+
+The task scripts are covered by comprehensive safety-critical tests to ensure reliability in production environments.
+
+### Running Tests
+
+Run all ENTSO-E task tests:
+
+```bash
+uv run pytest tests/test_tasks_entsoe.py -v
+```
+
+Run specific test categories:
+
+```bash
+# Run only safety-critical tests
+uv run pytest tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe -v
+
+# Run parameter validation tests
+uv run pytest tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe::test_train_lgbm_model_parameter_correctness -v
+
+# Run with coverage
+uv run pytest tests/test_tasks_entsoe.py --cov=spotforecast2.tasks.task_entsoe --cov-report=html
+```
+
+### Test Categories
+
+The test suite includes:
+
+- **Parameter Validation**: Ensures correct parameter passing between CLI and internal functions
+- **Error Handling**: Validates graceful degradation and meaningful error messages
+- **Data Validation**: Tests boundary conditions and edge cases
+- **Integration Tests**: Verifies end-to-end functionality
+- **Regression Tests**: Protects against known historical bugs
+- **Model Selection Safety**: Prevents model mismatch in production pipelines
+
+!!! tip "Continuous Testing"
+    Run tests before deployment in production environments:
+    ```bash
+    uv run pytest tests/ -v --tb=short
+    ```

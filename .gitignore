@@ -228,3 +228,4 @@ uv.lock
 data/weather_cache.parquet
 /~/spotforecast2_models
 IMPLEMENTATION_SUMMARY_MODEL_PERSISTENCE.md
+TEST_REPORT_ENTSOE_FIX.md

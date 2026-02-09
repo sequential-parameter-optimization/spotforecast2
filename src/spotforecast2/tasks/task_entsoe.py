@@ -313,6 +313,10 @@ def main():
 
     # Predict
     parser_pr = subparsers.add_parser("predict")
+    parser_pr.add_argument(
+        "model", choices=["lgbm", "xgb"], default="lgbm", nargs="?",
+        help="Model to use for prediction (default: lgbm)"
+    )
     parser_pr.add_argument("--plot", action="store_true")
 
     # Merge
@@ -336,11 +340,12 @@ def main():
         # Register models dynamically if needed, or pass classes
         model_map = {"lgbm": ForecasterRecursiveLGBM, "xgb": ForecasterRecursiveXGB}
         handle_training_safe(
-            model_class=model_map[args.model], model_type=args.model, force=args.force
+            model_class=model_map[args.model], model_name=args.model, force=args.force
         )
 
     elif args.subcommand == "predict":
-        out = get_model_prediction_safe()
+        model_name = getattr(args, "model", "lgbm")  # Default to lgbm for backward compatibility
+        out = get_model_prediction_safe(model_name=model_name)
         if out:
             logger.info("Prediction successful.")
             if args.plot:
