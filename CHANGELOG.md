@@ -1,3 +1,18 @@
+## [0.2.36](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.35...v0.2.36) (2026-02-09)
+
+
+### Bug Fixes
+
+* data path for entsoe ([06e2c83](https://github.com/sequential-parameter-optimization/spotforecast2/commit/06e2c830920df21b60f137d6bb123c7705298451))
+
+
+### Documentation
+
+* entsoe ([7df25c9](https://github.com/sequential-parameter-optimization/spotforecast2/commit/7df25c99913810e81a9c784950080cf9f59101c0))
+* entsoe ([5e8e1bd](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5e8e1bda34160e9b79e9a69896ced41f6e4cb24f))
+* entsoe example ([e94cd2a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e94cd2ac901d9a73b82a246080d4597c984e8e03))
+* entsoe task ([c855107](https://github.com/sequential-parameter-optimization/spotforecast2/commit/c855107dfc064d9cc3c4dfcb422199ba9017769d))
+
 ## [0.2.35](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.34...v0.2.35) (2026-02-09)
 
 
