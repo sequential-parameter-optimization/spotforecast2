@@ -246,7 +246,8 @@ from spotforecast2_safe.manager.predictor import get_model_prediction as get_mod
 from spotforecast2.manager.plotter import make_plot
 from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
 
-# 1. Setup Time Windows (Last 3 years until last month)
+# 1. Setup Time Windows (Last 3 years until last month) and country:
+country_code = "ES"  
 now = pd.Timestamp.now(tz='UTC').floor('D')
 current_month_start = now.replace(day=1)
 last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
@@ -254,7 +255,7 @@ last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
 # 2. Download Data (Optional, requires ENTSOE_API_KEY)
 api_key = os.environ.get("ENTSOE_API_KEY")
 if api_key:
-    download_new_data(api_key=api_key, start="202301010000")
+    download_new_data(api_key=api_key, start="202301010000", country_code=country_code)
 
 # 3. Configure and Train
 # Explicit parameters override global configuration for reproducibility
@@ -266,6 +267,7 @@ handle_training_safe(
     model_name=model_name,
     train_size=pd.Timedelta(days=3 * 365),
     end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
+    country_code=country_code
 )
 
 # 4. Generate Predictions for the forecast horizon
