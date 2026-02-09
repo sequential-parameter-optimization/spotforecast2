@@ -45,6 +45,7 @@ class ConfigEntsoe:
         refit_size: Number of days between model refits.
         random_state: Random seed for reproducibility.
         n_hyperparameters_trials: Number of trials for hyperparameter optimization.
+        data_filename: Path to the interim merged data file.
 
     Attributes:
         API_COUNTRY_CODE: ISO country code for API queries.
@@ -104,6 +105,7 @@ class ConfigEntsoe:
         refit_size: int = 7,
         random_state: int = 314159,
         n_hyperparameters_trials: int = 20,
+        data_filename: str = "interim/energy_load.csv",
     ):
         """Initialize ConfigEntsoe with specified or default parameters."""
         self.API_COUNTRY_CODE = api_country_code
@@ -150,3 +152,4 @@ class ConfigEntsoe:
         self.refit_size = refit_size
         self.random_state = random_state
         self.n_hyperparameters_trials = n_hyperparameters_trials
+        self.data_filename = data_filename

@@ -146,7 +146,10 @@ def main():
         # Register models dynamically if needed, or pass classes
         model_map = {"lgbm": ForecasterRecursiveLGBM, "xgb": ForecasterRecursiveXGB}
         handle_training_safe(
-            model_class=model_map[args.model], model_name=args.model, force=args.force
+            model_class=model_map[args.model],
+            model_name=args.model,
+            force=args.force,
+            data_filename=config.data_filename,
         )
 
     elif args.subcommand == "predict":
