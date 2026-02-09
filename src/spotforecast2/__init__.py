@@ -18,8 +18,12 @@ from . import preprocessing
 from . import stats
 from . import utils
 from . import weather
+from spotforecast2.manager.configurator.config_entsoe import ConfigEntsoe as Config
+from spotforecast2.manager.configurator.config_entsoe import ConfigEntsoe
 
 __all__ = [
+    "Config",
+    "ConfigEntsoe",
     "forecaster",
     "manager",
     "model_selection",

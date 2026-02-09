@@ -14,12 +14,11 @@ import pytest
 from spotforecast2.manager.plotter import make_plot
 from spotforecast2.tasks.task_entsoe import (
     main,
-    Period,
-    ExogBuilder,
-    RepeatingBasisFunction,
     ForecasterRecursiveLGBM,
     ForecasterRecursiveXGB
 )
+from spotforecast2_safe.data.data import Period
+from spotforecast2_safe.preprocessing import ExogBuilder, RepeatingBasisFunction
 
 class TestTaskEntsoe(unittest.TestCase):
     """Tests for the task_entsoe script."""
@@ -628,6 +627,146 @@ class TestSafetyCriticalEntsoe:
         # Verify it's called with arguments, not positionally
         assert len(mock_get_pred.call_args.args) == 0, \
             "REGRESSION: model_name should be keyword argument, not positional"
+
+
+class TestConfigInstanceUsage(unittest.TestCase):
+    """
+    SAFETY-CRITICAL: Test that config instance is used correctly.
+    
+    After refactoring ConfigEntsoe to require instantiation, ensure all
+    references use the config instance, not class attributes.
+    """
+
+    def test_forecaster_model_uses_config_instance(self):
+        """
+        CRITICAL: ForecasterRecursiveModel must use config instance.
+        
+        Bug: AttributeError when trying to access ConfigEntsoe.periods
+        after converting to instance-based configuration.
+        """
+        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM, config
+        
+        # Create model instance
+        model = ForecasterRecursiveLGBM(iteration=1)
+        
+        # Verify model uses config values
+        assert model.end_dev is not None, "end_dev should be initialized"
+        assert model.preprocessor is not None, "preprocessor should be initialized"
+        
+        # Verify preprocessor was built with config values
+        assert len(model.preprocessor.periods) == len(config.periods), \
+            "Preprocessor should use config.periods"
+        assert model.preprocessor.country_code == config.API_COUNTRY_CODE, \
+            "Preprocessor should use config.API_COUNTRY_CODE"
+        
+        # Verify forecaster was created with config random_state
+        assert model.forecaster is not None, "Forecaster should be initialized"
+        assert model.forecaster.regressor.random_state == config.random_state, \
+            "Forecaster should use config.random_state"
+
+    def test_config_instance_has_required_attributes(self):
+        """
+        VALIDATION: Ensure config instance has all required attributes.
+        
+        Prevents AttributeError by verifying config is properly initialized.
+        """
+        from spotforecast2.tasks.task_entsoe import config
+        
+        # Verify all required attributes exist
+        required_attrs = [
+            'API_COUNTRY_CODE', 'periods', 'lags_consider', 'train_size',
+            'end_train_default', 'delta_val', 'predict_size', 'refit_size',
+            'random_state', 'n_hyperparameters_trials'
+        ]
+        
+        for attr in required_attrs:
+            assert hasattr(config, attr), \
+                f"config instance missing required attribute: {attr}"
+        
+        # Verify types
+        assert isinstance(config.API_COUNTRY_CODE, str)
+        assert isinstance(config.periods, list)
+        assert len(config.periods) > 0
+        assert isinstance(config.random_state, int)
+
+    def test_config_instance_values_match_defaults(self):
+        """
+        REGRESSION: Verify config instance uses correct default values.
+        
+        After changing defaults (DE, 2025-12-31), ensure they're applied.
+        """
+        from spotforecast2.tasks.task_entsoe import config
+        
+        # Verify updated defaults
+        assert config.API_COUNTRY_CODE == "DE", \
+            "Default country code should be DE"
+        assert config.end_train_default == "2025-12-31 00:00+00:00", \
+            "Default end_train_default should be 2025-12-31"
+        assert config.predict_size == 24, \
+            "Default predict_size should be 24"
+        assert config.random_state == 314159, \
+            "Default random_state should be 314159"
+
+    def test_forecaster_lgbm_initialization(self):
+        """
+        INTEGRATION: Test LGBM forecaster initializes without errors.
+        
+        Ensures config instance usage doesn't break model instantiation.
+        """
+        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
+        
+        # Should not raise AttributeError
+        model = ForecasterRecursiveLGBM(iteration=1)
+        
+        assert model.name == "lgbm"
+        assert model.iteration == 1
+        assert model.forecaster is not None
+
+    def test_forecaster_xgb_initialization(self):
+        """
+        INTEGRATION: Test XGB forecaster initializes without errors.
+        
+        Ensures config instance usage doesn't break model instantiation.
+        """
+        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveXGB
+        
+        # Should not raise AttributeError
+        model = ForecasterRecursiveXGB(iteration=1)
+        
+        assert model.name == "xgb"
+        assert model.iteration == 1
+        # XGB forecaster may be None if xgboost not installed
+
+    def test_exog_builder_uses_config_periods(self):
+        """
+        VALIDATION: ExogBuilder correctly uses config.periods.
+        
+        Ensures preprocessor feature engineering uses config values.
+        """
+        from spotforecast2.tasks.task_entsoe import config
+        from spotforecast2_safe.preprocessing import ExogBuilder
+        
+        # Build with config periods
+        builder = ExogBuilder(
+            periods=config.periods,
+            country_code=config.API_COUNTRY_CODE
+        )
+        
+        # Verify periods are used
+        assert len(builder.periods) == len(config.periods)
+        assert builder.country_code == config.API_COUNTRY_CODE
+        
+        # Build features and verify shape
+        start = pd.Timestamp("2025-12-31 00:00", tz="UTC")
+        end = pd.Timestamp("2026-01-01 00:00", tz="UTC")
+        X = builder.build(start, end)
+        
+        # Should have RBF features from all periods
+        total_features = sum(p.n_periods for p in config.periods)
+        # Plus holidays and is_weekend
+        expected_cols = total_features + 2
+        assert X.shape[1] == expected_cols, \
+            f"Expected {expected_cols} features, got {X.shape[1]}"
 
 
 if __name__ == "__main__":

@@ -76,10 +76,13 @@ nav:
       - Utils: api/utils.md
       - Weather: api/weather.md
       - Exceptions: api/exceptions.md
+      - Config Entsoe: api/manager/configurator/config_entsoe.md
   - Processing Guides:
       - Model Persistence: processing/model_persistence.md
   - Preprocessing Guides:
       - Outlier Detection: preprocessing/outliers.md
       - Time Series Visualization: preprocessing/time_series_visualization.md
-  - Tasks: tasks.md
+  - Tasks:
+      - Overview: tasks.md
+      - ENTSO-E Guide: entsoe.md
 

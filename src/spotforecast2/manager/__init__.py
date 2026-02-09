@@ -13,8 +13,10 @@ from spotforecast2.manager.plotter import (
     plot_actual_vs_predicted,
     PredictionFigure,
 )
+from spotforecast2.manager.configurator import ConfigEntsoe
 
 __all__ = [
+    "ConfigEntsoe",
     "make_plot",
     "plot_actual_vs_predicted",
     "PredictionFigure",
