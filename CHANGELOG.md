@@ -1,3 +1,10 @@
+## [0.2.34](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.33...v0.2.34) (2026-02-09)
+
+
+### Bug Fixes
+
+* entso-e ([627f2e2](https://github.com/sequential-parameter-optimization/spotforecast2/commit/627f2e219108e092a056cdcf758f0b6aa429a74e))
+
 ## [0.2.33](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.32...v0.2.33) (2026-02-08)
 
 
