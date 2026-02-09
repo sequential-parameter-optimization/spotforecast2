@@ -231,6 +231,40 @@ print(model.preprocessor.country_code)  # 'FR'
 
 ---
 
+## Advanced Time Window Management
+
+### Training on Last 3 Years, Predicting Last Month
+
+In safety-critical MLOps, managing strict time windows is essential for reproducible results and avoiding data leakage. This example shows how to configure training for the last 3 years (up to the start of last month) and generate predictions for the entirety of last month.
+
+```python
+import pandas as pd
+from spotforecast2 import Config
+from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
+
+# Calculate dates relative to today (UTC)
+now = pd.Timestamp.now(tz='UTC').floor('D')
+# Start of current month
+current_month_start = now.replace(day=1)
+# Start of last month
+last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
+
+# Training: 3 years until last_month_start (end_dev)
+# Prediction window: 1 month (approx 744 hours)
+# These explicit parameters override the defaults from ConfigEntsoe
+model = ForecasterRecursiveLGBM(
+    iteration=1,
+    train_size=pd.Timedelta(days=3 * 365),
+    end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
+    predict_size=24 * 31
+)
+
+print(f"Training ends at: {model.end_dev}")
+print(f"Prediction horizon: {model.predict_size} hours")
+```
+
+---
+
 ## File Paths
 
 ### Data Home Directory

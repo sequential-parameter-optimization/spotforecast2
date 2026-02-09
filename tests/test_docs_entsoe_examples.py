@@ -337,6 +337,46 @@ class TestForecasterModelExamples:
         assert model.preprocessor.country_code == 'FR'
         assert model.random_state == 42
 
+    def test_forecaster_last_3_years_until_last_month(self):
+        """
+        Example: Training on last 3 years, predicting last month.
+
+        ```python
+        import pandas as pd
+        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
+
+        now = pd.Timestamp.now(tz='UTC').floor('D')
+        current_month_start = now.replace(day=1)
+        last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
+
+        model = ForecasterRecursiveLGBM(
+            iteration=1,
+            train_size=pd.Timedelta(days=3 * 365),
+            end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
+            predict_size=24 * 31
+        )
+        ```
+        """
+        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
+        import pandas as pd
+
+        # Calculate dates
+        now = pd.Timestamp.now(tz='UTC').floor('D')
+        current_month_start = now.replace(day=1)
+        last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
+
+        model = ForecasterRecursiveLGBM(
+            iteration=1,
+            train_size=pd.Timedelta(days=3 * 365),
+            end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
+            predict_size=24 * 31
+        )
+
+        assert model.train_size == pd.Timedelta(days=3 * 365)
+        # Convert model.end_dev (Timestamp) to string for comparison
+        assert pd.Timestamp(model.end_dev).strftime("%Y-%m-%d %H:%M%z") == last_month_start.strftime("%Y-%m-%d %H:%M%z")
+        assert model.predict_size == 24 * 31
+
 
 class TestLinearlyInterpolateTSExamples:
     """Tests for LinearlyInterpolateTS examples in documentation."""
