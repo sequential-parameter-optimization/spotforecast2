@@ -1278,6 +1278,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#advanced-time-window-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Time Window Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Time Window Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#training-on-last-3-years-predicting-last-month" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Training on Last 3 Years, Predicting Last Month
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#file-paths" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1653,6 +1681,34 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#advanced-time-window-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Advanced Time Window Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Advanced Time Window Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#training-on-last-3-years-predicting-last-month" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Training on Last 3 Years, Predicting Last Month
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#file-paths" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -2009,49 +2065,77 @@ Examples are organized from beginner to advanced, with each code snippet backed 
 <a id="__codelineno-10-17" name="__codelineno-10-17" href="#__codelineno-10-17"></a><span class="nb">print</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">preprocessor</span><span class="o">.</span><span class="n">country_code</span><span class="p">)</span>  <span class="c1"># &#39;FR&#39;</span>
 </code></pre></div>
 <hr />
+<h2 id="advanced-time-window-management">Advanced Time Window Management</h2>
+<h3 id="training-on-last-3-years-predicting-last-month">Training on Last 3 Years, Predicting Last Month</h3>
+<p>In safety-critical MLOps, managing strict time windows is essential for reproducible results and avoiding data leakage. This example shows how to configure training for the last 3 years (up to the start of last month) and generate predictions for the entirety of last month.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a><span class="kn">from</span><span class="w"> </span><span class="nn">spotforecast2</span><span class="w"> </span><span class="kn">import</span> <span class="n">Config</span>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="kn">from</span><span class="w"> </span><span class="nn">spotforecast2.tasks.task_entsoe</span><span class="w"> </span><span class="kn">import</span> <span class="n">ForecasterRecursiveLGBM</span>
+<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a>
+<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="c1"># Calculate dates relative to today (UTC)</span>
+<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="n">now</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">tz</span><span class="o">=</span><span class="s1">&#39;UTC&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="s1">&#39;D&#39;</span><span class="p">)</span>
+<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="c1"># Start of current month</span>
+<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="n">current_month_start</span> <span class="o">=</span> <span class="n">now</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-11-9" name="__codelineno-11-9" href="#__codelineno-11-9"></a><span class="c1"># Start of last month</span>
+<a id="__codelineno-11-10" name="__codelineno-11-10" href="#__codelineno-11-10"></a><span class="n">last_month_start</span> <span class="o">=</span> <span class="p">(</span><span class="n">current_month_start</span> <span class="o">-</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">day</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<a id="__codelineno-11-11" name="__codelineno-11-11" href="#__codelineno-11-11"></a>
+<a id="__codelineno-11-12" name="__codelineno-11-12" href="#__codelineno-11-12"></a><span class="c1"># Training: 3 years until last_month_start (end_dev)</span>
+<a id="__codelineno-11-13" name="__codelineno-11-13" href="#__codelineno-11-13"></a><span class="c1"># Prediction window: 1 month (approx 744 hours)</span>
+<a id="__codelineno-11-14" name="__codelineno-11-14" href="#__codelineno-11-14"></a><span class="c1"># These explicit parameters override the defaults from ConfigEntsoe</span>
+<a id="__codelineno-11-15" name="__codelineno-11-15" href="#__codelineno-11-15"></a><span class="n">model</span> <span class="o">=</span> <span class="n">ForecasterRecursiveLGBM</span><span class="p">(</span>
+<a id="__codelineno-11-16" name="__codelineno-11-16" href="#__codelineno-11-16"></a>    <span class="n">iteration</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+<a id="__codelineno-11-17" name="__codelineno-11-17" href="#__codelineno-11-17"></a>    <span class="n">train_size</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">Timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">3</span> <span class="o">*</span> <span class="mi">365</span><span class="p">),</span>
+<a id="__codelineno-11-18" name="__codelineno-11-18" href="#__codelineno-11-18"></a>    <span class="n">end_dev</span><span class="o">=</span><span class="n">last_month_start</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M%z&quot;</span><span class="p">),</span>
+<a id="__codelineno-11-19" name="__codelineno-11-19" href="#__codelineno-11-19"></a>    <span class="n">predict_size</span><span class="o">=</span><span class="mi">24</span> <span class="o">*</span> <span class="mi">31</span>
+<a id="__codelineno-11-20" name="__codelineno-11-20" href="#__codelineno-11-20"></a><span class="p">)</span>
+<a id="__codelineno-11-21" name="__codelineno-11-21" href="#__codelineno-11-21"></a>
+<a id="__codelineno-11-22" name="__codelineno-11-22" href="#__codelineno-11-22"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training ends at: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">end_dev</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-11-23" name="__codelineno-11-23" href="#__codelineno-11-23"></a><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Prediction horizon: </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">predict_size</span><span class="si">}</span><span class="s2"> hours&quot;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
 <h2 id="file-paths">File Paths</h2>
 <h3 id="data-home-directory">Data Home Directory</h3>
 <p>Access the data storage location:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">spotforecast2_safe.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_data_home</span>
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">data_home</span> <span class="o">=</span> <span class="n">get_data_home</span><span class="p">()</span>
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">data_home</span><span class="p">)</span>  <span class="c1"># ~/spotforecast2_data or SPOTFORECAST2_DATA</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">spotforecast2_safe.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_data_home</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">data_home</span> <span class="o">=</span> <span class="n">get_data_home</span><span class="p">()</span>
+<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="nb">print</span><span class="p">(</span><span class="n">data_home</span><span class="p">)</span>  <span class="c1"># ~/spotforecast2_data or SPOTFORECAST2_DATA</span>
 </code></pre></div>
 <hr />
 <h2 id="cli-commands">CLI Commands</h2>
 <h3 id="download-data">Download Data</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="c1"># Download with API key</span>
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>download<span class="w"> </span>--api-key<span class="w"> </span>YOUR_API_KEY<span class="w"> </span><span class="m">202301010000</span>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="c1"># Download with date range</span>
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>download<span class="w"> </span><span class="m">202301010000</span><span class="w"> </span><span class="m">202312312300</span>
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a>
-<a id="__codelineno-12-7" name="__codelineno-12-7" href="#__codelineno-12-7"></a><span class="c1"># Force re-download</span>
-<a id="__codelineno-12-8" name="__codelineno-12-8" href="#__codelineno-12-8"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>download<span class="w"> </span>--force<span class="w"> </span><span class="m">202301010000</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Download with API key</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>download<span class="w"> </span>--api-key<span class="w"> </span>YOUR_API_KEY<span class="w"> </span><span class="m">202301010000</span>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
+<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Download with date range</span>
+<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>download<span class="w"> </span><span class="m">202301010000</span><span class="w"> </span><span class="m">202312312300</span>
+<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
+<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="c1"># Force re-download</span>
+<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>download<span class="w"> </span>--force<span class="w"> </span><span class="m">202301010000</span>
 </code></pre></div>
 <h3 id="train-models">Train Models</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="c1"># Train LightGBM model</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>train<span class="w"> </span>lgbm
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="c1"># Train XGBoost model</span>
-<a id="__codelineno-13-5" name="__codelineno-13-5" href="#__codelineno-13-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>train<span class="w"> </span>xgb
-<a id="__codelineno-13-6" name="__codelineno-13-6" href="#__codelineno-13-6"></a>
-<a id="__codelineno-13-7" name="__codelineno-13-7" href="#__codelineno-13-7"></a><span class="c1"># Force retraining</span>
-<a id="__codelineno-13-8" name="__codelineno-13-8" href="#__codelineno-13-8"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>train<span class="w"> </span>lgbm<span class="w"> </span>--force
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Train LightGBM model</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>train<span class="w"> </span>lgbm
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
+<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># Train XGBoost model</span>
+<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>train<span class="w"> </span>xgb
+<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
+<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="c1"># Force retraining</span>
+<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>train<span class="w"> </span>lgbm<span class="w"> </span>--force
 </code></pre></div>
 <h3 id="generate-predictions">Generate Predictions</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># Predict with default model (lgbm)</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="c1"># Predict with specific model</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>lgbm
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>xgb
-<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a>
-<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="c1"># Predict and generate plot</span>
-<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>--plot
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="c1"># Predict with default model (lgbm)</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
+<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="c1"># Predict with specific model</span>
+<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>lgbm
+<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>xgb
+<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a>
+<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a><span class="c1"># Predict and generate plot</span>
+<a id="__codelineno-15-9" name="__codelineno-15-9" href="#__codelineno-15-9"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>--plot
 </code></pre></div>
 <h3 id="merge-data-files">Merge Data Files</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>merge
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>merge
 </code></pre></div>
 <hr />
 <h2 id="environment-variables">Environment Variables</h2>
@@ -2076,11 +2160,11 @@ Examples are organized from beginner to advanced, with each code snippet backed 
 <hr />
 <h2 id="testing">Testing</h2>
 <p>All examples in this guide are validated by automated tests:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="c1"># Run documentation example tests</span>
-<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_docs_entsoe_examples.py<span class="w"> </span>-v
-<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a>
-<a id="__codelineno-16-4" name="__codelineno-16-4" href="#__codelineno-16-4"></a><span class="c1"># Run all ENTSO-E tests</span>
-<a id="__codelineno-16-5" name="__codelineno-16-5" href="#__codelineno-16-5"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py<span class="w"> </span>-v
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="c1"># Run documentation example tests</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_docs_entsoe_examples.py<span class="w"> </span>-v
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a>
+<a id="__codelineno-17-4" name="__codelineno-17-4" href="#__codelineno-17-4"></a><span class="c1"># Run all ENTSO-E tests</span>
+<a id="__codelineno-17-5" name="__codelineno-17-5" href="#__codelineno-17-5"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py<span class="w"> </span>-v
 </code></pre></div>
 <hr />
 <h2 id="see-also">See Also</h2>
