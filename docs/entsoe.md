@@ -231,36 +231,53 @@ print(model.preprocessor.country_code)  # 'FR'
 
 ---
 
-## Advanced Time Window Management
+## Using the Python API (Notebooks & Quarto)
 
-### Training on Last 3 Years, Predicting Last Month
+### Full Prediction Pipeline
 
-In safety-critical MLOps, managing strict time windows is essential for reproducible results and avoiding data leakage. This example shows how to configure training for the last 3 years (up to the start of last month) and generate predictions for the entirety of last month.
+For users working in Jupyter Notebooks or Quarto, the entire ENTSO-E pipeline can be executed using the Python API. This approach is highly recommended for safety-critical research as it allows for precise control over time windows and hyperparameters.
 
 ```python
 import pandas as pd
-from spotforecast2 import Config
+import os
+from spotforecast2_safe.downloader.entsoe import download_new_data
+from spotforecast2_safe.manager.trainer import handle_training as handle_training_safe
+from spotforecast2_safe.manager.predictor import get_model_prediction as get_model_prediction_safe
+from spotforecast2.manager.plotter import make_plot
 from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
 
-# Calculate dates relative to today (UTC)
+# 1. Setup Time Windows (Last 3 years until last month)
 now = pd.Timestamp.now(tz='UTC').floor('D')
-# Start of current month
 current_month_start = now.replace(day=1)
-# Start of last month
 last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
 
-# Training: 3 years until last_month_start (end_dev)
-# Prediction window: 1 month (approx 744 hours)
-# These explicit parameters override the defaults from ConfigEntsoe
-model = ForecasterRecursiveLGBM(
-    iteration=1,
+# 2. Download Data (Optional, requires ENTSOE_API_KEY)
+api_key = os.environ.get("ENTSOE_API_KEY")
+if api_key:
+    download_new_data(api_key=api_key, start="202301010000")
+
+# 3. Configure and Train
+# Explicit parameters override global configuration for reproducibility
+model_class = ForecasterRecursiveLGBM
+model_name = "lgbm_advanced"
+
+handle_training_safe(
+    model_class=model_class,
+    model_name=model_name,
     train_size=pd.Timedelta(days=3 * 365),
     end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
+)
+
+# 4. Generate Predictions for the forecast horizon
+# The predictor will automatically load the model trained above
+predictions = get_model_prediction_safe(
+    model_name=model_name,
     predict_size=24 * 31
 )
 
-print(f"Training ends at: {model.end_dev}")
-print(f"Prediction horizon: {model.predict_size} hours")
+# 5. Visualize Results
+if predictions:
+    make_plot(predictions)
 ```
 
 ---

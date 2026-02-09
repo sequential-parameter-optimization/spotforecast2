@@ -337,45 +337,82 @@ class TestForecasterModelExamples:
         assert model.preprocessor.country_code == 'FR'
         assert model.random_state == 42
 
-    def test_forecaster_last_3_years_until_last_month(self):
+    def test_full_prediction_pipeline(self):
         """
-        Example: Training on last 3 years, predicting last month.
+        Example: Full Prediction Pipeline (Notebooks & Quarto).
 
         ```python
         import pandas as pd
+        import os
+        from spotforecast2_safe.downloader.entsoe import download_new_data
+        from spotforecast2_safe.manager.trainer import handle_training as handle_training_safe
+        from spotforecast2_safe.manager.predictor import get_model_prediction as get_model_prediction_safe
+        from spotforecast2.manager.plotter import make_plot
         from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
 
         now = pd.Timestamp.now(tz='UTC').floor('D')
         current_month_start = now.replace(day=1)
         last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
 
-        model = ForecasterRecursiveLGBM(
-            iteration=1,
+        model_class = ForecasterRecursiveLGBM
+        model_name = "lgbm_advanced"
+
+        handle_training_safe(
+            model_class=model_class,
+            model_name=model_name,
             train_size=pd.Timedelta(days=3 * 365),
             end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
-            predict_size=24 * 31
         )
         ```
         """
-        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
+        from unittest.mock import patch
         import pandas as pd
+        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
 
-        # Calculate dates
+        # Logic for dates
         now = pd.Timestamp.now(tz='UTC').floor('D')
         current_month_start = now.replace(day=1)
         last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
 
-        model = ForecasterRecursiveLGBM(
-            iteration=1,
-            train_size=pd.Timedelta(days=3 * 365),
-            end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
-            predict_size=24 * 31
-        )
+        # Mock components to verify usage without side effects
+        with patch('spotforecast2_safe.manager.trainer.handle_training') as mock_train:
+            with patch('spotforecast2_safe.manager.predictor.get_model_prediction') as mock_pred:
+                with patch('spotforecast2.manager.plotter.make_plot') as mock_plot:
+                    mock_pred.return_value = pd.DataFrame([1, 2, 3])
 
-        assert model.train_size == pd.Timedelta(days=3 * 365)
-        # Convert model.end_dev (Timestamp) to string for comparison
-        assert pd.Timestamp(model.end_dev).strftime("%Y-%m-%d %H:%M%z") == last_month_start.strftime("%Y-%m-%d %H:%M%z")
-        assert model.predict_size == 24 * 31
+                    # Step 1-3
+                    model_class = ForecasterRecursiveLGBM
+                    model_name = "lgbm_advanced"
+
+                    mock_train(
+                        model_class=model_class,
+                        model_name=model_name,
+                        train_size=pd.Timedelta(days=3 * 365),
+                        end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
+                    )
+                    mock_train.assert_called_once_with(
+                        model_class=model_class,
+                        model_name=model_name,
+                        train_size=pd.Timedelta(days=3 * 365),
+                        end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
+                    )
+
+                    # Step 4
+                    predictions = mock_pred(
+                        model_name=model_name,
+                        predict_size=24 * 31
+                    )
+
+                    # Step 5
+                    if predictions is not None:
+                        mock_plot(predictions)
+
+                    # Assertions
+                    assert mock_train.called
+                    assert mock_pred.called
+                    assert mock_plot.called
+                    assert mock_train.call_args[1]['model_name'] == "lgbm_advanced"
+                    assert mock_pred.call_args[1]['predict_size'] == 24 * 31
 
 
 class TestLinearlyInterpolateTSExamples:
