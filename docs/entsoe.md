@@ -266,8 +266,7 @@ handle_training_safe(
     model_class=model_class,
     model_name=model_name,
     train_size=pd.Timedelta(days=3 * 365),
-    end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
-    country_code=country_code
+    end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z")
 )
 
 # 4. Generate Predictions for the forecast horizon
