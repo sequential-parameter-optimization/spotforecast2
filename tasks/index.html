@@ -986,6 +986,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#visualize-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visualize Results
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1192,6 +1203,17 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#visualize-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Visualize Results
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1362,7 +1384,7 @@
 </thead>
 <tbody>
 <tr>
-<td><code>spotforecast-entsoe</code></td>
+<td><code>spotforecast2-entsoe</code></td>
 <td>ENTSO-E energy forecasting pipeline (download, train, predict)</td>
 </tr>
 <tr>
@@ -1389,32 +1411,42 @@
 </table>
 <hr />
 <h2 id="entso-e-task">ENTSO-E Task</h2>
-<p>The <code>spotforecast-entsoe</code> command provides a unified CLI for the ENTSO-E energy forecasting pipeline.</p>
+<p>The <code>spotforecast2-entsoe</code> command provides a unified CLI for the ENTSO-E energy forecasting pipeline.</p>
 <h3 id="subcommands">Subcommands</h3>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="c1"># Download data from ENTSO-E</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-entsoe<span class="w"> </span>download<span class="w"> </span>--api-key<span class="w"> </span>YOUR_API_KEY<span class="w"> </span><span class="m">202301010000</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>download<span class="w"> </span>--api-key<span class="w"> </span>YOUR_API_KEY<span class="w"> </span><span class="m">202301010000</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>
 <a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="c1"># Train a model (lgbm or xgb)</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-entsoe<span class="w"> </span>train<span class="w"> </span>lgbm<span class="w"> </span>--force
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>train<span class="w"> </span>lgbm<span class="w"> </span>--force
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="c1"># Generate predictions and plot (defaults to lgbm)</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-entsoe<span class="w"> </span>predict<span class="w"> </span>--plot
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>--plot
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a>
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="c1"># Generate predictions with explicit model selection</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-entsoe<span class="w"> </span>predict<span class="w"> </span>lgbm<span class="w"> </span>--plot
-<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-entsoe<span class="w"> </span>predict<span class="w"> </span>xgb<span class="w"> </span>--plot
+<a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>lgbm<span class="w"> </span>--plot
+<a id="__codelineno-0-12" name="__codelineno-0-12" href="#__codelineno-0-12"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>xgb<span class="w"> </span>--plot
 <a id="__codelineno-0-13" name="__codelineno-0-13" href="#__codelineno-0-13"></a>
 <a id="__codelineno-0-14" name="__codelineno-0-14" href="#__codelineno-0-14"></a><span class="c1"># Merge raw data files</span>
-<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-entsoe<span class="w"> </span>merge
+<a id="__codelineno-0-15" name="__codelineno-0-15" href="#__codelineno-0-15"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>merge
 </code></pre></div>
 <div class="admonition tip">
 <p class="admonition-title">API Key Management</p>
 <p>Store your ENTSO-E API key in the <code>ENTSOE_API_KEY</code> environment variable to avoid passing it on every command:
 <div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="nb">export</span><span class="w"> </span><span class="nv">ENTSOE_API_KEY</span><span class="o">=</span><span class="s2">&quot;your-api-key-here&quot;</span>
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">echo</span><span class="w"> </span><span class="nv">$ENTSOE_API_KEY</span>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-entsoe<span class="w"> </span>download<span class="w"> </span><span class="m">202301010000</span>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>download<span class="w"> </span><span class="m">202301010000</span>
 </code></pre></div></p>
 </div>
+<h3 id="visualize-results">Visualize Results</h3>
+<p>The prediction plot is saved as an HTML file named <code>index.html</code> in the data home directory.
+By default this is <code>~/spotforecast2_data/index.html</code> or the path defined by <code>SPOTFORECAST2_DATA</code>.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Default location on macOS/Linux</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>open<span class="w"> </span>~/spotforecast2_data/index.html
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># If you use a custom data home</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>open<span class="w"> </span><span class="s2">&quot;</span><span class="nv">$SPOTFORECAST2_DATA</span><span class="s2">/index.html&quot;</span>
+</code></pre></div>
+<p>Check the CLI logs for the exact path (look for "Plot saved to ...").</p>
 <hr />
 <h2 id="demo-task">Demo Task</h2>
 <p>The <code>spotforecast-demo</code> command runs a comparison of three forecasting approaches:</p>
@@ -1423,27 +1455,27 @@
 <li><strong>Covariate-enhanced</strong>: Includes weather, holidays, and cyclical features</li>
 <li><strong>Custom LightGBM</strong>: Optimized hyperparameters</li>
 </ol>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="c1"># Run with default settings</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-demo
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="c1"># Force retraining and save plot</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-demo<span class="w"> </span>--force_train<span class="w"> </span><span class="nb">true</span><span class="w"> </span>--html<span class="w"> </span>task_demo_plot.html
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Run with default settings</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-demo
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Force retraining and save plot</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-demo<span class="w"> </span>--force_train<span class="w"> </span><span class="nb">true</span><span class="w"> </span>--html<span class="w"> </span>task_demo_plot.html
 </code></pre></div>
 <hr />
 <h2 id="n-to-1-forecasting-tasks">N-to-1 Forecasting Tasks</h2>
 <p>These tasks implement multi-output time series forecasting with weighted aggregation.</p>
 <h3 id="basic-n-to-1">Basic N-to-1</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-n2o1
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-n2o1
 </code></pre></div>
 <h3 id="n-to-1-with-dataframe-input">N-to-1 with DataFrame Input</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-n2o1-df
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-n2o1-df
 </code></pre></div>
 <h3 id="n-to-1-with-covariates">N-to-1 with Covariates</h3>
 <p>Includes weather data, holiday indicators, and cyclical time features.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-n2o1-cov
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-n2o1-cov
 </code></pre></div>
 <h3 id="n-to-1-with-covariates-and-dataframe">N-to-1 with Covariates and DataFrame</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-n2o1-cov-df
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-n2o1-cov-df
 </code></pre></div>
 <hr />
 <h2 id="configuration">Configuration</h2>
@@ -1453,9 +1485,9 @@
 <li><strong>Command-line arguments</strong> (use <code>--help</code> for details)</li>
 <li><strong>Configuration files</strong> stored in <code>~/spotforecast2_models/</code></li>
 </ul>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># View available options for any command</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-demo<span class="w"> </span>--help
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-entsoe<span class="w"> </span>predict<span class="w"> </span>--help
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># View available options for any command</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast-demo<span class="w"> </span>--help
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a>uv<span class="w"> </span>run<span class="w"> </span>spotforecast2-entsoe<span class="w"> </span>predict<span class="w"> </span>--help
 </code></pre></div>
 <hr />
 <h2 id="model-persistence">Model Persistence</h2>
@@ -1474,17 +1506,17 @@
 <p>The task scripts are covered by comprehensive safety-critical tests to ensure reliability in production environments.</p>
 <h3 id="running-tests">Running Tests</h3>
 <p>Run all ENTSO-E task tests:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py<span class="w"> </span>-v
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py<span class="w"> </span>-v
 </code></pre></div>
 <p>Run specific test categories:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Run only safety-critical tests</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe<span class="w"> </span>-v
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a><span class="c1"># Run parameter validation tests</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe::test_train_lgbm_model_parameter_correctness<span class="w"> </span>-v
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a>
-<a id="__codelineno-9-7" name="__codelineno-9-7" href="#__codelineno-9-7"></a><span class="c1"># Run with coverage</span>
-<a id="__codelineno-9-8" name="__codelineno-9-8" href="#__codelineno-9-8"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py<span class="w"> </span>--cov<span class="o">=</span>spotforecast2.tasks.task_entsoe<span class="w"> </span>--cov-report<span class="o">=</span>html
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="c1"># Run only safety-critical tests</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe<span class="w"> </span>-v
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
+<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Run parameter validation tests</span>
+<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe::test_train_lgbm_model_parameter_correctness<span class="w"> </span>-v
+<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
+<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Run with coverage</span>
+<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/test_tasks_entsoe.py<span class="w"> </span>--cov<span class="o">=</span>spotforecast2.tasks.task_entsoe<span class="w"> </span>--cov-report<span class="o">=</span>html
 </code></pre></div>
 <h3 id="test-categories">Test Categories</h3>
 <p>The test suite includes:</p>
@@ -1499,7 +1531,7 @@
 <div class="admonition tip">
 <p class="admonition-title">Continuous Testing</p>
 <p>Run tests before deployment in production environments:
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="w"> </span>-v<span class="w"> </span>--tb<span class="o">=</span>short
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>uv<span class="w"> </span>run<span class="w"> </span>pytest<span class="w"> </span>tests/<span class="w"> </span>-v<span class="w"> </span>--tb<span class="o">=</span>short
 </code></pre></div></p>
 </div>
 
