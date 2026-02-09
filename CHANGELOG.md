@@ -1,3 +1,10 @@
+## [0.2.35](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.34...v0.2.35) (2026-02-09)
+
+
+### Code Refactoring
+
+* spotforecast2-entsoe ([af60ce9](https://github.com/sequential-parameter-optimization/spotforecast2/commit/af60ce97aba958ab1cbb01c740b2d17f1aa28808))
+
 ## [0.2.34](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.33...v0.2.34) (2026-02-09)
 
 
