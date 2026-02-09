@@ -384,13 +384,8 @@ class TestForecasterModelExamples:
                     model_class = ForecasterRecursiveLGBM
                     model_name = "lgbm_advanced"
 
-                    mock_train(
-                        model_class=model_class,
-                        model_name=model_name,
-                        train_size=pd.Timedelta(days=3 * 365),
-                        end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
-                    )
-                    mock_train.assert_called_once_with(
+                    from spotforecast2_safe.manager.trainer import handle_training as handle_training_safe
+                    handle_training_safe(
                         model_class=model_class,
                         model_name=model_name,
                         train_size=pd.Timedelta(days=3 * 365),
@@ -398,20 +393,25 @@ class TestForecasterModelExamples:
                     )
 
                     # Step 4
-                    predictions = mock_pred(
+                    from spotforecast2_safe.manager.predictor import get_model_prediction as get_model_prediction_safe
+                    predictions = get_model_prediction_safe(
                         model_name=model_name,
                         predict_size=24 * 31
                     )
 
                     # Step 5
                     if predictions is not None:
-                        mock_plot(predictions)
+                        from spotforecast2.manager.plotter import make_plot
+                        make_plot(predictions)
 
-                    # Assertions
-                    assert mock_train.called
-                    assert mock_pred.called
-                    assert mock_plot.called
-                    assert mock_train.call_args[1]['model_name'] == "lgbm_advanced"
+                    # Final Assertions
+                    mock_train.assert_called_once()
+                    mock_pred.assert_called_once()
+                    mock_plot.assert_called_once()
+                    
+                    # Verify arguments
+                    assert mock_train.call_args[1]['end_dev'] == last_month_start.strftime("%Y-%m-%d %H:%M%z")
+                    assert mock_pred.call_args[1]['predict_size'] == 24 * 31
                     assert mock_pred.call_args[1]['predict_size'] == 24 * 31
 
 
