@@ -6,7 +6,7 @@
 
 | Command | Description |
 |---------|-------------|
-| `spotforecast-entsoe` | ENTSO-E energy forecasting pipeline (download, train, predict) |
+| `spotforecast2-entsoe` | ENTSO-E energy forecasting pipeline (download, train, predict) |
 | `spotforecast-demo` | Demonstration task comparing baseline, covariate, and custom models |
 | `spotforecast-n2o1` | N-to-1 forecasting with weighted aggregation |
 | `spotforecast-n2o1-df` | N-to-1 forecasting using a DataFrame input |
@@ -17,26 +17,26 @@
 
 ## ENTSO-E Task
 
-The `spotforecast-entsoe` command provides a unified CLI for the ENTSO-E energy forecasting pipeline.
+The `spotforecast2-entsoe` command provides a unified CLI for the ENTSO-E energy forecasting pipeline.
 
 ### Subcommands
 
 ```bash
 # Download data from ENTSO-E
-uv run spotforecast-entsoe download --api-key YOUR_API_KEY 202301010000
+uv run spotforecast2-entsoe download --api-key YOUR_API_KEY 202301010000
 
 # Train a model (lgbm or xgb)
-uv run spotforecast-entsoe train lgbm --force
+uv run spotforecast2-entsoe train lgbm --force
 
 # Generate predictions and plot (defaults to lgbm)
-uv run spotforecast-entsoe predict --plot
+uv run spotforecast2-entsoe predict --plot
 
 # Generate predictions with explicit model selection
-uv run spotforecast-entsoe predict lgbm --plot
-uv run spotforecast-entsoe predict xgb --plot
+uv run spotforecast2-entsoe predict lgbm --plot
+uv run spotforecast2-entsoe predict xgb --plot
 
 # Merge raw data files
-uv run spotforecast-entsoe merge
+uv run spotforecast2-entsoe merge
 ```
 
 !!! tip "API Key Management"
@@ -44,8 +44,23 @@ uv run spotforecast-entsoe merge
     ```bash
     export ENTSOE_API_KEY="your-api-key-here"
     echo $ENTSOE_API_KEY
-    uv run spotforecast-entsoe download 202301010000
+    uv run spotforecast2-entsoe download 202301010000
     ```
+
+### Visualize Results
+
+The prediction plot is saved as an HTML file named `index.html` in the data home directory.
+By default this is `~/spotforecast2_data/index.html` or the path defined by `SPOTFORECAST2_DATA`.
+
+```bash
+# Default location on macOS/Linux
+open ~/spotforecast2_data/index.html
+
+# If you use a custom data home
+open "$SPOTFORECAST2_DATA/index.html"
+```
+
+Check the CLI logs for the exact path (look for "Plot saved to ...").
 
 ---
 
@@ -110,7 +125,7 @@ All tasks use sensible defaults but can be customized via:
 ```bash
 # View available options for any command
 uv run spotforecast-demo --help
-uv run spotforecast-entsoe predict --help
+uv run spotforecast2-entsoe predict --help
 ```
 
 ---

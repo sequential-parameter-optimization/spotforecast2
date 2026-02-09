@@ -314,8 +314,11 @@ def main():
     # Predict
     parser_pr = subparsers.add_parser("predict")
     parser_pr.add_argument(
-        "model", choices=["lgbm", "xgb"], default="lgbm", nargs="?",
-        help="Model to use for prediction (default: lgbm)"
+        "model",
+        choices=["lgbm", "xgb"],
+        default="lgbm",
+        nargs="?",
+        help="Model to use for prediction (default: lgbm)",
     )
     parser_pr.add_argument("--plot", action="store_true")
 
@@ -344,7 +347,9 @@ def main():
         )
 
     elif args.subcommand == "predict":
-        model_name = getattr(args, "model", "lgbm")  # Default to lgbm for backward compatibility
+        model_name = getattr(
+            args, "model", "lgbm"
+        )  # Default to lgbm for backward compatibility
         out = get_model_prediction_safe(model_name=model_name)
         if out:
             logger.info("Prediction successful.")

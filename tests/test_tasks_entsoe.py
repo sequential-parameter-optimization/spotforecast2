@@ -1,6 +1,7 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
+import logging
 import os
 import unittest
 from unittest.mock import MagicMock, patch
@@ -10,6 +11,7 @@ import sys
 from pathlib import Path
 import pytest
 
+from spotforecast2.manager.plotter import make_plot
 from spotforecast2.tasks.task_entsoe import (
     main,
     Period,
@@ -328,6 +330,82 @@ class TestSafetyCriticalEntsoe:
         
         mock_get_pred.assert_called_once()
         mock_make_plot.assert_not_called()
+
+    def test_plot_saved_to_output_path(self, tmp_path):
+        """
+        SAFETY: Verify plot generation persists an HTML file.
+
+        Ensures plotting outputs are saved for auditability.
+        """
+        index = pd.date_range("2026-01-01 00:00", periods=4, freq="h", tz="UTC")
+        prediction_package = {
+            "train_actual": pd.Series([100.0, 105.0], index=index[:2]),
+            "future_actual": pd.Series([110.0, 108.0], index=index[2:]),
+            "train_pred": pd.Series([101.0, 104.0], index=index[:2]),
+            "future_pred": pd.Series([109.0, 107.0], index=index[2:]),
+            "metrics_train": {"mae": 1.0, "mape": 0.01},
+            "metrics_future_one_day": {"mae": 2.0, "mape": 0.02},
+            "metrics_future": {"mae": 2.5, "mape": 0.03},
+        }
+        output_path = tmp_path / "prediction_plot.html"
+
+        fig = make_plot(prediction_package, output_path=output_path)
+
+        assert output_path.exists()
+        assert output_path.stat().st_size > 0
+        assert fig.data
+
+    def test_plot_saved_log_includes_expected_path(self, tmp_path, caplog):
+        """
+        SAFETY: Verify plot save log line includes the output path.
+
+        Ensures audit logs are traceable to concrete artifacts.
+        """
+        index = pd.date_range("2026-01-01 00:00", periods=4, freq="h", tz="UTC")
+        prediction_package = {
+            "train_actual": pd.Series([100.0, 105.0], index=index[:2]),
+            "future_actual": pd.Series([110.0, 108.0], index=index[2:]),
+            "train_pred": pd.Series([101.0, 104.0], index=index[:2]),
+            "future_pred": pd.Series([109.0, 107.0], index=index[2:]),
+            "metrics_train": {"mae": 1.0, "mape": 0.01},
+            "metrics_future_one_day": {"mae": 2.0, "mape": 0.02},
+            "metrics_future": {"mae": 2.5, "mape": 0.03},
+        }
+        output_path = tmp_path / "prediction_plot.html"
+
+        with caplog.at_level(logging.INFO, logger="spotforecast2.manager.plotter"):
+            make_plot(prediction_package, output_path=output_path)
+
+        log_text = "\n".join([record.getMessage() for record in caplog.records])
+        assert "Plot saved to" in log_text
+        assert str(output_path) in log_text
+
+    @patch("spotforecast2.tasks.task_entsoe.get_model_prediction_safe")
+    def test_cli_predict_plot_saves_to_default_data_home(self, mock_get_pred, tmp_path):
+        """
+        SAFETY: Verify CLI predict --plot saves to default data home.
+
+        Ensures output location is deterministic and auditable.
+        """
+        index = pd.date_range("2026-01-01 00:00", periods=4, freq="h", tz="UTC")
+        mock_get_pred.return_value = {
+            "train_actual": pd.Series([100.0, 105.0], index=index[:2]),
+            "future_actual": pd.Series([110.0, 108.0], index=index[2:]),
+            "train_pred": pd.Series([101.0, 104.0], index=index[:2]),
+            "future_pred": pd.Series([109.0, 107.0], index=index[2:]),
+            "metrics_train": {"mae": 1.0, "mape": 0.01},
+            "metrics_future_one_day": {"mae": 2.0, "mape": 0.02},
+            "metrics_future": {"mae": 2.5, "mape": 0.03},
+        }
+
+        with patch("spotforecast2.manager.plotter.get_data_home", return_value=tmp_path):
+            test_args = ["task_entsoe.py", "predict", "--plot"]
+            with patch.object(sys, "argv", test_args):
+                main()
+
+        expected_path = tmp_path / "index.html"
+        assert expected_path.exists()
+        assert expected_path.stat().st_size > 0
 
     # -------------------------------------------------------------------------
     # Data Validation Tests
