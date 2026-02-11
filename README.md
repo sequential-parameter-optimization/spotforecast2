@@ -13,6 +13,9 @@
 **Testing & Quality**
 
 [![Build Status](https://img.shields.io/github/actions/workflow/status/sequential-parameter-optimization/spotforecast2/ci.yml?branch=main&label=Tests)](https://github.com/sequential-parameter-optimization/spotforecast2/actions/workflows/ci.yml)
+[![codecov](https://codecov.io/gh/sequential-parameter-optimization/spotforecast2/branch/main/graph/badge.svg)](https://codecov.io/gh/sequential-parameter-optimization/spotforecast2)
+[![REUSE Compliance](https://api.reuse.software/badge/github.com/sequential-parameter-optimization/spotforecast2)](https://api.reuse.software/project/github.com/sequential-parameter-optimization/spotforecast2)
+[![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/sequential-parameter-optimization/spotforecast2/badge)](https://scorecard.dev/viewer/?uri=github.com/sequential-parameter-optimization/spotforecast2)
 [![Documentation](https://img.shields.io/badge/docs-passing-brightgreen)](https://sequential-parameter-optimization.github.io/spotforecast2/)
 [![GitHub Release](https://img.shields.io/github/v/release/sequential-parameter-optimization/spotforecast2)](https://github.com/sequential-parameter-optimization/spotforecast2/releases)
 
