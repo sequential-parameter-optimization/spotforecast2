@@ -68,8 +68,8 @@ def test_medical_device_expanding_window():
     # Safety check
     max_acceptable_error = 10.0
     catastrophic_errors = (
-        (y.loc[predictions.index] - predictions["pred"]).abs() > max_acceptable_error
-    )
+        y.loc[predictions.index] - predictions["pred"]
+    ).abs() > max_acceptable_error
 
     print(f"✓ Medical device example test passed")
     print(f"  MAE: {metric_values['mean_absolute_error'].mean():.2f} BPM")

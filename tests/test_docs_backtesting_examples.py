@@ -7,7 +7,7 @@ reasonable results for safety-critical forecasting validation.
 
 import numpy as np
 import pandas as pd
-import pytest
+
 from sklearn.ensemble import GradientBoostingRegressor
 from sklearn.linear_model import Ridge, LinearRegression
 
@@ -55,7 +55,7 @@ class TestBootstrappingExample:
         assert not predictions.empty
         assert metric_values["mean_absolute_error"].mean() > 0
         assert len(predictions.columns) > 0
-        
+
         # Check that predictions are reasonable
         mae = metric_values["mean_absolute_error"].iloc[0]
         assert mae < y.std()  # MAE should be less than data std
@@ -76,9 +76,7 @@ class TestConformalPredictionExample:
 
         # Initialize forecaster with binner for improved interval accuracy
         forecaster = ForecasterRecursive(
-            estimator=GradientBoostingRegressor(
-                random_state=456, n_estimators=50
-            ),
+            estimator=GradientBoostingRegressor(random_state=456, n_estimators=50),
             lags=24,
             binner_kwargs={"n_bins": 10},
         )
@@ -143,9 +141,7 @@ class TestForecastingWithExogenousVariables:
         forecaster = ForecasterRecursive(estimator=LinearRegression(), lags=7)
 
         # Configure cross-validation
-        cv = TimeSeriesFold(
-            steps=7, initial_train_size=180, refit=True, fold_stride=7
-        )
+        cv = TimeSeriesFold(steps=7, initial_train_size=180, refit=True, fold_stride=7)
 
         # Perform backtesting with conformal prediction
         metric_values, predictions = backtesting_forecaster(
@@ -177,7 +173,9 @@ class TestEnergySafetyExample:
         """
         # Simulate realistic energy load data with daily and weekly patterns
         rng = np.random.default_rng(42)
-        dates = pd.date_range("2023-01-01", periods=30 * 24, freq="h")  # Reduced to 30 days
+        dates = pd.date_range(
+            "2023-01-01", periods=30 * 24, freq="h"
+        )  # Reduced to 30 days
 
         # Base load + daily pattern + weekly pattern + noise
         hour_of_day = dates.hour
@@ -232,14 +230,17 @@ class TestEnergySafetyExample:
         assert not metric_values.empty
         assert not predictions.empty
         assert "mean_absolute_error" in metric_values.columns
-        
+
         # Verify predictions are reasonable
         mae = metric_values["mean_absolute_error"].mean()
         assert mae > 0
         assert mae < y.std() * 2  # Sanity check
-        
+
         # Coverage analysis (lenient for small test sets)
-        if "lower_bound" in predictions.columns and "upper_bound" in predictions.columns:
+        if (
+            "lower_bound" in predictions.columns
+            and "upper_bound" in predictions.columns
+        ):
             actual_coverage = (
                 (y.loc[predictions.index] >= predictions["lower_bound"])
                 & (y.loc[predictions.index] <= predictions["upper_bound"])

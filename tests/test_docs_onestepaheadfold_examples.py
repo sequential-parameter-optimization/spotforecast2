@@ -48,12 +48,16 @@ class TestRapidModelScreening:
         }
 
         # OneStepAheadFold for fast screening
-        cv = OneStepAheadFold(initial_train_size=15 * 24, verbose=False)  # 15 days train, 15 days test
+        cv = OneStepAheadFold(
+            initial_train_size=15 * 24, verbose=False
+        )  # 15 days train, 15 days test
 
         # Inspect fold structure
         folds_df = cv.split(y, as_pandas=True)
         assert len(folds_df) == 1  # OneStepAheadFold creates exactly 1 fold
-        assert folds_df.iloc[0]["train_end"] <= folds_df.iloc[0]["test_start"]  # Consecutive or with gap
+        assert (
+            folds_df.iloc[0]["train_end"] <= folds_df.iloc[0]["test_start"]
+        )  # Consecutive or with gap
 
         # Rapid screening of candidates
         results = {}
@@ -78,7 +82,7 @@ class TestRapidModelScreening:
         # Verify results
         assert len(results) == len(model_candidates)
         assert all(v > 0 for v in results.values())
-        
+
         # Best model should be identified
         best_model = min(results, key=results.get)
         assert best_model in model_candidates
@@ -99,13 +103,13 @@ class TestStaticModelDeployment:
         baseline_temp = 20
         noise = rng.normal(0, 2, len(dates))
 
-        y = pd.Series(baseline_temp + seasonal + noise, index=dates, name="temperature_c")
+        y = pd.Series(
+            baseline_temp + seasonal + noise, index=dates, name="temperature_c"
+        )
 
         # Embedded system: Static model deployment
         forecaster = ForecasterRecursive(
-            estimator=GradientBoostingRegressor(
-                n_estimators=50, random_state=654
-            ),
+            estimator=GradientBoostingRegressor(n_estimators=50, random_state=654),
             lags=30,
         )
 
@@ -138,25 +142,17 @@ class TestStaticModelDeployment:
         quarterly_mae = []
         for i in range(min(4, n_test // quarter_size)):
             start_idx = i * quarter_size
-            end_idx = (
-                (i + 1) * quarter_size if i < 3 else n_test
-            )
+            end_idx = (i + 1) * quarter_size if i < 3 else n_test
             if start_idx < n_test:
-                quarter_preds = test_predictions.iloc[
-                    start_idx:min(end_idx, n_test)
-                ]
+                quarter_preds = test_predictions.iloc[start_idx : min(end_idx, n_test)]
                 if len(quarter_preds) > 0:
                     quarter_actual = y.loc[quarter_preds.index]
-                    quarter_mae = (
-                        quarter_actual - quarter_preds["pred"]
-                    ).abs().mean()
+                    quarter_mae = (quarter_actual - quarter_preds["pred"]).abs().mean()
                     quarterly_mae.append(quarter_mae)
 
         # Verify performance stability
         if len(quarterly_mae) > 1:
-            mae_trend = np.polyfit(
-                range(len(quarterly_mae)), quarterly_mae, 1
-            )[0]
+            mae_trend = np.polyfit(range(len(quarterly_mae)), quarterly_mae, 1)[0]
             # Trend should not be catastrophically bad
             assert mae_trend < y.std()
 
@@ -187,9 +183,7 @@ class TestEmergencyProductionValidation:
 
         # Test rollback candidate quickly
         rollback_model = ForecasterRecursive(
-            estimator=RandomForestRegressor(
-                n_estimators=20, random_state=987
-            ),
+            estimator=RandomForestRegressor(n_estimators=20, random_state=987),
             lags=7,
         )
 
@@ -209,7 +203,7 @@ class TestEmergencyProductionValidation:
         # Verify results
         assert not metric_values.empty
         assert not predictions.empty
-        
+
         rollback_mae = metric_values["mean_absolute_error"].iloc[0]
         assert rollback_mae > 0
 
@@ -226,17 +220,17 @@ class TestOneStepAheadFoldStructure:
     def test_one_step_ahead_fold_single_split(self):
         """Verify OneStepAheadFold creates exactly one fold."""
         y = pd.Series(np.random.randn(100), name="test")
-        
+
         cv = OneStepAheadFold(initial_train_size=50, verbose=False)
         folds_df = cv.split(y, as_pandas=True)
-        
+
         # Should create exactly 1 fold
         assert len(folds_df) == 1
-        
+
         # Train should be first 50 observations
         assert folds_df.iloc[0]["train_start"] == 0
         assert folds_df.iloc[0]["train_end"] == 50
-        
+
         # Test should be remaining 50 observations
         assert folds_df.iloc[0]["test_start"] == 50
         assert folds_df.iloc[0]["test_end"] == 100
@@ -244,14 +238,14 @@ class TestOneStepAheadFoldStructure:
     def test_one_step_ahead_fold_all_data_tested(self):
         """Verify OneStepAheadFold uses all remaining data for testing."""
         y = pd.Series(np.random.randn(200), name="test")
-        
+
         cv = OneStepAheadFold(initial_train_size=100, verbose=False)
         folds_df = cv.split(y, as_pandas=True)
-        
+
         # Test set should be exactly the remaining data
         test_start = folds_df.iloc[0]["test_start"]
         test_end = folds_df.iloc[0]["test_end"]
         train_end = folds_df.iloc[0]["train_end"]
-        
+
         assert test_start == train_end
         assert test_end == len(y)

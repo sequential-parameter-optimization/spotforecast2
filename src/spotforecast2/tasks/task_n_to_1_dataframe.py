@@ -17,7 +17,7 @@ def main():
     SHOW_PROGRESS = True
     WEIGHTS = [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0]
 
-    df = fetch_data()
+    df = fetch_data(filename="data_in.csv")
 
     print("--- Starting n_to_1_task using modular functions ---")
 

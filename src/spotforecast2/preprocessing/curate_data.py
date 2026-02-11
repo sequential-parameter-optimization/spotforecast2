@@ -66,7 +66,7 @@ def curate_holidays(
     Examples:
         >>> from spotforecast2_safe.data.fetch_data import fetch_data, fetch_holiday_data
         >>> from spotforecast2.preprocessing.curate_data import get_start_end, curate_holidays
-        >>> data = fetch_data()
+        >>> data = fetch_data(filename="data_in.csv")
         >>> START, END, COV_START, COV_END = get_start_end(
         ...     data=data,
         ...     forecast_horizon=24,
@@ -108,7 +108,7 @@ def curate_weather(weather_df: pd.DataFrame, data: pd.DataFrame, forecast_horizo
     Examples:
         >>> from spotforecast2_safe.data.fetch_data import fetch_data, fetch_weather_data
         >>> from spotforecast2.preprocessing.curate_data import get_start_end, curate_weather
-        >>> data = fetch_data()
+        >>> data = fetch_data(filename="data_in.csv")
         >>> START, END, COV_START, COV_END = get_start_end(
         ...     data=data,
         ...     forecast_horizon=24,
@@ -148,7 +148,7 @@ def basic_ts_checks(data: pd.DataFrame, verbose: bool = False) -> bool:
     Examples:
         >>> from spotforecast2_safe.data.fetch_data import fetch_data
         >>> from spotforecast2.preprocessing.curate_data import basic_ts_checks
-        >>> data = fetch_data()
+        >>> data = fetch_data(filename="data_in.csv")
         >>> basic_ts_checks(data)
 
     Raises:

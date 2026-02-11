@@ -424,7 +424,7 @@ def main() -> None:
         >>> from spotforecast2.scripts.n_to_1_with_covariates import main
         >>> main()
     """
-    data = fetch_data()
+    data = fetch_data(filename="data_in.csv")
 
     FORECAST_HORIZON = 24
     CONTAMINATION = 0.01

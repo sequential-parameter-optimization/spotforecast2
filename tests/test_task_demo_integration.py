@@ -23,9 +23,7 @@ class TestLoadActualCombinedIntegration:
     def test_load_actual_combined_with_demo_config(self):
         """Test loading actual data using DemoConfig as in task_demo.py."""
         # Create temporary CSV file
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("timestamp,col1,col2,col3\n")
             for i in range(30):
                 f.write(f"2020-01-01 {i:02d}:00:00,{i},{i*2},{i*3}\n")
@@ -83,9 +81,7 @@ class TestLoadActualCombinedIntegration:
 
     def test_load_actual_combined_override_parameters(self):
         """Test overriding forecast_horizon and weights as in task_demo.py."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("timestamp,X,Y,Z\n")
             for i in range(50):
                 f.write(f"2020-01-01 {i:02d}:00:00,{i},{i*2},{i*3}\n")
@@ -110,9 +106,7 @@ class TestLoadActualCombinedIntegration:
 
     def test_load_actual_combined_with_standard_weights(self):
         """Test using the standard 11-column weight configuration from task_demo.py."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             # Create 11 columns as in task_demo
             columns = [f"col{i}" for i in range(11)]
             f.write("timestamp," + ",".join(columns) + "\n")
@@ -147,9 +141,7 @@ class TestTaskDemoWorkflow:
     def test_workflow_simulation(self):
         """Simulate the task_demo.py workflow with load_actual_combined."""
         # Create mock prediction data
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             columns = ["A", "B", "C"]
             f.write("timestamp," + ",".join(columns) + "\n")
             for i in range(30):
@@ -208,9 +200,7 @@ class TestErrorHandling:
 
     def test_missing_columns_error(self):
         """Test error when requested columns are missing."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("timestamp,A,B\n")
             f.write("2020-01-01 00:00:00,1,2\n")
             temp_path = Path(f.name)
@@ -235,9 +225,7 @@ class TestBackwardCompatibility:
 
     def test_same_results_as_old_implementation(self):
         """Verify new load_actual_combined produces same results as old _load_actual_combined."""
-        with tempfile.NamedTemporaryFile(
-            mode="w", suffix=".csv", delete=False
-        ) as f:
+        with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("timestamp,col1,col2\n")
             for i in range(10):
                 f.write(f"2020-01-01 {i:02d}:00:00,{i},{i*2}\n")

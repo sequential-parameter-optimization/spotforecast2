@@ -58,10 +58,7 @@ class TestConfigExamples:
         from spotforecast2 import Config
 
         config = Config(
-            api_country_code='FR',
-            predict_size=48,
-            refit_size=14,
-            random_state=42
+            api_country_code="FR", predict_size=48, refit_size=14, random_state=42
         )
 
         assert config.API_COUNTRY_CODE == "FR"
@@ -114,12 +111,7 @@ class TestPeriodExamples:
         """
         from spotforecast2_safe.data import Period
 
-        daily = Period(
-            name='daily',
-            n_periods=12,
-            column='hour',
-            input_range=(1, 24)
-        )
+        daily = Period(name="daily", n_periods=12, column="hour", input_range=(1, 24))
 
         assert daily.name == "daily"
         assert daily.n_periods == 12
@@ -157,20 +149,19 @@ class TestExogBuilderExamples:
         import pandas as pd
 
         periods = [
-            Period(name='daily', n_periods=12, column='hour', input_range=(1, 24)),
-            Period(name='weekly', n_periods=7, column='dayofweek', input_range=(0, 6)),
+            Period(name="daily", n_periods=12, column="hour", input_range=(1, 24)),
+            Period(name="weekly", n_periods=7, column="dayofweek", input_range=(0, 6)),
         ]
 
-        builder = ExogBuilder(periods=periods, country_code='DE')
+        builder = ExogBuilder(periods=periods, country_code="DE")
         X = builder.build(
-            pd.Timestamp('2025-01-01', tz='UTC'),
-            pd.Timestamp('2025-01-02', tz='UTC')
+            pd.Timestamp("2025-01-01", tz="UTC"), pd.Timestamp("2025-01-02", tz="UTC")
         )
 
         assert X.shape[0] == 25  # 25 hours (inclusive end date)
         assert X.shape[1] == 21  # 12 + 7 + 2 (holiday, weekend)
-        assert 'holidays' in X.columns
-        assert 'is_weekend' in X.columns
+        assert "holidays" in X.columns
+        assert "is_weekend" in X.columns
 
     def test_exog_builder_with_config(self):
         """
@@ -199,12 +190,10 @@ class TestExogBuilderExamples:
 
         config = Config()
         builder = ExogBuilder(
-            periods=config.periods,
-            country_code=config.API_COUNTRY_CODE
+            periods=config.periods, country_code=config.API_COUNTRY_CODE
         )
         X = builder.build(
-            pd.Timestamp('2025-12-31', tz='UTC'),
-            pd.Timestamp('2026-01-01', tz='UTC')
+            pd.Timestamp("2025-12-31", tz="UTC"), pd.Timestamp("2026-01-01", tz="UTC")
         )
 
         # 5 periods with different n_periods + 2 (holiday, weekend)
@@ -238,13 +227,9 @@ class TestRepeatingBasisFunctionExamples:
         from spotforecast2_safe.preprocessing import RepeatingBasisFunction
         import pandas as pd
 
-        rbf = RepeatingBasisFunction(
-            n_periods=12,
-            column='hour',
-            input_range=(1, 24)
-        )
+        rbf = RepeatingBasisFunction(n_periods=12, column="hour", input_range=(1, 24))
 
-        df = pd.DataFrame({'hour': range(1, 25)})
+        df = pd.DataFrame({"hour": range(1, 25)})
         features = rbf.transform(df)
 
         assert features.shape == (24, 12)
@@ -322,19 +307,19 @@ class TestForecasterModelExamples:
         from spotforecast2_safe.data import Period
 
         custom_periods = [
-            Period(name='hourly', n_periods=24, column='hour', input_range=(1, 24)),
+            Period(name="hourly", n_periods=24, column="hour", input_range=(1, 24)),
         ]
 
         model = ForecasterRecursiveLGBM(
             iteration=1,
             lags=48,
             periods=custom_periods,
-            country_code='FR',
-            random_state=42
+            country_code="FR",
+            random_state=42,
         )
 
         assert len(model.preprocessor.periods) == 1
-        assert model.preprocessor.country_code == 'FR'
+        assert model.preprocessor.country_code == "FR"
         assert model.random_state == 42
 
     def test_full_prediction_pipeline(self):
@@ -370,21 +355,26 @@ class TestForecasterModelExamples:
         from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
 
         # Logic for dates
-        now = pd.Timestamp.now(tz='UTC').floor('D')
+        now = pd.Timestamp.now(tz="UTC").floor("D")
         current_month_start = now.replace(day=1)
         last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
 
         # Mock components to verify usage without side effects
-        with patch('spotforecast2_safe.manager.trainer.handle_training') as mock_train:
-            with patch('spotforecast2_safe.manager.predictor.get_model_prediction') as mock_pred:
-                with patch('spotforecast2.manager.plotter.make_plot') as mock_plot:
+        with patch("spotforecast2_safe.manager.trainer.handle_training") as mock_train:
+            with patch(
+                "spotforecast2_safe.manager.predictor.get_model_prediction"
+            ) as mock_pred:
+                with patch("spotforecast2.manager.plotter.make_plot") as mock_plot:
                     mock_pred.return_value = pd.DataFrame([1, 2, 3])
 
                     # Step 1-3
                     model_class = ForecasterRecursiveLGBM
                     model_name = "lgbm_advanced"
 
-                    from spotforecast2_safe.manager.trainer import handle_training as handle_training_safe
+                    from spotforecast2_safe.manager.trainer import (
+                        handle_training as handle_training_safe,
+                    )
+
                     handle_training_safe(
                         model_class=model_class,
                         model_name=model_name,
@@ -393,26 +383,31 @@ class TestForecasterModelExamples:
                     )
 
                     # Step 4
-                    from spotforecast2_safe.manager.predictor import get_model_prediction as get_model_prediction_safe
+                    from spotforecast2_safe.manager.predictor import (
+                        get_model_prediction as get_model_prediction_safe,
+                    )
+
                     predictions = get_model_prediction_safe(
-                        model_name=model_name,
-                        predict_size=24 * 31
+                        model_name=model_name, predict_size=24 * 31
                     )
 
                     # Step 5
                     if predictions is not None:
                         from spotforecast2.manager.plotter import make_plot
+
                         make_plot(predictions)
 
                     # Final Assertions
                     mock_train.assert_called_once()
                     mock_pred.assert_called_once()
                     mock_plot.assert_called_once()
-                    
+
                     # Verify arguments
-                    assert mock_train.call_args[1]['end_dev'] == last_month_start.strftime("%Y-%m-%d %H:%M%z")
-                    assert mock_pred.call_args[1]['predict_size'] == 24 * 31
-                    assert mock_pred.call_args[1]['predict_size'] == 24 * 31
+                    assert mock_train.call_args[1][
+                        "end_dev"
+                    ] == last_month_start.strftime("%Y-%m-%d %H:%M%z")
+                    assert mock_pred.call_args[1]["predict_size"] == 24 * 31
+                    assert mock_pred.call_args[1]["predict_size"] == 24 * 31
 
 
 class TestLinearlyInterpolateTSExamples:
@@ -444,7 +439,7 @@ class TestLinearlyInterpolateTSExamples:
 
         ts = pd.Series(
             [1.0, np.nan, 3.0, np.nan, 5.0],
-            index=pd.date_range('2025-01-01', periods=5, freq='h')
+            index=pd.date_range("2025-01-01", periods=5, freq="h"),
         )
 
         interpolator = LinearlyInterpolateTS()

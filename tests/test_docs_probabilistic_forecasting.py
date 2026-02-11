@@ -17,7 +17,7 @@ from spotforecast2.model_selection import backtesting_forecaster, TimeSeriesFold
 def test_example_bootstrapping_method():
     """
     Test Example 1: Bootstrapping Method.
-    
+
     Verifies that backtesting with bootstrapping method produces
     predictions with bootstrap samples.
     """
@@ -34,9 +34,7 @@ def test_example_bootstrapping_method():
     forecaster = ForecasterRecursive(estimator=Ridge(random_state=123), lags=14)
 
     # Configure cross-validation
-    cv = TimeSeriesFold(
-        steps=10, initial_train_size=150, refit=True, fold_stride=10
-    )
+    cv = TimeSeriesFold(steps=10, initial_train_size=150, refit=True, fold_stride=10)
 
     # Perform backtesting with bootstrapping method
     metric_values, predictions = backtesting_forecaster(
@@ -67,7 +65,7 @@ def test_example_bootstrapping_method():
 def test_example_conformal_prediction():
     """
     Test Example 2: Conformal Prediction with Binned Residuals.
-    
+
     Verifies that conformal prediction with binned residuals produces
     valid prediction intervals with reasonable coverage.
     """
@@ -87,9 +85,7 @@ def test_example_conformal_prediction():
     )
 
     # Configure cross-validation
-    cv = TimeSeriesFold(
-        steps=24, initial_train_size=200, refit=False, fold_stride=24
-    )
+    cv = TimeSeriesFold(steps=24, initial_train_size=200, refit=False, fold_stride=24)
 
     # Perform backtesting with conformal prediction
     metric_values, predictions = backtesting_forecaster(
@@ -131,7 +127,7 @@ def test_example_conformal_prediction():
 def test_example_forecasting_with_exog():
     """
     Test Example 3: Forecasting with Exogenous Variables.
-    
+
     Verifies that backtesting with exogenous variables and conformal
     prediction produces the expected output columns.
     """
@@ -156,9 +152,7 @@ def test_example_forecasting_with_exog():
     forecaster = ForecasterRecursive(estimator=LinearRegression(), lags=7)
 
     # Configure cross-validation
-    cv = TimeSeriesFold(
-        steps=7, initial_train_size=180, refit=True, fold_stride=7
-    )
+    cv = TimeSeriesFold(steps=7, initial_train_size=180, refit=True, fold_stride=7)
 
     # Perform backtesting with conformal prediction
     metric_values, predictions = backtesting_forecaster(

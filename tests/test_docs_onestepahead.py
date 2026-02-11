@@ -34,7 +34,9 @@ def test_rapid_model_screening():
         "Ridge": Ridge(alpha=1.0),
         "Lasso": Lasso(alpha=0.1),
         "RandomForest": RandomForestRegressor(n_estimators=50, random_state=321),
-        "GradientBoosting": GradientBoostingRegressor(n_estimators=50, random_state=321),
+        "GradientBoosting": GradientBoostingRegressor(
+            n_estimators=50, random_state=321
+        ),
     }
 
     cv = OneStepAheadFold(

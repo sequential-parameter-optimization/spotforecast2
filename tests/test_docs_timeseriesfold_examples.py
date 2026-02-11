@@ -31,8 +31,8 @@ class TestMedicalDeviceExample:
 
         # Create heart rate data with circadian pattern
         hour_of_day = dates.hour + dates.minute / 60
-        circadian_pattern = (
-            10 * np.sin(2 * np.pi * (hour_of_day - 6) / 24)
+        circadian_pattern = 10 * np.sin(
+            2 * np.pi * (hour_of_day - 6) / 24
         )  # Peak afternoon
         baseline_hr = 70
         noise = rng.normal(0, 3, len(dates))
@@ -71,9 +71,9 @@ class TestMedicalDeviceExample:
         if len(folds_df) >= 2:
             train_ends = folds_df["train_end"].tolist()
             for i in range(1, len(train_ends)):
-                assert train_ends[i] >= train_ends[i-1], (
-                    "Expanding window should have non-decreasing train_end"
-                )
+                assert (
+                    train_ends[i] >= train_ends[i - 1]
+                ), "Expanding window should have non-decreasing train_end"
 
         # Run backtesting
         metric_values, predictions = backtesting_forecaster(
@@ -114,9 +114,7 @@ class TestHighFrequencyTradingExample:
         y = pd.Series(prices, index=dates, name="price_usd")
 
         # HFT configuration
-        forecaster = ForecasterRecursive(
-            estimator=Ridge(alpha=0.1), lags=60
-        )
+        forecaster = ForecasterRecursive(estimator=Ridge(alpha=0.1), lags=60)
 
         # Fixed window validation
         cv = TimeSeriesFold(
@@ -135,9 +133,7 @@ class TestHighFrequencyTradingExample:
         assert len(folds_df) > 0
 
         # Check fixed window property (training size should be constant)
-        train_sizes = (
-            folds_df["train_end"] - folds_df["train_start"]
-        ).unique()
+        train_sizes = (folds_df["train_end"] - folds_df["train_start"]).unique()
         assert len(train_sizes) == 1  # All training windows should be same size
 
         # Run backtesting
@@ -174,9 +170,7 @@ class TestOverlappingFoldsExample:
 
         # Industrial monitoring configuration
         forecaster = ForecasterRecursive(
-            estimator=GradientBoostingRegressor(
-                n_estimators=30, random_state=789
-            ),
+            estimator=GradientBoostingRegressor(n_estimators=30, random_state=789),
             lags=30,
         )
 
@@ -209,7 +203,7 @@ class TestOverlappingFoldsExample:
         # Verify results with overlapping predictions
         assert not metric_values.empty
         assert not predictions.empty
-        
+
         # With overlapping folds, we might have multiple predictions per timestamp
         unique_timestamps = len(predictions.index.unique())
         total_predictions = len(predictions)
