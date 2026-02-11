@@ -1,3 +1,15 @@
+## [0.3.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.36...v0.3.0) (2026-02-11)
+
+
+### Features
+
+* new filename handling in fetch_data() ([0e2b6e0](https://github.com/sequential-parameter-optimization/spotforecast2/commit/0e2b6e08caf0c91895e94f2a7286b530fca98dec))
+
+
+### Documentation
+
+* badges updated ([c2e6fba](https://github.com/sequential-parameter-optimization/spotforecast2/commit/c2e6fbaa9bf1c6ba08b801a80516c48dad254538))
+
 ## [0.2.36](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.2.35...v0.2.36) (2026-02-09)
 
 
