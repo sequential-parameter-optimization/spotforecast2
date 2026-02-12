@@ -4,44 +4,59 @@ on:
   push:
     branches:
       - main
+      - develop
 
-permissions:
-  contents: write
-  issues: write
-  pull-requests: write
-  id-token: write
+# Principle of Least Privilege: Base permissions are read-only
+permissions: read-all
 
 jobs:
   release:
     name: Create Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+      id-token: write
     if: "!contains(github.event.head_commit.message, 'chore(release)')"
     
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683  # v4.2.2
         with:
           fetch-depth: 0
           persist-credentials: false
       
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b  # v5.3.0
         with:
           python-version: "3.13"
-          cache: 'pip'
+      
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v5
       
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install build twine
-          pip install -e ".[dev]"
+          uv pip install --system build twine
+          uv pip install --system -e ".[dev]"
       
       - name: Run tests
         run: |
           pytest tests/ -v
       
+      - name: Verify package name in pyproject.toml
+        run: |
+          grep -q "name = \"spotforecast2\"" pyproject.toml || (echo "ERROR: Package name mismatch in pyproject.toml" && exit 1)
+          echo "✓ Package name verified: spotforecast2"
+      
+      - name: Build distribution packages
+        run: |
+          python -m build
+          echo "Build artifacts created:"
+          ls -lah dist/
+      
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af  # v4.1.0
         with:
           node-version: 20
       
@@ -55,9 +70,16 @@ jobs:
       
       - name: Semantic Release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
         run: npx semantic-release
+
+      - name: Publish to PyPI
+        if: success()
+        uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597  # release/v1
+        with:
+          packages-dir: dist/
+          skip-existing: true
+          # Note: No token needed with Trusted Publishers (OIDC)
       
       - name: Build documentation
         if: success()
@@ -73,3 +95,19 @@ jobs:
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
           mkdocs gh-deploy --force
+      
+      - name: Verify PyPI Release
+        if: success()
+        run: |
+          echo "Release completed successfully!"
+          echo "Verifying package on PyPI..."
+          for i in {1..30}; do
+            if python -c "import urllib.request; urllib.request.urlopen('https://pypi.org/project/spotforecast2/')" 2>/dev/null; then
+              echo "✓ Package found on PyPI"
+              break
+            fi
+            if [ $i -lt 30 ]; then
+              echo "Waiting for PyPI to sync (attempt $i/30)..."
+              sleep 10
+            fi
+          done
