@@ -2,20 +2,26 @@
 
 ## Supported Versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+We currently provide security updates for the following versions of `spotforecast2`:
 
 | Version | Supported          |
 | ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+| 0.3.x   | :white_check_mark: |
+| < 0.3   | :x:                |
 
 ## Reporting a Vulnerability
 
-Use this section to tell people how to report a vulnerability.
+If you discover a security vulnerability within `spotforecast2`, please report it privately to the maintainers.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+Please do **NOT** open a public issue for security-related bugs.
+
+### Contact
+Security reports can be sent via email to:
+**bartzbeielstein@users.noreply.github.com**
+
+### Our Response Process
+- We will acknowledge receipt of your report within 48 hours.
+- We will send a follow-up detailing our plan for remediation if the vulnerability is accepted.
+- We will provide a timeline for the fix and a coordinated disclosure date.
+
+Thank you for helping keep `spotforecast2` secure!
