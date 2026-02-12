@@ -1182,7 +1182,7 @@
 
 
 <h2 id="spotforecast2.stats.autocorrelation.calculate_lag_autocorrelation" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">spotforecast2</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">autocorrelation</span><span class="o">.</span><span class="n">calculate_lag_autocorrelation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">n_lags</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">last_n_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;partial_autocorrelation_abs&#39;</span><span class="p">,</span> <span class="n">acf_kwargs</span><span class="o">=</span><span class="p">{},</span> <span class="n">pacf_kwargs</span><span class="o">=</span><span class="p">{})</span></code>
+            <code class="highlight language-python"><span class="n">spotforecast2</span><span class="o">.</span><span class="n">stats</span><span class="o">.</span><span class="n">autocorrelation</span><span class="o">.</span><span class="n">calculate_lag_autocorrelation</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">n_lags</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">last_n_samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">sort_by</span><span class="o">=</span><span class="s1">&#39;partial_autocorrelation_abs&#39;</span><span class="p">,</span> <span class="n">acf_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">pacf_kwargs</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h2>
 
@@ -1280,7 +1280,7 @@ Default is partial_autocorrelation_abs.</p>
                 <code>acf_kwargs</code>
             </td>
             <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>]</code>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1289,7 +1289,7 @@ Default is {}.</p>
               </div>
             </td>
             <td>
-                  <code>{}</code>
+                  <code>None</code>
             </td>
           </tr>
           <tr class="doc-section-item">
@@ -1297,7 +1297,7 @@ Default is {}.</p>
                 <code>pacf_kwargs</code>
             </td>
             <td>
-                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>]</code>
+                  <code><span title="dict">dict</span>[<span title="str">str</span>, <span title="object">object</span>] | None</code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -1306,7 +1306,7 @@ Default is {}.</p>
               </div>
             </td>
             <td>
-                  <code>{}</code>
+                  <code>None</code>
             </td>
           </tr>
       </tbody>
@@ -1617,13 +1617,15 @@ partial_autocorrelation, autocorrelation_abs, autocorrelation.</p>
 <span class="normal"><a href="#__codelineno-0-173">173</a></span>
 <span class="normal"><a href="#__codelineno-0-174">174</a></span>
 <span class="normal"><a href="#__codelineno-0-175">175</a></span>
-<span class="normal"><a href="#__codelineno-0-176">176</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">def</span><span class="w"> </span><span class="nf">calculate_lag_autocorrelation</span><span class="p">(</span>
+<span class="normal"><a href="#__codelineno-0-176">176</a></span>
+<span class="normal"><a href="#__codelineno-0-177">177</a></span>
+<span class="normal"><a href="#__codelineno-0-178">178</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="k">def</span><span class="w"> </span><span class="nf">calculate_lag_autocorrelation</span><span class="p">(</span>
 <a id="__codelineno-0-17" name="__codelineno-0-17"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
 <a id="__codelineno-0-18" name="__codelineno-0-18"></a>    <span class="n">n_lags</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
 <a id="__codelineno-0-19" name="__codelineno-0-19"></a>    <span class="n">last_n_samples</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-20" name="__codelineno-0-20"></a>    <span class="n">sort_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;partial_autocorrelation_abs&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">acf_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="n">pacf_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">=</span> <span class="p">{},</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a>    <span class="n">acf_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a>    <span class="n">pacf_kwargs</span><span class="p">:</span> <span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">object</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    Calculate autocorrelation and partial autocorrelation for a time series.</span>
@@ -1757,27 +1759,29 @@ partial_autocorrelation, autocorrelation_abs, autocorrelation.</p>
 <a id="__codelineno-0-153" name="__codelineno-0-153"></a>        <span class="n">pacf_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">n_lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
 <a id="__codelineno-0-154" name="__codelineno-0-154"></a>        <span class="n">pacf_values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
 <a id="__codelineno-0-155" name="__codelineno-0-155"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-156" name="__codelineno-0-156"></a>        <span class="n">pacf_values</span> <span class="o">=</span> <span class="n">pacf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="n">n_lags</span><span class="p">,</span> <span class="o">**</span><span class="n">pacf_kwargs</span><span class="p">)</span>
-<a id="__codelineno-0-157" name="__codelineno-0-157"></a>        <span class="n">acf_values</span> <span class="o">=</span> <span class="n">acf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="n">n_lags</span><span class="p">,</span> <span class="o">**</span><span class="n">acf_kwargs</span><span class="p">)</span>
-<a id="__codelineno-0-158" name="__codelineno-0-158"></a>
-<a id="__codelineno-0-159" name="__codelineno-0-159"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-<a id="__codelineno-0-160" name="__codelineno-0-160"></a>        <span class="p">{</span>
-<a id="__codelineno-0-161" name="__codelineno-0-161"></a>            <span class="s2">&quot;lag&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
-<a id="__codelineno-0-162" name="__codelineno-0-162"></a>            <span class="s2">&quot;partial_autocorrelation_abs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pacf_values</span><span class="p">),</span>
-<a id="__codelineno-0-163" name="__codelineno-0-163"></a>            <span class="s2">&quot;partial_autocorrelation&quot;</span><span class="p">:</span> <span class="n">pacf_values</span><span class="p">,</span>
-<a id="__codelineno-0-164" name="__codelineno-0-164"></a>            <span class="s2">&quot;autocorrelation_abs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">acf_values</span><span class="p">),</span>
-<a id="__codelineno-0-165" name="__codelineno-0-165"></a>            <span class="s2">&quot;autocorrelation&quot;</span><span class="p">:</span> <span class="n">acf_values</span><span class="p">,</span>
-<a id="__codelineno-0-166" name="__codelineno-0-166"></a>        <span class="p">}</span>
-<a id="__codelineno-0-167" name="__codelineno-0-167"></a>    <span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
-<a id="__codelineno-0-168" name="__codelineno-0-168"></a>
-<a id="__codelineno-0-169" name="__codelineno-0-169"></a>    <span class="k">if</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s2">&quot;lag&quot;</span><span class="p">:</span>
-<a id="__codelineno-0-170" name="__codelineno-0-170"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">sort_by</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<a id="__codelineno-0-171" name="__codelineno-0-171"></a>    <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-172" name="__codelineno-0-172"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">sort_by</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span>
-<a id="__codelineno-0-173" name="__codelineno-0-173"></a>            <span class="n">drop</span><span class="o">=</span><span class="kc">True</span>
-<a id="__codelineno-0-174" name="__codelineno-0-174"></a>        <span class="p">)</span>
-<a id="__codelineno-0-175" name="__codelineno-0-175"></a>
-<a id="__codelineno-0-176" name="__codelineno-0-176"></a>    <span class="k">return</span> <span class="n">results</span>
+<a id="__codelineno-0-156" name="__codelineno-0-156"></a>        <span class="n">pacf_kwargs_</span> <span class="o">=</span> <span class="n">pacf_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">pacf_kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+<a id="__codelineno-0-157" name="__codelineno-0-157"></a>        <span class="n">acf_kwargs_</span> <span class="o">=</span> <span class="n">acf_kwargs</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span> <span class="k">if</span> <span class="n">acf_kwargs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="p">{}</span>
+<a id="__codelineno-0-158" name="__codelineno-0-158"></a>        <span class="n">pacf_values</span> <span class="o">=</span> <span class="n">pacf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="n">n_lags</span><span class="p">,</span> <span class="o">**</span><span class="n">pacf_kwargs_</span><span class="p">)</span>
+<a id="__codelineno-0-159" name="__codelineno-0-159"></a>        <span class="n">acf_values</span> <span class="o">=</span> <span class="n">acf</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">nlags</span><span class="o">=</span><span class="n">n_lags</span><span class="p">,</span> <span class="o">**</span><span class="n">acf_kwargs_</span><span class="p">)</span>
+<a id="__codelineno-0-160" name="__codelineno-0-160"></a>
+<a id="__codelineno-0-161" name="__codelineno-0-161"></a>    <span class="n">results</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+<a id="__codelineno-0-162" name="__codelineno-0-162"></a>        <span class="p">{</span>
+<a id="__codelineno-0-163" name="__codelineno-0-163"></a>            <span class="s2">&quot;lag&quot;</span><span class="p">:</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_lags</span> <span class="o">+</span> <span class="mi">1</span><span class="p">),</span>
+<a id="__codelineno-0-164" name="__codelineno-0-164"></a>            <span class="s2">&quot;partial_autocorrelation_abs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">pacf_values</span><span class="p">),</span>
+<a id="__codelineno-0-165" name="__codelineno-0-165"></a>            <span class="s2">&quot;partial_autocorrelation&quot;</span><span class="p">:</span> <span class="n">pacf_values</span><span class="p">,</span>
+<a id="__codelineno-0-166" name="__codelineno-0-166"></a>            <span class="s2">&quot;autocorrelation_abs&quot;</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">acf_values</span><span class="p">),</span>
+<a id="__codelineno-0-167" name="__codelineno-0-167"></a>            <span class="s2">&quot;autocorrelation&quot;</span><span class="p">:</span> <span class="n">acf_values</span><span class="p">,</span>
+<a id="__codelineno-0-168" name="__codelineno-0-168"></a>        <span class="p">}</span>
+<a id="__codelineno-0-169" name="__codelineno-0-169"></a>    <span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span>
+<a id="__codelineno-0-170" name="__codelineno-0-170"></a>
+<a id="__codelineno-0-171" name="__codelineno-0-171"></a>    <span class="k">if</span> <span class="n">sort_by</span> <span class="o">==</span> <span class="s2">&quot;lag&quot;</span><span class="p">:</span>
+<a id="__codelineno-0-172" name="__codelineno-0-172"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">sort_by</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<a id="__codelineno-0-173" name="__codelineno-0-173"></a>    <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-174" name="__codelineno-0-174"></a>        <span class="n">results</span> <span class="o">=</span> <span class="n">results</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="n">sort_by</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span>
+<a id="__codelineno-0-175" name="__codelineno-0-175"></a>            <span class="n">drop</span><span class="o">=</span><span class="kc">True</span>
+<a id="__codelineno-0-176" name="__codelineno-0-176"></a>        <span class="p">)</span>
+<a id="__codelineno-0-177" name="__codelineno-0-177"></a>
+<a id="__codelineno-0-178" name="__codelineno-0-178"></a>    <span class="k">return</span> <span class="n">results</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
