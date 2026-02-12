@@ -523,7 +523,7 @@ def date_to_index_position(
     date_input: int | str | pd.Timestamp,
     method: str = "prediction",
     date_literal: str = "steps",
-    kwargs_pd_to_datetime: dict = {},
+    kwargs_pd_to_datetime: dict | None = None,
 ) -> int:
     """
     Transform a datetime string or pandas Timestamp to an integer. The integer
@@ -571,7 +571,10 @@ def date_to_index_position(
                 f"not an integer. Check input series or last window."
             )
 
-        target_date = pd.to_datetime(date_input, **kwargs_pd_to_datetime)
+        kwargs_pd_to_datetime_ = (
+            kwargs_pd_to_datetime.copy() if kwargs_pd_to_datetime is not None else {}
+        )
+        target_date = pd.to_datetime(date_input, **kwargs_pd_to_datetime_)
         last_date = pd.to_datetime(index[-1])
 
         if method == "prediction":
