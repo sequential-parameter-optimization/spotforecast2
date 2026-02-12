@@ -1,6 +1,6 @@
 [project]
 name = "spotforecast2"
-version = "0.3.0"
+version = "0.3.1-rc.1"
 description = "Forecasting with spot"
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
@@ -76,5 +76,6 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 
-[tool.uv.sources]
-spotforecast2-safe = { path = "../spotforecast2-safe", editable = true }
+# [tool.uv.sources]
+# For local development, uncomment to use local editable install:
+# spotforecast2-safe = { path = "../spotforecast2-safe", editable = true }
