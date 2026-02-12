@@ -1,3 +1,11 @@
+## [0.3.2-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.1...v0.3.2-rc.1) (2026-02-12)
+
+
+### Bug Fixes
+
+* masked private info ([a73975b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/a73975bf777b485d454fb00eb86845dd62cad79e))
+* private info. ci: reuse ([d9216ce](https://github.com/sequential-parameter-optimization/spotforecast2/commit/d9216ce4202bb426919a1d3243fd55f9b354db4c))
+
 ## [0.3.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.0...v0.3.1) (2026-02-12)
 
 
