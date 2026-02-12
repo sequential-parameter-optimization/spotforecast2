@@ -33,7 +33,7 @@ jobs:
           python-version: "3.13"
       
       - name: Set up uv
-        uses: astral-sh/setup-uv@v5
+        uses: astral-sh/setup-uv@e58605a9b6da7c637471fab8847a5e5a6b8df081  # v5.2.2
       
       - name: Install dependencies
         run: |
@@ -62,11 +62,7 @@ jobs:
       
       - name: Install semantic-release
         run: |
-          npm install -g semantic-release@23 \
-            @semantic-release/git@10 \
-            @semantic-release/changelog@6 \
-            @semantic-release/exec@6 \
-            conventional-changelog-conventionalcommits@7
+          npm ci
       
       - name: Semantic Release
         env:
