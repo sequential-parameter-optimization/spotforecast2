@@ -1,3 +1,10 @@
+## [0.3.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.0...v0.3.1) (2026-02-12)
+
+
+### Bug Fixes
+
+* remove local path dependency for spotforecast2-safe in CI ([fd52a38](https://github.com/sequential-parameter-optimization/spotforecast2/commit/fd52a38244825010f539fd6cda5dbfcc6c00e219))
+
 ## [0.3.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.0...v0.3.1-rc.1) (2026-02-12)
 
 
