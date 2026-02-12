@@ -2480,12 +2480,44 @@ matrix generates missing values. Most machine learning models do not accept
 missing values, so the Forecaster's <code>fit' and</code>predict' methods may fail.</p>
 
 
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>message</code>
+            </td>
+            <td>
+                  <code><span title="str">str</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>The message to display.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
 <p><span class="doc-section-title">Examples:</span></p>
     <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span><span class="w"> </span><span class="nn">warnings</span>
-<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
-<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">... </span>    <span class="s2">&quot;Missing values detected in input data.&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">... </span>    <span class="n">MissingValuesWarning</span>
-<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">... </span><span class="p">)</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">spotforecast2_safe.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingValuesWarning</span>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="gp">... </span>    <span class="s2">&quot;Missing values detected in input data.&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">... </span>    <span class="n">MissingValuesWarning</span>
+<a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">... </span><span class="p">)</span>
 </code></pre></div>
 
 
@@ -2521,7 +2553,11 @@ missing values, so the Forecaster's <code>fit' and</code>predict' methods may fa
 <span class="normal"><a href="#__codelineno-0-369">369</a></span>
 <span class="normal"><a href="#__codelineno-0-370">370</a></span>
 <span class="normal"><a href="#__codelineno-0-371">371</a></span>
-<span class="normal"><a href="#__codelineno-0-372">372</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="k">class</span><span class="w"> </span><span class="nc">MissingValuesWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<span class="normal"><a href="#__codelineno-0-372">372</a></span>
+<span class="normal"><a href="#__codelineno-0-373">373</a></span>
+<span class="normal"><a href="#__codelineno-0-374">374</a></span>
+<span class="normal"><a href="#__codelineno-0-375">375</a></span>
+<span class="normal"><a href="#__codelineno-0-376">376</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-348" name="__codelineno-0-348"></a><span class="k">class</span><span class="w"> </span><span class="nc">MissingValuesWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
 <a id="__codelineno-0-349" name="__codelineno-0-349"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for missing values in data.</span>
 <a id="__codelineno-0-350" name="__codelineno-0-350"></a>
 <a id="__codelineno-0-351" name="__codelineno-0-351"></a><span class="sd">    Used to indicate that there are missing values in the data. This</span>
@@ -2529,23 +2565,27 @@ missing values, so the Forecaster's <code>fit' and</code>predict' methods may fa
 <a id="__codelineno-0-353" name="__codelineno-0-353"></a><span class="sd">    matrix generates missing values. Most machine learning models do not accept</span>
 <a id="__codelineno-0-354" name="__codelineno-0-354"></a><span class="sd">    missing values, so the Forecaster&#39;s `fit&#39; and `predict&#39; methods may fail.</span>
 <a id="__codelineno-0-355" name="__codelineno-0-355"></a>
-<a id="__codelineno-0-356" name="__codelineno-0-356"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-357" name="__codelineno-0-357"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
-<a id="__codelineno-0-358" name="__codelineno-0-358"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
-<a id="__codelineno-0-359" name="__codelineno-0-359"></a><span class="sd">        ...     &quot;Missing values detected in input data.&quot;,</span>
-<a id="__codelineno-0-360" name="__codelineno-0-360"></a><span class="sd">        ...     MissingValuesWarning</span>
-<a id="__codelineno-0-361" name="__codelineno-0-361"></a><span class="sd">        ... )  # doctest: +SKIP</span>
-<a id="__codelineno-0-362" name="__codelineno-0-362"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-363" name="__codelineno-0-363"></a>
-<a id="__codelineno-0-364" name="__codelineno-0-364"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-<a id="__codelineno-0-365" name="__codelineno-0-365"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-<a id="__codelineno-0-366" name="__codelineno-0-366"></a>
-<a id="__codelineno-0-367" name="__codelineno-0-367"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-368" name="__codelineno-0-368"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-369" name="__codelineno-0-369"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
-<a id="__codelineno-0-370" name="__codelineno-0-370"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=MissingValuesWarning)&quot;</span>
-<a id="__codelineno-0-371" name="__codelineno-0-371"></a>        <span class="p">)</span>
-<a id="__codelineno-0-372" name="__codelineno-0-372"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
+<a id="__codelineno-0-356" name="__codelineno-0-356"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-357" name="__codelineno-0-357"></a><span class="sd">        message (str): The message to display.</span>
+<a id="__codelineno-0-358" name="__codelineno-0-358"></a>
+<a id="__codelineno-0-359" name="__codelineno-0-359"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-360" name="__codelineno-0-360"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
+<a id="__codelineno-0-361" name="__codelineno-0-361"></a><span class="sd">        &gt;&gt;&gt; from spotforecast2_safe.exceptions import MissingValuesWarning</span>
+<a id="__codelineno-0-362" name="__codelineno-0-362"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
+<a id="__codelineno-0-363" name="__codelineno-0-363"></a><span class="sd">        ...     &quot;Missing values detected in input data.&quot;,</span>
+<a id="__codelineno-0-364" name="__codelineno-0-364"></a><span class="sd">        ...     MissingValuesWarning</span>
+<a id="__codelineno-0-365" name="__codelineno-0-365"></a><span class="sd">        ... )  # doctest: +SKIP</span>
+<a id="__codelineno-0-366" name="__codelineno-0-366"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-367" name="__codelineno-0-367"></a>
+<a id="__codelineno-0-368" name="__codelineno-0-368"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-369" name="__codelineno-0-369"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+<a id="__codelineno-0-370" name="__codelineno-0-370"></a>
+<a id="__codelineno-0-371" name="__codelineno-0-371"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<a id="__codelineno-0-372" name="__codelineno-0-372"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-373" name="__codelineno-0-373"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
+<a id="__codelineno-0-374" name="__codelineno-0-374"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=MissingValuesWarning)&quot;</span>
+<a id="__codelineno-0-375" name="__codelineno-0-375"></a>        <span class="p">)</span>
+<a id="__codelineno-0-376" name="__codelineno-0-376"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2610,11 +2650,7 @@ exception handling and backward compatibility.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>spotforecast2_safe/exceptions.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-499">499</a></span>
-<span class="normal"><a href="#__codelineno-0-500">500</a></span>
-<span class="normal"><a href="#__codelineno-0-501">501</a></span>
-<span class="normal"><a href="#__codelineno-0-502">502</a></span>
-<span class="normal"><a href="#__codelineno-0-503">503</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-503">503</a></span>
 <span class="normal"><a href="#__codelineno-0-504">504</a></span>
 <span class="normal"><a href="#__codelineno-0-505">505</a></span>
 <span class="normal"><a href="#__codelineno-0-506">506</a></span>
@@ -2623,20 +2659,24 @@ exception handling and backward compatibility.</p>
 <span class="normal"><a href="#__codelineno-0-509">509</a></span>
 <span class="normal"><a href="#__codelineno-0-510">510</a></span>
 <span class="normal"><a href="#__codelineno-0-511">511</a></span>
-<span class="normal"><a href="#__codelineno-0-512">512</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-499" name="__codelineno-0-499"></a><span class="k">class</span><span class="w"> </span><span class="nc">NotFittedError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
-<a id="__codelineno-0-500" name="__codelineno-0-500"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception class to raise if estimator is used before fitting.</span>
-<a id="__codelineno-0-501" name="__codelineno-0-501"></a>
-<a id="__codelineno-0-502" name="__codelineno-0-502"></a><span class="sd">    This class inherits from both ValueError and AttributeError to help with</span>
-<a id="__codelineno-0-503" name="__codelineno-0-503"></a><span class="sd">    exception handling and backward compatibility.</span>
-<a id="__codelineno-0-504" name="__codelineno-0-504"></a>
-<a id="__codelineno-0-505" name="__codelineno-0-505"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-506" name="__codelineno-0-506"></a><span class="sd">        &gt;&gt;&gt; from spotforecast2_safe.exceptions import NotFittedError</span>
-<a id="__codelineno-0-507" name="__codelineno-0-507"></a><span class="sd">        &gt;&gt;&gt; try:</span>
-<a id="__codelineno-0-508" name="__codelineno-0-508"></a><span class="sd">        ...     raise NotFittedError(&quot;Forecaster not fitted&quot;)</span>
-<a id="__codelineno-0-509" name="__codelineno-0-509"></a><span class="sd">        ... except NotFittedError as e:</span>
-<a id="__codelineno-0-510" name="__codelineno-0-510"></a><span class="sd">        ...     print(e)</span>
-<a id="__codelineno-0-511" name="__codelineno-0-511"></a><span class="sd">        Forecaster not fitted</span>
-<a id="__codelineno-0-512" name="__codelineno-0-512"></a><span class="sd">    &quot;&quot;&quot;</span>
+<span class="normal"><a href="#__codelineno-0-512">512</a></span>
+<span class="normal"><a href="#__codelineno-0-513">513</a></span>
+<span class="normal"><a href="#__codelineno-0-514">514</a></span>
+<span class="normal"><a href="#__codelineno-0-515">515</a></span>
+<span class="normal"><a href="#__codelineno-0-516">516</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-503" name="__codelineno-0-503"></a><span class="k">class</span><span class="w"> </span><span class="nc">NotFittedError</span><span class="p">(</span><span class="ne">ValueError</span><span class="p">,</span> <span class="ne">AttributeError</span><span class="p">):</span>
+<a id="__codelineno-0-504" name="__codelineno-0-504"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception class to raise if estimator is used before fitting.</span>
+<a id="__codelineno-0-505" name="__codelineno-0-505"></a>
+<a id="__codelineno-0-506" name="__codelineno-0-506"></a><span class="sd">    This class inherits from both ValueError and AttributeError to help with</span>
+<a id="__codelineno-0-507" name="__codelineno-0-507"></a><span class="sd">    exception handling and backward compatibility.</span>
+<a id="__codelineno-0-508" name="__codelineno-0-508"></a>
+<a id="__codelineno-0-509" name="__codelineno-0-509"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-510" name="__codelineno-0-510"></a><span class="sd">        &gt;&gt;&gt; from spotforecast2_safe.exceptions import NotFittedError</span>
+<a id="__codelineno-0-511" name="__codelineno-0-511"></a><span class="sd">        &gt;&gt;&gt; try:</span>
+<a id="__codelineno-0-512" name="__codelineno-0-512"></a><span class="sd">        ...     raise NotFittedError(&quot;Forecaster not fitted&quot;)</span>
+<a id="__codelineno-0-513" name="__codelineno-0-513"></a><span class="sd">        ... except NotFittedError as e:</span>
+<a id="__codelineno-0-514" name="__codelineno-0-514"></a><span class="sd">        ...     print(e)</span>
+<a id="__codelineno-0-515" name="__codelineno-0-515"></a><span class="sd">        Forecaster not fitted</span>
+<a id="__codelineno-0-516" name="__codelineno-0-516"></a><span class="sd">    &quot;&quot;&quot;</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2682,11 +2722,7 @@ exception handling and backward compatibility.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>spotforecast2_safe/exceptions.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-375">375</a></span>
-<span class="normal"><a href="#__codelineno-0-376">376</a></span>
-<span class="normal"><a href="#__codelineno-0-377">377</a></span>
-<span class="normal"><a href="#__codelineno-0-378">378</a></span>
-<span class="normal"><a href="#__codelineno-0-379">379</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-379">379</a></span>
 <span class="normal"><a href="#__codelineno-0-380">380</a></span>
 <span class="normal"><a href="#__codelineno-0-381">381</a></span>
 <span class="normal"><a href="#__codelineno-0-382">382</a></span>
@@ -2703,28 +2739,32 @@ exception handling and backward compatibility.</p>
 <span class="normal"><a href="#__codelineno-0-393">393</a></span>
 <span class="normal"><a href="#__codelineno-0-394">394</a></span>
 <span class="normal"><a href="#__codelineno-0-395">395</a></span>
-<span class="normal"><a href="#__codelineno-0-396">396</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-375" name="__codelineno-0-375"></a><span class="k">class</span><span class="w"> </span><span class="nc">OneStepAheadValidationWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-<a id="__codelineno-0-376" name="__codelineno-0-376"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for one-step-ahead validation usage.</span>
-<a id="__codelineno-0-377" name="__codelineno-0-377"></a>
-<a id="__codelineno-0-378" name="__codelineno-0-378"></a><span class="sd">    Used to notify that the one-step-ahead validation is being used.</span>
-<a id="__codelineno-0-379" name="__codelineno-0-379"></a>
-<a id="__codelineno-0-380" name="__codelineno-0-380"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-381" name="__codelineno-0-381"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
-<a id="__codelineno-0-382" name="__codelineno-0-382"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
-<a id="__codelineno-0-383" name="__codelineno-0-383"></a><span class="sd">        ...     &quot;Using one-step-ahead validation.&quot;,</span>
-<a id="__codelineno-0-384" name="__codelineno-0-384"></a><span class="sd">        ...     OneStepAheadValidationWarning</span>
-<a id="__codelineno-0-385" name="__codelineno-0-385"></a><span class="sd">        ... )  # doctest: +SKIP</span>
-<a id="__codelineno-0-386" name="__codelineno-0-386"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-387" name="__codelineno-0-387"></a>
-<a id="__codelineno-0-388" name="__codelineno-0-388"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-<a id="__codelineno-0-389" name="__codelineno-0-389"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-<a id="__codelineno-0-390" name="__codelineno-0-390"></a>
-<a id="__codelineno-0-391" name="__codelineno-0-391"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-392" name="__codelineno-0-392"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-393" name="__codelineno-0-393"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
-<a id="__codelineno-0-394" name="__codelineno-0-394"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=OneStepAheadValidationWarning)&quot;</span>
-<a id="__codelineno-0-395" name="__codelineno-0-395"></a>        <span class="p">)</span>
-<a id="__codelineno-0-396" name="__codelineno-0-396"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
+<span class="normal"><a href="#__codelineno-0-396">396</a></span>
+<span class="normal"><a href="#__codelineno-0-397">397</a></span>
+<span class="normal"><a href="#__codelineno-0-398">398</a></span>
+<span class="normal"><a href="#__codelineno-0-399">399</a></span>
+<span class="normal"><a href="#__codelineno-0-400">400</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-379" name="__codelineno-0-379"></a><span class="k">class</span><span class="w"> </span><span class="nc">OneStepAheadValidationWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<a id="__codelineno-0-380" name="__codelineno-0-380"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for one-step-ahead validation usage.</span>
+<a id="__codelineno-0-381" name="__codelineno-0-381"></a>
+<a id="__codelineno-0-382" name="__codelineno-0-382"></a><span class="sd">    Used to notify that the one-step-ahead validation is being used.</span>
+<a id="__codelineno-0-383" name="__codelineno-0-383"></a>
+<a id="__codelineno-0-384" name="__codelineno-0-384"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-385" name="__codelineno-0-385"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
+<a id="__codelineno-0-386" name="__codelineno-0-386"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
+<a id="__codelineno-0-387" name="__codelineno-0-387"></a><span class="sd">        ...     &quot;Using one-step-ahead validation.&quot;,</span>
+<a id="__codelineno-0-388" name="__codelineno-0-388"></a><span class="sd">        ...     OneStepAheadValidationWarning</span>
+<a id="__codelineno-0-389" name="__codelineno-0-389"></a><span class="sd">        ... )  # doctest: +SKIP</span>
+<a id="__codelineno-0-390" name="__codelineno-0-390"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-391" name="__codelineno-0-391"></a>
+<a id="__codelineno-0-392" name="__codelineno-0-392"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<a id="__codelineno-0-393" name="__codelineno-0-393"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+<a id="__codelineno-0-394" name="__codelineno-0-394"></a>
+<a id="__codelineno-0-395" name="__codelineno-0-395"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-396" name="__codelineno-0-396"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-397" name="__codelineno-0-397"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
+<a id="__codelineno-0-398" name="__codelineno-0-398"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=OneStepAheadValidationWarning)&quot;</span>
+<a id="__codelineno-0-399" name="__codelineno-0-399"></a>        <span class="p">)</span>
+<a id="__codelineno-0-400" name="__codelineno-0-400"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2788,11 +2828,7 @@ probabilistic forecasting process.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>spotforecast2_safe/exceptions.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-399">399</a></span>
-<span class="normal"><a href="#__codelineno-0-400">400</a></span>
-<span class="normal"><a href="#__codelineno-0-401">401</a></span>
-<span class="normal"><a href="#__codelineno-0-402">402</a></span>
-<span class="normal"><a href="#__codelineno-0-403">403</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-403">403</a></span>
 <span class="normal"><a href="#__codelineno-0-404">404</a></span>
 <span class="normal"><a href="#__codelineno-0-405">405</a></span>
 <span class="normal"><a href="#__codelineno-0-406">406</a></span>
@@ -2810,29 +2846,33 @@ probabilistic forecasting process.</p>
 <span class="normal"><a href="#__codelineno-0-418">418</a></span>
 <span class="normal"><a href="#__codelineno-0-419">419</a></span>
 <span class="normal"><a href="#__codelineno-0-420">420</a></span>
-<span class="normal"><a href="#__codelineno-0-421">421</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-399" name="__codelineno-0-399"></a><span class="k">class</span><span class="w"> </span><span class="nc">ResidualsUsageWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-<a id="__codelineno-0-400" name="__codelineno-0-400"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for incorrect residuals usage.</span>
-<a id="__codelineno-0-401" name="__codelineno-0-401"></a>
-<a id="__codelineno-0-402" name="__codelineno-0-402"></a><span class="sd">    Used to notify that a residual are not correctly used in the</span>
-<a id="__codelineno-0-403" name="__codelineno-0-403"></a><span class="sd">    probabilistic forecasting process.</span>
-<a id="__codelineno-0-404" name="__codelineno-0-404"></a>
-<a id="__codelineno-0-405" name="__codelineno-0-405"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-406" name="__codelineno-0-406"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
-<a id="__codelineno-0-407" name="__codelineno-0-407"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
-<a id="__codelineno-0-408" name="__codelineno-0-408"></a><span class="sd">        ...     &quot;Residuals are not properly used.&quot;,</span>
-<a id="__codelineno-0-409" name="__codelineno-0-409"></a><span class="sd">        ...     ResidualsUsageWarning</span>
-<a id="__codelineno-0-410" name="__codelineno-0-410"></a><span class="sd">        ... )  # doctest: +SKIP</span>
-<a id="__codelineno-0-411" name="__codelineno-0-411"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-412" name="__codelineno-0-412"></a>
-<a id="__codelineno-0-413" name="__codelineno-0-413"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-<a id="__codelineno-0-414" name="__codelineno-0-414"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-<a id="__codelineno-0-415" name="__codelineno-0-415"></a>
-<a id="__codelineno-0-416" name="__codelineno-0-416"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-417" name="__codelineno-0-417"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-418" name="__codelineno-0-418"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
-<a id="__codelineno-0-419" name="__codelineno-0-419"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=ResidualsUsageWarning)&quot;</span>
-<a id="__codelineno-0-420" name="__codelineno-0-420"></a>        <span class="p">)</span>
-<a id="__codelineno-0-421" name="__codelineno-0-421"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
+<span class="normal"><a href="#__codelineno-0-421">421</a></span>
+<span class="normal"><a href="#__codelineno-0-422">422</a></span>
+<span class="normal"><a href="#__codelineno-0-423">423</a></span>
+<span class="normal"><a href="#__codelineno-0-424">424</a></span>
+<span class="normal"><a href="#__codelineno-0-425">425</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-403" name="__codelineno-0-403"></a><span class="k">class</span><span class="w"> </span><span class="nc">ResidualsUsageWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<a id="__codelineno-0-404" name="__codelineno-0-404"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for incorrect residuals usage.</span>
+<a id="__codelineno-0-405" name="__codelineno-0-405"></a>
+<a id="__codelineno-0-406" name="__codelineno-0-406"></a><span class="sd">    Used to notify that a residual are not correctly used in the</span>
+<a id="__codelineno-0-407" name="__codelineno-0-407"></a><span class="sd">    probabilistic forecasting process.</span>
+<a id="__codelineno-0-408" name="__codelineno-0-408"></a>
+<a id="__codelineno-0-409" name="__codelineno-0-409"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-410" name="__codelineno-0-410"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
+<a id="__codelineno-0-411" name="__codelineno-0-411"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
+<a id="__codelineno-0-412" name="__codelineno-0-412"></a><span class="sd">        ...     &quot;Residuals are not properly used.&quot;,</span>
+<a id="__codelineno-0-413" name="__codelineno-0-413"></a><span class="sd">        ...     ResidualsUsageWarning</span>
+<a id="__codelineno-0-414" name="__codelineno-0-414"></a><span class="sd">        ... )  # doctest: +SKIP</span>
+<a id="__codelineno-0-415" name="__codelineno-0-415"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-416" name="__codelineno-0-416"></a>
+<a id="__codelineno-0-417" name="__codelineno-0-417"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<a id="__codelineno-0-418" name="__codelineno-0-418"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+<a id="__codelineno-0-419" name="__codelineno-0-419"></a>
+<a id="__codelineno-0-420" name="__codelineno-0-420"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-421" name="__codelineno-0-421"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-422" name="__codelineno-0-422"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
+<a id="__codelineno-0-423" name="__codelineno-0-423"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=ResidualsUsageWarning)&quot;</span>
+<a id="__codelineno-0-424" name="__codelineno-0-424"></a>        <span class="p">)</span>
+<a id="__codelineno-0-425" name="__codelineno-0-425"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2896,11 +2936,7 @@ a forecaster.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>spotforecast2_safe/exceptions.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-449">449</a></span>
-<span class="normal"><a href="#__codelineno-0-450">450</a></span>
-<span class="normal"><a href="#__codelineno-0-451">451</a></span>
-<span class="normal"><a href="#__codelineno-0-452">452</a></span>
-<span class="normal"><a href="#__codelineno-0-453">453</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-453">453</a></span>
 <span class="normal"><a href="#__codelineno-0-454">454</a></span>
 <span class="normal"><a href="#__codelineno-0-455">455</a></span>
 <span class="normal"><a href="#__codelineno-0-456">456</a></span>
@@ -2918,29 +2954,33 @@ a forecaster.</p>
 <span class="normal"><a href="#__codelineno-0-468">468</a></span>
 <span class="normal"><a href="#__codelineno-0-469">469</a></span>
 <span class="normal"><a href="#__codelineno-0-470">470</a></span>
-<span class="normal"><a href="#__codelineno-0-471">471</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-449" name="__codelineno-0-449"></a><span class="k">class</span><span class="w"> </span><span class="nc">SaveLoadSkforecastWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-<a id="__codelineno-0-450" name="__codelineno-0-450"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for save/load operations.</span>
-<a id="__codelineno-0-451" name="__codelineno-0-451"></a>
-<a id="__codelineno-0-452" name="__codelineno-0-452"></a><span class="sd">    Used to notify any issues that may arise when saving or loading</span>
-<a id="__codelineno-0-453" name="__codelineno-0-453"></a><span class="sd">    a forecaster.</span>
-<a id="__codelineno-0-454" name="__codelineno-0-454"></a>
-<a id="__codelineno-0-455" name="__codelineno-0-455"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-456" name="__codelineno-0-456"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
-<a id="__codelineno-0-457" name="__codelineno-0-457"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
-<a id="__codelineno-0-458" name="__codelineno-0-458"></a><span class="sd">        ...     &quot;Issues detected when saving forecaster.&quot;,</span>
-<a id="__codelineno-0-459" name="__codelineno-0-459"></a><span class="sd">        ...     SaveLoadSkforecastWarning</span>
-<a id="__codelineno-0-460" name="__codelineno-0-460"></a><span class="sd">        ... )  # doctest: +SKIP</span>
-<a id="__codelineno-0-461" name="__codelineno-0-461"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-462" name="__codelineno-0-462"></a>
-<a id="__codelineno-0-463" name="__codelineno-0-463"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-<a id="__codelineno-0-464" name="__codelineno-0-464"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-<a id="__codelineno-0-465" name="__codelineno-0-465"></a>
-<a id="__codelineno-0-466" name="__codelineno-0-466"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-467" name="__codelineno-0-467"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-468" name="__codelineno-0-468"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
-<a id="__codelineno-0-469" name="__codelineno-0-469"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=SaveLoadSkforecastWarning)&quot;</span>
-<a id="__codelineno-0-470" name="__codelineno-0-470"></a>        <span class="p">)</span>
-<a id="__codelineno-0-471" name="__codelineno-0-471"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
+<span class="normal"><a href="#__codelineno-0-471">471</a></span>
+<span class="normal"><a href="#__codelineno-0-472">472</a></span>
+<span class="normal"><a href="#__codelineno-0-473">473</a></span>
+<span class="normal"><a href="#__codelineno-0-474">474</a></span>
+<span class="normal"><a href="#__codelineno-0-475">475</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-453" name="__codelineno-0-453"></a><span class="k">class</span><span class="w"> </span><span class="nc">SaveLoadSkforecastWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<a id="__codelineno-0-454" name="__codelineno-0-454"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for save/load operations.</span>
+<a id="__codelineno-0-455" name="__codelineno-0-455"></a>
+<a id="__codelineno-0-456" name="__codelineno-0-456"></a><span class="sd">    Used to notify any issues that may arise when saving or loading</span>
+<a id="__codelineno-0-457" name="__codelineno-0-457"></a><span class="sd">    a forecaster.</span>
+<a id="__codelineno-0-458" name="__codelineno-0-458"></a>
+<a id="__codelineno-0-459" name="__codelineno-0-459"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-460" name="__codelineno-0-460"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
+<a id="__codelineno-0-461" name="__codelineno-0-461"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
+<a id="__codelineno-0-462" name="__codelineno-0-462"></a><span class="sd">        ...     &quot;Issues detected when saving forecaster.&quot;,</span>
+<a id="__codelineno-0-463" name="__codelineno-0-463"></a><span class="sd">        ...     SaveLoadSkforecastWarning</span>
+<a id="__codelineno-0-464" name="__codelineno-0-464"></a><span class="sd">        ... )  # doctest: +SKIP</span>
+<a id="__codelineno-0-465" name="__codelineno-0-465"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-466" name="__codelineno-0-466"></a>
+<a id="__codelineno-0-467" name="__codelineno-0-467"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<a id="__codelineno-0-468" name="__codelineno-0-468"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+<a id="__codelineno-0-469" name="__codelineno-0-469"></a>
+<a id="__codelineno-0-470" name="__codelineno-0-470"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-471" name="__codelineno-0-471"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-472" name="__codelineno-0-472"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
+<a id="__codelineno-0-473" name="__codelineno-0-473"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=SaveLoadSkforecastWarning)&quot;</span>
+<a id="__codelineno-0-474" name="__codelineno-0-474"></a>        <span class="p">)</span>
+<a id="__codelineno-0-475" name="__codelineno-0-475"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3004,11 +3044,7 @@ environment differs from the version used to initialize the forecaster.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>spotforecast2_safe/exceptions.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-474">474</a></span>
-<span class="normal"><a href="#__codelineno-0-475">475</a></span>
-<span class="normal"><a href="#__codelineno-0-476">476</a></span>
-<span class="normal"><a href="#__codelineno-0-477">477</a></span>
-<span class="normal"><a href="#__codelineno-0-478">478</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-478">478</a></span>
 <span class="normal"><a href="#__codelineno-0-479">479</a></span>
 <span class="normal"><a href="#__codelineno-0-480">480</a></span>
 <span class="normal"><a href="#__codelineno-0-481">481</a></span>
@@ -3026,29 +3062,33 @@ environment differs from the version used to initialize the forecaster.</p>
 <span class="normal"><a href="#__codelineno-0-493">493</a></span>
 <span class="normal"><a href="#__codelineno-0-494">494</a></span>
 <span class="normal"><a href="#__codelineno-0-495">495</a></span>
-<span class="normal"><a href="#__codelineno-0-496">496</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-474" name="__codelineno-0-474"></a><span class="k">class</span><span class="w"> </span><span class="nc">SpotforecastVersionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-<a id="__codelineno-0-475" name="__codelineno-0-475"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for version mismatch.</span>
-<a id="__codelineno-0-476" name="__codelineno-0-476"></a>
-<a id="__codelineno-0-477" name="__codelineno-0-477"></a><span class="sd">    Used to notify that the version installed in the</span>
-<a id="__codelineno-0-478" name="__codelineno-0-478"></a><span class="sd">    environment differs from the version used to initialize the forecaster.</span>
-<a id="__codelineno-0-479" name="__codelineno-0-479"></a>
-<a id="__codelineno-0-480" name="__codelineno-0-480"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-481" name="__codelineno-0-481"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
-<a id="__codelineno-0-482" name="__codelineno-0-482"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
-<a id="__codelineno-0-483" name="__codelineno-0-483"></a><span class="sd">        ...     &quot;Version mismatch detected.&quot;,</span>
-<a id="__codelineno-0-484" name="__codelineno-0-484"></a><span class="sd">        ...     SpotforecastVersionWarning</span>
-<a id="__codelineno-0-485" name="__codelineno-0-485"></a><span class="sd">        ... )  # doctest: +SKIP</span>
-<a id="__codelineno-0-486" name="__codelineno-0-486"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-487" name="__codelineno-0-487"></a>
-<a id="__codelineno-0-488" name="__codelineno-0-488"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-<a id="__codelineno-0-489" name="__codelineno-0-489"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-<a id="__codelineno-0-490" name="__codelineno-0-490"></a>
-<a id="__codelineno-0-491" name="__codelineno-0-491"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-492" name="__codelineno-0-492"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-493" name="__codelineno-0-493"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
-<a id="__codelineno-0-494" name="__codelineno-0-494"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=SpotforecastVersionWarning)&quot;</span>
-<a id="__codelineno-0-495" name="__codelineno-0-495"></a>        <span class="p">)</span>
-<a id="__codelineno-0-496" name="__codelineno-0-496"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
+<span class="normal"><a href="#__codelineno-0-496">496</a></span>
+<span class="normal"><a href="#__codelineno-0-497">497</a></span>
+<span class="normal"><a href="#__codelineno-0-498">498</a></span>
+<span class="normal"><a href="#__codelineno-0-499">499</a></span>
+<span class="normal"><a href="#__codelineno-0-500">500</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-478" name="__codelineno-0-478"></a><span class="k">class</span><span class="w"> </span><span class="nc">SpotforecastVersionWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<a id="__codelineno-0-479" name="__codelineno-0-479"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for version mismatch.</span>
+<a id="__codelineno-0-480" name="__codelineno-0-480"></a>
+<a id="__codelineno-0-481" name="__codelineno-0-481"></a><span class="sd">    Used to notify that the version installed in the</span>
+<a id="__codelineno-0-482" name="__codelineno-0-482"></a><span class="sd">    environment differs from the version used to initialize the forecaster.</span>
+<a id="__codelineno-0-483" name="__codelineno-0-483"></a>
+<a id="__codelineno-0-484" name="__codelineno-0-484"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-485" name="__codelineno-0-485"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
+<a id="__codelineno-0-486" name="__codelineno-0-486"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
+<a id="__codelineno-0-487" name="__codelineno-0-487"></a><span class="sd">        ...     &quot;Version mismatch detected.&quot;,</span>
+<a id="__codelineno-0-488" name="__codelineno-0-488"></a><span class="sd">        ...     SpotforecastVersionWarning</span>
+<a id="__codelineno-0-489" name="__codelineno-0-489"></a><span class="sd">        ... )  # doctest: +SKIP</span>
+<a id="__codelineno-0-490" name="__codelineno-0-490"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-491" name="__codelineno-0-491"></a>
+<a id="__codelineno-0-492" name="__codelineno-0-492"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<a id="__codelineno-0-493" name="__codelineno-0-493"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+<a id="__codelineno-0-494" name="__codelineno-0-494"></a>
+<a id="__codelineno-0-495" name="__codelineno-0-495"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-496" name="__codelineno-0-496"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-497" name="__codelineno-0-497"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
+<a id="__codelineno-0-498" name="__codelineno-0-498"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=SpotforecastVersionWarning)&quot;</span>
+<a id="__codelineno-0-499" name="__codelineno-0-499"></a>        <span class="p">)</span>
+<a id="__codelineno-0-500" name="__codelineno-0-500"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -3112,11 +3152,7 @@ training data.</p>
 
               <details class="mkdocstrings-source">
                 <summary>Source code in <code>spotforecast2_safe/exceptions.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-424">424</a></span>
-<span class="normal"><a href="#__codelineno-0-425">425</a></span>
-<span class="normal"><a href="#__codelineno-0-426">426</a></span>
-<span class="normal"><a href="#__codelineno-0-427">427</a></span>
-<span class="normal"><a href="#__codelineno-0-428">428</a></span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-428">428</a></span>
 <span class="normal"><a href="#__codelineno-0-429">429</a></span>
 <span class="normal"><a href="#__codelineno-0-430">430</a></span>
 <span class="normal"><a href="#__codelineno-0-431">431</a></span>
@@ -3134,29 +3170,33 @@ training data.</p>
 <span class="normal"><a href="#__codelineno-0-443">443</a></span>
 <span class="normal"><a href="#__codelineno-0-444">444</a></span>
 <span class="normal"><a href="#__codelineno-0-445">445</a></span>
-<span class="normal"><a href="#__codelineno-0-446">446</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-424" name="__codelineno-0-424"></a><span class="k">class</span><span class="w"> </span><span class="nc">UnknownLevelWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
-<a id="__codelineno-0-425" name="__codelineno-0-425"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for unknown levels in prediction.</span>
-<a id="__codelineno-0-426" name="__codelineno-0-426"></a>
-<a id="__codelineno-0-427" name="__codelineno-0-427"></a><span class="sd">    Used to notify that a level being predicted was not part of the</span>
-<a id="__codelineno-0-428" name="__codelineno-0-428"></a><span class="sd">    training data.</span>
-<a id="__codelineno-0-429" name="__codelineno-0-429"></a>
-<a id="__codelineno-0-430" name="__codelineno-0-430"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-431" name="__codelineno-0-431"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
-<a id="__codelineno-0-432" name="__codelineno-0-432"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
-<a id="__codelineno-0-433" name="__codelineno-0-433"></a><span class="sd">        ...     &quot;Predicting for an unknown level.&quot;,</span>
-<a id="__codelineno-0-434" name="__codelineno-0-434"></a><span class="sd">        ...     UnknownLevelWarning</span>
-<a id="__codelineno-0-435" name="__codelineno-0-435"></a><span class="sd">        ... )  # doctest: +SKIP</span>
-<a id="__codelineno-0-436" name="__codelineno-0-436"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-437" name="__codelineno-0-437"></a>
-<a id="__codelineno-0-438" name="__codelineno-0-438"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
-<a id="__codelineno-0-439" name="__codelineno-0-439"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
-<a id="__codelineno-0-440" name="__codelineno-0-440"></a>
-<a id="__codelineno-0-441" name="__codelineno-0-441"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<a id="__codelineno-0-442" name="__codelineno-0-442"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
-<a id="__codelineno-0-443" name="__codelineno-0-443"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
-<a id="__codelineno-0-444" name="__codelineno-0-444"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=UnknownLevelWarning)&quot;</span>
-<a id="__codelineno-0-445" name="__codelineno-0-445"></a>        <span class="p">)</span>
-<a id="__codelineno-0-446" name="__codelineno-0-446"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
+<span class="normal"><a href="#__codelineno-0-446">446</a></span>
+<span class="normal"><a href="#__codelineno-0-447">447</a></span>
+<span class="normal"><a href="#__codelineno-0-448">448</a></span>
+<span class="normal"><a href="#__codelineno-0-449">449</a></span>
+<span class="normal"><a href="#__codelineno-0-450">450</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-428" name="__codelineno-0-428"></a><span class="k">class</span><span class="w"> </span><span class="nc">UnknownLevelWarning</span><span class="p">(</span><span class="ne">UserWarning</span><span class="p">):</span>
+<a id="__codelineno-0-429" name="__codelineno-0-429"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Warning for unknown levels in prediction.</span>
+<a id="__codelineno-0-430" name="__codelineno-0-430"></a>
+<a id="__codelineno-0-431" name="__codelineno-0-431"></a><span class="sd">    Used to notify that a level being predicted was not part of the</span>
+<a id="__codelineno-0-432" name="__codelineno-0-432"></a><span class="sd">    training data.</span>
+<a id="__codelineno-0-433" name="__codelineno-0-433"></a>
+<a id="__codelineno-0-434" name="__codelineno-0-434"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-435" name="__codelineno-0-435"></a><span class="sd">        &gt;&gt;&gt; import warnings</span>
+<a id="__codelineno-0-436" name="__codelineno-0-436"></a><span class="sd">        &gt;&gt;&gt; warnings.warn(</span>
+<a id="__codelineno-0-437" name="__codelineno-0-437"></a><span class="sd">        ...     &quot;Predicting for an unknown level.&quot;,</span>
+<a id="__codelineno-0-438" name="__codelineno-0-438"></a><span class="sd">        ...     UnknownLevelWarning</span>
+<a id="__codelineno-0-439" name="__codelineno-0-439"></a><span class="sd">        ... )  # doctest: +SKIP</span>
+<a id="__codelineno-0-440" name="__codelineno-0-440"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-441" name="__codelineno-0-441"></a>
+<a id="__codelineno-0-442" name="__codelineno-0-442"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">message</span><span class="p">):</span>
+<a id="__codelineno-0-443" name="__codelineno-0-443"></a>        <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">=</span> <span class="n">message</span>
+<a id="__codelineno-0-444" name="__codelineno-0-444"></a>
+<a id="__codelineno-0-445" name="__codelineno-0-445"></a>    <span class="k">def</span><span class="w"> </span><span class="fm">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<a id="__codelineno-0-446" name="__codelineno-0-446"></a>        <span class="n">extra_message</span> <span class="o">=</span> <span class="p">(</span>
+<a id="__codelineno-0-447" name="__codelineno-0-447"></a>            <span class="s2">&quot;You can suppress this warning using: &quot;</span>
+<a id="__codelineno-0-448" name="__codelineno-0-448"></a>            <span class="s2">&quot;warnings.simplefilter(&#39;ignore&#39;, category=UnknownLevelWarning)&quot;</span>
+<a id="__codelineno-0-449" name="__codelineno-0-449"></a>        <span class="p">)</span>
+<a id="__codelineno-0-450" name="__codelineno-0-450"></a>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">message</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="se">\\</span><span class="s2">n&quot;</span> <span class="o">+</span> <span class="n">extra_message</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
