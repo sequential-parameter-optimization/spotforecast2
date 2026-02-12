@@ -3,6 +3,15 @@
 ### Bug Fixes
 
 * uninitialized ([253a371](https://github.com/sequential-parameter-optimization/spotforecast2/commit/253a371a095803edaac2f3b3d51cce1c979b4556))
+## [0.3.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.2...v0.3.3) (2026-02-12)
+
+### Bug Fixes
+
+* bayesian search ([dc55295](https://github.com/sequential-parameter-optimization/spotforecast2/commit/dc55295b7a2d8b9491b42e4aab512a6b8fdc44a4))
+
+### Documentation
+
+* security ([5bc7217](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5bc721740b7d57164998c9db0b4542c99eaca8f3))
 
 ## [0.3.3-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.2...v0.3.3-rc.1) (2026-02-12)
 
