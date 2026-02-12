@@ -18,8 +18,8 @@ def calculate_lag_autocorrelation(
     n_lags: int = 50,
     last_n_samples: int | None = None,
     sort_by: str = "partial_autocorrelation_abs",
-    acf_kwargs: dict[str, object] = {},
-    pacf_kwargs: dict[str, object] = {},
+    acf_kwargs: dict[str, object] | None = None,
+    pacf_kwargs: dict[str, object] | None = None,
 ) -> pd.DataFrame:
     """
     Calculate autocorrelation and partial autocorrelation for a time series.
@@ -153,8 +153,10 @@ def calculate_lag_autocorrelation(
         pacf_values = np.zeros(n_lags + 1)
         pacf_values[0] = 1.0
     else:
-        pacf_values = pacf(data, nlags=n_lags, **pacf_kwargs)
-        acf_values = acf(data, nlags=n_lags, **acf_kwargs)
+        pacf_kwargs_ = pacf_kwargs.copy() if pacf_kwargs is not None else {}
+        acf_kwargs_ = acf_kwargs.copy() if acf_kwargs is not None else {}
+        pacf_values = pacf(data, nlags=n_lags, **pacf_kwargs_)
+        acf_values = acf(data, nlags=n_lags, **acf_kwargs_)
 
     results = pd.DataFrame(
         {

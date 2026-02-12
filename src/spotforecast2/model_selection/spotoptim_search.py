@@ -86,7 +86,7 @@ def spotoptim_search_forecaster(
     show_progress: bool = True,
     suppress_warnings: bool = False,
     output_file: str | None = None,
-    kwargs_spotoptim: dict = {},
+    kwargs_spotoptim: dict | None = None,
 ) -> tuple[pd.DataFrame, object]:
     """
     Hyperparameter optimization for a Forecaster using SpotOptim.
@@ -179,13 +179,15 @@ def _spotoptim_search(
     verbose: bool = False,
     suppress_warnings: bool = False,
     output_file: str | None = None,
-    kwargs_spotoptim: dict = {},
+    kwargs_spotoptim: dict | None = None,
 ) -> tuple[pd.DataFrame, object]:
     """
     Internal implementation of SpotOptim search.
     """
 
     set_skforecast_warnings(suppress_warnings, action="ignore")
+
+    kwargs_spotoptim_ = kwargs_spotoptim.copy() if kwargs_spotoptim is not None else {}
 
     forecaster_search = deepcopy(forecaster)
     forecaster_name = type(forecaster_search).__name__
@@ -333,7 +335,7 @@ def _spotoptim_search(
         n_initial=n_initial,
         seed=random_state,
         verbose=verbose,
-        **kwargs_spotoptim,
+        **kwargs_spotoptim_,
     )
 
     optimizer.optimize()

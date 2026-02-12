@@ -53,8 +53,8 @@ def bayesian_search_forecaster(
     show_progress: bool = True,
     suppress_warnings: bool = False,
     output_file: str | None = None,
-    kwargs_create_study: dict = {},
-    kwargs_study_optimize: dict = {},
+    kwargs_create_study: dict | None = None,
+    kwargs_study_optimize: dict | None = None,
 ) -> tuple[pd.DataFrame, object]:
     """
     Bayesian hyperparameter optimization for a Forecaster using Optuna.
@@ -166,8 +166,8 @@ def _bayesian_search_optuna(
     show_progress: bool = True,
     suppress_warnings: bool = False,
     output_file: str | None = None,
-    kwargs_create_study: dict = {},
-    kwargs_study_optimize: dict = {},
+    kwargs_create_study: dict | None = None,
+    kwargs_study_optimize: dict | None = None,
 ) -> tuple[pd.DataFrame, object]:
     """
     Bayesian search for hyperparameters of a Forecaster object using Optuna library.
@@ -178,6 +178,13 @@ def _bayesian_search_optuna(
     """
 
     set_skforecast_warnings(suppress_warnings, action="ignore")
+
+    kwargs_create_study_ = (
+        kwargs_create_study.copy() if kwargs_create_study is not None else {}
+    )
+    kwargs_study_optimize_ = (
+        kwargs_study_optimize.copy() if kwargs_study_optimize is not None else {}
+    )
 
     forecaster_search = deepcopy(forecaster)
     forecaster_name = type(forecaster_search).__name__
@@ -335,11 +342,11 @@ def _bayesian_search_optuna(
 
             return metrics_list[0]
 
-    if "direction" not in kwargs_create_study.keys():
-        kwargs_create_study["direction"] = "minimize" if is_regression else "maximize"
+    if "direction" not in kwargs_create_study_.keys():
+        kwargs_create_study_["direction"] = "minimize" if is_regression else "maximize"
 
     if show_progress:
-        kwargs_study_optimize["show_progress_bar"] = True
+        kwargs_study_optimize_["show_progress_bar"] = True
 
     if output_file is not None:
         # Redirect optuna logging to file
@@ -360,9 +367,9 @@ def _bayesian_search_optuna(
     # only the optimized value can be returned.
     metric_values = []
 
-    study = optuna.create_study(**kwargs_create_study)
+    study = optuna.create_study(**kwargs_create_study_)
 
-    if "sampler" not in kwargs_create_study.keys():
+    if "sampler" not in kwargs_create_study_.keys():
         study.sampler = TPESampler(seed=random_state)
 
     with warnings.catch_warnings():
@@ -371,7 +378,7 @@ def _bayesian_search_optuna(
             category=UserWarning,
             message="Choices for a categorical distribution should be*",
         )
-        study.optimize(_objective, n_trials=n_trials, **kwargs_study_optimize)
+        study.optimize(_objective, n_trials=n_trials, **kwargs_study_optimize_)
         best_trial = study.best_trial
         search_space_best = search_space(best_trial)
 
