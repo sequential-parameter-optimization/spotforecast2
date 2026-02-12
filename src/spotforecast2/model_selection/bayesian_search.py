@@ -348,14 +348,15 @@ def _bayesian_search_optuna(
     if show_progress:
         kwargs_study_optimize_["show_progress_bar"] = True
 
+    handler: logging.FileHandler | None = None
     if output_file is not None:
         # Redirect optuna logging to file
         optuna.logging.disable_default_handler()
         logger = logging.getLogger("optuna")
         logger.setLevel(logging.INFO)
-        for handler in logger.handlers.copy():
-            if isinstance(handler, logging.StreamHandler):
-                logger.removeHandler(handler)
+        for h in logger.handlers.copy():
+            if isinstance(h, logging.StreamHandler):
+                logger.removeHandler(h)
         handler = logging.FileHandler(output_file, mode="w")
         logger.addHandler(handler)
     else:
@@ -382,7 +383,7 @@ def _bayesian_search_optuna(
         best_trial = study.best_trial
         search_space_best = search_space(best_trial)
 
-    if output_file is not None:
+        # Close logging handler if it was created    if handler is not None:
         handler.close()
 
     if search_space_best.keys() != best_trial.params.keys():

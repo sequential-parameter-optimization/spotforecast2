@@ -1,3 +1,14 @@
+## [0.3.4-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.3...v0.3.4-rc.1) (2026-02-12)
+
+### Bug Fixes
+
+* uninitialized ([253a371](https://github.com/sequential-parameter-optimization/spotforecast2/commit/253a371a095803edaac2f3b3d51cce1c979b4556))
+
+## [0.3.3-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.3-rc.1...v0.3.3-rc.2) (2026-02-12)
+
+### Bug Fixes
+
+* uninitialized ([253a371](https://github.com/sequential-parameter-optimization/spotforecast2/commit/253a371a095803edaac2f3b3d51cce1c979b4556))
 ## [0.3.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.2...v0.3.3) (2026-02-12)
 
 ### Bug Fixes

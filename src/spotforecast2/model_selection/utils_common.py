@@ -250,6 +250,12 @@ def check_backtesting_input(
         data_name = "series"
         data_length = max([len(series[serie]) for serie in series])
 
+    else:
+        raise TypeError(
+            f"Forecaster type '{forecaster_name}' is not supported for backtesting. "
+            f"Supported forecasters: {forecasters_uni + forecasters_multi_no_dict + forecasters_multi_dict}."
+        )
+
     if exog is not None:
         if forecaster_name in forecasters_multi_dict:
             # NOTE: Checks are not need as they are done in the function
@@ -564,6 +570,12 @@ def check_one_step_ahead_input(
 
         data_name = "series"
         data_length = max([len(series[serie]) for serie in series])
+
+    else:
+        raise TypeError(
+            f"Forecaster type '{forecaster_name}' is not supported for one-step-ahead validation. "
+            f"Supported forecasters: {forecasters_uni + forecasters_multi_no_dict + forecasters_multi_dict}."
+        )
 
     if exog is not None:
         if forecaster_name in forecasters_multi_dict:
