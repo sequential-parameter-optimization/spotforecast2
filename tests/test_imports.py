@@ -1,4 +1,3 @@
-import pytest
 from spotforecast2_safe.data.data import Period as PeriodFull
 from spotforecast2_safe.data import Period as PeriodData
 from spotforecast2_safe import Period as PeriodTop

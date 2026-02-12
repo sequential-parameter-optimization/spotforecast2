@@ -1,4 +1,3 @@
-import pytest
 from spotforecast2_safe.preprocessing.repeating_basis_function import (
     RepeatingBasisFunction as RBFFull,
 )

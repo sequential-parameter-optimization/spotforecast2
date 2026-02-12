@@ -7,7 +7,6 @@ and demonstrate rapid validation for safety-critical systems.
 
 import numpy as np
 import pandas as pd
-import pytest
 from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.linear_model import Ridge
 

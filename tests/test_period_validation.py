@@ -11,7 +11,6 @@ appropriate for daily (hourly) patterns.
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from spotforecast2 import Config
 from spotforecast2.manager.configurator.config_entsoe import Period
@@ -69,10 +68,10 @@ class TestPeriodConfiguration:
         print("\n=== Daily Period Configuration Analysis ===")
         print(f"n_periods=12: {12} features for 24 hours (~2 hour resolution)")
         print(f"n_periods=24: {24} features for 24 hours (~1 hour resolution)")
-        print(f"\nFeature matrix stats (n_periods=12):")
+        print("\nFeature matrix stats (n_periods=12):")
         print(f"  Mean activation per hour: {features_12.mean(axis=1).mean():.3f}")
         print(f"  Max activation per hour: {features_12.max(axis=1).mean():.3f}")
-        print(f"\nFeature matrix stats (n_periods=24):")
+        print("\nFeature matrix stats (n_periods=24):")
         print(f"  Mean activation per hour: {features_24.mean(axis=1).mean():.3f}")
         print(f"  Max activation per hour: {features_24.max(axis=1).mean():.3f}")
 

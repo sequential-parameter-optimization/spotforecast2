@@ -40,7 +40,7 @@ class TestGetOutliers:
         data_original = pd.DataFrame(
             {"A": np.concatenate([np.random.normal(0, 1, 100), [10, 11, 12]])}
         )
-        
+
         outliers = get_outliers(
             data_original, data_original=data_original, contamination=0.03
         )

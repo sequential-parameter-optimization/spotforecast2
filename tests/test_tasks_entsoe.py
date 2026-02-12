@@ -4,11 +4,10 @@
 import logging
 import os
 import unittest
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 import pandas as pd
 import numpy as np
 import sys
-from pathlib import Path
 import pytest
 
 from spotforecast2.manager.plotter import make_plot
@@ -111,9 +110,6 @@ class TestTaskEntsoe(unittest.TestCase):
 # ==============================================================================
 # Safety-Critical Pytest Suite for MLOps
 # ==============================================================================
-
-import pytest
-from unittest.mock import call
 
 
 class TestSafetyCriticalEntsoe:

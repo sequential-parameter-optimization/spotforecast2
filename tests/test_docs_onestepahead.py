@@ -75,7 +75,7 @@ def test_rapid_model_screening():
     assert all(mae > 0 for mae in results.values())
 
     best_model = min(results, key=results.get)
-    print(f"✓ Rapid screening example test passed")
+    print("✓ Rapid screening example test passed")
     print(f"  Best model: {best_model} (MAE: {results[best_model]:.3f} PSI)")
     print(f"  Models screened: {len(results)}")
 
@@ -136,7 +136,7 @@ def test_static_deployment_validation():
 
     mae_trend = np.polyfit(range(4), quarterly_mae, 1)[0]
 
-    print(f"✓ Static deployment example test passed")
+    print("✓ Static deployment example test passed")
     print(f"  MAE: {metric_values['mean_absolute_error'].iloc[0]:.2f} °C")
     print(f"  Performance trend: {mae_trend:+.3f} °C/quarter")
 
@@ -185,7 +185,7 @@ def test_emergency_validation():
 
     rollback_mae = metric_values["mean_absolute_error"].iloc[0]
 
-    print(f"✓ Emergency validation example test passed")
+    print("✓ Emergency validation example test passed")
     print(f"  Validation time: {validation_time:.2f} seconds")
     print(f"  Rollback MAE: {rollback_mae:.2f}")
 

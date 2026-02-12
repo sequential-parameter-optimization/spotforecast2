@@ -7,7 +7,6 @@ executable and produce the expected results.
 
 import numpy as np
 import pandas as pd
-import pytest
 from sklearn.linear_model import Ridge, LinearRegression
 from sklearn.ensemble import GradientBoostingRegressor
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive

@@ -8,8 +8,6 @@ Each test corresponds to a code example in docs/entsoe.md to ensure
 documentation remains accurate and executable.
 """
 
-import pandas as pd
-import pytest
 from pathlib import Path
 
 

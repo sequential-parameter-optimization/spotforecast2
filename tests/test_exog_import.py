@@ -1,4 +1,3 @@
-import pytest
 from spotforecast2_safe.preprocessing.exog_builder import ExogBuilder as ExogFull
 from spotforecast2_safe.preprocessing import ExogBuilder as ExogPre
 from spotforecast2_safe import ExogBuilder as ExogTop

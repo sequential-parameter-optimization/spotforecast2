@@ -1,11 +1,3 @@
-import pytest
-from spotforecast2_safe.preprocessing import (
-    ForecasterRecursiveModel,
-    ForecasterRecursiveLGBM,
-    ForecasterRecursiveXGB,
-)
-
-
 def test_forecaster_recursive_import_direct():
     """Verify that models can be imported from preprocessing."""
     from spotforecast2_safe.preprocessing import ForecasterRecursiveLGBM

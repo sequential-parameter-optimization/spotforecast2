@@ -71,7 +71,7 @@ def test_medical_device_expanding_window():
         y.loc[predictions.index] - predictions["pred"]
     ).abs() > max_acceptable_error
 
-    print(f"✓ Medical device example test passed")
+    print("✓ Medical device example test passed")
     print(f"  MAE: {metric_values['mean_absolute_error'].mean():.2f} BPM")
     print(f"  Catastrophic errors: {catastrophic_errors.sum()}")
 
@@ -130,7 +130,7 @@ def test_hft_fixed_window():
     assert isinstance(metric_values, pd.DataFrame)
     assert len(predictions) > 0
 
-    print(f"✓ HFT example test passed")
+    print("✓ HFT example test passed")
     print(f"  MAE: {metric_values['mean_absolute_error'].mean():.4f} USD")
     print(f"  Fixed window size: {train_sizes.iloc[0]} observations")
 
@@ -189,7 +189,7 @@ def test_overlapping_folds():
     unique_timestamps = len(predictions.index.unique())
     total_predictions = len(predictions)
 
-    print(f"✓ Overlapping folds example test passed")
+    print("✓ Overlapping folds example test passed")
     print(f"  MAE: {metric_values['mean_absolute_error'].mean():.2f} °C")
     print(f"  Total predictions: {total_predictions}")
     print(f"  Unique timestamps: {unique_timestamps}")

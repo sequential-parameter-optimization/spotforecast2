@@ -12,9 +12,6 @@ Safety-critical validation scope:
 - Reproducibility with random_state
 """
 
-import tempfile
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import pytest

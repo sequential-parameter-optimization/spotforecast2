@@ -1,4 +1,3 @@
-import pytest
 from spotforecast2_safe.preprocessing.linearly_interpolate_ts import (
     LinearlyInterpolateTS as LinearFull,
 )
