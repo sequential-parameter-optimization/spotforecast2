@@ -24,6 +24,7 @@ from spotforecast2.model_selection.utils_common import (
     select_n_jobs_backtesting,
 )
 from spotforecast2.forecaster.metrics import add_y_train_argument, _get_metric
+from spotforecast2.forecaster.utils import date_to_index_position
 from spotforecast2.model_selection.utils_metrics import (
     _calculate_metrics_one_step_ahead,
 )
@@ -84,17 +85,22 @@ def _evaluate_grid_hyperparameters(
             show_progress=show_progress,
             suppress_warnings=suppress_warnings,
         )
-        # Update cv params in case they were modified during input check or need setting
-        # (Original code does initialization of initial_train_size here)
-        # We assume cv is already correctly set up or updated by user.
-        # But OneStepAheadFold in original is used to split?
-        # Original code re-initializes cv params?
-        # Lines 280-293 in original handle date_to_index_position for initial_train_size.
-        # We should probably do that if passing strings.
-        # But TimeSeriesFold does it in its init?
-        # OneStepAheadFold might support string initial_train_size.
-        # Let's adding it for robustness if needed, but keeping it simple for now as per prior porting.
-        pass
+
+        cv = deepcopy(cv)
+        initial_train_size = date_to_index_position(
+            index=cv._extract_index(y),
+            date_input=cv.initial_train_size,
+            method="validation",
+            date_literal="initial_train_size",
+        )
+        cv.set_params(
+            {
+                "initial_train_size": initial_train_size,
+                "window_size": forecaster_search.window_size,
+                "differentiation": forecaster_search.differentiation_max,
+                "verbose": verbose,
+            }
+        )
 
     if not isinstance(metric, list):
         metric = [metric]
@@ -108,7 +114,10 @@ def _evaluate_grid_hyperparameters(
         raise ValueError("When `metric` is a `list`, each metric name must be unique.")
 
     lags_grid, lags_label = initialize_lags_grid(forecaster, lags_grid)
-    cv = deepcopy(cv)
+
+    # Deepcopy cv for TimeSeriesFold (already done for OneStepAheadFold above)
+    if isinstance(cv, TimeSeriesFold):
+        cv = deepcopy(cv)
 
     if n_jobs == "auto":
         refit = cv.refit if isinstance(cv, TimeSeriesFold) else False

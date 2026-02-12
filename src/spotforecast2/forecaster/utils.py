@@ -49,11 +49,6 @@ optional_dependencies = {
 }
 
 
-# TODO: Remove this function, because it is imported from spotforecast2_safe
-# def check_preprocess_series(series):
-#     pass
-
-
 def exog_to_direct_numpy(
     exog: np.ndarray | pd.Series | pd.DataFrame, steps: int
 ) -> tuple[np.ndarray, list[str] | None]:
@@ -587,7 +582,7 @@ def date_to_index_position(
                 start=last_date, end=target_date, freq=index.freq
             )
             output = len(span_index) - 1
-        elif method == "validation":
+        else:  # method == "validation"
             first_date = pd.to_datetime(index[0])
             if target_date < first_date or target_date > last_date:
                 raise ValueError(
@@ -833,7 +828,7 @@ def initialize_transformer_series(
 def _find_optional_dependency(
     package_name: str,
     optional_dependencies: dict[str, list[str]] = optional_dependencies,
-) -> tuple[str, str]:
+) -> tuple[str, str] | None:
     """
     Find if a package is an optional dependency. If True, find the version and
     the extension it belongs to.
@@ -843,6 +838,8 @@ def _find_optional_dependency(
         package_version = [package for package in packages if package_name in package]
         if package_version:
             return extra, package_version[0]
+
+    return None
 
 
 def check_optional_dependency(package_name: str) -> None:
@@ -859,9 +856,7 @@ def check_optional_dependency(package_name: str) -> None:
 
     if find_spec(package_name) is None:
         try:
-            extra, package_version = _find_optional_dependency(
-                package_name=package_name
-            )
+            _, _ = _find_optional_dependency(package_name=package_name)
             msg = f"\n'{package_name}' is an optional dependency not included in the default spotforecast installation."
         except Exception:
             msg = f"\n'{package_name}' is needed but not installed. Please install it."

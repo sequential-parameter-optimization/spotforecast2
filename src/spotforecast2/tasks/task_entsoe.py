@@ -81,12 +81,6 @@ class ForecasterRecursiveXGB(_ForecasterRecursiveXGBBase):
         super().__init__(iteration=iteration, lags=lags, **kwargs)
 
 
-# Optional dependencies
-try:
-    from xgboost import XGBRegressor
-except ImportError:
-    XGBRegressor = None
-
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -126,7 +120,7 @@ def main():
     parser_pr.add_argument("--plot", action="store_true")
 
     # Merge
-    _parser_mg = subparsers.add_parser("merge")  # noqa: F841
+    subparsers.add_parser("merge")
 
     args = parser.parse_args()
 
