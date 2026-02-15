@@ -3,6 +3,11 @@
 ### Bug Fixes
 
 * Config import from spotforecast2_safe ([63e73a0](https://github.com/sequential-parameter-optimization/spotforecast2/commit/63e73a0c75cab54da2a98519e5c73e658063cbdc))
+## [0.3.4](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.3...v0.3.4) (2026-02-12)
+
+### Bug Fixes
+
+* uninitialized ([253a371](https://github.com/sequential-parameter-optimization/spotforecast2/commit/253a371a095803edaac2f3b3d51cce1c979b4556))
 
 ## [0.3.4-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.3...v0.3.4-rc.1) (2026-02-12)
 
