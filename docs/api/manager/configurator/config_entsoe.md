@@ -2,7 +2,7 @@
 
 ## ConfigEntsoe
 
-::: spotforecast2.manager.configurator.config_entsoe.ConfigEntsoe
+::: spotforecast2_safe.manager.configurator.ConfigEntsoe
     options:
       show_source: true
       members:
@@ -20,6 +20,6 @@
 
 ## Period
 
-::: spotforecast2.manager.configurator.config_entsoe.Period
+::: spotforecast2_safe.data.Period
     options:
       show_source: true

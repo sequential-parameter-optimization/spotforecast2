@@ -1,3 +1,14 @@
+## [0.3.6-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.5...v0.3.6-rc.1) (2026-02-15)
+
+### Bug Fixes
+
+* mkdocs error ([05ede2b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/05ede2b467216d64cd37728785b6346de72ca159))
+
+## [0.3.5-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.5-rc.1...v0.3.5-rc.2) (2026-02-15)
+
+### Bug Fixes
+
+* mkdocs error ([05ede2b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/05ede2b467216d64cd37728785b6346de72ca159))
 ## [0.3.5](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.4...v0.3.5) (2026-02-15)
 
 ### Bug Fixes
