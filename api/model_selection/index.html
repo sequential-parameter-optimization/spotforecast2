@@ -2753,7 +2753,7 @@ Defaults to False.</p>
 <a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">y</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">10</span><span class="p">])</span>
 <a id="__codelineno-0-6" name="__codelineno-0-6" href="#__codelineno-0-6"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">forecaster</span> <span class="o">=</span> <span class="n">ForecasterRecursive</span><span class="p">(</span>
 <a id="__codelineno-0-7" name="__codelineno-0-7" href="#__codelineno-0-7"></a><span class="gp">... </span>    <span class="n">estimator</span><span class="o">=</span><span class="n">RandomForestRegressor</span><span class="p">(</span><span class="n">random_state</span><span class="o">=</span><span class="mi">123</span><span class="p">),</span>
-<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">... </span>    <span class="n">lags</span><span class="o">=</span><span class="mi">2</span>
+<a id="__codelineno-0-8" name="__codelineno-0-8" href="#__codelineno-0-8"></a><span class="gp">... </span>    <span class="n">lags</span><span class="o">=</span><span class="mi">5</span>
 <a id="__codelineno-0-9" name="__codelineno-0-9" href="#__codelineno-0-9"></a><span class="gp">... </span><span class="p">)</span>
 <a id="__codelineno-0-10" name="__codelineno-0-10" href="#__codelineno-0-10"></a><span class="gp">&gt;&gt;&gt; </span><span class="n">cv</span> <span class="o">=</span> <span class="n">TimeSeriesFold</span><span class="p">(</span>
 <a id="__codelineno-0-11" name="__codelineno-0-11" href="#__codelineno-0-11"></a><span class="gp">... </span>    <span class="n">steps</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -2781,49 +2781,7 @@ Defaults to False.</p>
 
             <details class="mkdocstrings-source">
               <summary>Source code in <code>spotforecast2_safe/model_selection/validation.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-646">646</a></span>
-<span class="normal"><a href="#__codelineno-0-647">647</a></span>
-<span class="normal"><a href="#__codelineno-0-648">648</a></span>
-<span class="normal"><a href="#__codelineno-0-649">649</a></span>
-<span class="normal"><a href="#__codelineno-0-650">650</a></span>
-<span class="normal"><a href="#__codelineno-0-651">651</a></span>
-<span class="normal"><a href="#__codelineno-0-652">652</a></span>
-<span class="normal"><a href="#__codelineno-0-653">653</a></span>
-<span class="normal"><a href="#__codelineno-0-654">654</a></span>
-<span class="normal"><a href="#__codelineno-0-655">655</a></span>
-<span class="normal"><a href="#__codelineno-0-656">656</a></span>
-<span class="normal"><a href="#__codelineno-0-657">657</a></span>
-<span class="normal"><a href="#__codelineno-0-658">658</a></span>
-<span class="normal"><a href="#__codelineno-0-659">659</a></span>
-<span class="normal"><a href="#__codelineno-0-660">660</a></span>
-<span class="normal"><a href="#__codelineno-0-661">661</a></span>
-<span class="normal"><a href="#__codelineno-0-662">662</a></span>
-<span class="normal"><a href="#__codelineno-0-663">663</a></span>
-<span class="normal"><a href="#__codelineno-0-664">664</a></span>
-<span class="normal"><a href="#__codelineno-0-665">665</a></span>
-<span class="normal"><a href="#__codelineno-0-666">666</a></span>
-<span class="normal"><a href="#__codelineno-0-667">667</a></span>
-<span class="normal"><a href="#__codelineno-0-668">668</a></span>
-<span class="normal"><a href="#__codelineno-0-669">669</a></span>
-<span class="normal"><a href="#__codelineno-0-670">670</a></span>
-<span class="normal"><a href="#__codelineno-0-671">671</a></span>
-<span class="normal"><a href="#__codelineno-0-672">672</a></span>
-<span class="normal"><a href="#__codelineno-0-673">673</a></span>
-<span class="normal"><a href="#__codelineno-0-674">674</a></span>
-<span class="normal"><a href="#__codelineno-0-675">675</a></span>
-<span class="normal"><a href="#__codelineno-0-676">676</a></span>
-<span class="normal"><a href="#__codelineno-0-677">677</a></span>
-<span class="normal"><a href="#__codelineno-0-678">678</a></span>
-<span class="normal"><a href="#__codelineno-0-679">679</a></span>
-<span class="normal"><a href="#__codelineno-0-680">680</a></span>
-<span class="normal"><a href="#__codelineno-0-681">681</a></span>
-<span class="normal"><a href="#__codelineno-0-682">682</a></span>
-<span class="normal"><a href="#__codelineno-0-683">683</a></span>
-<span class="normal"><a href="#__codelineno-0-684">684</a></span>
-<span class="normal"><a href="#__codelineno-0-685">685</a></span>
-<span class="normal"><a href="#__codelineno-0-686">686</a></span>
-<span class="normal"><a href="#__codelineno-0-687">687</a></span>
-<span class="normal"><a href="#__codelineno-0-688">688</a></span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-688">688</a></span>
 <span class="normal"><a href="#__codelineno-0-689">689</a></span>
 <span class="normal"><a href="#__codelineno-0-690">690</a></span>
 <span class="normal"><a href="#__codelineno-0-691">691</a></span>
@@ -3010,236 +2968,278 @@ Defaults to False.</p>
 <span class="normal"><a href="#__codelineno-0-872">872</a></span>
 <span class="normal"><a href="#__codelineno-0-873">873</a></span>
 <span class="normal"><a href="#__codelineno-0-874">874</a></span>
-<span class="normal"><a href="#__codelineno-0-875">875</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-646" name="__codelineno-0-646"></a><span class="k">def</span><span class="w"> </span><span class="nf">backtesting_forecaster</span><span class="p">(</span>
-<a id="__codelineno-0-647" name="__codelineno-0-647"></a>    <span class="n">forecaster</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
-<a id="__codelineno-0-648" name="__codelineno-0-648"></a>    <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-<a id="__codelineno-0-649" name="__codelineno-0-649"></a>    <span class="n">cv</span><span class="p">:</span> <span class="n">TimeSeriesFold</span><span class="p">,</span>
-<a id="__codelineno-0-650" name="__codelineno-0-650"></a>    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">],</span>
-<a id="__codelineno-0-651" name="__codelineno-0-651"></a>    <span class="n">exog</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-652" name="__codelineno-0-652"></a>    <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-0-653" name="__codelineno-0-653"></a>    <span class="n">interval_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bootstrapping&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-654" name="__codelineno-0-654"></a>    <span class="n">n_boot</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
-<a id="__codelineno-0-655" name="__codelineno-0-655"></a>    <span class="n">use_in_sample_residuals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-656" name="__codelineno-0-656"></a>    <span class="n">use_binned_residuals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-657" name="__codelineno-0-657"></a>    <span class="n">random_state</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">123</span><span class="p">,</span>
-<a id="__codelineno-0-658" name="__codelineno-0-658"></a>    <span class="n">return_predictors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-659" name="__codelineno-0-659"></a>    <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
-<a id="__codelineno-0-660" name="__codelineno-0-660"></a>    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-661" name="__codelineno-0-661"></a>    <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-662" name="__codelineno-0-662"></a>    <span class="n">suppress_warnings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
-<a id="__codelineno-0-663" name="__codelineno-0-663"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-<a id="__codelineno-0-664" name="__codelineno-0-664"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<a id="__codelineno-0-665" name="__codelineno-0-665"></a><span class="sd">    Backtesting of forecaster model following the folds generated by the TimeSeriesFold</span>
-<a id="__codelineno-0-666" name="__codelineno-0-666"></a><span class="sd">    class and using the metric(s) provided.</span>
-<a id="__codelineno-0-667" name="__codelineno-0-667"></a>
-<a id="__codelineno-0-668" name="__codelineno-0-668"></a><span class="sd">    If `forecaster` is already trained and `initial_train_size` is set to `None` in the</span>
-<a id="__codelineno-0-669" name="__codelineno-0-669"></a><span class="sd">    TimeSeriesFold class, no initial train will be done and all data will be used</span>
-<a id="__codelineno-0-670" name="__codelineno-0-670"></a><span class="sd">    to evaluate the model. However, the first `len(forecaster.last_window)` observations</span>
-<a id="__codelineno-0-671" name="__codelineno-0-671"></a><span class="sd">    are needed to create the initial predictors, so no predictions are calculated for</span>
-<a id="__codelineno-0-672" name="__codelineno-0-672"></a><span class="sd">    them.</span>
-<a id="__codelineno-0-673" name="__codelineno-0-673"></a>
-<a id="__codelineno-0-674" name="__codelineno-0-674"></a><span class="sd">    A copy of the original forecaster is created so that it is not modified during</span>
-<a id="__codelineno-0-675" name="__codelineno-0-675"></a><span class="sd">    the process.</span>
-<a id="__codelineno-0-676" name="__codelineno-0-676"></a>
-<a id="__codelineno-0-677" name="__codelineno-0-677"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-678" name="__codelineno-0-678"></a><span class="sd">        forecaster (ForecasterRecursive, ForecasterDirect, ForecasterEquivalentDate):</span>
-<a id="__codelineno-0-679" name="__codelineno-0-679"></a><span class="sd">            Forecaster model.</span>
-<a id="__codelineno-0-680" name="__codelineno-0-680"></a><span class="sd">        y (pd.Series): Training time series.</span>
-<a id="__codelineno-0-681" name="__codelineno-0-681"></a><span class="sd">        cv (TimeSeriesFold): TimeSeriesFold object with the information needed to</span>
-<a id="__codelineno-0-682" name="__codelineno-0-682"></a><span class="sd">            split the data into folds.</span>
-<a id="__codelineno-0-683" name="__codelineno-0-683"></a><span class="sd">        metric (str | Callable | list): Metric used to quantify the goodness of fit</span>
-<a id="__codelineno-0-684" name="__codelineno-0-684"></a><span class="sd">            of the model.</span>
-<a id="__codelineno-0-685" name="__codelineno-0-685"></a>
-<a id="__codelineno-0-686" name="__codelineno-0-686"></a><span class="sd">            - If `str`: {&#39;mean_squared_error&#39;, &#39;mean_absolute_error&#39;,</span>
-<a id="__codelineno-0-687" name="__codelineno-0-687"></a><span class="sd">              &#39;mean_absolute_percentage_error&#39;, &#39;mean_squared_log_error&#39;,</span>
-<a id="__codelineno-0-688" name="__codelineno-0-688"></a><span class="sd">              &#39;mean_absolute_scaled_error&#39;, &#39;root_mean_squared_scaled_error&#39;}</span>
-<a id="__codelineno-0-689" name="__codelineno-0-689"></a><span class="sd">            - If `Callable`: Function with arguments `y_true`, `y_pred` and `y_train`</span>
-<a id="__codelineno-0-690" name="__codelineno-0-690"></a><span class="sd">              (Optional) that returns a float.</span>
-<a id="__codelineno-0-691" name="__codelineno-0-691"></a><span class="sd">            - If `list`: List containing multiple strings and/or Callables.</span>
-<a id="__codelineno-0-692" name="__codelineno-0-692"></a><span class="sd">        exog (pd.Series | pd.DataFrame, optional): Exogenous variable/s included as</span>
-<a id="__codelineno-0-693" name="__codelineno-0-693"></a><span class="sd">            predictor/s. Must have the same number of observations as `y` and should</span>
-<a id="__codelineno-0-694" name="__codelineno-0-694"></a><span class="sd">            be aligned so that y[i] is regressed on exog[i]. Defaults to None.</span>
-<a id="__codelineno-0-695" name="__codelineno-0-695"></a><span class="sd">        interval (float | list | tuple | str | object, optional): Specifies whether</span>
-<a id="__codelineno-0-696" name="__codelineno-0-696"></a><span class="sd">            probabilistic predictions should be estimated and the method to use.</span>
-<a id="__codelineno-0-697" name="__codelineno-0-697"></a><span class="sd">            The following options are supported:</span>
-<a id="__codelineno-0-698" name="__codelineno-0-698"></a>
-<a id="__codelineno-0-699" name="__codelineno-0-699"></a><span class="sd">            - If `float`, represents the nominal (expected) coverage (between 0 and 1).</span>
-<a id="__codelineno-0-700" name="__codelineno-0-700"></a><span class="sd">            For instance, `interval=0.95` corresponds to `[2.5, 97.5]` percentiles.</span>
-<a id="__codelineno-0-701" name="__codelineno-0-701"></a><span class="sd">            - If `list` or `tuple`: Sequence of percentiles to compute, each value must</span>
-<a id="__codelineno-0-702" name="__codelineno-0-702"></a><span class="sd">              be between 0 and 100 inclusive. For example, a 95% confidence interval can</span>
-<a id="__codelineno-0-703" name="__codelineno-0-703"></a><span class="sd">              be specified as `interval = [2.5, 97.5]` or multiple percentiles (e.g. 10,</span>
-<a id="__codelineno-0-704" name="__codelineno-0-704"></a><span class="sd">              50 and 90) as `interval = [10, 50, 90]`.</span>
-<a id="__codelineno-0-705" name="__codelineno-0-705"></a><span class="sd">            - If &#39;bootstrapping&#39; (str): `n_boot` bootstrapping predictions will be</span>
-<a id="__codelineno-0-706" name="__codelineno-0-706"></a><span class="sd">              generated.</span>
-<a id="__codelineno-0-707" name="__codelineno-0-707"></a><span class="sd">            - If scipy.stats distribution object, the distribution parameters will</span>
-<a id="__codelineno-0-708" name="__codelineno-0-708"></a><span class="sd">              be estimated for each prediction.</span>
-<a id="__codelineno-0-709" name="__codelineno-0-709"></a><span class="sd">            - If None, no probabilistic predictions are estimated.</span>
-<a id="__codelineno-0-710" name="__codelineno-0-710"></a><span class="sd">            Defaults to None.</span>
-<a id="__codelineno-0-711" name="__codelineno-0-711"></a><span class="sd">        interval_method (str, optional): Technique used to estimate prediction</span>
-<a id="__codelineno-0-712" name="__codelineno-0-712"></a><span class="sd">            intervals. Available options:</span>
-<a id="__codelineno-0-713" name="__codelineno-0-713"></a>
-<a id="__codelineno-0-714" name="__codelineno-0-714"></a><span class="sd">            - &#39;bootstrapping&#39;: Bootstrapping is used to generate prediction intervals.</span>
-<a id="__codelineno-0-715" name="__codelineno-0-715"></a><span class="sd">            - &#39;conformal&#39;: Employs the conformal prediction split method for</span>
-<a id="__codelineno-0-716" name="__codelineno-0-716"></a><span class="sd">              interval estimation.</span>
-<a id="__codelineno-0-717" name="__codelineno-0-717"></a><span class="sd">            Defaults to &#39;bootstrapping&#39;.</span>
-<a id="__codelineno-0-718" name="__codelineno-0-718"></a><span class="sd">        n_boot (int, optional): Number of bootstrapping iterations to perform when</span>
-<a id="__codelineno-0-719" name="__codelineno-0-719"></a><span class="sd">            estimating prediction intervals. Defaults to 250.</span>
-<a id="__codelineno-0-720" name="__codelineno-0-720"></a><span class="sd">        use_in_sample_residuals (bool, optional): If `True`, residuals from the</span>
-<a id="__codelineno-0-721" name="__codelineno-0-721"></a><span class="sd">            training data are used as proxy of prediction error to create predictions.</span>
-<a id="__codelineno-0-722" name="__codelineno-0-722"></a><span class="sd">            If `False`, out of sample residuals (calibration) are used.</span>
-<a id="__codelineno-0-723" name="__codelineno-0-723"></a><span class="sd">            Out-of-sample residuals must be precomputed using Forecaster&#39;s</span>
-<a id="__codelineno-0-724" name="__codelineno-0-724"></a><span class="sd">            `set_out_sample_residuals()` method. Defaults to True.</span>
-<a id="__codelineno-0-725" name="__codelineno-0-725"></a><span class="sd">        use_binned_residuals (bool, optional): If `True`, residuals are selected</span>
-<a id="__codelineno-0-726" name="__codelineno-0-726"></a><span class="sd">            based on the predicted values (binned selection).</span>
-<a id="__codelineno-0-727" name="__codelineno-0-727"></a><span class="sd">            If `False`, residuals are selected randomly. Defaults to True.</span>
-<a id="__codelineno-0-728" name="__codelineno-0-728"></a><span class="sd">        random_state (int, optional): Seed for the random number generator to</span>
-<a id="__codelineno-0-729" name="__codelineno-0-729"></a><span class="sd">            ensure reproducibility. Defaults to 123.</span>
-<a id="__codelineno-0-730" name="__codelineno-0-730"></a><span class="sd">        return_predictors (bool, optional): If `True`, the predictors used to make</span>
-<a id="__codelineno-0-731" name="__codelineno-0-731"></a><span class="sd">            the predictions are also returned. Defaults to False.</span>
-<a id="__codelineno-0-732" name="__codelineno-0-732"></a><span class="sd">        n_jobs (int | str, optional): The number of jobs to run in parallel. If `-1`,</span>
-<a id="__codelineno-0-733" name="__codelineno-0-733"></a><span class="sd">            then the number of jobs is set to the number of cores. If &#39;auto&#39;, `n_jobs`</span>
-<a id="__codelineno-0-734" name="__codelineno-0-734"></a><span class="sd">            is set using the function `skforecast.utils.select_n_jobs_backtesting`.</span>
-<a id="__codelineno-0-735" name="__codelineno-0-735"></a><span class="sd">            Defaults to &#39;auto&#39;.</span>
-<a id="__codelineno-0-736" name="__codelineno-0-736"></a><span class="sd">        verbose (bool, optional): Print number of folds and index of training and</span>
-<a id="__codelineno-0-737" name="__codelineno-0-737"></a><span class="sd">            validation sets used for backtesting. Defaults to False.</span>
-<a id="__codelineno-0-738" name="__codelineno-0-738"></a><span class="sd">        show_progress (bool, optional): Whether to show a progress bar.</span>
-<a id="__codelineno-0-739" name="__codelineno-0-739"></a><span class="sd">            Defaults to True.</span>
-<a id="__codelineno-0-740" name="__codelineno-0-740"></a><span class="sd">        suppress_warnings (bool, optional): If `True`, spotforecast warnings will be</span>
-<a id="__codelineno-0-741" name="__codelineno-0-741"></a><span class="sd">            suppressed during the backtesting process. See</span>
-<a id="__codelineno-0-742" name="__codelineno-0-742"></a><span class="sd">            `spotforecast.exceptions.warn_skforecast_categories` for more information.</span>
-<a id="__codelineno-0-743" name="__codelineno-0-743"></a><span class="sd">            Defaults to False.</span>
-<a id="__codelineno-0-744" name="__codelineno-0-744"></a>
-<a id="__codelineno-0-745" name="__codelineno-0-745"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-746" name="__codelineno-0-746"></a><span class="sd">        tuple (pd.DataFrame, pd.DataFrame):</span>
-<a id="__codelineno-0-747" name="__codelineno-0-747"></a><span class="sd">            - metric_values: Value(s) of the metric(s).</span>
-<a id="__codelineno-0-748" name="__codelineno-0-748"></a><span class="sd">            - backtest_predictions: Value of predictions. The DataFrame includes</span>
-<a id="__codelineno-0-749" name="__codelineno-0-749"></a><span class="sd">              the following columns:</span>
-<a id="__codelineno-0-750" name="__codelineno-0-750"></a>
-<a id="__codelineno-0-751" name="__codelineno-0-751"></a><span class="sd">              - fold: Indicates the fold number where the prediction was made.</span>
-<a id="__codelineno-0-752" name="__codelineno-0-752"></a><span class="sd">              - pred: Predicted values for the corresponding series and time steps.</span>
-<a id="__codelineno-0-753" name="__codelineno-0-753"></a>
-<a id="__codelineno-0-754" name="__codelineno-0-754"></a><span class="sd">              If `interval` is not `None`, additional columns are included depending</span>
-<a id="__codelineno-0-755" name="__codelineno-0-755"></a><span class="sd">              on the method:</span>
-<a id="__codelineno-0-756" name="__codelineno-0-756"></a>
-<a id="__codelineno-0-757" name="__codelineno-0-757"></a><span class="sd">              - For `float`: Columns `lower_bound` and `upper_bound`.</span>
-<a id="__codelineno-0-758" name="__codelineno-0-758"></a><span class="sd">              - For `list` or `tuple` of 2 elements: Columns `lower_bound` and</span>
-<a id="__codelineno-0-759" name="__codelineno-0-759"></a><span class="sd">                `upper_bound`.</span>
-<a id="__codelineno-0-760" name="__codelineno-0-760"></a><span class="sd">              - For `list` or `tuple` with multiple percentiles: One column per</span>
-<a id="__codelineno-0-761" name="__codelineno-0-761"></a><span class="sd">                percentile (e.g., `p_10`, `p_50`, `p_90`).</span>
-<a id="__codelineno-0-762" name="__codelineno-0-762"></a><span class="sd">              - For `&#39;bootstrapping&#39;`: One column per bootstrapping iteration</span>
-<a id="__codelineno-0-763" name="__codelineno-0-763"></a><span class="sd">                (e.g., `pred_boot_0`, `pred_boot_1`, ..., `pred_boot_n`).</span>
-<a id="__codelineno-0-764" name="__codelineno-0-764"></a><span class="sd">              - For `scipy.stats` distribution objects: One column for each</span>
-<a id="__codelineno-0-765" name="__codelineno-0-765"></a><span class="sd">                estimated parameter of the distribution (e.g., `loc`, `scale`).</span>
-<a id="__codelineno-0-766" name="__codelineno-0-766"></a>
-<a id="__codelineno-0-767" name="__codelineno-0-767"></a><span class="sd">              If `return_predictors` is `True`, one column per predictor is created.</span>
-<a id="__codelineno-0-768" name="__codelineno-0-768"></a>
-<a id="__codelineno-0-769" name="__codelineno-0-769"></a><span class="sd">              Depending on the relation between `steps` and `fold_stride`, the output</span>
-<a id="__codelineno-0-770" name="__codelineno-0-770"></a><span class="sd">              may include repeated indexes (if `fold_stride &lt; steps`) or gaps</span>
-<a id="__codelineno-0-771" name="__codelineno-0-771"></a><span class="sd">              (if `fold_stride &gt; steps`). See Notes below for more details.</span>
-<a id="__codelineno-0-772" name="__codelineno-0-772"></a>
-<a id="__codelineno-0-773" name="__codelineno-0-773"></a><span class="sd">    Notes:</span>
-<a id="__codelineno-0-774" name="__codelineno-0-774"></a><span class="sd">        Note on `fold_stride` vs. `steps`:</span>
-<a id="__codelineno-0-775" name="__codelineno-0-775"></a>
-<a id="__codelineno-0-776" name="__codelineno-0-776"></a><span class="sd">        - If `fold_stride == steps`, test sets are placed back-to-back without overlap.</span>
-<a id="__codelineno-0-777" name="__codelineno-0-777"></a><span class="sd">          Each observation appears only once in the output DataFrame, so the</span>
-<a id="__codelineno-0-778" name="__codelineno-0-778"></a><span class="sd">          index is unique.</span>
-<a id="__codelineno-0-779" name="__codelineno-0-779"></a><span class="sd">        - If `fold_stride &lt; steps`, test sets overlap. Multiple forecasts are</span>
-<a id="__codelineno-0-780" name="__codelineno-0-780"></a><span class="sd">          generated for the same observations and, therefore, the output</span>
-<a id="__codelineno-0-781" name="__codelineno-0-781"></a><span class="sd">          DataFrame contains repeated indexes.</span>
-<a id="__codelineno-0-782" name="__codelineno-0-782"></a><span class="sd">        - If `fold_stride &gt; steps`, there are gaps between consecutive test sets.</span>
-<a id="__codelineno-0-783" name="__codelineno-0-783"></a><span class="sd">          Some observations in the series will not have associated predictions,</span>
-<a id="__codelineno-0-784" name="__codelineno-0-784"></a><span class="sd">          so the output DataFrame has non-contiguous indexes.</span>
-<a id="__codelineno-0-785" name="__codelineno-0-785"></a>
-<a id="__codelineno-0-786" name="__codelineno-0-786"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-787" name="__codelineno-0-787"></a><span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
-<a id="__codelineno-0-788" name="__codelineno-0-788"></a><span class="sd">        &gt;&gt;&gt; from sklearn.ensemble import RandomForestRegressor</span>
-<a id="__codelineno-0-789" name="__codelineno-0-789"></a><span class="sd">        &gt;&gt;&gt; from spotforecast2_safe.forecaster.recursive import ForecasterRecursive</span>
-<a id="__codelineno-0-790" name="__codelineno-0-790"></a><span class="sd">        &gt;&gt;&gt; from spotforecast2_safe.model_selection import backtesting_forecaster, TimeSeriesFold</span>
-<a id="__codelineno-0-791" name="__codelineno-0-791"></a><span class="sd">        &gt;&gt;&gt; y = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])</span>
-<a id="__codelineno-0-792" name="__codelineno-0-792"></a><span class="sd">        &gt;&gt;&gt; forecaster = ForecasterRecursive(</span>
-<a id="__codelineno-0-793" name="__codelineno-0-793"></a><span class="sd">        ...     estimator=RandomForestRegressor(random_state=123),</span>
-<a id="__codelineno-0-794" name="__codelineno-0-794"></a><span class="sd">        ...     lags=2</span>
-<a id="__codelineno-0-795" name="__codelineno-0-795"></a><span class="sd">        ... )</span>
-<a id="__codelineno-0-796" name="__codelineno-0-796"></a><span class="sd">        &gt;&gt;&gt; cv = TimeSeriesFold(</span>
-<a id="__codelineno-0-797" name="__codelineno-0-797"></a><span class="sd">        ...     steps=2,</span>
-<a id="__codelineno-0-798" name="__codelineno-0-798"></a><span class="sd">        ...     initial_train_size=5,</span>
-<a id="__codelineno-0-799" name="__codelineno-0-799"></a><span class="sd">        ...     refit=False</span>
-<a id="__codelineno-0-800" name="__codelineno-0-800"></a><span class="sd">        ... )</span>
-<a id="__codelineno-0-801" name="__codelineno-0-801"></a><span class="sd">        &gt;&gt;&gt; metric_values, backtest_predictions = backtesting_forecaster(</span>
-<a id="__codelineno-0-802" name="__codelineno-0-802"></a><span class="sd">        ...     forecaster=forecaster,</span>
-<a id="__codelineno-0-803" name="__codelineno-0-803"></a><span class="sd">        ...     y=y,</span>
-<a id="__codelineno-0-804" name="__codelineno-0-804"></a><span class="sd">        ...     cv=cv,</span>
-<a id="__codelineno-0-805" name="__codelineno-0-805"></a><span class="sd">        ...     metric=&#39;mean_squared_error&#39;</span>
-<a id="__codelineno-0-806" name="__codelineno-0-806"></a><span class="sd">        ... )</span>
-<a id="__codelineno-0-807" name="__codelineno-0-807"></a><span class="sd">        &gt;&gt;&gt; metric_values</span>
-<a id="__codelineno-0-808" name="__codelineno-0-808"></a><span class="sd">           mean_squared_error</span>
-<a id="__codelineno-0-809" name="__codelineno-0-809"></a><span class="sd">        0            0.201334</span>
-<a id="__codelineno-0-810" name="__codelineno-0-810"></a><span class="sd">        &gt;&gt;&gt; backtest_predictions</span>
-<a id="__codelineno-0-811" name="__codelineno-0-811"></a><span class="sd">           fold  pred</span>
-<a id="__codelineno-0-812" name="__codelineno-0-812"></a><span class="sd">        5     0  5.18</span>
-<a id="__codelineno-0-813" name="__codelineno-0-813"></a><span class="sd">        6     0  6.10</span>
-<a id="__codelineno-0-814" name="__codelineno-0-814"></a><span class="sd">        7     1  7.36</span>
-<a id="__codelineno-0-815" name="__codelineno-0-815"></a><span class="sd">        8     1  8.40</span>
-<a id="__codelineno-0-816" name="__codelineno-0-816"></a><span class="sd">        9     2  9.31</span>
-<a id="__codelineno-0-817" name="__codelineno-0-817"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-818" name="__codelineno-0-818"></a>
-<a id="__codelineno-0-819" name="__codelineno-0-819"></a>    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cv</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;OneStepAheadFold&quot;</span><span class="p">:</span>
-<a id="__codelineno-0-820" name="__codelineno-0-820"></a>        <span class="k">return</span> <span class="n">backtesting_forecaster_one_step</span><span class="p">(</span>
-<a id="__codelineno-0-821" name="__codelineno-0-821"></a>            <span class="n">forecaster</span><span class="o">=</span><span class="n">forecaster</span><span class="p">,</span>
-<a id="__codelineno-0-822" name="__codelineno-0-822"></a>            <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
-<a id="__codelineno-0-823" name="__codelineno-0-823"></a>            <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
-<a id="__codelineno-0-824" name="__codelineno-0-824"></a>            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
-<a id="__codelineno-0-825" name="__codelineno-0-825"></a>            <span class="n">exog</span><span class="o">=</span><span class="n">exog</span><span class="p">,</span>
-<a id="__codelineno-0-826" name="__codelineno-0-826"></a>            <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
-<a id="__codelineno-0-827" name="__codelineno-0-827"></a>            <span class="n">interval_method</span><span class="o">=</span><span class="n">interval_method</span><span class="p">,</span>
-<a id="__codelineno-0-828" name="__codelineno-0-828"></a>            <span class="n">n_boot</span><span class="o">=</span><span class="n">n_boot</span><span class="p">,</span>
-<a id="__codelineno-0-829" name="__codelineno-0-829"></a>            <span class="n">use_in_sample_residuals</span><span class="o">=</span><span class="n">use_in_sample_residuals</span><span class="p">,</span>
-<a id="__codelineno-0-830" name="__codelineno-0-830"></a>            <span class="n">use_binned_residuals</span><span class="o">=</span><span class="n">use_binned_residuals</span><span class="p">,</span>
-<a id="__codelineno-0-831" name="__codelineno-0-831"></a>            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-<a id="__codelineno-0-832" name="__codelineno-0-832"></a>            <span class="n">return_predictors</span><span class="o">=</span><span class="n">return_predictors</span><span class="p">,</span>
-<a id="__codelineno-0-833" name="__codelineno-0-833"></a>            <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
-<a id="__codelineno-0-834" name="__codelineno-0-834"></a>            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-<a id="__codelineno-0-835" name="__codelineno-0-835"></a>            <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
-<a id="__codelineno-0-836" name="__codelineno-0-836"></a>            <span class="n">suppress_warnings</span><span class="o">=</span><span class="n">suppress_warnings</span><span class="p">,</span>
-<a id="__codelineno-0-837" name="__codelineno-0-837"></a>        <span class="p">)</span>
-<a id="__codelineno-0-838" name="__codelineno-0-838"></a>
-<a id="__codelineno-0-839" name="__codelineno-0-839"></a>    <span class="n">check_backtesting_input</span><span class="p">(</span>
-<a id="__codelineno-0-840" name="__codelineno-0-840"></a>        <span class="n">forecaster</span><span class="o">=</span><span class="n">forecaster</span><span class="p">,</span>
-<a id="__codelineno-0-841" name="__codelineno-0-841"></a>        <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
-<a id="__codelineno-0-842" name="__codelineno-0-842"></a>        <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
-<a id="__codelineno-0-843" name="__codelineno-0-843"></a>        <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
-<a id="__codelineno-0-844" name="__codelineno-0-844"></a>        <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
-<a id="__codelineno-0-845" name="__codelineno-0-845"></a>        <span class="n">interval_method</span><span class="o">=</span><span class="n">interval_method</span><span class="p">,</span>
-<a id="__codelineno-0-846" name="__codelineno-0-846"></a>        <span class="n">n_boot</span><span class="o">=</span><span class="n">n_boot</span><span class="p">,</span>
-<a id="__codelineno-0-847" name="__codelineno-0-847"></a>        <span class="n">use_in_sample_residuals</span><span class="o">=</span><span class="n">use_in_sample_residuals</span><span class="p">,</span>
-<a id="__codelineno-0-848" name="__codelineno-0-848"></a>        <span class="n">use_binned_residuals</span><span class="o">=</span><span class="n">use_binned_residuals</span><span class="p">,</span>
-<a id="__codelineno-0-849" name="__codelineno-0-849"></a>        <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-<a id="__codelineno-0-850" name="__codelineno-0-850"></a>        <span class="n">return_predictors</span><span class="o">=</span><span class="n">return_predictors</span><span class="p">,</span>
-<a id="__codelineno-0-851" name="__codelineno-0-851"></a>        <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
-<a id="__codelineno-0-852" name="__codelineno-0-852"></a>        <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
-<a id="__codelineno-0-853" name="__codelineno-0-853"></a>        <span class="n">suppress_warnings</span><span class="o">=</span><span class="n">suppress_warnings</span><span class="p">,</span>
-<a id="__codelineno-0-854" name="__codelineno-0-854"></a>    <span class="p">)</span>
-<a id="__codelineno-0-855" name="__codelineno-0-855"></a>
-<a id="__codelineno-0-856" name="__codelineno-0-856"></a>    <span class="n">metric_values</span><span class="p">,</span> <span class="n">backtest_predictions</span> <span class="o">=</span> <span class="n">_backtesting_forecaster</span><span class="p">(</span>
-<a id="__codelineno-0-857" name="__codelineno-0-857"></a>        <span class="n">forecaster</span><span class="o">=</span><span class="n">forecaster</span><span class="p">,</span>
-<a id="__codelineno-0-858" name="__codelineno-0-858"></a>        <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
-<a id="__codelineno-0-859" name="__codelineno-0-859"></a>        <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
-<a id="__codelineno-0-860" name="__codelineno-0-860"></a>        <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
-<a id="__codelineno-0-861" name="__codelineno-0-861"></a>        <span class="n">exog</span><span class="o">=</span><span class="n">exog</span><span class="p">,</span>
-<a id="__codelineno-0-862" name="__codelineno-0-862"></a>        <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
-<a id="__codelineno-0-863" name="__codelineno-0-863"></a>        <span class="n">interval_method</span><span class="o">=</span><span class="n">interval_method</span><span class="p">,</span>
-<a id="__codelineno-0-864" name="__codelineno-0-864"></a>        <span class="n">n_boot</span><span class="o">=</span><span class="n">n_boot</span><span class="p">,</span>
-<a id="__codelineno-0-865" name="__codelineno-0-865"></a>        <span class="n">use_in_sample_residuals</span><span class="o">=</span><span class="n">use_in_sample_residuals</span><span class="p">,</span>
-<a id="__codelineno-0-866" name="__codelineno-0-866"></a>        <span class="n">use_binned_residuals</span><span class="o">=</span><span class="n">use_binned_residuals</span><span class="p">,</span>
-<a id="__codelineno-0-867" name="__codelineno-0-867"></a>        <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
-<a id="__codelineno-0-868" name="__codelineno-0-868"></a>        <span class="n">return_predictors</span><span class="o">=</span><span class="n">return_predictors</span><span class="p">,</span>
-<a id="__codelineno-0-869" name="__codelineno-0-869"></a>        <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
-<a id="__codelineno-0-870" name="__codelineno-0-870"></a>        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
-<a id="__codelineno-0-871" name="__codelineno-0-871"></a>        <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
-<a id="__codelineno-0-872" name="__codelineno-0-872"></a>        <span class="n">suppress_warnings</span><span class="o">=</span><span class="n">suppress_warnings</span><span class="p">,</span>
-<a id="__codelineno-0-873" name="__codelineno-0-873"></a>    <span class="p">)</span>
-<a id="__codelineno-0-874" name="__codelineno-0-874"></a>
-<a id="__codelineno-0-875" name="__codelineno-0-875"></a>    <span class="k">return</span> <span class="n">metric_values</span><span class="p">,</span> <span class="n">backtest_predictions</span>
+<span class="normal"><a href="#__codelineno-0-875">875</a></span>
+<span class="normal"><a href="#__codelineno-0-876">876</a></span>
+<span class="normal"><a href="#__codelineno-0-877">877</a></span>
+<span class="normal"><a href="#__codelineno-0-878">878</a></span>
+<span class="normal"><a href="#__codelineno-0-879">879</a></span>
+<span class="normal"><a href="#__codelineno-0-880">880</a></span>
+<span class="normal"><a href="#__codelineno-0-881">881</a></span>
+<span class="normal"><a href="#__codelineno-0-882">882</a></span>
+<span class="normal"><a href="#__codelineno-0-883">883</a></span>
+<span class="normal"><a href="#__codelineno-0-884">884</a></span>
+<span class="normal"><a href="#__codelineno-0-885">885</a></span>
+<span class="normal"><a href="#__codelineno-0-886">886</a></span>
+<span class="normal"><a href="#__codelineno-0-887">887</a></span>
+<span class="normal"><a href="#__codelineno-0-888">888</a></span>
+<span class="normal"><a href="#__codelineno-0-889">889</a></span>
+<span class="normal"><a href="#__codelineno-0-890">890</a></span>
+<span class="normal"><a href="#__codelineno-0-891">891</a></span>
+<span class="normal"><a href="#__codelineno-0-892">892</a></span>
+<span class="normal"><a href="#__codelineno-0-893">893</a></span>
+<span class="normal"><a href="#__codelineno-0-894">894</a></span>
+<span class="normal"><a href="#__codelineno-0-895">895</a></span>
+<span class="normal"><a href="#__codelineno-0-896">896</a></span>
+<span class="normal"><a href="#__codelineno-0-897">897</a></span>
+<span class="normal"><a href="#__codelineno-0-898">898</a></span>
+<span class="normal"><a href="#__codelineno-0-899">899</a></span>
+<span class="normal"><a href="#__codelineno-0-900">900</a></span>
+<span class="normal"><a href="#__codelineno-0-901">901</a></span>
+<span class="normal"><a href="#__codelineno-0-902">902</a></span>
+<span class="normal"><a href="#__codelineno-0-903">903</a></span>
+<span class="normal"><a href="#__codelineno-0-904">904</a></span>
+<span class="normal"><a href="#__codelineno-0-905">905</a></span>
+<span class="normal"><a href="#__codelineno-0-906">906</a></span>
+<span class="normal"><a href="#__codelineno-0-907">907</a></span>
+<span class="normal"><a href="#__codelineno-0-908">908</a></span>
+<span class="normal"><a href="#__codelineno-0-909">909</a></span>
+<span class="normal"><a href="#__codelineno-0-910">910</a></span>
+<span class="normal"><a href="#__codelineno-0-911">911</a></span>
+<span class="normal"><a href="#__codelineno-0-912">912</a></span>
+<span class="normal"><a href="#__codelineno-0-913">913</a></span>
+<span class="normal"><a href="#__codelineno-0-914">914</a></span>
+<span class="normal"><a href="#__codelineno-0-915">915</a></span>
+<span class="normal"><a href="#__codelineno-0-916">916</a></span>
+<span class="normal"><a href="#__codelineno-0-917">917</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-688" name="__codelineno-0-688"></a><span class="k">def</span><span class="w"> </span><span class="nf">backtesting_forecaster</span><span class="p">(</span>
+<a id="__codelineno-0-689" name="__codelineno-0-689"></a>    <span class="n">forecaster</span><span class="p">:</span> <span class="nb">object</span><span class="p">,</span>
+<a id="__codelineno-0-690" name="__codelineno-0-690"></a>    <span class="n">y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+<a id="__codelineno-0-691" name="__codelineno-0-691"></a>    <span class="n">cv</span><span class="p">:</span> <span class="n">TimeSeriesFold</span><span class="p">,</span>
+<a id="__codelineno-0-692" name="__codelineno-0-692"></a>    <span class="n">metric</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span> <span class="o">|</span> <span class="n">Callable</span><span class="p">],</span>
+<a id="__codelineno-0-693" name="__codelineno-0-693"></a>    <span class="n">exog</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span> <span class="o">|</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-694" name="__codelineno-0-694"></a>    <span class="n">interval</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="nb">list</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">|</span> <span class="nb">object</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+<a id="__codelineno-0-695" name="__codelineno-0-695"></a>    <span class="n">interval_method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;bootstrapping&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-696" name="__codelineno-0-696"></a>    <span class="n">n_boot</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">250</span><span class="p">,</span>
+<a id="__codelineno-0-697" name="__codelineno-0-697"></a>    <span class="n">use_in_sample_residuals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-698" name="__codelineno-0-698"></a>    <span class="n">use_binned_residuals</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-699" name="__codelineno-0-699"></a>    <span class="n">random_state</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">123</span><span class="p">,</span>
+<a id="__codelineno-0-700" name="__codelineno-0-700"></a>    <span class="n">return_predictors</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-701" name="__codelineno-0-701"></a>    <span class="n">n_jobs</span><span class="p">:</span> <span class="nb">int</span> <span class="o">|</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+<a id="__codelineno-0-702" name="__codelineno-0-702"></a>    <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-703" name="__codelineno-0-703"></a>    <span class="n">show_progress</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-704" name="__codelineno-0-704"></a>    <span class="n">suppress_warnings</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+<a id="__codelineno-0-705" name="__codelineno-0-705"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
+<a id="__codelineno-0-706" name="__codelineno-0-706"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<a id="__codelineno-0-707" name="__codelineno-0-707"></a><span class="sd">    Backtesting of forecaster model following the folds generated by the TimeSeriesFold</span>
+<a id="__codelineno-0-708" name="__codelineno-0-708"></a><span class="sd">    class and using the metric(s) provided.</span>
+<a id="__codelineno-0-709" name="__codelineno-0-709"></a>
+<a id="__codelineno-0-710" name="__codelineno-0-710"></a><span class="sd">    If `forecaster` is already trained and `initial_train_size` is set to `None` in the</span>
+<a id="__codelineno-0-711" name="__codelineno-0-711"></a><span class="sd">    TimeSeriesFold class, no initial train will be done and all data will be used</span>
+<a id="__codelineno-0-712" name="__codelineno-0-712"></a><span class="sd">    to evaluate the model. However, the first `len(forecaster.last_window)` observations</span>
+<a id="__codelineno-0-713" name="__codelineno-0-713"></a><span class="sd">    are needed to create the initial predictors, so no predictions are calculated for</span>
+<a id="__codelineno-0-714" name="__codelineno-0-714"></a><span class="sd">    them.</span>
+<a id="__codelineno-0-715" name="__codelineno-0-715"></a>
+<a id="__codelineno-0-716" name="__codelineno-0-716"></a><span class="sd">    A copy of the original forecaster is created so that it is not modified during</span>
+<a id="__codelineno-0-717" name="__codelineno-0-717"></a><span class="sd">    the process.</span>
+<a id="__codelineno-0-718" name="__codelineno-0-718"></a>
+<a id="__codelineno-0-719" name="__codelineno-0-719"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-720" name="__codelineno-0-720"></a><span class="sd">        forecaster (ForecasterRecursive, ForecasterDirect, ForecasterEquivalentDate):</span>
+<a id="__codelineno-0-721" name="__codelineno-0-721"></a><span class="sd">            Forecaster model.</span>
+<a id="__codelineno-0-722" name="__codelineno-0-722"></a><span class="sd">        y (pd.Series): Training time series.</span>
+<a id="__codelineno-0-723" name="__codelineno-0-723"></a><span class="sd">        cv (TimeSeriesFold): TimeSeriesFold object with the information needed to</span>
+<a id="__codelineno-0-724" name="__codelineno-0-724"></a><span class="sd">            split the data into folds.</span>
+<a id="__codelineno-0-725" name="__codelineno-0-725"></a><span class="sd">        metric (str | Callable | list): Metric used to quantify the goodness of fit</span>
+<a id="__codelineno-0-726" name="__codelineno-0-726"></a><span class="sd">            of the model.</span>
+<a id="__codelineno-0-727" name="__codelineno-0-727"></a>
+<a id="__codelineno-0-728" name="__codelineno-0-728"></a><span class="sd">            - If `str`: {&#39;mean_squared_error&#39;, &#39;mean_absolute_error&#39;,</span>
+<a id="__codelineno-0-729" name="__codelineno-0-729"></a><span class="sd">              &#39;mean_absolute_percentage_error&#39;, &#39;mean_squared_log_error&#39;,</span>
+<a id="__codelineno-0-730" name="__codelineno-0-730"></a><span class="sd">              &#39;mean_absolute_scaled_error&#39;, &#39;root_mean_squared_scaled_error&#39;}</span>
+<a id="__codelineno-0-731" name="__codelineno-0-731"></a><span class="sd">            - If `Callable`: Function with arguments `y_true`, `y_pred` and `y_train`</span>
+<a id="__codelineno-0-732" name="__codelineno-0-732"></a><span class="sd">              (Optional) that returns a float.</span>
+<a id="__codelineno-0-733" name="__codelineno-0-733"></a><span class="sd">            - If `list`: List containing multiple strings and/or Callables.</span>
+<a id="__codelineno-0-734" name="__codelineno-0-734"></a><span class="sd">        exog (pd.Series | pd.DataFrame, optional): Exogenous variable/s included as</span>
+<a id="__codelineno-0-735" name="__codelineno-0-735"></a><span class="sd">            predictor/s. Must have the same number of observations as `y` and should</span>
+<a id="__codelineno-0-736" name="__codelineno-0-736"></a><span class="sd">            be aligned so that y[i] is regressed on exog[i]. Defaults to None.</span>
+<a id="__codelineno-0-737" name="__codelineno-0-737"></a><span class="sd">        interval (float | list | tuple | str | object, optional): Specifies whether</span>
+<a id="__codelineno-0-738" name="__codelineno-0-738"></a><span class="sd">            probabilistic predictions should be estimated and the method to use.</span>
+<a id="__codelineno-0-739" name="__codelineno-0-739"></a><span class="sd">            The following options are supported:</span>
+<a id="__codelineno-0-740" name="__codelineno-0-740"></a>
+<a id="__codelineno-0-741" name="__codelineno-0-741"></a><span class="sd">            - If `float`, represents the nominal (expected) coverage (between 0 and 1).</span>
+<a id="__codelineno-0-742" name="__codelineno-0-742"></a><span class="sd">            For instance, `interval=0.95` corresponds to `[2.5, 97.5]` percentiles.</span>
+<a id="__codelineno-0-743" name="__codelineno-0-743"></a><span class="sd">            - If `list` or `tuple`: Sequence of percentiles to compute, each value must</span>
+<a id="__codelineno-0-744" name="__codelineno-0-744"></a><span class="sd">              be between 0 and 100 inclusive. For example, a 95% confidence interval can</span>
+<a id="__codelineno-0-745" name="__codelineno-0-745"></a><span class="sd">              be specified as `interval = [2.5, 97.5]` or multiple percentiles (e.g. 10,</span>
+<a id="__codelineno-0-746" name="__codelineno-0-746"></a><span class="sd">              50 and 90) as `interval = [10, 50, 90]`.</span>
+<a id="__codelineno-0-747" name="__codelineno-0-747"></a><span class="sd">            - If &#39;bootstrapping&#39; (str): `n_boot` bootstrapping predictions will be</span>
+<a id="__codelineno-0-748" name="__codelineno-0-748"></a><span class="sd">              generated.</span>
+<a id="__codelineno-0-749" name="__codelineno-0-749"></a><span class="sd">            - If scipy.stats distribution object, the distribution parameters will</span>
+<a id="__codelineno-0-750" name="__codelineno-0-750"></a><span class="sd">              be estimated for each prediction.</span>
+<a id="__codelineno-0-751" name="__codelineno-0-751"></a><span class="sd">            - If None, no probabilistic predictions are estimated.</span>
+<a id="__codelineno-0-752" name="__codelineno-0-752"></a><span class="sd">            Defaults to None.</span>
+<a id="__codelineno-0-753" name="__codelineno-0-753"></a><span class="sd">        interval_method (str, optional): Technique used to estimate prediction</span>
+<a id="__codelineno-0-754" name="__codelineno-0-754"></a><span class="sd">            intervals. Available options:</span>
+<a id="__codelineno-0-755" name="__codelineno-0-755"></a>
+<a id="__codelineno-0-756" name="__codelineno-0-756"></a><span class="sd">            - &#39;bootstrapping&#39;: Bootstrapping is used to generate prediction intervals.</span>
+<a id="__codelineno-0-757" name="__codelineno-0-757"></a><span class="sd">            - &#39;conformal&#39;: Employs the conformal prediction split method for</span>
+<a id="__codelineno-0-758" name="__codelineno-0-758"></a><span class="sd">              interval estimation.</span>
+<a id="__codelineno-0-759" name="__codelineno-0-759"></a><span class="sd">            Defaults to &#39;bootstrapping&#39;.</span>
+<a id="__codelineno-0-760" name="__codelineno-0-760"></a><span class="sd">        n_boot (int, optional): Number of bootstrapping iterations to perform when</span>
+<a id="__codelineno-0-761" name="__codelineno-0-761"></a><span class="sd">            estimating prediction intervals. Defaults to 250.</span>
+<a id="__codelineno-0-762" name="__codelineno-0-762"></a><span class="sd">        use_in_sample_residuals (bool, optional): If `True`, residuals from the</span>
+<a id="__codelineno-0-763" name="__codelineno-0-763"></a><span class="sd">            training data are used as proxy of prediction error to create predictions.</span>
+<a id="__codelineno-0-764" name="__codelineno-0-764"></a><span class="sd">            If `False`, out of sample residuals (calibration) are used.</span>
+<a id="__codelineno-0-765" name="__codelineno-0-765"></a><span class="sd">            Out-of-sample residuals must be precomputed using Forecaster&#39;s</span>
+<a id="__codelineno-0-766" name="__codelineno-0-766"></a><span class="sd">            `set_out_sample_residuals()` method. Defaults to True.</span>
+<a id="__codelineno-0-767" name="__codelineno-0-767"></a><span class="sd">        use_binned_residuals (bool, optional): If `True`, residuals are selected</span>
+<a id="__codelineno-0-768" name="__codelineno-0-768"></a><span class="sd">            based on the predicted values (binned selection).</span>
+<a id="__codelineno-0-769" name="__codelineno-0-769"></a><span class="sd">            If `False`, residuals are selected randomly. Defaults to True.</span>
+<a id="__codelineno-0-770" name="__codelineno-0-770"></a><span class="sd">        random_state (int, optional): Seed for the random number generator to</span>
+<a id="__codelineno-0-771" name="__codelineno-0-771"></a><span class="sd">            ensure reproducibility. Defaults to 123.</span>
+<a id="__codelineno-0-772" name="__codelineno-0-772"></a><span class="sd">        return_predictors (bool, optional): If `True`, the predictors used to make</span>
+<a id="__codelineno-0-773" name="__codelineno-0-773"></a><span class="sd">            the predictions are also returned. Defaults to False.</span>
+<a id="__codelineno-0-774" name="__codelineno-0-774"></a><span class="sd">        n_jobs (int | str, optional): The number of jobs to run in parallel. If `-1`,</span>
+<a id="__codelineno-0-775" name="__codelineno-0-775"></a><span class="sd">            then the number of jobs is set to the number of cores. If &#39;auto&#39;, `n_jobs`</span>
+<a id="__codelineno-0-776" name="__codelineno-0-776"></a><span class="sd">            is set using the function `skforecast.utils.select_n_jobs_backtesting`.</span>
+<a id="__codelineno-0-777" name="__codelineno-0-777"></a><span class="sd">            Defaults to &#39;auto&#39;.</span>
+<a id="__codelineno-0-778" name="__codelineno-0-778"></a><span class="sd">        verbose (bool, optional): Print number of folds and index of training and</span>
+<a id="__codelineno-0-779" name="__codelineno-0-779"></a><span class="sd">            validation sets used for backtesting. Defaults to False.</span>
+<a id="__codelineno-0-780" name="__codelineno-0-780"></a><span class="sd">        show_progress (bool, optional): Whether to show a progress bar.</span>
+<a id="__codelineno-0-781" name="__codelineno-0-781"></a><span class="sd">            Defaults to True.</span>
+<a id="__codelineno-0-782" name="__codelineno-0-782"></a><span class="sd">        suppress_warnings (bool, optional): If `True`, spotforecast warnings will be</span>
+<a id="__codelineno-0-783" name="__codelineno-0-783"></a><span class="sd">            suppressed during the backtesting process. See</span>
+<a id="__codelineno-0-784" name="__codelineno-0-784"></a><span class="sd">            `spotforecast.exceptions.warn_skforecast_categories` for more information.</span>
+<a id="__codelineno-0-785" name="__codelineno-0-785"></a><span class="sd">            Defaults to False.</span>
+<a id="__codelineno-0-786" name="__codelineno-0-786"></a>
+<a id="__codelineno-0-787" name="__codelineno-0-787"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-788" name="__codelineno-0-788"></a><span class="sd">        tuple (pd.DataFrame, pd.DataFrame):</span>
+<a id="__codelineno-0-789" name="__codelineno-0-789"></a><span class="sd">            - metric_values: Value(s) of the metric(s).</span>
+<a id="__codelineno-0-790" name="__codelineno-0-790"></a><span class="sd">            - backtest_predictions: Value of predictions. The DataFrame includes</span>
+<a id="__codelineno-0-791" name="__codelineno-0-791"></a><span class="sd">              the following columns:</span>
+<a id="__codelineno-0-792" name="__codelineno-0-792"></a>
+<a id="__codelineno-0-793" name="__codelineno-0-793"></a><span class="sd">              - fold: Indicates the fold number where the prediction was made.</span>
+<a id="__codelineno-0-794" name="__codelineno-0-794"></a><span class="sd">              - pred: Predicted values for the corresponding series and time steps.</span>
+<a id="__codelineno-0-795" name="__codelineno-0-795"></a>
+<a id="__codelineno-0-796" name="__codelineno-0-796"></a><span class="sd">              If `interval` is not `None`, additional columns are included depending</span>
+<a id="__codelineno-0-797" name="__codelineno-0-797"></a><span class="sd">              on the method:</span>
+<a id="__codelineno-0-798" name="__codelineno-0-798"></a>
+<a id="__codelineno-0-799" name="__codelineno-0-799"></a><span class="sd">              - For `float`: Columns `lower_bound` and `upper_bound`.</span>
+<a id="__codelineno-0-800" name="__codelineno-0-800"></a><span class="sd">              - For `list` or `tuple` of 2 elements: Columns `lower_bound` and</span>
+<a id="__codelineno-0-801" name="__codelineno-0-801"></a><span class="sd">                `upper_bound`.</span>
+<a id="__codelineno-0-802" name="__codelineno-0-802"></a><span class="sd">              - For `list` or `tuple` with multiple percentiles: One column per</span>
+<a id="__codelineno-0-803" name="__codelineno-0-803"></a><span class="sd">                percentile (e.g., `p_10`, `p_50`, `p_90`).</span>
+<a id="__codelineno-0-804" name="__codelineno-0-804"></a><span class="sd">              - For `&#39;bootstrapping&#39;`: One column per bootstrapping iteration</span>
+<a id="__codelineno-0-805" name="__codelineno-0-805"></a><span class="sd">                (e.g., `pred_boot_0`, `pred_boot_1`, ..., `pred_boot_n`).</span>
+<a id="__codelineno-0-806" name="__codelineno-0-806"></a><span class="sd">              - For `scipy.stats` distribution objects: One column for each</span>
+<a id="__codelineno-0-807" name="__codelineno-0-807"></a><span class="sd">                estimated parameter of the distribution (e.g., `loc`, `scale`).</span>
+<a id="__codelineno-0-808" name="__codelineno-0-808"></a>
+<a id="__codelineno-0-809" name="__codelineno-0-809"></a><span class="sd">              If `return_predictors` is `True`, one column per predictor is created.</span>
+<a id="__codelineno-0-810" name="__codelineno-0-810"></a>
+<a id="__codelineno-0-811" name="__codelineno-0-811"></a><span class="sd">              Depending on the relation between `steps` and `fold_stride`, the output</span>
+<a id="__codelineno-0-812" name="__codelineno-0-812"></a><span class="sd">              may include repeated indexes (if `fold_stride &lt; steps`) or gaps</span>
+<a id="__codelineno-0-813" name="__codelineno-0-813"></a><span class="sd">              (if `fold_stride &gt; steps`). See Notes below for more details.</span>
+<a id="__codelineno-0-814" name="__codelineno-0-814"></a>
+<a id="__codelineno-0-815" name="__codelineno-0-815"></a><span class="sd">    Notes:</span>
+<a id="__codelineno-0-816" name="__codelineno-0-816"></a><span class="sd">        Note on `fold_stride` vs. `steps`:</span>
+<a id="__codelineno-0-817" name="__codelineno-0-817"></a>
+<a id="__codelineno-0-818" name="__codelineno-0-818"></a><span class="sd">        - If `fold_stride == steps`, test sets are placed back-to-back without overlap.</span>
+<a id="__codelineno-0-819" name="__codelineno-0-819"></a><span class="sd">          Each observation appears only once in the output DataFrame, so the</span>
+<a id="__codelineno-0-820" name="__codelineno-0-820"></a><span class="sd">          index is unique.</span>
+<a id="__codelineno-0-821" name="__codelineno-0-821"></a><span class="sd">        - If `fold_stride &lt; steps`, test sets overlap. Multiple forecasts are</span>
+<a id="__codelineno-0-822" name="__codelineno-0-822"></a><span class="sd">          generated for the same observations and, therefore, the output</span>
+<a id="__codelineno-0-823" name="__codelineno-0-823"></a><span class="sd">          DataFrame contains repeated indexes.</span>
+<a id="__codelineno-0-824" name="__codelineno-0-824"></a><span class="sd">        - If `fold_stride &gt; steps`, there are gaps between consecutive test sets.</span>
+<a id="__codelineno-0-825" name="__codelineno-0-825"></a><span class="sd">          Some observations in the series will not have associated predictions,</span>
+<a id="__codelineno-0-826" name="__codelineno-0-826"></a><span class="sd">          so the output DataFrame has non-contiguous indexes.</span>
+<a id="__codelineno-0-827" name="__codelineno-0-827"></a>
+<a id="__codelineno-0-828" name="__codelineno-0-828"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-829" name="__codelineno-0-829"></a><span class="sd">        &gt;&gt;&gt; import pandas as pd</span>
+<a id="__codelineno-0-830" name="__codelineno-0-830"></a><span class="sd">        &gt;&gt;&gt; from sklearn.ensemble import RandomForestRegressor</span>
+<a id="__codelineno-0-831" name="__codelineno-0-831"></a><span class="sd">        &gt;&gt;&gt; from spotforecast2_safe.forecaster.recursive import ForecasterRecursive</span>
+<a id="__codelineno-0-832" name="__codelineno-0-832"></a><span class="sd">        &gt;&gt;&gt; from spotforecast2_safe.model_selection import backtesting_forecaster, TimeSeriesFold</span>
+<a id="__codelineno-0-833" name="__codelineno-0-833"></a><span class="sd">        &gt;&gt;&gt; y = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])</span>
+<a id="__codelineno-0-834" name="__codelineno-0-834"></a><span class="sd">        &gt;&gt;&gt; forecaster = ForecasterRecursive(</span>
+<a id="__codelineno-0-835" name="__codelineno-0-835"></a><span class="sd">        ...     estimator=RandomForestRegressor(random_state=123),</span>
+<a id="__codelineno-0-836" name="__codelineno-0-836"></a><span class="sd">        ...     lags=5</span>
+<a id="__codelineno-0-837" name="__codelineno-0-837"></a><span class="sd">        ... )</span>
+<a id="__codelineno-0-838" name="__codelineno-0-838"></a><span class="sd">        &gt;&gt;&gt; cv = TimeSeriesFold(</span>
+<a id="__codelineno-0-839" name="__codelineno-0-839"></a><span class="sd">        ...     steps=2,</span>
+<a id="__codelineno-0-840" name="__codelineno-0-840"></a><span class="sd">        ...     initial_train_size=5,</span>
+<a id="__codelineno-0-841" name="__codelineno-0-841"></a><span class="sd">        ...     refit=False</span>
+<a id="__codelineno-0-842" name="__codelineno-0-842"></a><span class="sd">        ... )</span>
+<a id="__codelineno-0-843" name="__codelineno-0-843"></a><span class="sd">        &gt;&gt;&gt; metric_values, backtest_predictions = backtesting_forecaster(</span>
+<a id="__codelineno-0-844" name="__codelineno-0-844"></a><span class="sd">        ...     forecaster=forecaster,</span>
+<a id="__codelineno-0-845" name="__codelineno-0-845"></a><span class="sd">        ...     y=y,</span>
+<a id="__codelineno-0-846" name="__codelineno-0-846"></a><span class="sd">        ...     cv=cv,</span>
+<a id="__codelineno-0-847" name="__codelineno-0-847"></a><span class="sd">        ...     metric=&#39;mean_squared_error&#39;</span>
+<a id="__codelineno-0-848" name="__codelineno-0-848"></a><span class="sd">        ... )</span>
+<a id="__codelineno-0-849" name="__codelineno-0-849"></a><span class="sd">        &gt;&gt;&gt; metric_values</span>
+<a id="__codelineno-0-850" name="__codelineno-0-850"></a><span class="sd">           mean_squared_error</span>
+<a id="__codelineno-0-851" name="__codelineno-0-851"></a><span class="sd">        0            0.201334</span>
+<a id="__codelineno-0-852" name="__codelineno-0-852"></a><span class="sd">        &gt;&gt;&gt; backtest_predictions</span>
+<a id="__codelineno-0-853" name="__codelineno-0-853"></a><span class="sd">           fold  pred</span>
+<a id="__codelineno-0-854" name="__codelineno-0-854"></a><span class="sd">        5     0  5.18</span>
+<a id="__codelineno-0-855" name="__codelineno-0-855"></a><span class="sd">        6     0  6.10</span>
+<a id="__codelineno-0-856" name="__codelineno-0-856"></a><span class="sd">        7     1  7.36</span>
+<a id="__codelineno-0-857" name="__codelineno-0-857"></a><span class="sd">        8     1  8.40</span>
+<a id="__codelineno-0-858" name="__codelineno-0-858"></a><span class="sd">        9     2  9.31</span>
+<a id="__codelineno-0-859" name="__codelineno-0-859"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-860" name="__codelineno-0-860"></a>
+<a id="__codelineno-0-861" name="__codelineno-0-861"></a>    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">cv</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;OneStepAheadFold&quot;</span><span class="p">:</span>
+<a id="__codelineno-0-862" name="__codelineno-0-862"></a>        <span class="k">return</span> <span class="n">backtesting_forecaster_one_step</span><span class="p">(</span>
+<a id="__codelineno-0-863" name="__codelineno-0-863"></a>            <span class="n">forecaster</span><span class="o">=</span><span class="n">forecaster</span><span class="p">,</span>
+<a id="__codelineno-0-864" name="__codelineno-0-864"></a>            <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+<a id="__codelineno-0-865" name="__codelineno-0-865"></a>            <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
+<a id="__codelineno-0-866" name="__codelineno-0-866"></a>            <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+<a id="__codelineno-0-867" name="__codelineno-0-867"></a>            <span class="n">exog</span><span class="o">=</span><span class="n">exog</span><span class="p">,</span>
+<a id="__codelineno-0-868" name="__codelineno-0-868"></a>            <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+<a id="__codelineno-0-869" name="__codelineno-0-869"></a>            <span class="n">interval_method</span><span class="o">=</span><span class="n">interval_method</span><span class="p">,</span>
+<a id="__codelineno-0-870" name="__codelineno-0-870"></a>            <span class="n">n_boot</span><span class="o">=</span><span class="n">n_boot</span><span class="p">,</span>
+<a id="__codelineno-0-871" name="__codelineno-0-871"></a>            <span class="n">use_in_sample_residuals</span><span class="o">=</span><span class="n">use_in_sample_residuals</span><span class="p">,</span>
+<a id="__codelineno-0-872" name="__codelineno-0-872"></a>            <span class="n">use_binned_residuals</span><span class="o">=</span><span class="n">use_binned_residuals</span><span class="p">,</span>
+<a id="__codelineno-0-873" name="__codelineno-0-873"></a>            <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+<a id="__codelineno-0-874" name="__codelineno-0-874"></a>            <span class="n">return_predictors</span><span class="o">=</span><span class="n">return_predictors</span><span class="p">,</span>
+<a id="__codelineno-0-875" name="__codelineno-0-875"></a>            <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+<a id="__codelineno-0-876" name="__codelineno-0-876"></a>            <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+<a id="__codelineno-0-877" name="__codelineno-0-877"></a>            <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+<a id="__codelineno-0-878" name="__codelineno-0-878"></a>            <span class="n">suppress_warnings</span><span class="o">=</span><span class="n">suppress_warnings</span><span class="p">,</span>
+<a id="__codelineno-0-879" name="__codelineno-0-879"></a>        <span class="p">)</span>
+<a id="__codelineno-0-880" name="__codelineno-0-880"></a>
+<a id="__codelineno-0-881" name="__codelineno-0-881"></a>    <span class="n">check_backtesting_input</span><span class="p">(</span>
+<a id="__codelineno-0-882" name="__codelineno-0-882"></a>        <span class="n">forecaster</span><span class="o">=</span><span class="n">forecaster</span><span class="p">,</span>
+<a id="__codelineno-0-883" name="__codelineno-0-883"></a>        <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
+<a id="__codelineno-0-884" name="__codelineno-0-884"></a>        <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+<a id="__codelineno-0-885" name="__codelineno-0-885"></a>        <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+<a id="__codelineno-0-886" name="__codelineno-0-886"></a>        <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+<a id="__codelineno-0-887" name="__codelineno-0-887"></a>        <span class="n">interval_method</span><span class="o">=</span><span class="n">interval_method</span><span class="p">,</span>
+<a id="__codelineno-0-888" name="__codelineno-0-888"></a>        <span class="n">n_boot</span><span class="o">=</span><span class="n">n_boot</span><span class="p">,</span>
+<a id="__codelineno-0-889" name="__codelineno-0-889"></a>        <span class="n">use_in_sample_residuals</span><span class="o">=</span><span class="n">use_in_sample_residuals</span><span class="p">,</span>
+<a id="__codelineno-0-890" name="__codelineno-0-890"></a>        <span class="n">use_binned_residuals</span><span class="o">=</span><span class="n">use_binned_residuals</span><span class="p">,</span>
+<a id="__codelineno-0-891" name="__codelineno-0-891"></a>        <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+<a id="__codelineno-0-892" name="__codelineno-0-892"></a>        <span class="n">return_predictors</span><span class="o">=</span><span class="n">return_predictors</span><span class="p">,</span>
+<a id="__codelineno-0-893" name="__codelineno-0-893"></a>        <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+<a id="__codelineno-0-894" name="__codelineno-0-894"></a>        <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+<a id="__codelineno-0-895" name="__codelineno-0-895"></a>        <span class="n">suppress_warnings</span><span class="o">=</span><span class="n">suppress_warnings</span><span class="p">,</span>
+<a id="__codelineno-0-896" name="__codelineno-0-896"></a>    <span class="p">)</span>
+<a id="__codelineno-0-897" name="__codelineno-0-897"></a>
+<a id="__codelineno-0-898" name="__codelineno-0-898"></a>    <span class="n">metric_values</span><span class="p">,</span> <span class="n">backtest_predictions</span> <span class="o">=</span> <span class="n">_backtesting_forecaster</span><span class="p">(</span>
+<a id="__codelineno-0-899" name="__codelineno-0-899"></a>        <span class="n">forecaster</span><span class="o">=</span><span class="n">forecaster</span><span class="p">,</span>
+<a id="__codelineno-0-900" name="__codelineno-0-900"></a>        <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span>
+<a id="__codelineno-0-901" name="__codelineno-0-901"></a>        <span class="n">cv</span><span class="o">=</span><span class="n">cv</span><span class="p">,</span>
+<a id="__codelineno-0-902" name="__codelineno-0-902"></a>        <span class="n">metric</span><span class="o">=</span><span class="n">metric</span><span class="p">,</span>
+<a id="__codelineno-0-903" name="__codelineno-0-903"></a>        <span class="n">exog</span><span class="o">=</span><span class="n">exog</span><span class="p">,</span>
+<a id="__codelineno-0-904" name="__codelineno-0-904"></a>        <span class="n">interval</span><span class="o">=</span><span class="n">interval</span><span class="p">,</span>
+<a id="__codelineno-0-905" name="__codelineno-0-905"></a>        <span class="n">interval_method</span><span class="o">=</span><span class="n">interval_method</span><span class="p">,</span>
+<a id="__codelineno-0-906" name="__codelineno-0-906"></a>        <span class="n">n_boot</span><span class="o">=</span><span class="n">n_boot</span><span class="p">,</span>
+<a id="__codelineno-0-907" name="__codelineno-0-907"></a>        <span class="n">use_in_sample_residuals</span><span class="o">=</span><span class="n">use_in_sample_residuals</span><span class="p">,</span>
+<a id="__codelineno-0-908" name="__codelineno-0-908"></a>        <span class="n">use_binned_residuals</span><span class="o">=</span><span class="n">use_binned_residuals</span><span class="p">,</span>
+<a id="__codelineno-0-909" name="__codelineno-0-909"></a>        <span class="n">random_state</span><span class="o">=</span><span class="n">random_state</span><span class="p">,</span>
+<a id="__codelineno-0-910" name="__codelineno-0-910"></a>        <span class="n">return_predictors</span><span class="o">=</span><span class="n">return_predictors</span><span class="p">,</span>
+<a id="__codelineno-0-911" name="__codelineno-0-911"></a>        <span class="n">n_jobs</span><span class="o">=</span><span class="n">n_jobs</span><span class="p">,</span>
+<a id="__codelineno-0-912" name="__codelineno-0-912"></a>        <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,</span>
+<a id="__codelineno-0-913" name="__codelineno-0-913"></a>        <span class="n">show_progress</span><span class="o">=</span><span class="n">show_progress</span><span class="p">,</span>
+<a id="__codelineno-0-914" name="__codelineno-0-914"></a>        <span class="n">suppress_warnings</span><span class="o">=</span><span class="n">suppress_warnings</span><span class="p">,</span>
+<a id="__codelineno-0-915" name="__codelineno-0-915"></a>    <span class="p">)</span>
+<a id="__codelineno-0-916" name="__codelineno-0-916"></a>
+<a id="__codelineno-0-917" name="__codelineno-0-917"></a>    <span class="k">return</span> <span class="n">metric_values</span><span class="p">,</span> <span class="n">backtest_predictions</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
