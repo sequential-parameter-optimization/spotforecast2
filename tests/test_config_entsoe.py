@@ -11,8 +11,8 @@ import aliases.
 import pandas as pd
 import pytest
 
-from spotforecast2 import Config, ConfigEntsoe
-from spotforecast2.manager.configurator.config_entsoe import Period
+from spotforecast2_safe import Config, ConfigEntsoe
+from spotforecast2_safe.data import Period
 
 
 class TestConfigEntsoeImports:

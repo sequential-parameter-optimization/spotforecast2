@@ -28,8 +28,8 @@ from spotforecast2_safe.manager.predictor import (
 from spotforecast2_safe.manager.trainer import handle_training as handle_training_safe
 
 from spotforecast2.manager.plotter import make_plot
-from spotforecast2.manager.configurator.config_entsoe import ConfigEntsoe
-from spotforecast2_safe.preprocessing import (
+from spotforecast2 import ConfigEntsoe
+from spotforecast2_safe.manager.models import (
     ForecasterRecursiveLGBM as _ForecasterRecursiveLGBMBase,
     ForecasterRecursiveXGB as _ForecasterRecursiveXGBBase,
 )

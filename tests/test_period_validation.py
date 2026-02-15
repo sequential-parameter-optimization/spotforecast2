@@ -13,7 +13,7 @@ import numpy as np
 import pandas as pd
 
 from spotforecast2 import Config
-from spotforecast2.manager.configurator.config_entsoe import Period
+from spotforecast2_safe.data import Period
 from spotforecast2_safe.preprocessing import RepeatingBasisFunction
 
 
