@@ -1,3 +1,9 @@
+## [0.3.5](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.4...v0.3.5) (2026-02-15)
+
+### Bug Fixes
+
+* Config import from spotforecast2_safe ([63e73a0](https://github.com/sequential-parameter-optimization/spotforecast2/commit/63e73a0c75cab54da2a98519e5c73e658063cbdc))
+
 ## [0.3.5-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.4...v0.3.5-rc.1) (2026-02-15)
 
 ### Bug Fixes
