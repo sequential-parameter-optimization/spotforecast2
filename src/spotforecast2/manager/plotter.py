@@ -46,10 +46,33 @@ class PredictionFigure:
 
     def make_plot(self) -> go.Figure:
         """
-        Generate the Plotly figure with traces and annotations.
+        Generate the Plotly figure with traces and annotations. The following traces are added:
+        - Actual values
+        - Predicted values
+        - Future forecast values
+        - Actual values of the last week
 
-        Returns:
-            The generated plotly.graph_objects.Figure.
+        Examples:
+            >>> import pandas as pd
+            >>> import numpy as np
+            >>> from spotforecast2.manager.plotter import PredictionFigure
+            >>> # Create synthetic data
+            >>> dates = pd.date_range("2023-01-01", periods=100, freq="h", tz="UTC")
+            >>> train_end = dates[70]
+            >>> y = pd.Series(np.random.rand(100) * 100, index=dates, name="load")
+            >>> p = y + np.random.normal(0, 5, 100)
+            >>> pkg = {
+            ...     "train_actual": y.loc[:train_end],
+            ...     "future_actual": y.loc[train_end:],
+            ...     "train_pred": p.loc[:train_end],
+            ...     "future_pred": p.loc[train_end:],
+            ...     "metrics_train": {"mae": 5.0, "mape": 0.1},
+            ...     "metrics_future": {"mae": 6.0, "mape": 0.12},
+            ...     "metrics_future_one_day": {"mae": 4.5, "mape": 0.08},
+            ... }
+            >>> fig = PredictionFigure(pkg).make_plot()
+            >>> isinstance(fig.data, tuple)
+            True
         """
         # Combine data for plotting
         y_actual = pd.concat(
