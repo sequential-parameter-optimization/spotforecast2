@@ -21,7 +21,6 @@ from spotforecast2.model_selection.spotoptim_search import (
     _convert_search_space,
     _parse_lags_from_string,
 )
-import spotforecast2.model_selection.spotoptim_search as mod
 from spotoptim.hyperparameters import ParameterSet
 
 # ------------------------------------------------------------------
