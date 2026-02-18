@@ -1,3 +1,13 @@
+## [0.4.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.6-rc.1...v0.4.0-rc.1) (2026-02-18)
+
+### Features
+
+* tune, shap and spotoptim ([34c5225](https://github.com/sequential-parameter-optimization/spotforecast2/commit/34c5225f341830e78795257121a865ba0ca4eec9))
+
+### Documentation
+
+* plotter ([6e8b590](https://github.com/sequential-parameter-optimization/spotforecast2/commit/6e8b59041c55c2e06fde0a8596e3508d16350079))
+
 ## [0.3.6-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.3.5...v0.3.6-rc.1) (2026-02-15)
 
 ### Bug Fixes
