@@ -690,7 +690,7 @@ class TestConfigInstanceUsage(unittest.TestCase):
         # Verify forecaster was created with config random_state
         assert model.forecaster is not None, "Forecaster should be initialized"
         assert (
-            model.forecaster.regressor.random_state == config.random_state
+            model.forecaster.estimator.random_state == config.random_state
         ), "Forecaster should use config.random_state"
 
     def test_config_instance_has_required_attributes(self):

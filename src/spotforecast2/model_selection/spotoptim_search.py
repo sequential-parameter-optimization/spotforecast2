@@ -3,13 +3,22 @@
 
 """
 Hyperparameter search functions for forecasters using SpotOptim.
+
+This module provides an alternative to Bayesian (Optuna-based) search
+by leveraging the SpotOptim surrogate-model-based optimizer.  It
+follows the same interface as
+:func:`spotforecast2.model_selection.bayesian_search_forecaster`, so the
+two can be used interchangeably.
 """
 
 from __future__ import annotations
-from typing import Callable, Dict, Any
+
+import ast
+import logging
 import warnings
 from copy import deepcopy
-import ast
+from typing import Any, Callable, Dict
+
 import numpy as np
 import pandas as pd
 
@@ -23,50 +32,54 @@ except ImportError:
         ImportWarning,
     )
 
+from spotforecast2.exceptions import IgnoredArgumentWarning
+from spotforecast2.forecaster.metrics import _get_metric, add_y_train_argument
+from spotforecast2.forecaster.utils import date_to_index_position, initialize_lags
 from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
-from spotforecast2_safe.model_selection import OneStepAheadFold
-from spotforecast2_safe.model_selection import _backtesting_forecaster
-from spotforecast2.forecaster.metrics import add_y_train_argument, _get_metric
 from spotforecast2.model_selection.utils_common import (
-    check_one_step_ahead_input,
     check_backtesting_input,
+    check_one_step_ahead_input,
     select_n_jobs_backtesting,
 )
 from spotforecast2.model_selection.utils_metrics import (
     _calculate_metrics_one_step_ahead,
 )
-from spotforecast2.forecaster.utils import (
-    initialize_lags,
-    date_to_index_position,
-)
-from spotforecast2.exceptions import IgnoredArgumentWarning
 from spotforecast2_safe.exceptions import set_skforecast_warnings
+from spotforecast2_safe.model_selection import OneStepAheadFold, _backtesting_forecaster
+
+logger = logging.getLogger(__name__)
 
 
 def _parse_lags_from_string(lags_str: str) -> int | list:
-    """
-    Parse lags string representation back to Python object.
+    """Parse a lags string representation back to a Python object.
 
     Handles two formats:
-    - Single integer as string: "24" -> 24
-    - List representation: "[1, 2, 3]" -> [1, 2, 3]
+
+    * Single integer as string: ``"24"`` → ``24``
+    * List representation:      ``"[1, 2, 3]"`` → ``[1, 2, 3]``
 
     Args:
         lags_str: String representation of lags.
 
     Returns:
         Either an integer or a list of integers representing lags.
+
+    Examples:
+        >>> from spotforecast2.model_selection.spotoptim_search import (
+        ...     _parse_lags_from_string,
+        ... )
+        >>> _parse_lags_from_string("24")
+        24
+        >>> _parse_lags_from_string("[1, 2, 3]")
+        [1, 2, 3]
     """
     lags_str = lags_str.strip()
     if lags_str.startswith("["):
-        # It's a list representation - parse it
         return ast.literal_eval(lags_str)
     else:
-        # It's a single integer
         try:
             return int(lags_str)
         except ValueError:
-            # Fallback for unexpected formats
             return lags_str
 
 
@@ -88,53 +101,105 @@ def spotoptim_search_forecaster(
     output_file: str | None = None,
     kwargs_spotoptim: dict | None = None,
 ) -> tuple[pd.DataFrame, object]:
-    """
-    Hyperparameter optimization for a Forecaster using SpotOptim.
+    """Hyperparameter optimisation for a Forecaster using SpotOptim.
 
-    Performs hyperparameter search using the SpotOptim library for a
-    Forecaster object. Validation is done using time series backtesting with
-    the provided cross-validation strategy.
+    Drop-in alternative to
+    :func:`~spotforecast2.model_selection.bayesian_search_forecaster`
+    that uses the SpotOptim surrogate-model-based optimizer instead of
+    Optuna's TPE sampler.
 
     Args:
-        forecaster: Forecaster model. Can be ForecasterRecursive, ForecasterDirect,
-            or any compatible forecaster class.
-        y: Training time series values. Must be a pandas Series with a
-            datetime or numeric index.
-        cv: Cross-validation strategy with information needed to split the data
-            into folds. Must be an instance of TimeSeriesFold or OneStepAheadFold.
-        search_space: Hyperparameter search space. Can be either:
-            - ParameterSet: A ParameterSet object from spotoptim.hyperparameters
-              defining parameters with their types, bounds, and transformations.
-            - Dict: A dictionary with keys 'bounds', 'var_type', 'var_name', 'var_trans'
-              (SpotOptim format), or a mapping of parameter names to (low, high) tuples.
-        metric: Metric(s) to quantify model goodness of fit.
-        exog: Exogenous variable(s) included as predictors. Default is None.
-        n_trials: Total number of evaluations (initial + sequential iterations).
-            Default is 10.
-        n_initial: Number of initial random points to sample before starting
-            sequential optimization. Default is 5.
-        random_state: Seed for sampling reproducibility. Default is 123.
-        return_best: If True, refit the forecaster using the best parameters
-            found on the whole dataset at the end. Default is True.
-        n_jobs: Number of parallel jobs. If -1, uses all cores. If 'auto',
-            automatically determines the number of jobs. Default is 'auto'.
-        verbose: If True, print optimization progress. Default is False.
-        show_progress: Whether to show progress (currently handled by verbose).
-            Default is True.
-        suppress_warnings: If True, suppress spotforecast warnings. Default is False.
-        output_file: Filename or full path to save results as TSV. Default is None.
-        kwargs_spotoptim: Additional keyword arguments passed to SpotOptim().
-            Default is {}.
+        forecaster: Forecaster model (e.g. ``ForecasterRecursive``).
+        y: Training time series.  Must have a datetime or numeric index.
+        cv: Cross-validation strategy — ``TimeSeriesFold`` or
+            ``OneStepAheadFold``.
+        search_space: Hyperparameter search space.  Either a
+            :class:`~spotoptim.hyperparameters.ParameterSet` or a plain
+            ``dict`` (see examples below).
+        metric: Metric name, callable, or list thereof.
+        exog: Optional exogenous variable(s).
+        n_trials: Total evaluations (initial + sequential).
+        n_initial: Random initial points before surrogate kicks in.
+        random_state: RNG seed.
+        return_best: Re-fit forecaster with best params after search.
+        n_jobs: Parallel jobs for backtesting (``"auto"`` or int).
+        verbose: Print optimisation progress.
+        show_progress: (Handled by *verbose*.)
+        suppress_warnings: Suppress spotforecast warnings.
+        output_file: Save results as TSV to this path.
+        kwargs_spotoptim: Extra kwargs passed to ``SpotOptim()``.
 
     Returns:
-        tuple[pd.DataFrame, object]: A tuple containing:
-            - results: DataFrame with columns 'lags', 'params', metric values,
-              and individual parameter columns. Sorted by the first metric.
-            - optimizer: SpotOptim object containing the optimization results.
+        tuple: ``(results, optimizer)`` where *results* is a sorted
+        ``DataFrame`` and *optimizer* is the ``SpotOptim`` instance.
 
     Raises:
-        ValueError: If exog length doesn't match y length when return_best=True.
-        TypeError: If cv is not an instance of TimeSeriesFold or OneStepAheadFold.
+        ValueError: If ``exog`` length ≠ ``y`` length and
+            ``return_best`` is True.
+        TypeError: If ``cv`` is not ``TimeSeriesFold`` or
+            ``OneStepAheadFold``.
+
+    Examples:
+        **1 — Dict-based search space (no ParameterSet needed):**
+
+        >>> import numpy as np
+        >>> import pandas as pd
+        >>> from sklearn.linear_model import Ridge
+        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        >>> from spotforecast2.model_selection import (
+        ...     TimeSeriesFold,
+        ...     spotoptim_search_forecaster,
+        ... )
+        >>> np.random.seed(42)
+        >>> y = pd.Series(
+        ...     np.random.randn(200).cumsum(),
+        ...     index=pd.date_range("2022-01-01", periods=200, freq="h"),
+        ...     name="load",
+        ... )
+        >>> forecaster = ForecasterRecursive(estimator=Ridge(), lags=5)
+        >>> cv = TimeSeriesFold(
+        ...     steps=5,
+        ...     initial_train_size=150,
+        ...     refit=False,
+        ... )
+        >>> search_space = {"alpha": (0.01, 10.0)}
+        >>> results, optimizer = spotoptim_search_forecaster(
+        ...     forecaster=forecaster,
+        ...     y=y,
+        ...     cv=cv,
+        ...     search_space=search_space,
+        ...     metric="mean_absolute_error",
+        ...     n_trials=5,
+        ...     n_initial=3,
+        ...     random_state=42,
+        ...     return_best=False,
+        ...     verbose=False,
+        ...     show_progress=False,
+        ... )
+        >>> isinstance(results, pd.DataFrame)
+        True
+        >>> "alpha" in results.columns
+        True
+
+        **2 — ParameterSet-based search space:**
+
+        >>> from spotoptim.hyperparameters import ParameterSet
+        >>> ps = ParameterSet()
+        >>> _ = ps.add_float("alpha", low=0.01, high=10.0)
+        >>> results2, _ = spotoptim_search_forecaster(
+        ...     forecaster=ForecasterRecursive(estimator=Ridge(), lags=5),
+        ...     y=y,
+        ...     cv=cv,
+        ...     search_space=ps,
+        ...     metric="mean_absolute_error",
+        ...     n_trials=5,
+        ...     n_initial=3,
+        ...     return_best=False,
+        ...     verbose=False,
+        ...     show_progress=False,
+        ... )
+        >>> len(results2) == 5
+        True
     """
 
     if return_best and exog is not None and (len(exog) != len(y)):
@@ -181,8 +246,13 @@ def _spotoptim_search(
     output_file: str | None = None,
     kwargs_spotoptim: dict | None = None,
 ) -> tuple[pd.DataFrame, object]:
-    """
-    Internal implementation of SpotOptim search.
+    """Internal implementation of the SpotOptim search.
+
+    This function is not intended to be called directly. Use
+    :func:`spotoptim_search_forecaster` instead.
+
+    Returns:
+        tuple: ``(results_df, optimizer)``
     """
 
     set_skforecast_warnings(suppress_warnings, action="ignore")
@@ -262,21 +332,20 @@ def _spotoptim_search(
         )
         n_jobs = 1
 
-    # Convert search space to SpotOptim format
+    # --- Convert search space to SpotOptim arrays -------------------------
     bounds, var_type, var_name, var_trans = _convert_search_space(search_space)
 
-    all_metric_values = []
-    all_lags = []
-    all_params = []
+    all_metric_values: list[list[float]] = []
+    all_lags: list = []
+    all_params: list[dict] = []
 
+    # --- Objective function -----------------------------------------------
     def _objective(X: np.ndarray) -> np.ndarray:
-        results = []
+        results_arr = []
         for params_array in X:
             params_dict = _array_to_params(params_array, var_name, var_type, bounds)
             sample_params = {k: v for k, v in params_dict.items() if k != "lags"}
 
-            # Use a fresh copy for each evaluation to be safe in multithreaded (though SpotOptim is usually seq)
-            # or just reset state.
             f_search = deepcopy(forecaster_search)
             f_search.set_params(**sample_params)
 
@@ -303,7 +372,6 @@ def _spotoptim_search(
                         y=y, initial_train_size=cv.initial_train_size, exog=exog
                     )
                 )
-
                 metrics_list = _calculate_metrics_one_step_ahead(
                     forecaster=f_search,
                     metrics=metric,
@@ -321,10 +389,11 @@ def _spotoptim_search(
                 lags_val = _parse_lags_from_string(lags_val)
             all_lags.append(lags_val)
             all_params.append(sample_params)
-            results.append(metrics_list[0])
+            results_arr.append(metrics_list[0])
 
-        return np.array(results)
+        return np.array(results_arr)
 
+    # --- Run SpotOptim ----------------------------------------------------
     optimizer = SpotOptim(
         fun=_objective,
         bounds=bounds,
@@ -340,7 +409,7 @@ def _spotoptim_search(
 
     optimizer.optimize()
 
-    # Build results
+    # --- Build results DataFrame ------------------------------------------
     lags_list = [
         initialize_lags(forecaster_name=forecaster_name, lags=lag)[0]
         for lag in all_lags
@@ -383,11 +452,53 @@ def _spotoptim_search(
     return results, optimizer
 
 
+# ======================================================================
+# Conversion helpers
+# ======================================================================
+
+
 def _convert_search_space(
     search_space: ParameterSet | Dict[str, Any],
 ) -> tuple[list, list, list, list]:
-    """
-    Convert search space to SpotOptim internal format.
+    """Convert a search space to the SpotOptim internal format.
+
+    Accepts either a :class:`~spotoptim.hyperparameters.ParameterSet`
+    or a plain ``dict``.  Three dict flavours are supported:
+
+    1. **Raw SpotOptim dict** — keys ``bounds``, ``var_type``,
+       ``var_name``, ``var_trans``.
+    2. **Simple tuples** — ``{"param_name": (low, high), ...}``
+       (int or float are inferred).
+    3. **Factor list** — ``{"param_name": ["a", "b", "c"]}``
+
+    Args:
+        search_space: The search space to convert.
+
+    Returns:
+        Tuple ``(bounds, var_type, var_name, var_trans)``.
+
+    Raises:
+        TypeError: If *search_space* is not a supported type.
+        ValueError: If a dict value is not a valid bound description.
+
+    Examples:
+        >>> from spotforecast2.model_selection.spotoptim_search import (
+        ...     _convert_search_space,
+        ... )
+        >>> bounds, vt, vn, vtrans = _convert_search_space(
+        ...     {"alpha": (0.01, 10.0), "max_depth": (2, 8)}
+        ... )
+        >>> vn
+        ['alpha', 'max_depth']
+        >>> vt
+        ['float', 'int']
+
+        >>> from spotoptim.hyperparameters import ParameterSet
+        >>> ps = ParameterSet()
+        >>> _ = ps.add_float("lr", low=0.001, high=0.1)
+        >>> b, t, n, tr = _convert_search_space(ps)
+        >>> n
+        ['lr']
     """
     if isinstance(search_space, ParameterSet):
         return (
@@ -408,7 +519,6 @@ def _convert_search_space(
                 search_space["var_trans"],
             )
 
-        # Convert dictionary mapping to SpotOptim format
         bounds, var_type, var_name, var_trans = [], [], [], []
         for name, value in search_space.items():
             var_name.append(name)
@@ -432,12 +542,39 @@ def _convert_search_space(
 
 
 def _array_to_params(
-    params_array: np.ndarray, var_name: list, var_type: list, bounds: list
+    params_array: np.ndarray,
+    var_name: list,
+    var_type: list,
+    bounds: list,
 ) -> Dict[str, Any]:
+    """Convert a SpotOptim parameter array back to a dict.
+
+    Each element of *params_array* is mapped to the corresponding
+    name / type / bounds entry, converting to the correct Python type.
+
+    Args:
+        params_array: 1-D array of raw parameter values from SpotOptim.
+        var_name: Parameter names (same order as *params_array*).
+        var_type: Parameter types (``"int"``, ``"float"``, ``"factor"``).
+        bounds: Parameter bounds.
+
+    Returns:
+        Dictionary mapping parameter names to typed values.
+
+    Examples:
+        >>> import numpy as np
+        >>> from spotforecast2.model_selection.spotoptim_search import (
+        ...     _array_to_params,
+        ... )
+        >>> _array_to_params(
+        ...     np.array([100.0, 0.05]),
+        ...     var_name=["n_estimators", "lr"],
+        ...     var_type=["int", "float"],
+        ...     bounds=[(50, 200), (0.01, 0.3)],
+        ... )
+        {'n_estimators': 100, 'lr': 0.05}
     """
-    Convert SpotOptim array back to parameter dictionary.
-    """
-    params_dict = {}
+    params_dict: Dict[str, Any] = {}
     for i, (name, ptype, value) in enumerate(zip(var_name, var_type, params_array)):
         if ptype == "factor":
             str_value = str(value)

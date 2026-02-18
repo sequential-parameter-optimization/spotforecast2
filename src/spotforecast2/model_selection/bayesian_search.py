@@ -383,7 +383,8 @@ def _bayesian_search_optuna(
         best_trial = study.best_trial
         search_space_best = search_space(best_trial)
 
-        # Close logging handler if it was created    if handler is not None:
+        # Close logging handler if it was created
+    if handler is not None:
         handler.close()
 
     if search_space_best.keys() != best_trial.params.keys():
