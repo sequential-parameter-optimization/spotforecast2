@@ -35,7 +35,6 @@ logger = logging.getLogger(__name__)
 
 # Default number of Optuna trials when none is specified.
 _DEFAULT_N_TRIALS: int = 10
-_DEFAULT_RANDOM_STATE: int = 123456789
 
 
 class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
