@@ -3,6 +3,11 @@
 ### Features
 
 * trainer_full ([6c6b4e2](https://github.com/sequential-parameter-optimization/spotforecast2/commit/6c6b4e2a069395d5c5704a5f021d4a3f465e998f))
+## [0.4.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.4.0...v0.4.1) (2026-02-20)
+
+### Bug Fixes
+
+* tests update ([ec82ebf](https://github.com/sequential-parameter-optimization/spotforecast2/commit/ec82ebf18e176431c32eed1991b6caaa058b4faa))
 
 ## [0.4.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.4.0...v0.4.1-rc.1) (2026-02-20)
 
