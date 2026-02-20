@@ -28,7 +28,7 @@ from spotforecast2_safe.manager.models.forecaster_recursive_model import (
 from spotforecast2_safe.manager.models.forecaster_recursive_xgb import (
     ForecasterRecursiveXGB,
 )
-from spotforecast2_safe.manager.trainer import SEARCH_SPACES
+from spotforecast2.manager.trainer_full import SEARCH_SPACES
 from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
 
 logger = logging.getLogger(__name__)
