@@ -25,7 +25,7 @@ from spotforecast2_safe.downloader.entsoe import download_new_data, merge_build_
 from spotforecast2_safe.manager.predictor import (
     get_model_prediction as get_model_prediction_safe,
 )
-from spotforecast2_safe.manager.trainer import handle_training as handle_training_safe
+from spotforecast2.manager.trainer_full import handle_training as handle_training_safe
 
 from spotforecast2.manager.plotter import make_plot
 from spotforecast2 import ConfigEntsoe
