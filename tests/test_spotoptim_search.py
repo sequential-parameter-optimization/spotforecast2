@@ -361,6 +361,9 @@ class TestDocstringExamples:
 
     def test_doctest(self):
         import doctest
+        from spotforecast2.model_selection import spotoptim_search
 
-        results = doctest.testmod(mod, verbose=False)
+        results = doctest.testmod(
+            spotoptim_search, verbose=False, optionflags=doctest.ELLIPSIS
+        )
         assert results.failed == 0, f"{results.failed} doctest(s) failed"
