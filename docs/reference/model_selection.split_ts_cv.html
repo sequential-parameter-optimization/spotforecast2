@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Welcome to spotforecast2 – spotforecast2</title>
+<title>model_selection.split_ts_cv – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -58,27 +58,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-bcbce66894bfa8e7e94e40e0186b9bb8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-dark-4e7a6ecc11b04d2331dcee725084a9de.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting-bcbce66894bfa8e7e94e40e0186b9bb8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-dae36b7b209a5a9f0102814064d699d0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="site_libs/bootstrap/bootstrap-dark-090e59de8c83bcb5ac477581d78b478d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="site_libs/bootstrap/bootstrap-dae36b7b209a5a9f0102814064d699d0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bcbce66894bfa8e7e94e40e0186b9bb8.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-dark-4e7a6ecc11b04d2331dcee725084a9de.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bcbce66894bfa8e7e94e40e0186b9bb8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap-dae36b7b209a5a9f0102814064d699d0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-090e59de8c83bcb5ac477581d78b478d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-dae36b7b209a5a9f0102814064d699d0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -278,7 +278,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">spotforecast2</span>
     </a>
   </div>
@@ -305,7 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Home</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.qmd">Model Selection</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.split_ts_cv.html">split_ts_cv</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -319,28 +319,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Home</span></a>
   </div>
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
  <span class="menu-text">API Reference</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/index.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/index.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Overview</span></a>
   </div>
 </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./docs/reference/exceptions.html" class="sidebar-item-text sidebar-link">
+            <a href="../../docs/reference/exceptions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Exceptions</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -349,7 +349,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/exceptions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/exceptions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">exceptions</span></a>
   </div>
 </li>
@@ -357,7 +357,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./docs/reference/forecaster.qmd" class="sidebar-item-text sidebar-link">
+            <a href="../../docs/reference/forecaster.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Forecaster</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -366,19 +366,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/forecaster.metrics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/forecaster.metrics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">metrics</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/forecaster.utils.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/forecaster.utils.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">utils</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/forecaster.recursive._warnings.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/forecaster.recursive._warnings.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">recursive._warnings</span></a>
   </div>
 </li>
@@ -386,7 +386,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./docs/reference/manager.qmd" class="sidebar-item-text sidebar-link">
+            <a href="../../docs/reference/manager.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Manager</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -395,19 +395,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/manager.models.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/manager.models.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">models</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/manager.plotter.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/manager.plotter.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">plotter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/manager.trainer_full.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/manager.trainer_full.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">trainer_full</span></a>
   </div>
 </li>
@@ -415,58 +415,58 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./docs/reference/model_selection.qmd" class="sidebar-item-text sidebar-link">
+            <a href="../../docs/reference/model_selection.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Model Selection</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/model_selection.bayesian_search.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/model_selection.bayesian_search.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">bayesian_search</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/model_selection.grid_search.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/model_selection.grid_search.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">grid_search</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/model_selection.random_search.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/model_selection.random_search.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">random_search</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/model_selection.split_base.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/model_selection.split_base.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">split_base</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/model_selection.split_ts_cv.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/model_selection.split_ts_cv.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">split_ts_cv</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/model_selection.spotoptim_search.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/model_selection.spotoptim_search.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">spotoptim_search</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/model_selection.utils_common.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/model_selection.utils_common.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">utils_common</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/model_selection.utils_metrics.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/model_selection.utils_metrics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">utils_metrics</span></a>
   </div>
 </li>
@@ -474,7 +474,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./docs/reference/preprocessing.qmd" class="sidebar-item-text sidebar-link">
+            <a href="../../docs/reference/preprocessing.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Preprocessing</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -483,61 +483,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing._binner.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing._binner.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">_binner</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing._common.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing._common.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">_common</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing._differentiator.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing._differentiator.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">_differentiator</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing._rolling.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing._rolling.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">_rolling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing.curate_data.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing.curate_data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">curate_data</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing.imputation.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing.imputation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">imputation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing.outlier.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing.outlier.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">outlier</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing.outlier_plots.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing.outlier_plots.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">outlier_plots</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing.split.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing.split.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">split</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/preprocessing.time_series_visualization.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/preprocessing.time_series_visualization.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">time_series_visualization</span></a>
   </div>
 </li>
@@ -545,7 +545,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./docs/reference/stats.qmd" class="sidebar-item-text sidebar-link">
+            <a href="../../docs/reference/stats.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Stats</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -554,7 +554,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/stats.autocorrelation.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/stats.autocorrelation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">autocorrelation</span></a>
   </div>
 </li>
@@ -562,7 +562,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./docs/reference/tasks.qmd" class="sidebar-item-text sidebar-link">
+            <a href="../../docs/reference/tasks.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Tasks</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -571,37 +571,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/tasks.task_demo.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/tasks.task_demo.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">task_demo</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/tasks.task_entsoe.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/tasks.task_entsoe.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">task_entsoe</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/tasks.task_n_to_1.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/tasks.task_n_to_1.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">task_n_to_1</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/tasks.task_n_to_1_dataframe.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/tasks.task_n_to_1_dataframe.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">task_n_to_1_dataframe</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/tasks.task_n_to_1_with_covariates.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/tasks.task_n_to_1_with_covariates.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">task_n_to_1_with_covariates</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">task_n_to_1_with_covariates_and_dataframe</span></a>
   </div>
 </li>
@@ -609,7 +609,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./docs/reference/utils.qmd" class="sidebar-item-text sidebar-link">
+            <a href="../../docs/reference/utils.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Utils</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -618,25 +618,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/utils.data_transform.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/utils.data_transform.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">data_transform</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/utils.forecaster_config.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/utils.forecaster_config.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">forecaster_config</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/utils.generate_holiday.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/utils.generate_holiday.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">generate_holiday</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/utils.validation.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/utils.validation.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">validation</span></a>
   </div>
 </li>
@@ -644,7 +644,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a href="./docs/reference/weather.qmd" class="sidebar-item-text sidebar-link">
+            <a href="../../docs/reference/weather.qmd" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Weather</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-10" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
@@ -653,7 +653,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/reference/weather.weather_client.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/weather.weather_client.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">weather_client</span></a>
   </div>
 </li>
@@ -672,7 +672,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/processing/model_persistence.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/processing/model_persistence.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Model Persistence</span></a>
   </div>
 </li>
@@ -689,13 +689,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/preprocessing/outliers.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/preprocessing/outliers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Outlier Detection</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/preprocessing/time_series_visualization.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/preprocessing/time_series_visualization.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Time Series Visualization</span></a>
   </div>
 </li>
@@ -712,13 +712,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/tasks.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/tasks.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Overview</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./docs/entsoe.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/entsoe.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">ENTSO-E Guide</span></a>
   </div>
 </li>
@@ -734,78 +734,400 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#quick-links" id="toc-quick-links" class="nav-link active" data-scroll-target="#quick-links">Quick Links</a></li>
-  <li><a href="#installation" id="toc-installation" class="nav-link" data-scroll-target="#installation">Installation</a></li>
-  <li><a href="#features" id="toc-features" class="nav-link" data-scroll-target="#features">Features</a></li>
-  <li><a href="#attributions" id="toc-attributions" class="nav-link" data-scroll-target="#attributions">Attributions</a></li>
+  <li><a href="#spotforecast2.model_selection.split_ts_cv" id="toc-spotforecast2.model_selection.split_ts_cv" class="nav-link active" data-scroll-target="#spotforecast2.model_selection.split_ts_cv">model_selection.split_ts_cv</a>
+  <ul class="collapse">
+  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <ul class="collapse">
+  <li><a href="#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold" id="toc-spotforecast2.model_selection.split_ts_cv.TimeSeriesFold" class="nav-link" data-scroll-target="#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold">TimeSeriesFold</a></li>
+  </ul></li>
+  </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/model_selection.split_ts_cv.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content">
-
-
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">Welcome to spotforecast2</h1>
-</div>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.qmd">Model Selection</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.split_ts_cv.html">split_ts_cv</a></li></ol></nav></header>
 
 
 
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
 
 
-</header>
-
-
-<!--
-SPDX-FileCopyrightText: 2024-2026 bartzbeielstein
-SPDX-License-Identifier: AGPL-3.0-or-later
--->
-<hr>
-<p><a href="https://github.com/sequential-parameter-optimization/spotforecast2/releases"><img src="https://img.shields.io/badge/version-0.5.0-rc.1-blue.svg" class="img-fluid" alt="Version"></a> <a href="https://github.com/sequential-parameter-optimization/spotforecast2"><img src="https://img.shields.io/badge/GitHub-spotforecast2-181717?logo=github.png" class="img-fluid" alt="GitHub"></a> <a href="https://www.python.org/downloads/"><img src="https://img.shields.io/badge/python-3.13+-blue.svg" class="img-fluid" alt="Python"></a></p>
-<p><strong>spotforecast2</strong> is a Python package for forecasting, combining the power of <code>sklearn</code>, <code>spotoptim</code> and <code>skforecast</code> with specialized utilities for “spot” forecasting.</p>
-<section id="quick-links" class="level2">
-<h2 class="anchored" data-anchor-id="quick-links">Quick Links</h2>
-<ul>
-<li>📦 <a href="https://github.com/sequential-parameter-optimization/spotforecast2">GitHub Repository</a></li>
-<li>📚 <a href="./docs/reference/index.html">API Reference</a></li>
-<li>🚀 Current Version: <strong>0.5.0-rc.1</strong></li>
-</ul>
+<section id="spotforecast2.model_selection.split_ts_cv" class="level1">
+<h1>model_selection.split_ts_cv</h1>
+<p><code>model_selection.split_ts_cv</code></p>
+<p>Time series cross-validation splitting.</p>
+<section id="classes" class="level2">
+<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold">TimeSeriesFold</a></td>
+<td>Class to split time series data into train and test folds.</td>
+</tr>
+</tbody>
+</table>
+<section id="spotforecast2.model_selection.split_ts_cv.TimeSeriesFold" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.model_selection.split_ts_cv.TimeSeriesFold">TimeSeriesFold</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>model_selection.split_ts_cv.TimeSeriesFold(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    steps,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    initial_train_size<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    fold_stride<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    differentiation<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    refit<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    fixed_train_size<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    gap<span class="op">=</span><span class="dv">0</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    skip_folds<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    allow_incomplete_fold<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    return_all_indexes<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Class to split time series data into train and test folds.</p>
+<p>When used within a backtesting or hyperparameter search, the arguments ‘initial_train_size’, ‘window_size’ and ‘differentiation’ are not required as they are automatically set by the backtesting or hyperparameter search functions.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>steps</td>
+<td><a href="`int`">int</a></td>
+<td>Number of observations used to be predicted in each fold. This is also commonly referred to as the forecast horizon or test size.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>initial_train_size</td>
+<td><a href="`int`">int</a> | <a href="`str`">str</a> | <a href="`pandas`">pd</a>.<a href="`pandas.Timestamp`">Timestamp</a> | None</td>
+<td>Number of observations used for initial training. - If <code>None</code> or 0, the initial forecaster is not trained in the first fold. - If an integer, the number of observations used for initial training. - If a date string or pandas Timestamp, it is the last date included in the initial training set. Defaults to None.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>fold_stride</td>
+<td><a href="`int`">int</a> | None</td>
+<td>Number of observations that the start of the test set advances between consecutive folds. - If <code>None</code>, it defaults to the same value as <code>steps</code>, meaning that folds are placed back-to-back without overlap. - If <code>fold_stride &lt; steps</code>, test sets overlap and multiple forecasts will be generated for the same observations. - If <code>fold_stride &gt; steps</code>, gaps are left between consecutive test sets. Defaults to None.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>window_size</td>
+<td><a href="`int`">int</a> | None</td>
+<td>Number of observations needed to generate the autoregressive predictors. Defaults to None.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>differentiation</td>
+<td><a href="`int`">int</a> | None</td>
+<td>Number of observations to use for differentiation. This is used to extend the <code>last_window</code> as many observations as the differentiation order. Defaults to None.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>refit</td>
+<td><a href="`bool`">bool</a> | <a href="`int`">int</a></td>
+<td>Whether to refit the forecaster in each fold. - If <code>True</code>, the forecaster is refitted in each fold. - If <code>False</code>, the forecaster is trained only in the first fold. - If an integer, the forecaster is trained in the first fold and then refitted every <code>refit</code> folds. Defaults to False.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="odd">
+<td>fixed_train_size</td>
+<td><a href="`bool`">bool</a></td>
+<td>Whether the training size is fixed or increases in each fold. Defaults to True.</td>
+<td><code>True</code></td>
+</tr>
+<tr class="even">
+<td>gap</td>
+<td><a href="`int`">int</a></td>
+<td>Number of observations between the end of the training set and the start of the test set. Defaults to 0.</td>
+<td><code>0</code></td>
+</tr>
+<tr class="odd">
+<td>skip_folds</td>
+<td><a href="`int`">int</a> | <a href="`list`">list</a>[<a href="`int`">int</a>] | None</td>
+<td>Number of folds to skip. - If an integer, every ‘skip_folds’-th is returned. - If a list, the indexes of the folds to skip. For example, if <code>skip_folds=3</code> and there are 10 folds, the returned folds are 0, 3, 6, and 9. If <code>skip_folds=[1, 2, 3]</code>, the returned folds are 0, 4, 5, 6, 7, 8, and 9. Defaults to None.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>allow_incomplete_fold</td>
+<td><a href="`bool`">bool</a></td>
+<td>Whether to allow the last fold to include fewer observations than <code>steps</code>. If <code>False</code>, the last fold is excluded if it is incomplete. Defaults to True.</td>
+<td><code>True</code></td>
+</tr>
+<tr class="odd">
+<td>return_all_indexes</td>
+<td><a href="`bool`">bool</a></td>
+<td>Whether to return all indexes or only the start and end indexes of each fold. Defaults to False.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
+<td>verbose</td>
+<td><a href="`bool`">bool</a></td>
+<td>Whether to print information about generated folds. Defaults to True.</td>
+<td><code>True</code></td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="installation" class="level2">
-<h2 class="anchored" data-anchor-id="installation">Installation</h2>
-<ul>
-<li>Download from GitHub</li>
-</ul>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">git</span> clone https://github.com/sequential-parameter-optimization/spotforecast2.git</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">cd</span> spotforecast2</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<ul>
-<li>Sync using uv</li>
-</ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> sync</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="attributes" class="level4 doc-section doc-section-attributes">
+<h4 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 13%">
+<col style="width: 4%">
+<col style="width: 82%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>steps</td>
+<td></td>
+<td>Number of observations used to be predicted in each fold.</td>
+</tr>
+<tr class="even">
+<td>initial_train_size</td>
+<td></td>
+<td>Number of observations used for initial training. If <code>None</code> or 0, the initial forecaster is not trained in the first fold.</td>
+</tr>
+<tr class="odd">
+<td>fold_stride</td>
+<td></td>
+<td>Number of observations that the start of the test set advances between consecutive folds.</td>
+</tr>
+<tr class="even">
+<td>overlapping_folds</td>
+<td></td>
+<td>Whether the folds overlap.</td>
+</tr>
+<tr class="odd">
+<td>window_size</td>
+<td></td>
+<td>Number of observations needed to generate the autoregressive predictors.</td>
+</tr>
+<tr class="even">
+<td>differentiation</td>
+<td></td>
+<td>Number of observations to use for differentiation. This is used to extend the <code>last_window</code> as many observations as the differentiation order.</td>
+</tr>
+<tr class="odd">
+<td>refit</td>
+<td></td>
+<td>Whether to refit the forecaster in each fold.</td>
+</tr>
+<tr class="even">
+<td>fixed_train_size</td>
+<td></td>
+<td>Whether the training size is fixed or increases in each fold.</td>
+</tr>
+<tr class="odd">
+<td>gap</td>
+<td></td>
+<td>Number of observations between the end of the training set and the start of the test set.</td>
+</tr>
+<tr class="even">
+<td>skip_folds</td>
+<td></td>
+<td>Number of folds to skip.</td>
+</tr>
+<tr class="odd">
+<td>allow_incomplete_fold</td>
+<td></td>
+<td>Whether to allow the last fold to include fewer observations than <code>steps</code>.</td>
+</tr>
+<tr class="even">
+<td>return_all_indexes</td>
+<td></td>
+<td>Whether to return all indexes or only the start and end indexes of each fold.</td>
+</tr>
+<tr class="odd">
+<td>verbose</td>
+<td></td>
+<td>Whether to print information about generated folds.</td>
+</tr>
+</tbody>
+</table>
 </section>
-<section id="features" class="level2">
-<h2 class="anchored" data-anchor-id="features">Features</h2>
-<ul>
-<li><strong>Data Fetching</strong>: Easy access to time series data.</li>
-<li><strong>Preprocessing</strong>: Robust tools for curating, cleaning, and splitting data.</li>
-<li><strong>Forecasting</strong>: A rich set of forecasting strategies (constantly extended).</li>
-<li><strong>Model Selection</strong>: <code>spotoptim</code> and <code>optuna</code> search for hyperparameter tuning.</li>
-<li><strong>Weather Integration</strong>: Utilities for fetching and using weather data in forecasts.</li>
-</ul>
+<section id="examples" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
+<p>Basic usage with fixed train size:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.model_selection <span class="im">import</span> TimeSeriesFold</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Create sample time series data</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> dates <span class="op">=</span> pd.date_range(<span class="st">'2020-01-01'</span>, periods<span class="op">=</span><span class="dv">100</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> y <span class="op">=</span> pd.Series(np.arange(<span class="dv">100</span>), index<span class="op">=</span>dates)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Create fold splitter</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> cv <span class="op">=</span> TimeSeriesFold(</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>...     steps<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>...     initial_train_size<span class="op">=</span><span class="dv">50</span>,</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>...     refit<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>...     fixed_train_size<span class="op">=</span><span class="va">True</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>... )</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Get folds</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> folds <span class="op">=</span> cv.split(y)</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="ss">f"Number of folds: </span><span class="sc">{</span><span class="bu">len</span>(folds)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>Number of folds: <span class="dv">4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Overlapping folds with custom stride:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> cv <span class="op">=</span> TimeSeriesFold(</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>...     steps<span class="op">=</span><span class="dv">30</span>,</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>...     initial_train_size<span class="op">=</span><span class="dv">50</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>...     fold_stride<span class="op">=</span><span class="dv">7</span>,</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>...     fixed_train_size<span class="op">=</span><span class="va">False</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>... )</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> folds <span class="op">=</span> cv.split(y)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># First test fold covers [50, 80), second [57, 87), etc.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Return as pandas DataFrame:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> cv <span class="op">=</span> TimeSeriesFold(steps<span class="op">=</span><span class="dv">10</span>, initial_train_size<span class="op">=</span><span class="dv">50</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> folds_df <span class="op">=</span> cv.split(y, as_pandas<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(folds_df.columns.tolist())</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>[<span class="st">'fold'</span>, <span class="st">'train_start'</span>, <span class="st">'train_end'</span>, <span class="st">'last_window_start'</span>, <span class="st">'last_window_end'</span>, <span class="st">'test_start'</span>, <span class="st">'test_end'</span>, <span class="st">'test_start_with_gap'</span>, <span class="st">'test_end_with_gap'</span>, <span class="st">'fit_forecaster'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Skip folds for faster evaluation:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> cv <span class="op">=</span> TimeSeriesFold(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>...     steps<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>...     initial_train_size<span class="op">=</span><span class="dv">50</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>...     skip_folds<span class="op">=</span><span class="dv">2</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>... )</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> folds <span class="op">=</span> cv.split(y)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Returns folds 0, 2, 4, 6, ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="attributions" class="level2">
-<h2 class="anchored" data-anchor-id="attributions">Attributions</h2>
-<p>Parts of the code are ported from skforecast to reduce external dependencies. Many thanks to the skforecast team for their great work!</p>
+<section id="note" class="level4 doc-section doc-section-note">
+<h4 class="doc-section doc-section-note anchored" data-anchor-id="note">Note</h4>
+<p>Returned values are the positions of the observations and not the actual values of the index, so they can be used to slice the data directly using iloc. For example, if the input series is <code>X = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]</code>, the <code>initial_train_size = 3</code>, <code>window_size = 2</code>, <code>steps = 4</code>, and <code>gap = 1</code>, the output of the first fold will: [0, [0, 3], [1, 3], [3, 8], [4, 8], True].</p>
+<p>The first element is the fold number, the first list <code>[0, 3]</code> indicates that the training set goes from the first to the third observation. The second list <code>[1, 3]</code> indicates that the last window seen by the forecaster during training goes from the second to the third observation. The third list <code>[3, 8]</code> indicates that the test set goes from the fourth to the eighth observation. The fourth list <code>[4, 8]</code> indicates that the test set including the gap goes from the fifth to the eighth observation. The boolean <code>False</code> indicates that the forecaster should not be trained in this fold.</p>
+<p>Following the python convention, the start index is inclusive and the end index is exclusive. This means that the last index is not included in the slice.</p>
+<p>As an example, with <code>initial_train_size=50</code>, <code>steps=30</code>, and <code>fold_stride=7</code>, the first test fold will cover observations [50, 80), the second fold [57, 87), and the third fold [64, 94). This configuration produces multiple forecasts for the same observations, which is often desirable in rolling-origin evaluation.</p>
+</section>
+<section id="methods" class="level4">
+<h4 class="anchored" data-anchor-id="methods">Methods</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold.split">split</a></td>
+<td>Split the time series data into train and test folds.</td>
+</tr>
+</tbody>
+</table>
+<section id="spotforecast2.model_selection.split_ts_cv.TimeSeriesFold.split" class="level5">
+<h5 class="anchored" data-anchor-id="spotforecast2.model_selection.split_ts_cv.TimeSeriesFold.split">split</h5>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model_selection.split_ts_cv.TimeSeriesFold.split(X, as_pandas<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Split the time series data into train and test folds.</p>
+<section id="parameters-1" class="level6 doc-section doc-section-parameters">
+<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h6>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>X</td>
+<td><a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a> | <a href="`pandas`">pd</a>.<a href="`pandas.Index`">Index</a> | <a href="`dict`">dict</a>[<a href="`str`">str</a>, <a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>]</td>
+<td>Time series data or index to split. Can be a pandas Series, DataFrame, Index, or a dictionary of Series/DataFrames.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>as_pandas</td>
+<td><a href="`bool`">bool</a></td>
+<td>If True, the folds are returned as a DataFrame. This is useful to visualize the folds in a more interpretable way. Defaults to False.</td>
+<td><code>False</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level6 doc-section doc-section-returns">
+<h6 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h6>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td>A list of lists containing the indices (position) for each fold, or a</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td>DataFrame if <code>as_pandas=True</code>. Each list contains 4 lists and a boolean</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td>with the following information:</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td>- <strong>fold</strong>: fold number.</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td>- <strong>[train_start, train_end]</strong>: list with the start and end positions of the training set.</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td>- <strong>[last_window_start, last_window_end]</strong>: list with the start and end positions of the last window seen by the forecaster during training. The last window is used to generate the lags use as predictors. If <code>differentiation</code> is included, the interval is extended as many observations as the differentiation order. If the argument <code>window_size</code> is <code>None</code>, this list is empty.</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td>- <strong>[test_start, test_end]</strong>: list with the start and end positions of the test set. These are the observations used to evaluate the forecaster.</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td>- <strong>[test_start_with_gap, test_end_with_gap]</strong>: list with the start and end positions of the test set including the gap. The gap is the number of observations between the end of the training set and the start of the test set.</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td>- <strong>fit_forecaster</strong>: boolean indicating whether the forecaster should be fitted in this fold.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="note-1" class="level6 doc-section doc-section-note">
+<h6 class="doc-section doc-section-note anchored" data-anchor-id="note-1">Note</h6>
+<p>The returned values are the positions of the observations and not the actual values of the index, so they can be used to slice the data directly using iloc.</p>
+<p>If <code>as_pandas</code> is <code>True</code>, the folds are returned as a DataFrame with the following columns: ‘fold’, ‘train_start’, ‘train_end’, ‘last_window_start’, ‘last_window_end’, ‘test_start’, ‘test_end’, ‘test_start_with_gap’, ‘test_end_with_gap’, ‘fit_forecaster’.</p>
+<p>Following the python convention, the start index is inclusive and the end index is exclusive. This means that the last index is not included in the slice.</p>
 
 
+</section>
+</section>
+</section>
+</section>
+</section>
 </section>
 
 </main> <!-- /main -->
@@ -1236,7 +1558,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     </div>   
     <div class="nav-footer-center">
 <p>Copyright © 2024-2026 bartzbeielstein | <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/index.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/model_selection.split_ts_cv.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
@@ -1246,5 +1568,5 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 
 
-<script src="site_libs/quarto-html/zenscroll-min.js"></script>
+<script src="../../site_libs/quarto-html/zenscroll-min.js"></script>
 </body></html>
