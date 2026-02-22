@@ -418,7 +418,7 @@ The system implements intelligent selective retraining:
 
 ## See Also
 
-- [API Reference - Forecasting](../api/forecaster.md)
-- [API Reference - Data](../api/data.md)
-- [Preprocessing Guide](../api/preprocessing.md)
+- [API Reference - Forecasting](../reference/forecaster.qmd)
+- [API Reference - Data](../reference/index.qmd)
+- [Preprocessing Guide](../reference/preprocessing.qmd)
 

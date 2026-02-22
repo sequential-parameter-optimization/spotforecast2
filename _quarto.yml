@@ -1,0 +1,271 @@
+# SPDX-FileCopyrightText: 2024-2026 bartzbeielstein
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# =============================================================================
+# _quarto.yml  —  spotforecast2 Documentation
+# =============================================================================
+
+project:
+  type: website
+  output-dir: _site
+
+  render:
+    - "index.qmd"
+    - "docs/**/*.qmd"
+    - "docs/**/*.md"
+    - "!docs/api/**/*.md"
+
+  pre-render: docs/pre-render.py
+
+website:
+  title: "spotforecast2"
+  description: "Forecasting with spot"
+  site-url: "https://sequential-parameter-optimization.github.io/spotforecast2/"
+  repo-url: "https://github.com/sequential-parameter-optimization/spotforecast2"
+  repo-actions: [edit, issue]
+
+  navbar:
+    background: primary
+    search: true
+    right:
+      - icon: github
+        href: "https://github.com/sequential-parameter-optimization/spotforecast2"
+        aria-label: "GitHub repository"
+
+  sidebar:
+    style: "docked"
+    search: false
+    collapse-level: 1
+    contents:
+      - text: "Home"
+        file: index.qmd
+
+      - section: "API Reference"
+        contents:
+          - text: "Overview"
+            file: docs/reference/index.qmd
+          - section: "Exceptions"
+            href: docs/reference/exceptions.qmd
+            contents:
+              - text: "exceptions"
+                file: docs/reference/exceptions.qmd
+          - section: "Forecaster"
+            href: docs/reference/forecaster.qmd
+            contents:
+              - text: "metrics"
+                file: docs/reference/forecaster.metrics.qmd
+              - text: "utils"
+                file: docs/reference/forecaster.utils.qmd
+              - text: "recursive._warnings"
+                file: docs/reference/forecaster.recursive._warnings.qmd
+          - section: "Manager"
+            href: docs/reference/manager.qmd
+            contents:
+              - text: "models"
+                file: docs/reference/manager.models.qmd
+              - text: "plotter"
+                file: docs/reference/manager.plotter.qmd
+              - text: "trainer_full"
+                file: docs/reference/manager.trainer_full.qmd
+          - section: "Model Selection"
+            href: docs/reference/model_selection.qmd
+            contents:
+              - text: "bayesian_search"
+                file: docs/reference/model_selection.bayesian_search.qmd
+              - text: "grid_search"
+                file: docs/reference/model_selection.grid_search.qmd
+              - text: "random_search"
+                file: docs/reference/model_selection.random_search.qmd
+              - text: "split_base"
+                file: docs/reference/model_selection.split_base.qmd
+              - text: "split_ts_cv"
+                file: docs/reference/model_selection.split_ts_cv.qmd
+              - text: "spotoptim_search"
+                file: docs/reference/model_selection.spotoptim_search.qmd
+              - text: "utils_common"
+                file: docs/reference/model_selection.utils_common.qmd
+              - text: "utils_metrics"
+                file: docs/reference/model_selection.utils_metrics.qmd
+          - section: "Preprocessing"
+            href: docs/reference/preprocessing.qmd
+            contents:
+              - text: "_binner"
+                file: docs/reference/preprocessing._binner.qmd
+              - text: "_common"
+                file: docs/reference/preprocessing._common.qmd
+              - text: "_differentiator"
+                file: docs/reference/preprocessing._differentiator.qmd
+              - text: "_rolling"
+                file: docs/reference/preprocessing._rolling.qmd
+              - text: "curate_data"
+                file: docs/reference/preprocessing.curate_data.qmd
+              - text: "imputation"
+                file: docs/reference/preprocessing.imputation.qmd
+              - text: "outlier"
+                file: docs/reference/preprocessing.outlier.qmd
+              - text: "outlier_plots"
+                file: docs/reference/preprocessing.outlier_plots.qmd
+              - text: "split"
+                file: docs/reference/preprocessing.split.qmd
+              - text: "time_series_visualization"
+                file: docs/reference/preprocessing.time_series_visualization.qmd
+          - section: "Stats"
+            href: docs/reference/stats.qmd
+            contents:
+              - text: "autocorrelation"
+                file: docs/reference/stats.autocorrelation.qmd
+          - section: "Tasks"
+            href: docs/reference/tasks.qmd
+            contents:
+              - text: "task_demo"
+                file: docs/reference/tasks.task_demo.qmd
+              - text: "task_entsoe"
+                file: docs/reference/tasks.task_entsoe.qmd
+              - text: "task_n_to_1"
+                file: docs/reference/tasks.task_n_to_1.qmd
+              - text: "task_n_to_1_dataframe"
+                file: docs/reference/tasks.task_n_to_1_dataframe.qmd
+              - text: "task_n_to_1_with_covariates"
+                file: docs/reference/tasks.task_n_to_1_with_covariates.qmd
+              - text: "task_n_to_1_with_covariates_and_dataframe"
+                file: docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.qmd
+          - section: "Utils"
+            href: docs/reference/utils.qmd
+            contents:
+              - text: "data_transform"
+                file: docs/reference/utils.data_transform.qmd
+              - text: "forecaster_config"
+                file: docs/reference/utils.forecaster_config.qmd
+              - text: "generate_holiday"
+                file: docs/reference/utils.generate_holiday.qmd
+              - text: "validation"
+                file: docs/reference/utils.validation.qmd
+          - section: "Weather"
+            href: docs/reference/weather.qmd
+            contents:
+              - text: "weather_client"
+                file: docs/reference/weather.weather_client.qmd
+
+      - section: "Processing Guides"
+        contents:
+          - text: "Model Persistence"
+            file: docs/processing/model_persistence.md
+            
+      - section: "Preprocessing Guides"
+        contents:
+          - text: "Outlier Detection"
+            file: docs/preprocessing/outliers.md
+          - text: "Time Series Visualization"
+            file: docs/preprocessing/time_series_visualization.md
+
+      - section: "Tasks Guide"
+        contents:
+          - text: "Overview"
+            file: docs/tasks.md
+          - text: "ENTSO-E Guide"
+            file: docs/entsoe.md
+
+  page-footer:
+    center: |
+      Copyright © 2024-2026 bartzbeielstein |
+      [AGPL-3.0-or-later](https://www.gnu.org/licenses/agpl-3.0.html)
+
+  search:
+    location: navbar
+    type: overlay
+
+format:
+  html:
+    theme:
+      light: cosmo
+      dark: darkly
+    toc: true
+    toc-depth: 3
+    toc-location: right
+    code-copy: true
+    code-fold: false
+    highlight-style: github
+    html-math-method: mathjax
+    smooth-scroll: true
+    link-external-icon: true
+    link-external-newwindow: true
+
+quartodoc:
+  package: spotforecast2
+  source_dir: src
+  dir: docs/reference
+  parser: google
+  render_interlinks: true
+  sections:
+    - title: "Preprocessing"
+      desc: "Data curation, outlier detection, and split tools."
+      contents:
+        - preprocessing._binner
+        - preprocessing._common
+        - preprocessing._differentiator
+        - preprocessing._rolling
+        - preprocessing.curate_data
+        - preprocessing.imputation
+        - preprocessing.outlier
+        - preprocessing.outlier_plots
+        - preprocessing.split
+        - preprocessing.time_series_visualization
+
+    - title: "Model Selection"
+      desc: "Search algorithms and cross-validation tools."
+      contents:
+        - model_selection.bayesian_search
+        - model_selection.grid_search
+        - model_selection.random_search
+        - model_selection.split_base
+        - model_selection.split_ts_cv
+        - model_selection.spotoptim_search
+        - model_selection.utils_common
+        - model_selection.utils_metrics
+
+    - title: "Manager"
+      desc: "Model management and configurators."
+      contents:
+        - manager.models
+        - manager.plotter
+        - manager.trainer_full
+
+    - title: "Forecaster"
+      desc: "Forecasting utilities and metrics."
+      contents:
+        - forecaster.metrics
+        - forecaster.utils
+        - forecaster.recursive._warnings
+
+    - title: "Stats"
+      desc: "Statistical analysis tools."
+      contents:
+        - stats.autocorrelation
+
+    - title: "Tasks"
+      desc: "Demonstration and predefined forecasting tasks."
+      contents:
+        - tasks.task_demo
+        - tasks.task_entsoe
+        - tasks.task_n_to_1
+        - tasks.task_n_to_1_dataframe
+        - tasks.task_n_to_1_with_covariates
+        - tasks.task_n_to_1_with_covariates_and_dataframe
+
+    - title: "Weather"
+      desc: "Weather client utilities."
+      contents:
+        - weather.weather_client
+
+    - title: "Utils"
+      desc: "Validation and data transformation utilities."
+      contents:
+        - utils.data_transform
+        - utils.forecaster_config
+        - utils.generate_holiday
+        - utils.validation
+
+    - title: "Exceptions"
+      desc: "Spotforecast exception classes."
+      contents:
+        - exceptions
