@@ -801,13 +801,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>estimator</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Scikit-learn compatible estimator.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>fit_kwargs</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`dict`">dict</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>]</td>
 <td>Dictionary of arguments to pass to the estimator’s fit method.</td>
 <td><code>None</code></td>
 </tr>
@@ -827,7 +827,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`dict`">dict</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></td>
 <td>Dictionary with only the arguments accepted by the estimator’s fit method.</td>
 </tr>
 </tbody>
@@ -846,7 +846,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`TypeError`">TypeError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#TypeError">TypeError</a></td>
 <td>If fit_kwargs is not a dict.</td>
 </tr>
 </tbody>
@@ -890,13 +890,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>forecaster_name</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Name of the forecaster class for error messages.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>lags</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Lag specification in one of several formats: - int: Creates lags from 1 to lags (e.g., 5 → [1,2,3,4,5]) - list/tuple/range: Converted to numpy array - numpy.ndarray: Validated and used directly - None: Returns (None, None, None)</td>
 <td><em>required</em></td>
 </tr>
@@ -916,22 +916,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>]</td>
 <td>Tuple containing:</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`typing.List`">List</a>[<a href="`str`">str</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]]</td>
 <td>- lags: Sorted numpy array of lag values (or None)</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`int`">int</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
 <td>- lags_names: List of lag names like [‘lag_1’, ‘lag_2’, …] (or None)</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`typing.Tuple`">Tuple</a>[<a href="`typing.Optional`">Optional</a>[<a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>], <a href="`typing.Optional`">Optional</a>[<a href="`typing.List`">List</a>[<a href="`str`">str</a>]], <a href="`typing.Optional`">Optional</a>[<a href="`int`">int</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>], <a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]], <a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]]</td>
 <td>- max_lag: Maximum lag value (or None)</td>
 </tr>
 </tbody>
@@ -950,12 +950,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If lags &lt; 1, empty array, or not 1-dimensional.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`TypeError`">TypeError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#TypeError">TypeError</a></td>
 <td>If lags is not an integer, not in the right format for the forecaster, or array contains non-integer values.</td>
 </tr>
 </tbody>
@@ -1031,25 +1031,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>forecaster_name</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Name of the forecaster class.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>estimator</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Scikit-learn compatible estimator or pipeline.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>weight_func</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Weight function specification: - Callable: Single weight function - dict: Dictionary of weight functions (for MultiSeries forecasters) - None: No weighting</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>series_weights</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Dictionary of series-level weights (for MultiSeries forecasters). - dict: Maps series names to weight values - None: No series weighting</td>
 <td><em>required</em></td>
 </tr>
@@ -1069,22 +1069,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Tuple containing:</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`typing.Union`">Union</a>[<a href="`str`">str</a>, <a href="`dict`">dict</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>]]</td>
 <td>- weight_func: Validated weight function (or None if invalid)</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>- source_code_weight_func: Source code of weight function(s) for serialization (or None)</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`typing.Tuple`">Tuple</a>[<a href="`typing.Any`">Any</a>, <a href="`typing.Optional`">Optional</a>[<a href="`typing.Union`">Union</a>[<a href="`str`">str</a>, <a href="`dict`">dict</a>]], <a href="`typing.Any`">Any</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>]], <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
 <td>- series_weights: Validated series weights (or None if invalid)</td>
 </tr>
 </tbody>
@@ -1103,7 +1103,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`TypeError`">TypeError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#TypeError">TypeError</a></td>
 <td>If weight_func is not Callable/dict (depending on forecaster type), or if series_weights is not a dict.</td>
 </tr>
 </tbody>

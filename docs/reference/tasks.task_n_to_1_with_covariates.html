@@ -923,109 +923,109 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>forecast_horizon</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of forecast steps ahead. Determines how many time steps to predict into the future. Typical values: 24 (1 day), 48 (2 days), 168 (1 week). Default: 24.</td>
 <td><code>24</code></td>
 </tr>
 <tr class="even">
 <td>contamination</td>
-<td><a href="`float`">float</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
 <td>Outlier contamination level for anomaly detection. Expected proportion of outliers in the training data [0, 1]. Higher values detect fewer outliers. Default: 0.01 (1%).</td>
 <td><code>0.01</code></td>
 </tr>
 <tr class="odd">
 <td>window_size</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Rolling window size for feature engineering (hours). Size of the rolling window for computing statistics. Must be &gt; lags. Typical range: 24-168. Default: 72.</td>
 <td><code>72</code></td>
 </tr>
 <tr class="even">
 <td>lags</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of lagged features to create. Creates AR(p) features with p=lags. Typical values: 12, 24, 48. Default: 24.</td>
 <td><code>24</code></td>
 </tr>
 <tr class="odd">
 <td>train_ratio</td>
-<td><a href="`float`">float</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
 <td>Proportion of data for training [0, 1]. Remaining data (1 - train_ratio) used for validation/testing. Typical values: 0.7-0.9. Default: 0.8.</td>
 <td><code>0.8</code></td>
 </tr>
 <tr class="even">
 <td>latitude</td>
-<td><a href="`float`">float</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
 <td>Geographic latitude for solar features. Used to compute sunrise/sunset times for day/night features. Default: 51.5136 (Dortmund, Germany).</td>
 <td><code>51.5136</code></td>
 </tr>
 <tr class="odd">
 <td>longitude</td>
-<td><a href="`float`">float</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
 <td>Geographic longitude for solar features. Used to compute sunrise/sunset times for day/night features. Default: 7.4653 (Dortmund, Germany).</td>
 <td><code>7.4653</code></td>
 </tr>
 <tr class="even">
 <td>timezone</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Timezone for time-based features. Any timezone recognized by pytz. Default: “UTC”.</td>
 <td><code>'UTC'</code></td>
 </tr>
 <tr class="odd">
 <td>country_code</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>ISO 3166-1 alpha-2 country code for holidays. Examples: “DE” (Germany), “US” (USA), “GB” (UK). Default: “DE”.</td>
 <td><code>'DE'</code></td>
 </tr>
 <tr class="even">
 <td>state</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>State/region code for holidays. Country-dependent. For Germany: “BW”, “BY”, “NW”, etc. Default: “NW” (Nordrhein-Westfalen).</td>
 <td><code>'NW'</code></td>
 </tr>
 <tr class="odd">
 <td>estimator</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`typing.Union`">Union</a>[<a href="`str`">str</a>, <a href="`object`">object</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#object">object</a>]]</td>
 <td>Forecaster model. Can be: - None: Uses LGBMRegressor(n_estimators=100, verbose=-1). - “ForecasterRecursive”: References default estimator (same as None). - LGBMRegressor(…): Custom pre-configured estimator. - Any sklearn-compatible regressor. Default: None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>include_weather_windows</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Add rolling weather statistics. Creates moving averages, min, max of weather features over multiple windows (1D, 7D). Increases feature count significantly. Default: False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td>include_holiday_features</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Add holiday binary indicators. Creates features indicating holidays and special dates. Useful for capturing demand patterns around holidays. Default: False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>include_poly_features</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Add polynomial interactions. Creates 2nd-order interaction terms between selected features. Useful for capturing non-linear relationships. Default: False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td>weights</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`typing.Union`">Union</a>[<a href="`typing.Dict`">Dict</a>[<a href="`str`">str</a>, <a href="`float`">float</a>], <a href="`typing.List`">List</a>[<a href="`float`">float</a>], <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#float">float</a>], <a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/functions.html#float">float</a>], <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>]]</td>
 <td>Weights for combining multi-output predictions. Can be: - None: Default weights [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0] - Dict: {“col_name”: weight, …} for specific columns - List: [w1, w2, …] in column order - np.ndarray: Same as list Default: None (uses default weights).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>verbose</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Enable progress logging. Prints intermediate results and timestamps. Default: True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="odd">
 <td>show_progress</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Show a progress bar for major pipeline steps. Default: True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="even">
 <td>**kwargs</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Additional parameters for underlying functions. These are passed to n2n_predict_with_covariates(). Examples: - freq: Frequency for data resampling. Default: “h” (hourly). - columns: Specific columns to forecast. Default: None (all). Any parameter accepted by n2n_predict_with_covariates().</td>
 <td><code>{}</code></td>
 </tr>
@@ -1045,7 +1045,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`typing.Tuple`">Tuple</a>[<a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>, <a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a>, <a href="`typing.Dict`">Dict</a>, <a href="`typing.Dict`">Dict</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>]</td>
 <td>Tuple[pd.DataFrame, pd.Series, Dict, Dict]: A tuple containing: - predictions (pd.DataFrame): Multi-output forecasts from recursive model. Each column represents a target variable. Index is datetime matching the forecast period. - combined_prediction (pd.Series): Aggregated forecast from weighted combination. Single column combining all output predictions. Index is datetime matching the forecast period. - model_metrics (Dict): Performance metrics from recursive forecaster. Keys may include: ‘mae’, ‘rmse’, ‘mape’, etc. - feature_info (Dict): Information about engineered features. Contains feature counts, types, and engineering details.</td>
 </tr>
 </tbody>
@@ -1064,17 +1064,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If forecast_horizon &lt;= 0 or invalid parameter combinations.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`FileNotFoundError`">FileNotFoundError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError">FileNotFoundError</a></td>
 <td>If data source files cannot be accessed.</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`RuntimeError`">RuntimeError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#RuntimeError">RuntimeError</a></td>
 <td>If model training fails or data processing errors occur.</td>
 </tr>
 </tbody>

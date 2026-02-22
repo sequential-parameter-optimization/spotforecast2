@@ -789,19 +789,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>stats</td>
-<td><a href="`str`">str</a> | <a href="`typing.List`">List</a>[<a href="`str`">str</a>] | <a href="`typing.List`">List</a>[<a href="`typing.Any`">Any</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>] | <a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
 <td>Rolling statistics to compute. Can be a single string (‘mean’, ‘std’, ‘min’, ‘max’, ‘sum’, ‘median’), list of statistic names, or list of callable functions. Multiple statistics can be computed simultaneously.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>window_sizes</td>
-<td><a href="`int`">int</a> | <a href="`typing.List`">List</a>[<a href="`int`">int</a>]</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
 <td>Window size(s) for rolling computation. Can be a single integer or list of integers. Multiple windows are applied to all statistics.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>features_names</td>
-<td><a href="`typing.List`">List</a>[<a href="`str`">str</a>] | None</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>] | None</td>
 <td>Custom names for output features. If None, names are auto-generated from statistic names and window sizes (e.g., ‘roll_mean_7’, ‘roll_std_14’). Defaults to None.</td>
 <td><code>None</code></td>
 </tr>
@@ -947,13 +947,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>X</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Time series data (not used for fitting).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>y</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Target values (ignored). Defaults to None.</td>
 <td><code>None</code></td>
 </tr>
@@ -973,7 +973,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>self</td>
-<td><a href="`spotforecast2.preprocessing._rolling.RollingFeatures`">RollingFeatures</a></td>
+<td><a href="../../docs/reference/preprocessing._rolling.html#spotforecast2.preprocessing._rolling.RollingFeatures">RollingFeatures</a></td>
 <td>Returns the fitted transformer.</td>
 </tr>
 </tbody>
@@ -999,7 +999,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>X</td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a></td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></td>
 <td>Time series data as 1D numpy array or array-like.</td>
 <td><em>required</em></td>
 </tr>
@@ -1019,7 +1019,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a></td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></td>
 <td>np.ndarray: Array of shape (len(X), len(features_names)) containing the computed rolling statistics. Each column corresponds to a feature in features_names. Early positions contain NaN values before the window is fully populated.</td>
 </tr>
 </tbody>
@@ -1045,7 +1045,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>X</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a></td>
 <td>Time series data as pandas Series. The index is preserved in output.</td>
 <td><em>required</em></td>
 </tr>
@@ -1065,7 +1065,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>pd.DataFrame: DataFrame with shape (len(X), len(features_names)) where columns are feature names and index matches the input Series. Contains NaN values at the beginning where windows are incomplete.</td>
 </tr>
 </tbody>

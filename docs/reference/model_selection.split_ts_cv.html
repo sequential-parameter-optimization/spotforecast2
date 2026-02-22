@@ -803,73 +803,73 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>steps</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of observations used to be predicted in each fold. This is also commonly referred to as the forecast horizon or test size.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>initial_train_size</td>
-<td><a href="`int`">int</a> | <a href="`str`">str</a> | <a href="`pandas`">pd</a>.<a href="`pandas.Timestamp`">Timestamp</a> | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Timestamp.html#pandas.Timestamp">Timestamp</a> | None</td>
 <td>Number of observations used for initial training. - If <code>None</code> or 0, the initial forecaster is not trained in the first fold. - If an integer, the number of observations used for initial training. - If a date string or pandas Timestamp, it is the last date included in the initial training set. Defaults to None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>fold_stride</td>
-<td><a href="`int`">int</a> | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | None</td>
 <td>Number of observations that the start of the test set advances between consecutive folds. - If <code>None</code>, it defaults to the same value as <code>steps</code>, meaning that folds are placed back-to-back without overlap. - If <code>fold_stride &lt; steps</code>, test sets overlap and multiple forecasts will be generated for the same observations. - If <code>fold_stride &gt; steps</code>, gaps are left between consecutive test sets. Defaults to None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>window_size</td>
-<td><a href="`int`">int</a> | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | None</td>
 <td>Number of observations needed to generate the autoregressive predictors. Defaults to None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>differentiation</td>
-<td><a href="`int`">int</a> | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | None</td>
 <td>Number of observations to use for differentiation. This is used to extend the <code>last_window</code> as many observations as the differentiation order. Defaults to None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>refit</td>
-<td><a href="`bool`">bool</a> | <a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a> | <a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Whether to refit the forecaster in each fold. - If <code>True</code>, the forecaster is refitted in each fold. - If <code>False</code>, the forecaster is trained only in the first fold. - If an integer, the forecaster is trained in the first fold and then refitted every <code>refit</code> folds. Defaults to False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td>fixed_train_size</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether the training size is fixed or increases in each fold. Defaults to True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="even">
 <td>gap</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of observations between the end of the training set and the start of the test set. Defaults to 0.</td>
 <td><code>0</code></td>
 </tr>
 <tr class="odd">
 <td>skip_folds</td>
-<td><a href="`int`">int</a> | <a href="`list`">list</a>[<a href="`int`">int</a>] | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>] | None</td>
 <td>Number of folds to skip. - If an integer, every ‘skip_folds’-th is returned. - If a list, the indexes of the folds to skip. For example, if <code>skip_folds=3</code> and there are 10 folds, the returned folds are 0, 3, 6, and 9. If <code>skip_folds=[1, 2, 3]</code>, the returned folds are 0, 4, 5, 6, 7, 8, and 9. Defaults to None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>allow_incomplete_fold</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to allow the last fold to include fewer observations than <code>steps</code>. If <code>False</code>, the last fold is excluded if it is incomplete. Defaults to True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="odd">
 <td>return_all_indexes</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to return all indexes or only the start and end indexes of each fold. Defaults to False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>verbose</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to print information about generated folds. Defaults to True.</td>
 <td><code>True</code></td>
 </tr>
@@ -1044,13 +1044,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>X</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a> | <a href="`pandas`">pd</a>.<a href="`pandas.Index`">Index</a> | <a href="`dict`">dict</a>[<a href="`str`">str</a>, <a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>]</td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index">Index</a> | <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
 <td>Time series data or index to split. Can be a pandas Series, DataFrame, Index, or a dictionary of Series/DataFrames.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>as_pandas</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>If True, the folds are returned as a DataFrame. This is useful to visualize the folds in a more interpretable way. Defaults to False.</td>
 <td><code>False</code></td>
 </tr>
@@ -1070,47 +1070,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>A list of lists containing the indices (position) for each fold, or a</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>DataFrame if <code>as_pandas=True</code>. Each list contains 4 lists and a boolean</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>with the following information:</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>- <strong>fold</strong>: fold number.</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>- <strong>[train_start, train_end]</strong>: list with the start and end positions of the training set.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>- <strong>[last_window_start, last_window_end]</strong>: list with the start and end positions of the last window seen by the forecaster during training. The last window is used to generate the lags use as predictors. If <code>differentiation</code> is included, the interval is extended as many observations as the differentiation order. If the argument <code>window_size</code> is <code>None</code>, this list is empty.</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>- <strong>[test_start, test_end]</strong>: list with the start and end positions of the test set. These are the observations used to evaluate the forecaster.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>- <strong>[test_start_with_gap, test_end_with_gap]</strong>: list with the start and end positions of the test set including the gap. The gap is the number of observations between the end of the training set and the start of the test set.</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`list`">list</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>- <strong>fit_forecaster</strong>: boolean indicating whether the forecaster should be fitted in this fold.</td>
 </tr>
 </tbody>

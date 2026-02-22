@@ -796,13 +796,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>index</td>
-<td><a href="`typing.Union`">Union</a>[<a href="`pandas`">pd</a>.<a href="`pandas.Index`">Index</a>, None]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index">Index</a>, None]</td>
 <td>Original pandas Index (DatetimeIndex or RangeIndex). If None, creates a RangeIndex starting from 0.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>steps</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of future steps to generate.</td>
 <td><em>required</em></td>
 </tr>
@@ -822,7 +822,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Index`">Index</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index">Index</a></td>
 <td>New pandas Index with <code>steps</code> future periods.</td>
 </tr>
 </tbody>
@@ -841,7 +841,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`TypeError`">TypeError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#TypeError">TypeError</a></td>
 <td>If steps is not an integer, or if index is neither DatetimeIndex nor RangeIndex.</td>
 </tr>
 </tbody>
@@ -896,13 +896,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td><a href="`typing.Union`">Union</a>[<a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a>, <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
 <td>Input data as pandas Series or DataFrame.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>input_name</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Name of the input data type. Accepted values are: - ‘y’: Target time series - ‘last_window’: Last window for prediction - ‘exog’: Exogenous variables</td>
 <td><em>required</em></td>
 </tr>
@@ -922,12 +922,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>DataFrame version of the input data. For Series input, uses the series</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>name if available, otherwise uses a default name based on input_name.</td>
 </tr>
 </tbody>

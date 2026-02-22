@@ -825,61 +825,61 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>model</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Fitted scikit-learn model.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>X</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>Feature matrix (e.g., test set).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>y</td>
-<td><a href="`typing.Union`">Union</a>[<a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a>, <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
 <td>Target series or DataFrame (e.g., test set).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>cv_results</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`typing.Dict`">Dict</a>[<a href="`str`">str</a>, <a href="`typing.Any`">Any</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]]</td>
 <td>Optional dictionary of cross-validation results from <code>evaluate()</code> or <code>sklearn.model_selection.cross_validate()</code>.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>title</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Title of the plot. Defaults to “Forecast”.</td>
 <td><code>'Forecast'</code></td>
 </tr>
 <tr class="even">
 <td>figsize</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`tuple`">tuple</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>]</td>
 <td>Figure dimensions.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>show</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to display the plot. Defaults to True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="even">
 <td>nrows</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`int`">int</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
 <td>Number of rows for subplots (multivariate).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>ncols</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of columns for subplots (multivariate).</td>
 <td><code>1</code></td>
 </tr>
 <tr class="even">
 <td>sharex</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to share x-axis for subplots. Defaults to True.</td>
 <td><code>True</code></td>
 </tr>
@@ -889,6 +889,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="returns" class="level4 doc-section doc-section-returns">
 <h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 56%">
+<col style="width: 37%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -899,7 +904,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`matplotlib.pyplot`">plt</a>.<a href="`matplotlib.pyplot.Figure`">Figure</a></td>
+<td><code>plt</code>.<code>Figure</code></td>
 <td>plt.Figure: The matplotlib Figure object.</td>
 </tr>
 </tbody>
@@ -951,55 +956,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>y_true</td>
-<td><a href="`typing.Union`">Union</a>[<a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a>, <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
 <td>Series or DataFrame containing the actual target values.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>predictions</td>
-<td><a href="`typing.Dict`">Dict</a>[<a href="`str`">str</a>, <a href="`typing.Union`">Union</a>[<a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a>, <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>, <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>, <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>]]</td>
 <td>Dictionary where keys are labels (e.g., model names) and values are the corresponding predictions. If arrays are provided, they must have the same length as the sliced <code>y_true</code>.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>slice_seq</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`slice`">slice</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/functions.html#slice">slice</a>]</td>
 <td>Optional slice object to select a subset of the data. If None, the entire series is plotted. Example: <code>slice(-96, None)</code> to select the last 96 points.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>title</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Title of the plot. Defaults to “Predictions vs Actuals”.</td>
 <td><code>'Predictions vs Actuals'</code></td>
 </tr>
 <tr class="odd">
 <td>figsize</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`tuple`">tuple</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>]</td>
 <td>Tuple defining figure width and height. If None, automatically calculated based on number of subplots.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>show</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to display the plot. Defaults to True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="odd">
 <td>nrows</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`int`">int</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
 <td>Number of rows for subplots (multivariate). Defaults to n_targets.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>ncols</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of columns for subplots (multivariate). Defaults to 1.</td>
 <td><code>1</code></td>
 </tr>
 <tr class="odd">
 <td>sharex</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to share x-axis for subplots. Defaults to True.</td>
 <td><code>True</code></td>
 </tr>
@@ -1009,6 +1014,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="returns-1" class="level4 doc-section doc-section-returns">
 <h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 5%">
+<col style="width: 47%">
+<col style="width: 46%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -1019,7 +1029,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`matplotlib.pyplot`">plt</a>.<a href="`matplotlib.pyplot.Figure`">Figure</a></td>
+<td><code>plt</code>.<code>Figure</code></td>
 <td>plt.Figure: The matplotlib Figure object containing the plot.</td>
 </tr>
 </tbody>
@@ -1065,31 +1075,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>DataFrame containing the time series data. Must have a DatetimeIndex or an index convertible to datetime.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>target</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Name of the column to plot.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>figsize</td>
-<td><a href="`tuple`">tuple</a>[<a href="`int`">int</a>, <a href="`int`">int</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>, <a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
 <td>Figure dimensions (width, height). Defaults to (8, 5).</td>
 <td><code>(8, 5)</code></td>
 </tr>
 <tr class="even">
 <td>show</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to display the plot immediately. Defaults to True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="odd">
 <td>logscale</td>
-<td><a href="`typing.Union`">Union</a>[<a href="`bool`">bool</a>, <a href="`list`">list</a>[<a href="`bool`">bool</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://docs.python.org/3/library/functions.html#bool">bool</a>, <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#bool">bool</a>]]</td>
 <td>Whether to use a log scale for the y-axis. Can be a single boolean (applies to all 4 plots) or a list of 4 booleans (applies to each plot individually). Defaults to False.</td>
 <td><code>False</code></td>
 </tr>
@@ -1099,6 +1109,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="returns-2" class="level4 doc-section doc-section-returns">
 <h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-2">Returns</h4>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 56%">
+<col style="width: 37%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -1109,7 +1124,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`matplotlib.pyplot`">plt</a>.<a href="`matplotlib.pyplot.Figure`">Figure</a></td>
+<td><code>plt</code>.<code>Figure</code></td>
 <td>plt.Figure: The matplotlib Figure object.</td>
 </tr>
 </tbody>
@@ -1162,37 +1177,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>data</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>DataFrame containing the time series data. Must have a DatetimeIndex or an index convertible to datetime.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>target</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Name of the column to plot.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>zoom</td>
-<td><a href="`tuple`">tuple</a>[<a href="`str`">str</a>, <a href="`str`">str</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
 <td>Tuple of (start_date, end_date) strings defining the zoom range.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>title</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`str`">str</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
 <td>Optional title for the plot. If None, defaults to target name.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>figsize</td>
-<td><a href="`tuple`">tuple</a>[<a href="`int`">int</a>, <a href="`int`">int</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>, <a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
 <td>Figure dimensions (width, height). Defaults to (8, 4).</td>
 <td><code>(8, 4)</code></td>
 </tr>
 <tr class="even">
 <td>show</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to display the plot immediately. Defaults to True.</td>
 <td><code>True</code></td>
 </tr>
@@ -1202,6 +1217,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="returns-3" class="level4 doc-section doc-section-returns">
 <h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-3">Returns</h4>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 6%">
+<col style="width: 56%">
+<col style="width: 37%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -1212,7 +1232,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`matplotlib.pyplot`">plt</a>.<a href="`matplotlib.pyplot.Figure`">Figure</a></td>
+<td><code>plt</code>.<code>Figure</code></td>
 <td>plt.Figure: The matplotlib Figure object.</td>
 </tr>
 </tbody>
@@ -1264,49 +1284,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>dataframes</td>
-<td><a href="`typing.Dict`">Dict</a>[<a href="`str`">str</a>, <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
 <td>Dictionary mapping dataset names to pandas DataFrames.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>columns</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`typing.List`">List</a>[<a href="`str`">str</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]]</td>
 <td>List of column names to visualize. If None, all columns are used. Default: None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>title_suffix</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Suffix to append to column names. Default: ““.</td>
 <td><code>''</code></td>
 </tr>
 <tr class="even">
 <td>figsize</td>
-<td><a href="`tuple`">tuple</a>[<a href="`int`">int</a>, <a href="`int`">int</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>, <a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
 <td>Figure size as (width, height) in pixels. Default: (1000, 500).</td>
 <td><code>(1000, 500)</code></td>
 </tr>
 <tr class="odd">
 <td>template</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Plotly template. Default: ‘plotly_white’.</td>
 <td><code>'plotly_white'</code></td>
 </tr>
 <tr class="even">
 <td>colors</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`typing.Dict`">Dict</a>[<a href="`str`">str</a>, <a href="`str`">str</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]]</td>
 <td>Dictionary mapping dataset names to colors. Default: None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>show_mean</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>If True, overlay the mean of all datasets. Default: False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>**kwargs</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Additional keyword arguments for go.Scatter().</td>
 <td><code>{}</code></td>
 </tr>
@@ -1345,12 +1365,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If dataframes is empty.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`ImportError`">ImportError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ImportError">ImportError</a></td>
 <td>If plotly is not installed.</td>
 </tr>
 </tbody>
@@ -1409,43 +1429,43 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>dataframes</td>
-<td><a href="`typing.Dict`">Dict</a>[<a href="`str`">str</a>, <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
 <td>Dictionary mapping dataset names to pandas DataFrames with datetime index. Example: {‘Train’: df_train, ‘Validation’: df_val, ‘Test’: df_test}</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>columns</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`typing.List`">List</a>[<a href="`str`">str</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]]</td>
 <td>List of column names to visualize. If None, all columns are used. Default: None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>title_suffix</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Suffix to append to the column name in the title. Useful for adding units or descriptions. Default: ““.</td>
 <td><code>''</code></td>
 </tr>
 <tr class="even">
 <td>figsize</td>
-<td><a href="`tuple`">tuple</a>[<a href="`int`">int</a>, <a href="`int`">int</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>, <a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
 <td>Figure size as (width, height) in pixels. Default: (1000, 500).</td>
 <td><code>(1000, 500)</code></td>
 </tr>
 <tr class="odd">
 <td>template</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Plotly template name for styling. Options include ‘plotly_white’, ‘plotly_dark’, ‘plotly’, ‘ggplot2’, etc. Default: ‘plotly_white’.</td>
 <td><code>'plotly_white'</code></td>
 </tr>
 <tr class="even">
 <td>colors</td>
-<td><a href="`typing.Optional`">Optional</a>[<a href="`typing.Dict`">Dict</a>[<a href="`str`">str</a>, <a href="`str`">str</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]]</td>
 <td>Dictionary mapping dataset names to colors. If None, uses Plotly default colors. Example: {‘Train’: ‘blue’, ‘Validation’: ‘orange’}. Default: None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>**kwargs</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Additional keyword arguments passed to go.Scatter() (e.g., mode=‘lines+markers’, line=dict(dash=‘dash’)).</td>
 <td><code>{}</code></td>
 </tr>
@@ -1484,17 +1504,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If dataframes dict is empty, contains no columns, or if specified columns don’t exist in all dataframes.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`ImportError`">ImportError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ImportError">ImportError</a></td>
 <td>If plotly is not installed.</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`TypeError`">TypeError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#TypeError">TypeError</a></td>
 <td>If dataframes parameter is not a dictionary.</td>
 </tr>
 </tbody>

@@ -808,97 +808,97 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>forecaster</td>
-<td><a href="`object`">object</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a></td>
 <td>Forecaster model (e.g.&nbsp;<code>ForecasterRecursive</code>).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>y</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a></td>
 <td>Training time series. Must have a datetime or numeric index.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>cv</td>
-<td><a href="`spotforecast2.model_selection.split_ts_cv.TimeSeriesFold`">TimeSeriesFold</a> | <a href="`spotforecast2_safe.model_selection.OneStepAheadFold`">OneStepAheadFold</a></td>
+<td><a href="../../docs/reference/model_selection.split_ts_cv.html#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold">TimeSeriesFold</a> | <code>OneStepAheadFold</code></td>
 <td>Cross-validation strategy — <code>TimeSeriesFold</code> or <code>OneStepAheadFold</code>.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>search_space</td>
-<td><a href="`spotoptim.hyperparameters.ParameterSet`">ParameterSet</a> | <a href="`typing.Dict`">Dict</a>[<a href="`str`">str</a>, <a href="`typing.Any`">Any</a>]</td>
+<td><code>ParameterSet</code> | <a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
 <td>Hyperparameter search space. Either a :class:<code>~spotoptim.hyperparameters.ParameterSet</code> or a plain <code>dict</code> (see examples below).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>metric</td>
-<td><a href="`str`">str</a> | <a href="`typing.Callable`">Callable</a> | <a href="`list`">list</a>[<a href="`str`">str</a> | <a href="`typing.Callable`">Callable</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a> | <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>]</td>
 <td>Metric name, callable, or list thereof.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>exog</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a> | None</td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a> | None</td>
 <td>Optional exogenous variable(s).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>n_trials</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Total evaluations (initial + sequential).</td>
 <td><code>10</code></td>
 </tr>
 <tr class="even">
 <td>n_initial</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Random initial points before surrogate kicks in.</td>
 <td><code>5</code></td>
 </tr>
 <tr class="odd">
 <td>random_state</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>RNG seed.</td>
 <td><code>123</code></td>
 </tr>
 <tr class="even">
 <td>return_best</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Re-fit forecaster with best params after search.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="odd">
 <td>n_jobs</td>
-<td><a href="`int`">int</a> | <a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Parallel jobs for backtesting (<code>"auto"</code> or int).</td>
 <td><code>'auto'</code></td>
 </tr>
 <tr class="even">
 <td>verbose</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Print optimisation progress.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td>show_progress</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>(Handled by <em>verbose</em>.)</td>
 <td><code>True</code></td>
 </tr>
 <tr class="even">
 <td>suppress_warnings</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Suppress spotforecast warnings.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td>output_file</td>
-<td><a href="`str`">str</a> | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</td>
 <td>Save results as TSV to this path.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>kwargs_spotoptim</td>
-<td><a href="`dict`">dict</a> | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a> | None</td>
 <td>Extra kwargs passed to <code>SpotOptim()</code>.</td>
 <td><code>None</code></td>
 </tr>
@@ -918,12 +918,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>tuple</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td><code>(results, optimizer)</code> where <em>results</em> is a sorted</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`object`">object</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a></td>
 <td><code>DataFrame</code> and <em>optimizer</em> is the <code>SpotOptim</code> instance.</td>
 </tr>
 </tbody>
@@ -942,12 +942,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If <code>exog</code> length ≠ <code>y</code> length and <code>return_best</code> is True.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`TypeError`">TypeError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#TypeError">TypeError</a></td>
 <td>If <code>cv</code> is not <code>TimeSeriesFold</code> or <code>OneStepAheadFold</code>.</td>
 </tr>
 </tbody>

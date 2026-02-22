@@ -806,91 +806,91 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>forecaster</td>
-<td><a href="`object`">object</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a></td>
 <td>Forecaster model (ForecasterRecursive or ForecasterDirect).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>y</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a></td>
 <td>Training time series.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>cv</td>
-<td><a href="`spotforecast2.model_selection.split_ts_cv.TimeSeriesFold`">TimeSeriesFold</a> | <a href="`spotforecast2_safe.model_selection.OneStepAheadFold`">OneStepAheadFold</a></td>
+<td><a href="../../docs/reference/model_selection.split_ts_cv.html#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold">TimeSeriesFold</a> | <code>OneStepAheadFold</code></td>
 <td>Cross-validation strategy (TimeSeriesFold or OneStepAheadFold) with information needed to split the data into folds.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>param_distributions</td>
-<td><a href="`dict`">dict</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></td>
 <td>Dictionary with parameter names (str) as keys and distributions or lists of parameters to try as values. Use scipy.stats distributions for continuous parameters.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>metric</td>
-<td><a href="`str`">str</a> | <a href="`typing.Callable`">Callable</a> | <a href="`list`">list</a>[<a href="`str`">str</a> | <a href="`typing.Callable`">Callable</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a> | <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>]</td>
 <td>Metric(s) to quantify model goodness of fit. If str: ‘mean_squared_error’, ‘mean_absolute_error’, ‘mean_absolute_percentage_error’, ‘mean_squared_log_error’, ‘mean_absolute_scaled_error’, ‘root_mean_squared_scaled_error’. If Callable: Function with arguments (y_true, y_pred, y_train) that returns a float. If list: Multiple strings and/or Callables.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>exog</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a> | None</td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a> | None</td>
 <td>Exogenous variable(s) included as predictors. Must have the same number of observations as y and aligned so that y[i] is regressed on exog[i]. Default is None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>lags_grid</td>
-<td><a href="`list`">list</a>[<a href="`int`">int</a> | <a href="`list`">list</a>[<a href="`int`">int</a>] | <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>[<a href="`int`">int</a>] | <a href="`range`">range</a>[<a href="`int`">int</a>]] | <a href="`dict`">dict</a>[<a href="`str`">str</a>, <a href="`list`">list</a>[<a href="`int`">int</a> | <a href="`list`">list</a>[<a href="`int`">int</a>] | <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>[<a href="`int`">int</a>] | <a href="`range`">range</a>[<a href="`int`">int</a>]]] | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>] | <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>] | <a href="https://docs.python.org/3/library/stdtypes.html#range">range</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]] | <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>] | <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>] | <a href="https://docs.python.org/3/library/stdtypes.html#range">range</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]]] | None</td>
 <td>Lists of lags to try. Can be int, lists, numpy ndarray, or range objects. If dict, keys are used as labels in results DataFrame. Default is None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>n_iter</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of parameter settings sampled per lags configuration. Trades off runtime vs solution quality. Default is 10.</td>
 <td><code>10</code></td>
 </tr>
 <tr class="odd">
 <td>random_state</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Seed for random sampling for reproducible output. Default is 123.</td>
 <td><code>123</code></td>
 </tr>
 <tr class="even">
 <td>return_best</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>If True, refit the forecaster using best parameters on the whole dataset. Default is True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="odd">
 <td>n_jobs</td>
-<td><a href="`int`">int</a> | <a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Number of jobs to run in parallel. If -1, uses all cores. If ‘auto’, uses select_n_jobs_backtesting. Default is ‘auto’.</td>
 <td><code>'auto'</code></td>
 </tr>
 <tr class="even">
 <td>verbose</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>If True, print number of folds used for cv. Default is False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td>show_progress</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to show a progress bar. Default is True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="even">
 <td>suppress_warnings</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>If True, suppress spotforecast warnings during hyperparameter search. Default is False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
 <td>output_file</td>
-<td><a href="`str`">str</a> | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</td>
 <td>Filename or full path to save results as TSV. If None, results are not saved to file. Default is None.</td>
 <td><code>None</code></td>
 </tr>
@@ -910,22 +910,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>Results for each parameter combination with columns: lags (lags</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>configuration), lags_label (descriptive label), params (parameters</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>configuration), metric (metric value), and additional columns with</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>param=value pairs.</td>
 </tr>
 </tbody>

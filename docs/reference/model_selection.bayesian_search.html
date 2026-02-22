@@ -807,97 +807,97 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>forecaster</td>
-<td><a href="`object`">object</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a></td>
 <td>Forecaster model. Can be ForecasterRecursive, ForecasterDirect, or any compatible forecaster class.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>y</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a></td>
 <td>Training time series values. Must be a pandas Series with a datetime or numeric index.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>cv</td>
-<td><a href="`spotforecast2.model_selection.split_ts_cv.TimeSeriesFold`">TimeSeriesFold</a> | <a href="`spotforecast2_safe.model_selection.OneStepAheadFold`">OneStepAheadFold</a></td>
+<td><a href="../../docs/reference/model_selection.split_ts_cv.html#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold">TimeSeriesFold</a> | <code>OneStepAheadFold</code></td>
 <td>Cross-validation strategy with information needed to split the data into folds. Must be an instance of TimeSeriesFold or OneStepAheadFold.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>search_space</td>
-<td><a href="`typing.Callable`">Callable</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a></td>
 <td>Callable function with argument <code>trial</code> that returns a dictionary with parameter names (str) as keys and Trial objects from optuna (trial.suggest_float, trial.suggest_int, trial.suggest_categorical) as values. Can optionally include ‘lags’ key to search over different lag configurations.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>metric</td>
-<td><a href="`str`">str</a> | <a href="`typing.Callable`">Callable</a> | <a href="`list`">list</a>[<a href="`str`">str</a> | <a href="`typing.Callable`">Callable</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a> | <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>]</td>
 <td>Metric(s) to quantify model goodness of fit. Can be: - str: One of ‘mean_squared_error’, ‘mean_absolute_error’, ‘mean_absolute_percentage_error’, ‘mean_squared_log_error’, ‘mean_absolute_scaled_error’, ‘root_mean_squared_scaled_error’. - Callable: Function with arguments (y_true, y_pred) or (y_true, y_pred, y_train) that returns a float. - list: List containing multiple strings and/or Callables.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>exog</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a> | None</td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a> | None</td>
 <td>Exogenous variable(s) included as predictors. Must have the same number of observations as <code>y</code> and aligned so that y[i] is regressed on exog[i]. Default is None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>n_trials</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of parameter settings sampled during optimization. Default is 10.</td>
 <td><code>10</code></td>
 </tr>
 <tr class="even">
 <td>random_state</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Seed for sampling reproducibility. When passing a custom sampler in kwargs_create_study, set the seed within the sampler (e.g., {‘sampler’: TPESampler(seed=145)}). Default is 123.</td>
 <td><code>123</code></td>
 </tr>
 <tr class="odd">
 <td>return_best</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>If True, refit the forecaster using the best parameters found on the whole dataset at the end. Default is True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="even">
 <td>n_jobs</td>
-<td><a href="`int`">int</a> | <a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Number of parallel jobs. If -1, uses all cores. If ‘auto’, uses spotforecast.skforecast.utils.select_n_jobs_backtesting to automatically determine the number of jobs. Default is ‘auto’.</td>
 <td><code>'auto'</code></td>
 </tr>
 <tr class="odd">
 <td>verbose</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>If True, print number of folds used for cross-validation. Default is False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>show_progress</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to show an Optuna progress bar during optimization. Default is True.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="odd">
 <td>suppress_warnings</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>If True, suppress spotforecast warnings during hyperparameter search. Default is False.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>output_file</td>
-<td><a href="`str`">str</a> | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</td>
 <td>Filename or full path to save results as TSV. If None, results are not saved to file. Default is None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>kwargs_create_study</td>
-<td><a href="`dict`">dict</a> | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a> | None</td>
 <td>Additional keyword arguments passed to optuna.create_study(). If not specified, direction is set to ‘minimize’ and TPESampler(seed=123) is used. Default is {}.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>kwargs_study_optimize</td>
-<td><a href="`dict`">dict</a> | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a> | None</td>
 <td>Additional keyword arguments passed to study.optimize(). Default is {}.</td>
 <td><code>None</code></td>
 </tr>
@@ -917,7 +917,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`tuple`">tuple</a>[<a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a>, <a href="`object`">object</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>, <a href="https://docs.python.org/3/library/functions.html#object">object</a>]</td>
 <td>tuple[pd.DataFrame, object]: A tuple containing: - results: DataFrame with columns ‘lags’, ‘params’, metric values, and individual parameter columns. Sorted by the first metric. - best_trial: Best optimization result as an optuna.FrozenTrial object containing the best parameters and metric value.</td>
 </tr>
 </tbody>
@@ -936,17 +936,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If exog length doesn’t match y length when return_best=True.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`TypeError`">TypeError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#TypeError">TypeError</a></td>
 <td>If cv is not an instance of TimeSeriesFold or OneStepAheadFold.</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If metric list contains duplicate metric names.</td>
 </tr>
 </tbody>

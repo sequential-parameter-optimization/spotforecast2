@@ -797,31 +797,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>n_bins</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>The number of quantile-based bins to create. Must be &gt;= 2.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>method</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>The method used to compute quantiles, passed to numpy.percentile. Default is ‘linear’. Valid values: “inverse_cdf”, “averaged_inverse_cdf”, “closest_observation”, “interpolated_inverse_cdf”, “hazen”, “weibull”, “linear”, “median_unbiased”, “normal_unbiased”.</td>
 <td><code>'linear'</code></td>
 </tr>
 <tr class="odd">
 <td>subsample</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Maximum number of samples for computing quantiles. If dataset has more samples, a random subset is used. Default 200000.</td>
 <td><code>200000</code></td>
 </tr>
 <tr class="even">
 <td>dtype</td>
-<td><a href="`type`">type</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#type">type</a></td>
 <td>Data type for bin indices. Default is numpy.float64.</td>
 <td><code>np.float64</code></td>
 </tr>
 <tr class="odd">
 <td>random_state</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Random seed for subset generation. Default 789654.</td>
 <td><code>789654</code></td>
 </tr>
@@ -841,47 +841,47 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>n_bins</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of bins to create.</td>
 </tr>
 <tr class="even">
 <td>method</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Quantile computation method.</td>
 </tr>
 <tr class="odd">
 <td>subsample</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Maximum samples for quantile computation.</td>
 </tr>
 <tr class="even">
 <td>dtype</td>
-<td><a href="`type`">type</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#type">type</a></td>
 <td>Data type for bin indices.</td>
 </tr>
 <tr class="odd">
 <td>random_state</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Random seed.</td>
 </tr>
 <tr class="even">
 <td>n_bins_</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Actual number of bins after fitting (may differ from n_bins if duplicate edges are found).</td>
 </tr>
 <tr class="odd">
 <td>bin_edges_</td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a></td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></td>
 <td>Edges of the bins learned during fitting.</td>
 </tr>
 <tr class="even">
 <td>internal_edges_</td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a></td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></td>
 <td>Internal edges for optimized bin assignment.</td>
 </tr>
 <tr class="odd">
 <td>intervals_</td>
-<td><a href="`dict`">dict</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></td>
 <td>Mapping from bin index to (lower, upper) interval bounds.</td>
 </tr>
 </tbody>
@@ -963,13 +963,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>X</td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a></td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></td>
 <td>Training data (1D numpy array) for computing quantiles.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>y</td>
-<td><a href="`object`">object</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a></td>
 <td>Ignored.</td>
 <td><code>None</code></td>
 </tr>
@@ -989,7 +989,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`object`">object</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a></td>
 <td>Self for method chaining.</td>
 </tr>
 </tbody>
@@ -1008,7 +1008,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If input data X is empty.</td>
 </tr>
 </tbody>
@@ -1072,12 +1072,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`dict`">dict</a>[<a href="`str`">str</a>, <a href="`typing.Any`">Any</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
 <td>Dictionary containing n_bins, method, subsample, dtype, and</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`dict`">dict</a>[<a href="`str`">str</a>, <a href="`typing.Any`">Any</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
 <td>random_state parameters.</td>
 </tr>
 </tbody>
@@ -1116,7 +1116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>**params</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Parameter names and values to set as keyword arguments.</td>
 <td><code>{}</code></td>
 </tr>
@@ -1181,13 +1181,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>X</td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a></td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></td>
 <td>Data to assign to bins (1D numpy array).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>y</td>
-<td><a href="`object`">object</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a></td>
 <td>Ignored.</td>
 <td><code>None</code></td>
 </tr>
@@ -1207,7 +1207,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a></td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></td>
 <td>Bin indices as numpy array with dtype specified in <strong>init</strong>.</td>
 </tr>
 </tbody>
@@ -1216,6 +1216,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="raises-1" class="level6 doc-section doc-section-raises">
 <h6 class="doc-section doc-section-raises anchored" data-anchor-id="raises-1">Raises</h6>
 <table class="caption-top table">
+<colgroup>
+<col style="width: 8%">
+<col style="width: 56%">
+<col style="width: 35%">
+</colgroup>
 <thead>
 <tr class="header">
 <th>Name</th>
@@ -1226,7 +1231,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`sklearn.exceptions.NotFittedError`">NotFittedError</a></td>
+<td><code>NotFittedError</code></td>
 <td>If fit() has not been called yet.</td>
 </tr>
 </tbody>

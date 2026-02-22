@@ -843,55 +843,55 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>forecaster_name</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>str Forecaster name.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>use_in_sample_residuals</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>bool Indicates if in sample or out sample residuals are used.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>in_sample_residuals_</td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a> | <a href="`dict`">dict</a>[<a href="`str`">str</a>, <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>] | None</td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a> | <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>] | None</td>
 <td>numpy ndarray, dict Residuals of the model when predicting training data.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>out_sample_residuals_</td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a> | <a href="`dict`">dict</a>[<a href="`str`">str</a>, <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>] | None</td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a> | <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>] | None</td>
 <td>numpy ndarray, dict Residuals of the model when predicting non training data.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>use_binned_residuals</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>bool Indicates if residuals are binned.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>in_sample_residuals_by_bin_</td>
-<td><a href="`dict`">dict</a>[<a href="`str`">str</a> | <a href="`int`">int</a>, <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a> | <a href="`dict`">dict</a>[<a href="`int`">int</a>, <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>]] | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://docs.python.org/3/library/functions.html#int">int</a>, <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a> | <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>, <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>]] | None</td>
 <td>dict In sample residuals binned according to the predicted value each residual is associated with.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>out_sample_residuals_by_bin_</td>
-<td><a href="`dict`">dict</a>[<a href="`str`">str</a> | <a href="`int`">int</a>, <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a> | <a href="`dict`">dict</a>[<a href="`int`">int</a>, <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>]] | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://docs.python.org/3/library/functions.html#int">int</a>, <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a> | <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>, <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>]] | None</td>
 <td>dict Out of sample residuals binned according to the predicted value each residual is associated with.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>levels</td>
-<td><a href="`list`">list</a>[<a href="`str`">str</a>] | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>] | None</td>
 <td>list, default None Names of the series (levels) to be predicted (Forecasters multiseries).</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>encoding</td>
-<td><a href="`str`">str</a> | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</td>
 <td>str, default None Encoding used to identify the different series (ForecasterRecursiveMultiSeries).</td>
 <td><code>None</code></td>
 </tr>
@@ -942,31 +942,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>index</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.Index`">Index</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index">Index</a></td>
 <td>pandas Index Original datetime index (must be a pandas DatetimeIndex if <code>date_input</code> is not an int).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>date_input</td>
-<td><a href="`int`">int</a> | <a href="`str`">str</a> | <a href="`pandas`">pd</a>.<a href="`pandas.Timestamp`">Timestamp</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Timestamp.html#pandas.Timestamp">Timestamp</a></td>
 <td>int, str, pandas Timestamp Datetime to transform to integer. - If int, returns the same integer. - If str or pandas Timestamp, it is converted and expanded into the index.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>method</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>str, default ‘prediction’ Can be ‘prediction’ or ‘validation’. - If ‘prediction’, the date must be later than the last date in the index. - If ‘validation’, the date must be within the index range.</td>
 <td><code>'prediction'</code></td>
 </tr>
 <tr class="even">
 <td>date_literal</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>str, default ‘steps’ Variable name used in error messages.</td>
 <td><code>'steps'</code></td>
 </tr>
 <tr class="odd">
 <td>kwargs_pd_to_datetime</td>
-<td><a href="`dict`">dict</a> | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a> | None</td>
 <td>dict, default {} Additional keyword arguments to pass to <code>pd.to_datetime()</code>.</td>
 <td><code>None</code></td>
 </tr>
@@ -986,37 +986,37 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>int</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td><code>date_input</code> transformed to integer position in the <code>index</code>.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>+ If <code>date_input</code> is an integer, it returns the same integer.</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>+ If method is ‘prediction’, number of steps to predict from the last</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>date in the index.</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>+ If method is ‘validation’, position plus one of the date in the index,</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>this is done to include the target date in the training set when using</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>pandas iloc with slices.</td>
 </tr>
 </tbody>
@@ -1041,13 +1041,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>exog</td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a> | <a href="`pandas`">pd</a>.<a href="`pandas.Series`">Series</a> | <a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>numpy ndarray, pandas Series, pandas DataFrame Exogenous variables, shape(samples,). If exog is a pandas format, the direct exog names are created.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>steps</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>int Number of steps that will be predicted using exog.</td>
 <td><em>required</em></td>
 </tr>
@@ -1067,7 +1067,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`tuple`">tuple</a>[<a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a>, <a href="`list`">list</a>[<a href="`str`">str</a>] | None]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>[<a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>, <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>] | None]</td>
 <td>tuple[np.ndarray, list[str] | None]: exog_direct: numpy ndarray Exogenous variables transformed. exog_direct_names: list, None Names of the columns of the exogenous variables transformed. Only created if <code>exog</code> is a pandas Series or DataFrame.</td>
 </tr>
 </tbody>
@@ -1092,13 +1092,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>estimator</td>
-<td><a href="`object`">object</a> | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a> | None</td>
 <td>estimator or pipeline compatible with the scikit-learn API, default None An instance of a estimator or pipeline compatible with the scikit-learn API.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>regressor</td>
-<td><a href="`object`">object</a> | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a> | None</td>
 <td>estimator or pipeline compatible with the scikit-learn API, default None Deprecated. An instance of a estimator or pipeline compatible with the scikit-learn API.</td>
 <td><code>None</code></td>
 </tr>
@@ -1154,25 +1154,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>forecaster_name</td>
-<td><a href="`str`">str</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Name of the forecaster using this function. Special handling is applied for ‘ForecasterRecursiveMultiSeries’.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>series_names_in_</td>
-<td><a href="`list`">list</a>[<a href="`str`">str</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
 <td>Names of the time series (levels) used during training. These will be the keys in the returned transformer dictionary.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>encoding</td>
-<td><a href="`str`">str</a> | None</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | None</td>
 <td>Encoding used to identify different series. Only used for ForecasterRecursiveMultiSeries. If None, creates a single ’_unknown_level’ entry. Defaults to None.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>transformer_series</td>
-<td><a href="`object`">object</a> | <a href="`dict`">dict</a>[<a href="`str`">str</a>, <a href="`object`">object</a> | None] | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a> | <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#object">object</a> | None] | None</td>
 <td>Transformer(s) to apply to series. Can be: - None: No transformation applied - Single transformer object: Same transformer cloned for all series - Dict mapping series names to transformers: Different transformer per series Defaults to None.</td>
 <td><code>None</code></td>
 </tr>
@@ -1192,7 +1192,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>dict</td>
-<td><a href="`dict`">dict</a>[<a href="`str`">str</a>, <a href="`object`">object</a> | None]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#object">object</a> | None]</td>
 <td>Dictionary with series names as keys and transformer objects (or None) as values. Transformers are cloned to prevent overwriting.</td>
 </tr>
 </tbody>
@@ -1264,7 +1264,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>window_features</td>
-<td><a href="`typing.Any`">Any</a></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Classes used to create window features. Can be a single object or a list of objects. Each object must have <code>window_sizes</code>, <code>features_names</code> attributes and <code>transform_batch</code>, <code>transform</code> methods.</td>
 <td><em>required</em></td>
 </tr>
@@ -1284,7 +1284,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>tuple</td>
-<td><a href="`typing.Tuple`">Tuple</a>[<a href="`typing.Optional`">Optional</a>[<a href="`typing.List`">List</a>[<a href="`object`">object</a>]], <a href="`typing.Optional`">Optional</a>[<a href="`typing.List`">List</a>[<a href="`str`">str</a>]], <a href="`typing.Optional`">Optional</a>[<a href="`int`">int</a>]]</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/functions.html#object">object</a>]], <a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]], <a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]]</td>
 <td>A tuple containing: - window_features (list or None): List of classes used to create window features. - window_features_names (list or None): List with all the features names of the window features. - max_size_window_features (int or None): Maximum value of the <code>window_sizes</code> attribute of all classes.</td>
 </tr>
 </tbody>
@@ -1303,17 +1303,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If <code>window_features</code> is an empty list.</td>
 </tr>
 <tr class="even">
 <td></td>
-<td><a href="`ValueError`">ValueError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
 <td>If a window feature is missing required attributes or methods.</td>
 </tr>
 <tr class="odd">
 <td></td>
-<td><a href="`TypeError`">TypeError</a></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#TypeError">TypeError</a></td>
 <td>If <code>window_sizes</code> or <code>features_names</code> have incorrect types.</td>
 </tr>
 </tbody>
@@ -1359,25 +1359,25 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>forecasters</td>
-<td><a href="`dict`">dict</a></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a></td>
 <td>Dictionary of fitted forecaster instances (one per target). Keys are target names, values are the fitted forecasters (e.g., ForecasterRecursive, ForecasterEquivalentDate).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>steps_ahead</td>
-<td><a href="`int`">int</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of steps to forecast.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="odd">
 <td>exog</td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>Exogenous variables for prediction. If provided, will be passed to each forecaster’s predict method.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>show_progress</td>
-<td><a href="`bool`">bool</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Show progress bar while predicting per target forecaster. Default: False.</td>
 <td><code>False</code></td>
 </tr>
@@ -1397,7 +1397,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`pandas`">pd</a>.<a href="`pandas.DataFrame`">DataFrame</a></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
 <td>pd.DataFrame: DataFrame with predictions for all targets.</td>
 </tr>
 </tbody>
@@ -1441,13 +1441,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>max_step</td>
-<td><a href="`int`">int</a> | <a href="`list`">list</a>[<a href="`int`">int</a>] | <a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a></td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>] | <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></td>
 <td>int, list, numpy ndarray Maximum number of future steps the forecaster will predict when using predict methods.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>steps</td>
-<td><a href="`int`">int</a> | <a href="`list`">list</a>[<a href="`int`">int</a>] | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>] | None</td>
 <td>int, list, None, default None Predict n steps. The value of <code>steps</code> must be less than or equal to the value of steps defined when initializing the forecaster. Starts at 1. - If <code>int</code>: Only steps within the range of 1 to int are predicted. - If <code>list</code>: List of ints. Only the steps contained in the list are predicted. - If <code>None</code>: As many steps are predicted as were defined at initialization.</td>
 <td><code>None</code></td>
 </tr>
@@ -1467,7 +1467,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="`list`">list</a>[<a href="`int`">int</a>]</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
 <td>list[int]: Steps to be predicted.</td>
 </tr>
 </tbody>
@@ -1502,13 +1502,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td>array</td>
-<td><a href="`numpy`">np</a>.<a href="`numpy.ndarray`">ndarray</a></td>
+<td><a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a></td>
 <td>numpy ndarray Array to be transformed.</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
 <td>transformer</td>
-<td><a href="`object`">object</a> | None</td>
+<td><a href="https://docs.python.org/3/library/functions.html#object">object</a> | None</td>
 <td>scikit-learn alike transformer, preprocessor, or ColumnTransformer. Scikit-learn alike transformer (preprocessor) with methods: fit, transform, fit_transform and inverse_transform.</td>
 <td><em>required</em></td>
 </tr>
