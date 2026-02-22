@@ -238,3 +238,18 @@ TEST_REPORT_ENTSOE_FIX.md
 
 /.quarto/
 **/*.quarto_ipynb
+
+# Quarto build output (never commit the rendered site)
+/_site/
+
+# Quarto auto-generated variables file (re-created by docs/pre-render.py)
+/_variables.yml
+
+# quartodoc interlink inventory (regenerated on each build)
+/objects.json
+
+# Old MkDocs config backup
+mkdocs.yml.bak
+
+# MkDocs build output
+site/
