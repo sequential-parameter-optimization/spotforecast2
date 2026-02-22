@@ -94,6 +94,13 @@ jobs:
         run: |
           quarto render --no-cache
       
+      - name: Setup Git Credentials for Publish
+        if: success()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git
+
       - name: Deploy documentation
         if: success()
         uses: quarto-dev/quarto-actions/publish@8a96df13519ee81fd526f2dfca5962811136661b  # v2.2.0
