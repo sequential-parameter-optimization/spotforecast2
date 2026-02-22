@@ -949,7 +949,8 @@
     "text": "exceptions\nCustom exceptions and warnings for spotforecast2.\nThis module contains all the custom warnings and error classes used across spotforecast2.\n\n\nUsing custom warnings::\nimport warnings\nfrom spotforecast2.exceptions import MissingValuesWarning\n\n# Raise a warning\nwarnings.warn(\n    \"Missing values detected in input data.\",\n    MissingValuesWarning\n)\n\n# Suppress a specific warning\nwarnings.simplefilter('ignore', category=MissingValuesWarning)",
     "crumbs": [
       "API Reference",
-      "Exceptions"
+      "Exceptions",
+      "exceptions"
     ]
   },
   {
@@ -960,7 +961,8 @@
     "text": "Using custom warnings::\nimport warnings\nfrom spotforecast2.exceptions import MissingValuesWarning\n\n# Raise a warning\nwarnings.warn(\n    \"Missing values detected in input data.\",\n    MissingValuesWarning\n)\n\n# Suppress a specific warning\nwarnings.simplefilter('ignore', category=MissingValuesWarning)",
     "crumbs": [
       "API Reference",
-      "Exceptions"
+      "Exceptions",
+      "exceptions"
     ]
   },
   {
@@ -978,7 +980,7 @@
     "href": "index.html#quick-links",
     "title": "Welcome to spotforecast2",
     "section": "Quick Links",
-    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 0.5.0",
+    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 0.5.0-rc.1",
     "crumbs": [
       "Home"
     ]
