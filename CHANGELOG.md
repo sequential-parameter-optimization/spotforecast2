@@ -1,3 +1,9 @@
+## [0.6.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.6.0...v0.6.1-rc.1) (2026-02-22)
+
+### Bug Fixes
+
+* spotoptim accepts var_trans ([06d4c82](https://github.com/sequential-parameter-optimization/spotforecast2/commit/06d4c825f06058db4fe8377b79b23acd78e0fa09))
+
 ## [0.5.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.5.0-rc.1...v0.5.0-rc.2) (2026-02-22)
 
 ### Bug Fixes
