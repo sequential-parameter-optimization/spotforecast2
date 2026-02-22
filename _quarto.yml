@@ -45,12 +45,10 @@ website:
           - text: "Overview"
             file: docs/reference/index.qmd
           - section: "Exceptions"
-            href: docs/reference/exceptions.qmd
             contents:
               - text: "exceptions"
                 file: docs/reference/exceptions.qmd
           - section: "Forecaster"
-            href: docs/reference/forecaster.qmd
             contents:
               - text: "metrics"
                 file: docs/reference/forecaster.metrics.qmd
@@ -59,7 +57,6 @@ website:
               - text: "recursive._warnings"
                 file: docs/reference/forecaster.recursive._warnings.qmd
           - section: "Manager"
-            href: docs/reference/manager.qmd
             contents:
               - text: "models"
                 file: docs/reference/manager.models.qmd
@@ -68,7 +65,6 @@ website:
               - text: "trainer_full"
                 file: docs/reference/manager.trainer_full.qmd
           - section: "Model Selection"
-            href: docs/reference/model_selection.qmd
             contents:
               - text: "bayesian_search"
                 file: docs/reference/model_selection.bayesian_search.qmd
@@ -87,7 +83,6 @@ website:
               - text: "utils_metrics"
                 file: docs/reference/model_selection.utils_metrics.qmd
           - section: "Preprocessing"
-            href: docs/reference/preprocessing.qmd
             contents:
               - text: "_binner"
                 file: docs/reference/preprocessing._binner.qmd
@@ -110,12 +105,10 @@ website:
               - text: "time_series_visualization"
                 file: docs/reference/preprocessing.time_series_visualization.qmd
           - section: "Stats"
-            href: docs/reference/stats.qmd
             contents:
               - text: "autocorrelation"
                 file: docs/reference/stats.autocorrelation.qmd
           - section: "Tasks"
-            href: docs/reference/tasks.qmd
             contents:
               - text: "task_demo"
                 file: docs/reference/tasks.task_demo.qmd
@@ -130,7 +123,6 @@ website:
               - text: "task_n_to_1_with_covariates_and_dataframe"
                 file: docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.qmd
           - section: "Utils"
-            href: docs/reference/utils.qmd
             contents:
               - text: "data_transform"
                 file: docs/reference/utils.data_transform.qmd
@@ -141,7 +133,6 @@ website:
               - text: "validation"
                 file: docs/reference/utils.validation.qmd
           - section: "Weather"
-            href: docs/reference/weather.qmd
             contents:
               - text: "weather_client"
                 file: docs/reference/weather.weather_client.qmd
