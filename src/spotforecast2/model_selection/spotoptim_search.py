@@ -522,24 +522,29 @@ def _convert_search_space(
         bounds, var_type, var_name, var_trans = [], [], [], []
         for name, value in search_space.items():
             var_name.append(name)
-            
-            # Formats: 
+
+            # Formats:
             # 2-element tuple/list (low, high) -> var_trans = None
             # 3-element tuple/list (low, high, trans) -> var_trans = trans
-            
-            if isinstance(value, (list, tuple)) and len(value) in (2, 3) and isinstance(value[0], (int, float)) and isinstance(value[1], (int, float)):
+
+            if (
+                isinstance(value, (list, tuple))
+                and len(value) in (2, 3)
+                and isinstance(value[0], (int, float))
+                and isinstance(value[1], (int, float))
+            ):
                 if isinstance(value[0], int) and isinstance(value[1], int):
                     var_type.append("int")
                 else:
                     var_type.append("float")
-                    
-                bounds.append(value[:2]) # Keep only low/high for bounds
-                
+
+                bounds.append(value[:2])  # Keep only low/high for bounds
+
                 if len(value) == 3:
                     var_trans.append(value[2])
                 else:
                     var_trans.append(None)
-                    
+
             elif isinstance(value, list):
                 # Categorical factors
                 var_type.append("factor")
@@ -547,7 +552,7 @@ def _convert_search_space(
                 var_trans.append(None)
             else:
                 raise ValueError(f"Invalid search space for '{name}': {value}")
-                
+
         return bounds, var_type, var_name, var_trans
 
     raise TypeError(

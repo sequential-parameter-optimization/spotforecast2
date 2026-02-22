@@ -81,13 +81,11 @@ class TestConvertSearchSpace:
         assert vtrans == [None]
 
     def test_dict_float_bounds_with_transform(self):
-        bounds, vt, vn, vtrans = _convert_search_space(
-            {"alpha": (0.01, 10.0, "10^")}
-        )
+        bounds, vt, vn, vtrans = _convert_search_space({"alpha": (0.01, 10.0, "log10")})
         assert vn == ["alpha"]
         assert vt == ["float"]
         assert bounds == [(0.01, 10.0)]
-        assert vtrans == ["10^"]
+        assert vtrans == ["log10"]
 
     def test_dict_int_bounds(self):
         bounds, vt, vn, _ = _convert_search_space({"max_depth": (2, 8)})
