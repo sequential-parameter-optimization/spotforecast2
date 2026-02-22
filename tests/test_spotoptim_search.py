@@ -81,9 +81,7 @@ class TestConvertSearchSpace:
         assert vtrans == [None]
 
     def test_dict_float_bounds_with_transform(self):
-        bounds, vt, vn, vtrans = _convert_search_space(
-            {"alpha": (0.01, 10.0, "10^")}
-        )
+        bounds, vt, vn, vtrans = _convert_search_space({"alpha": (0.01, 10.0, "10^")})
         assert vn == ["alpha"]
         assert vt == ["float"]
         assert bounds == [(0.01, 10.0)]
