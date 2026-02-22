@@ -3,11 +3,22 @@
 ### Bug Fixes
 
 * spotoptim accepts var_trans ([06d4c82](https://github.com/sequential-parameter-optimization/spotforecast2/commit/06d4c825f06058db4fe8377b79b23acd78e0fa09))
+## [0.6.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.5.0...v0.6.0) (2026-02-22)
+
+### Features
+
+* neew doc (quarto). Merge pull request [#19](https://github.com/sequential-parameter-optimization/spotforecast2/issues/19) from sequential-parameter-optimization/develop ([dc415c7](https://github.com/sequential-parameter-optimization/spotforecast2/commit/dc415c7158e2630bcbadf43434230e3de018d62a))
 
 ### Documentation
 
 * migrate from MkDocs to Quarto framework ([fd69444](https://github.com/sequential-parameter-optimization/spotforecast2/commit/fd69444f8ad3af9d79fb57380fedd4735276eea8))
 * remove invalid href links from quarto sidebar sections ([e61f980](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e61f98036ffe5ccfcd6eda7f82583e7a73f93b09))
+
+## [0.5.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.4.1...v0.5.0) (2026-02-20)
+
+### Features
+
+* trainer_full ([6c6b4e2](https://github.com/sequential-parameter-optimization/spotforecast2/commit/6c6b4e2a069395d5c5704a5f021d4a3f465e998f))
 
 ## [0.5.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.4.1-rc.1...v0.5.0-rc.1) (2026-02-20)
 
