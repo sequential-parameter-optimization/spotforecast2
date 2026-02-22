@@ -113,7 +113,7 @@ print(custom_config.predict_size)      # 48
 | `lags_consider` | List[int] | [1..23] | Lag values for features |
 | `periods` | List[Period] | 5 periods | Cyclical feature encodings |
 
-For more details, see the [ConfigEntsoe API documentation](reference/manager.qmd).
+For more details, see the [ConfigEntsoe API documentation](reference/index.qmd#manager).
 
 ### Time intervals for download, training, prediction, validation, and testing
 
