@@ -375,5 +375,5 @@ uv run pytest tests/test_tasks_entsoe.py -v
 ## See Also
 
 - [Tasks Overview](tasks.md) - All available CLI commands
-- [API Reference](api/preprocessing.md) - Detailed API documentation
+- [API Reference](reference/preprocessing.qmd) - Detailed API documentation
 - [Model Persistence](processing/model_persistence.md) - Saving and loading models

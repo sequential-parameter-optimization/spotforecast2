@@ -1,16 +1,24 @@
-# Welcome to spotforecast2
+---
+title: "Welcome to spotforecast2"
+---
 
-[![Version](https://img.shields.io/badge/version-{{ version_badge }}-blue.svg)](https://github.com/sequential-parameter-optimization/spotforecast2/releases)
+<!--
+SPDX-FileCopyrightText: 2024-2026 bartzbeielstein
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+---
+
+[![Version](https://img.shields.io/badge/version-{{< var version_badge >}}-blue.svg)](https://github.com/sequential-parameter-optimization/spotforecast2/releases)
 [![GitHub](https://img.shields.io/badge/GitHub-spotforecast2-181717?logo=github)](https://github.com/sequential-parameter-optimization/spotforecast2)
 [![Python](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 
-**spotforecast2** is a Python package for forecasting, combining the power of `sklearn`, `spotoptim`and `skforecast` with specialized utilities for "spot" forecasting.
+**spotforecast2** is a Python package for forecasting, combining the power of `sklearn`, `spotoptim` and `skforecast` with specialized utilities for "spot" forecasting.
 
 ## Quick Links
 
 - 📦 [GitHub Repository](https://github.com/sequential-parameter-optimization/spotforecast2)
-- 📚 [API Reference](api/data.md)
-- 🚀 Current Version: **{{ version }}**
+- 📚 [API Reference](docs/reference/index.qmd)
+- 🚀 Current Version: **{{< var version >}}**
 
 ## Installation
 
