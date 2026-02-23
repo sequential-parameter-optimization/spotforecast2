@@ -1,10 +1,6 @@
 [project]
 name = "spotforecast2"
-<<<<<<< develop
-version = "0.6.2-rc.1"
-=======
 version = "0.6.2"
->>>>>>> main
 description = "Forecasting with spot"
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
