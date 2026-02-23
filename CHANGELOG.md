@@ -1,3 +1,10 @@
+## [0.7.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.6.2...v0.7.0) (2026-02-23)
+
+### Features
+
+* lags in spotoptim ([0fbe4e1](https://github.com/sequential-parameter-optimization/spotforecast2/commit/0fbe4e1df0c8129724ee86d31ce1997e10147ede))
+* show progress ([05bbd68](https://github.com/sequential-parameter-optimization/spotforecast2/commit/05bbd684c7be84f6cd5ec29aa8e8555b169743b5))
+
 ## [0.7.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.7.0-rc.1...v0.7.0-rc.2) (2026-02-23)
 
 ### Features
