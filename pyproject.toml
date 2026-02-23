@@ -72,6 +72,6 @@ python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 
-[tool.uv.sources]
+# [tool.uv.sources]
 # For local development, uncomment to use local editable install:
-spotforecast2-safe = { path = "../spotforecast2-safe", editable = true }
+# spotforecast2-safe = { path = "../spotforecast2-safe", editable = true }
