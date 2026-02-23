@@ -6,8 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="description" content="How lag configurations are mapped to search spaces in SpotOptim.">
 
-<title>model_selection.utils_metrics – spotforecast2</title>
+<title>Lag Handling in SpotOptim Search – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,6 +20,41 @@ ul.task-list li input[type="checkbox"] {
   width: 0.8em;
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
 </style>
 
@@ -72,6 +108,35 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
 
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
 
 </head>
 
@@ -270,7 +335,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.bayesian_search.html">Model Selection</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.utils_metrics.html">utils_metrics</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/model_selection/spotoptim_lags.html">Model Selection Guides</a></li><li class="breadcrumb-item"><a href="../../docs/model_selection/spotoptim_lags.html">SpotOptim Lag Handling</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -290,13 +355,13 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
  <span class="menu-text">API Reference</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/index.html" class="sidebar-item-text sidebar-link">
@@ -380,13 +445,13 @@ ul.task-list li input[type="checkbox"] {
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
  <span class="menu-text">Model Selection</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/model_selection.bayesian_search.html" class="sidebar-item-text sidebar-link">
@@ -431,7 +496,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/model_selection.utils_metrics.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../docs/reference/model_selection.utils_metrics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">utils_metrics</span></a>
   </div>
 </li>
@@ -668,16 +733,16 @@ ul.task-list li input[type="checkbox"] {
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
  <span class="menu-text">Model Selection Guides</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/model_selection/spotoptim_lags.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/model_selection/spotoptim_lags.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">SpotOptim Lag Handling</span></a>
   </div>
 </li>
@@ -716,21 +781,135 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#spotforecast2.model_selection.utils_metrics" id="toc-spotforecast2.model_selection.utils_metrics" class="nav-link active" data-scroll-target="#spotforecast2.model_selection.utils_metrics">model_selection.utils_metrics</a></li>
+  <li><a href="#specifying-search-spaces-for-lags" id="toc-specifying-search-spaces-for-lags" class="nav-link active" data-scroll-target="#specifying-search-spaces-for-lags">Specifying Search Spaces for Lags</a>
+  <ul class="collapse">
+  <li><a href="#numeric-range-integer-search" id="toc-numeric-range-integer-search" class="nav-link" data-scroll-target="#numeric-range-integer-search">1. Numeric Range (Integer Search)</a></li>
+  <li><a href="#discrete-configurations-categorical-search" id="toc-discrete-configurations-categorical-search" class="nav-link" data-scroll-target="#discrete-configurations-categorical-search">2. Discrete Configurations (Categorical Search)</a></li>
+  </ul></li>
+  <li><a href="#summary-of-mapping-logic" id="toc-summary-of-mapping-logic" class="nav-link" data-scroll-target="#summary-of-mapping-logic">Summary of Mapping Logic</a></li>
+  <li><a href="#why-strings-for-lag-lists" id="toc-why-strings-for-lag-lists" class="nav-link" data-scroll-target="#why-strings-for-lag-lists">Why Strings for Lag Lists?</a></li>
+  <li><a href="#implementation-details" id="toc-implementation-details" class="nav-link" data-scroll-target="#implementation-details">Implementation Details</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/model_selection.utils_metrics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/model_selection/spotoptim_lags.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.bayesian_search.html">Model Selection</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.utils_metrics.html">utils_metrics</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
 
 
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/model_selection/spotoptim_lags.html">Model Selection Guides</a></li><li class="breadcrumb-item"><a href="../../docs/model_selection/spotoptim_lags.html">SpotOptim Lag Handling</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Lag Handling in SpotOptim Search</h1>
+</div>
+
+<div>
+  <div class="description">
+    How lag configurations are mapped to search spaces in SpotOptim.
+  </div>
+</div>
 
 
+<div class="quarto-title-meta">
 
-<section id="spotforecast2.model_selection.utils_metrics" class="level1">
-<h1>model_selection.utils_metrics</h1>
-<p><code>model_selection.utils_metrics</code></p>
-<p>Metrics calculation utilities for model selection.</p>
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<p>When performing hyperparameter optimization with <code>spotoptim_search_forecaster</code>, the <code>lags</code> parameter can be tuned just like any other model parameter. This guide explains the two primary ways to specify lag search spaces and how they are handled internally.</p>
+<section id="specifying-search-spaces-for-lags" class="level2">
+<h2 class="anchored" data-anchor-id="specifying-search-spaces-for-lags">Specifying Search Spaces for Lags</h2>
+<p>In <code>spotforecast2</code>, lags can be specified either as a numeric range (for searching the number of recent observations) or as a discrete set of configurations (for searching specific offsets).</p>
+<section id="numeric-range-integer-search" class="level3">
+<h3 class="anchored" data-anchor-id="numeric-range-integer-search">1. Numeric Range (Integer Search)</h3>
+<p>If you want to search for the optimal number of lags (e.g., between 2 and 24), you can provide a tuple of integers.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>search_space <span class="op">=</span> {</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lags"</span>: (<span class="dv">2</span>, <span class="dv">24</span>),</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"alpha"</span>: (<span class="fl">0.01</span>, <span class="fl">1.0</span>)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Internal Mapping:</p>
+<ul>
+<li>This is mapped to an integer variable type (<code>"int"</code>) in SpotOptim.</li>
+<li>SpotOptim treats this as a bounded search space <code>[2, 24]</code>.</li>
+<li>During evaluation, if SpotOptim selects a value like <code>5</code>, <code>spotforecast2</code> automatically expands this into a full lag array: <code>[1, 2, 3, 4, 5]</code>.</li>
+</ul>
+</section>
+<section id="discrete-configurations-categorical-search" class="level3">
+<h3 class="anchored" data-anchor-id="discrete-configurations-categorical-search">2. Discrete Configurations (Categorical Search)</h3>
+<p>Often, specific lag patterns are more effective than a simple range (e.g., “only the same hour yesterday” vs “all 24 hours”). You can specify these as a list of strings representing the configurations.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>search_space <span class="op">=</span> {</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="st">"lags"</span>: [<span class="st">"24"</span>, <span class="st">"48"</span>, <span class="st">"[1, 2, 24, 48]"</span>],</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="st">"max_depth"</span>: (<span class="dv">3</span>, <span class="dv">10</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Internal Mapping:</p>
+<ul>
+<li>This is mapped to a factor variable type (<code>"factor"</code>) in SpotOptim.</li>
+<li>Each string in the list is treated as a discrete category.</li>
+<li>SpotOptim selects one of the strings (e.g., <code>"[1, 2, 24, 48]"</code>).</li>
+<li><code>spotforecast2</code> parses this string back into a Python object (e.g., a list of integers) and applies it to the forecaster.</li>
+</ul>
+</section>
+</section>
+<section id="summary-of-mapping-logic" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-mapping-logic">Summary of Mapping Logic</h2>
+<p>The following table summarizes how different Python types in the search space dictionary are mapped to SpotOptim’s internal representations:</p>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+<col style="width: 25%">
+</colgroup>
+<thead>
+<tr class="header">
+<th style="text-align: left;">User Input Type</th>
+<th style="text-align: left;">Example</th>
+<th style="text-align: left;">SpotOptim Type</th>
+<th style="text-align: left;">Internal Handling</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Tuple of ints</td>
+<td style="text-align: left;"><code>(2, 24)</code></td>
+<td style="text-align: left;"><code>int</code></td>
+<td style="text-align: left;">Maps to numeric range <span class="math inline">\([LB, UB]\)</span>.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Tuple of floats</td>
+<td style="text-align: left;"><code>(0.1, 1.0)</code></td>
+<td style="text-align: left;"><code>float</code></td>
+<td style="text-align: left;">Maps to numeric range <span class="math inline">\([LB, UB]\)</span>.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">List of strings</td>
+<td style="text-align: left;"><code>["24", "48"]</code></td>
+<td style="text-align: left;"><code>factor</code></td>
+<td style="text-align: left;">Maps to discrete categories.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="why-strings-for-lag-lists" class="level2">
+<h2 class="anchored" data-anchor-id="why-strings-for-lag-lists">Why Strings for Lag Lists?</h2>
+<p>In the categorical search space, lists of lags are provided as strings (e.g., <code>"[1, 2, 24]"</code> instead of <code>[1, 2, 24]</code>). This is because:</p>
+<ol type="1">
+<li>SpotOptim Factors: SpotOptim’s categorical interface expects strings to distinguish different configurations.</li>
+<li>Ambiguity Avoidance: Using a string <code>"[1, 12, 24]"</code> ensures that the entire configuration is treated as a single “choice” rather than a range of values.</li>
+</ol>
+</section>
+<section id="implementation-details" class="level2">
+<h2 class="anchored" data-anchor-id="implementation-details">Implementation Details</h2>
+<p>The mapping is handled via two internal utilities:</p>
+<ul>
+<li><code>_convert_search_space</code>: Converts the dictionary into SpotOptim’s <code>bounds</code>, <code>var_type</code>, and <code>var_name</code> arrays.</li>
+<li><code>_parse_lags_from_string</code>: Converts the selected choice back into a usable lag object (integer or list).</li>
+</ul>
+<p>These utilities ensure that the optimization process is seamless, regardless of whether you are searching across a continuous range or a discrete set of domain-specific lag patterns.</p>
 
 
 </section>
@@ -1163,7 +1342,7 @@ ul.task-list li input[type="checkbox"] {
     </div>   
     <div class="nav-footer-center">
 <p>Copyright © 2024-2026 bartzbeielstein | <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/model_selection.utils_metrics.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/model_selection/spotoptim_lags.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
