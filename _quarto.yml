@@ -161,6 +161,11 @@ website:
           - text: "Time Series Visualization"
             file: docs/preprocessing/time_series_visualization.md
 
+      - section: "Model Selection Guides"
+        contents:
+          - text: "SpotOptim Lag Handling"
+            file: docs/model_selection/spotoptim_lags.qmd
+
       - section: "Tasks Guide"
         contents:
           - text: "Overview"
