@@ -1,3 +1,13 @@
+## [0.6.1-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.6.1-rc.1...v0.6.1-rc.2) (2026-02-23)
+
+### Bug Fixes
+
+* Reverting the local editable path for spotforecast2-safe in pyproject.toml ([a52d227](https://github.com/sequential-parameter-optimization/spotforecast2/commit/a52d227b4c7e10a18b1ae80658898f7d31724861))
+
+### Documentation
+
+* fixed links ([be91cde](https://github.com/sequential-parameter-optimization/spotforecast2/commit/be91cde8d340fb01a7eaa12f44d4f3ae5f7fc503))
+* formatting ([c1ae7e4](https://github.com/sequential-parameter-optimization/spotforecast2/commit/c1ae7e4778ecb529aa7eeab67d1739dd30f464cb))
 ## [0.6.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.6.0...v0.6.1) (2026-02-22)
 
 ### Bug Fixes
