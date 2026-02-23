@@ -50,16 +50,16 @@ from spotforecast2_safe.model_selection import OneStepAheadFold, _backtesting_fo
 logger = logging.getLogger(__name__)
 
 
-def _parse_lags_from_string(lags_str: str) -> int | list:
-    """Parse a lags string representation back to a Python object.
+def _parse_lags_from_string(lags_str: str | int | list) -> int | list:
+    """Parse a lags representation back to a Python object.
 
-    Handles two formats:
-
-    * Single integer as string: ``"24"`` → ``24``
-    * List representation:      ``"[1, 2, 3]"`` → ``[1, 2, 3]``
+    Handles three input scenarios:
+    1. Already an integer or list: returned as is.
+    2. Single integer as string: ``"24"`` → ``24``
+    3. List representation:      ``"[1, 2, 3]"`` → ``[1, 2, 3]``
 
     Args:
-        lags_str: String representation of lags.
+        lags_str: Lag specification (string, int, or list).
 
     Returns:
         Either an integer or a list of integers representing lags.
@@ -68,11 +68,14 @@ def _parse_lags_from_string(lags_str: str) -> int | list:
         >>> from spotforecast2.model_selection.spotoptim_search import (
         ...     _parse_lags_from_string,
         ... )
-        >>> _parse_lags_from_string("24")
+        >>> _parse_lags_from_string(24)
         24
         >>> _parse_lags_from_string("[1, 2, 3]")
         [1, 2, 3]
     """
+    if isinstance(lags_str, (int, list)):
+        return lags_str
+
     lags_str = lags_str.strip()
     if lags_str.startswith("["):
         return ast.literal_eval(lags_str)

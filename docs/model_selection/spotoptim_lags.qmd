@@ -1,0 +1,71 @@
+---
+title: "Lag Handling in SpotOptim Search"
+description: "How lag configurations are mapped to search spaces in SpotOptim."
+---
+
+When performing hyperparameter optimization with `spotoptim_search_forecaster`, the `lags` parameter can be tuned just like any other model parameter. This guide explains the two primary ways to specify lag search spaces and how they are handled internally.
+
+## Specifying Search Spaces for Lags
+
+In `spotforecast2`, lags can be specified either as a numeric range (for searching the number of recent observations) or as a discrete set of configurations (for searching specific offsets).
+
+### 1. Numeric Range (Integer Search)
+
+If you want to search for the optimal number of lags (e.g., between 2 and 24), you can provide a tuple of integers.
+
+```python
+search_space = {
+    "lags": (2, 24),
+    "alpha": (0.01, 1.0)
+}
+```
+
+Internal Mapping:
+
+- This is mapped to an integer variable type (`"int"`) in SpotOptim.
+- SpotOptim treats this as a bounded search space `[2, 24]`.
+- During evaluation, if SpotOptim selects a value like `5`, `spotforecast2` automatically expands this into a full lag array: `[1, 2, 3, 4, 5]`.
+
+### 2. Discrete Configurations (Categorical Search)
+
+Often, specific lag patterns are more effective than a simple range (e.g., "only the same hour yesterday" vs "all 24 hours"). You can specify these as a list of strings representing the configurations.
+
+```python
+search_space = {
+    "lags": ["24", "48", "[1, 2, 24, 48]"],
+    "max_depth": (3, 10)
+}
+```
+
+Internal Mapping:
+
+- This is mapped to a factor variable type (`"factor"`) in SpotOptim.
+- Each string in the list is treated as a discrete category.
+- SpotOptim selects one of the strings (e.g., `"[1, 2, 24, 48]"`).
+- `spotforecast2` parses this string back into a Python object (e.g., a list of integers) and applies it to the forecaster.
+
+## Summary of Mapping Logic
+
+The following table summarizes how different Python types in the search space dictionary are mapped to SpotOptim's internal representations:
+
+| User Input Type | Example | SpotOptim Type | Internal Handling |
+| :--- | :--- | :--- | :--- |
+| Tuple of ints | `(2, 24)` | `int` | Maps to numeric range $[LB, UB]$. |
+| Tuple of floats | `(0.1, 1.0)` | `float` | Maps to numeric range $[LB, UB]$. |
+| List of strings | `["24", "48"]` | `factor` | Maps to discrete categories. |
+
+## Why Strings for Lag Lists?
+
+In the categorical search space, lists of lags are provided as strings (e.g., `"[1, 2, 24]"` instead of `[1, 2, 24]`). This is because:
+
+1. SpotOptim Factors: SpotOptim's categorical interface expects strings to distinguish different configurations.
+2. Ambiguity Avoidance: Using a string `"[1, 12, 24]"` ensures that the entire configuration is treated as a single "choice" rather than a range of values.
+
+## Implementation Details
+
+The mapping is handled via two internal utilities:
+
+- `_convert_search_space`: Converts the dictionary into SpotOptim's `bounds`, `var_type`, and `var_name` arrays.
+- `_parse_lags_from_string`: Converts the selected choice back into a usable lag object (integer or list).
+
+These utilities ensure that the optimization process is seamless, regardless of whether you are searching across a continuous range or a discrete set of domain-specific lag patterns.
