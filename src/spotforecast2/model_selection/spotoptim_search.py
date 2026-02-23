@@ -124,7 +124,7 @@ def spotoptim_search_forecaster(
         return_best: Re-fit forecaster with best params after search.
         n_jobs: Parallel jobs for backtesting (``"auto"`` or int).
         verbose: Print optimisation progress.
-        show_progress: (Handled by *verbose*.)
+        show_progress: Show progress bar during backtesting/validation.
         suppress_warnings: Suppress spotforecast warnings.
         output_file: Save results as TSV to this path.
         kwargs_spotoptim: Extra kwargs passed to ``SpotOptim()``.
@@ -221,6 +221,7 @@ def spotoptim_search_forecaster(
         return_best=return_best,
         n_jobs=n_jobs,
         verbose=verbose,
+        show_progress=show_progress,
         suppress_warnings=suppress_warnings,
         output_file=output_file,
         kwargs_spotoptim=kwargs_spotoptim,
@@ -242,6 +243,7 @@ def _spotoptim_search(
     return_best: bool = True,
     n_jobs: int | str = "auto",
     verbose: bool = False,
+    show_progress: bool = True,
     suppress_warnings: bool = False,
     output_file: str | None = None,
     kwargs_spotoptim: dict | None = None,
@@ -279,7 +281,7 @@ def _spotoptim_search(
             metric=metric,
             y=y,
             exog=exog,
-            show_progress=False,
+            show_progress=show_progress,
             suppress_warnings=False,
         )
 
@@ -306,7 +308,7 @@ def _spotoptim_search(
             metric=metric,
             exog=exog,
             n_jobs=n_jobs,
-            show_progress=False,
+            show_progress=show_progress,
             suppress_warnings=suppress_warnings,
         )
 
@@ -362,7 +364,7 @@ def _spotoptim_search(
                     metric=metric,
                     n_jobs=n_jobs,
                     verbose=verbose,
-                    show_progress=False,
+                    show_progress=show_progress,
                     suppress_warnings=suppress_warnings,
                 )
                 metrics_list = metrics_df.iloc[0, :].to_list()
