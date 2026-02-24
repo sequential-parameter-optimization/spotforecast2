@@ -517,7 +517,7 @@ Handle missing values before visualization:
 
 ```{python}
 # Forward fill missing values
-df_filled = df_api.fillna(method='ffill')
+df_filled = df_api.ffill()
 visualize_ts_plotly({'Data': df_filled})
 ```
 
@@ -574,7 +574,7 @@ All code examples in this documentation have been validated with pytest:
 
 ## See Also
 
-- [Outlier Detection and Visualization](outliers.md)
+- [Outlier Detection and Visualization](outliers.qmd)
 - [Plotly Documentation](https://plotly.com/python/)
 
 ## References

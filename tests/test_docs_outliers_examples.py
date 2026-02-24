@@ -1,7 +1,7 @@
 """
 Test suite for outlier detection and visualization documentation examples.
 
-Implements pytest tests for all examples from docs/preprocessing/outliers.md
+Implements pytest tests for all examples from docs/preprocessing/outliers.qmd
 to ensure documentation accuracy and example functionality.
 
 Safety-critical validation scope:
