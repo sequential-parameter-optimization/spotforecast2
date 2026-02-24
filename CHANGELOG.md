@@ -1,3 +1,9 @@
+## [0.10.0-rc.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.0-rc.2...v0.10.0-rc.3) (2026-02-24)
+
+### Bug Fixes
+
+* quarto render ([3c45246](https://github.com/sequential-parameter-optimization/spotforecast2/commit/3c45246a9b23b513a5c9a4e70fdd153b6165d149))
+
 ## [0.10.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.0-rc.1...v0.10.0-rc.2) (2026-02-24)
 
 ### Bug Fixes
