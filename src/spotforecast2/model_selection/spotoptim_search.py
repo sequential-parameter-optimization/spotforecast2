@@ -75,20 +75,23 @@ def parse_lags_from_strings(lags_str: str | int | list) -> int | list:
         >>> parse_lags_from_strings("[1, 2, 3]")
         [1, 2, 3]
 
-        Visualizing the safety threshold (Textual representation):
+        Visualizing the safety threshold (Example of dynamic documentation):
 
         ```{python}
+        import matplotlib.pyplot as plt
         import numpy as np
 
         def check_safety_threshold(val, threshold):
-            return "SAFE" if val >= threshold else "RISK"
+            return 1 if val >= threshold else 0
 
         threshold = 0.95
-        values = [0.90, 0.94, 0.95, 0.98]
-        
-        for val in values:
-            status = check_safety_threshold(val, threshold)
-            print(f"Value: {val:.2f} -> Status: {status}")
+        x = np.linspace(0.8, 1.0, 50)
+        y = [check_safety_threshold(val, threshold) for val in x]
+
+        plt.step(x, y, where='post')
+        plt.axvline(threshold, color='red', linestyle='--')
+        plt.title("Safety Status Transition")
+        # plt.show()  # Commented for non-interactive environments
         ```
     """
     if isinstance(lags_str, (int, list)):
