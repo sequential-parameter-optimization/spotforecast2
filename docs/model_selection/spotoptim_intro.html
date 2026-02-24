@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>model_selection.split_ts_cv – spotforecast2</title>
+<title>Introduction to Hyperparameter Tuning with SpotOptim – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -305,7 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.bayesian_search.html">Model Selection</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.split_ts_cv.html">split_ts_cv</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/model_selection/spotoptim_intro.html">Model Selection Guides</a></li><li class="breadcrumb-item"><a href="../../docs/model_selection/spotoptim_intro.html">Intro to SpotOptim</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -325,13 +325,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
  <span class="menu-text">API Reference</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/index.html" class="sidebar-item-text sidebar-link">
@@ -415,13 +415,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
  <span class="menu-text">Model Selection</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/model_selection.bayesian_search.html" class="sidebar-item-text sidebar-link">
@@ -448,7 +448,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/model_selection.split_ts_cv.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../docs/reference/model_selection.split_ts_cv.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">split_ts_cv</span></a>
   </div>
 </li>
@@ -703,16 +703,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
  <span class="menu-text">Model Selection Guides</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/model_selection/spotoptim_intro.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/model_selection/spotoptim_intro.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Intro to SpotOptim</span></a>
   </div>
 </li>
@@ -757,400 +757,282 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#spotforecast2.model_selection.split_ts_cv" id="toc-spotforecast2.model_selection.split_ts_cv" class="nav-link active" data-scroll-target="#spotforecast2.model_selection.split_ts_cv">model_selection.split_ts_cv</a>
-  <ul class="collapse">
-  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
-  <ul class="collapse">
-  <li><a href="#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold" id="toc-spotforecast2.model_selection.split_ts_cv.TimeSeriesFold" class="nav-link" data-scroll-target="#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold">TimeSeriesFold</a></li>
-  </ul></li>
-  </ul></li>
+  <li><a href="#core-arguments-overview" id="toc-core-arguments-overview" class="nav-link active" data-scroll-target="#core-arguments-overview">Core Arguments Overview</a></li>
+  <li><a href="#simple-tuning-example" id="toc-simple-tuning-example" class="nav-link" data-scroll-target="#simple-tuning-example">Simple Tuning Example</a></li>
+  <li><a href="#advanced-tuning-example" id="toc-advanced-tuning-example" class="nav-link" data-scroll-target="#advanced-tuning-example">Advanced Tuning Example</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/model_selection.split_ts_cv.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/model_selection/spotoptim_intro.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.bayesian_search.html">Model Selection</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.split_ts_cv.html">split_ts_cv</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/model_selection/spotoptim_intro.html">Model Selection Guides</a></li><li class="breadcrumb-item"><a href="../../docs/model_selection/spotoptim_intro.html">Intro to SpotOptim</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">Introduction to Hyperparameter Tuning with SpotOptim</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
 
 
-<section id="spotforecast2.model_selection.split_ts_cv" class="level1">
-<h1>model_selection.split_ts_cv</h1>
-<p><code>model_selection.split_ts_cv</code></p>
-<p>Time series cross-validation splitting.</p>
-<section id="classes" class="level2">
-<h2 class="anchored" data-anchor-id="classes">Classes</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold">TimeSeriesFold</a></td>
-<td>Class to split time series data into train and test folds.</td>
-</tr>
-</tbody>
-</table>
-<section id="spotforecast2.model_selection.split_ts_cv.TimeSeriesFold" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.model_selection.split_ts_cv.TimeSeriesFold">TimeSeriesFold</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>model_selection.split_ts_cv.TimeSeriesFold(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    steps,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    initial_train_size<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    fold_stride<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    differentiation<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    refit<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    fixed_train_size<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    gap<span class="op">=</span><span class="dv">0</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    skip_folds<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    allow_incomplete_fold<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    return_all_indexes<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Class to split time series data into train and test folds.</p>
-<p>When used within a backtesting or hyperparameter search, the arguments ‘initial_train_size’, ‘window_size’ and ‘differentiation’ are not required as they are automatically set by the backtesting or hyperparameter search functions.</p>
-<section id="parameters" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>steps</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Number of observations used to be predicted in each fold. This is also commonly referred to as the forecast horizon or test size.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="even">
-<td>initial_train_size</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#str">str</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Timestamp.html#pandas.Timestamp">Timestamp</a> | None</td>
-<td>Number of observations used for initial training. - If <code>None</code> or 0, the initial forecaster is not trained in the first fold. - If an integer, the number of observations used for initial training. - If a date string or pandas Timestamp, it is the last date included in the initial training set. Defaults to None.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>fold_stride</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | None</td>
-<td>Number of observations that the start of the test set advances between consecutive folds. - If <code>None</code>, it defaults to the same value as <code>steps</code>, meaning that folds are placed back-to-back without overlap. - If <code>fold_stride &lt; steps</code>, test sets overlap and multiple forecasts will be generated for the same observations. - If <code>fold_stride &gt; steps</code>, gaps are left between consecutive test sets. Defaults to None.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>window_size</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | None</td>
-<td>Number of observations needed to generate the autoregressive predictors. Defaults to None.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>differentiation</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | None</td>
-<td>Number of observations to use for differentiation. This is used to extend the <code>last_window</code> as many observations as the differentiation order. Defaults to None.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>refit</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a> | <a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Whether to refit the forecaster in each fold. - If <code>True</code>, the forecaster is refitted in each fold. - If <code>False</code>, the forecaster is trained only in the first fold. - If an integer, the forecaster is trained in the first fold and then refitted every <code>refit</code> folds. Defaults to False.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="odd">
-<td>fixed_train_size</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Whether the training size is fixed or increases in each fold. Defaults to True.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="even">
-<td>gap</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Number of observations between the end of the training set and the start of the test set. Defaults to 0.</td>
-<td><code>0</code></td>
-</tr>
-<tr class="odd">
-<td>skip_folds</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a> | <a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>] | None</td>
-<td>Number of folds to skip. - If an integer, every ‘skip_folds’-th is returned. - If a list, the indexes of the folds to skip. For example, if <code>skip_folds=3</code> and there are 10 folds, the returned folds are 0, 3, 6, and 9. If <code>skip_folds=[1, 2, 3]</code>, the returned folds are 0, 4, 5, 6, 7, 8, and 9. Defaults to None.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>allow_incomplete_fold</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Whether to allow the last fold to include fewer observations than <code>steps</code>. If <code>False</code>, the last fold is excluded if it is incomplete. Defaults to True.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="odd">
-<td>return_all_indexes</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Whether to return all indexes or only the start and end indexes of each fold. Defaults to False.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="even">
-<td>verbose</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Whether to print information about generated folds. Defaults to True.</td>
-<td><code>True</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="attributes" class="level4 doc-section doc-section-attributes">
-<h4 class="doc-section doc-section-attributes anchored" data-anchor-id="attributes">Attributes</h4>
+</header>
+
+
+<p>SpotOptim provides an advanced surrogate-model-based optimization engine integrated directly into <code>spotforecast2</code>. It acts as a powerful, drop-in alternative to <code>bayesian_search_forecaster</code>, leveraging surrogate modeling (such as Kriging/Gaussian Processes, Random Forests, etc.) rather than Optuna’s TPE sampler, often discovering better hyperparameter configurations with fewer evaluations.</p>
+<p>This guide will walk you through the core function <code>spotoptim_search_forecaster()</code>, from a simple baseline example up to an advanced configuration, explaining every argument available.</p>
+<section id="core-arguments-overview" class="level2">
+<h2 class="anchored" data-anchor-id="core-arguments-overview">Core Arguments Overview</h2>
+<p>When calling <code>spotoptim_search_forecaster()</code>, you can comprehensively control the optimization environment. <a href="#tbl-args" class="quarto-xref">Table&nbsp;1</a> shows a breakdown of every available argument:</p>
+<div id="tbl-args" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-args-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Available arguments for <code>spotoptim_search_forecaster()</code>.
+</figcaption>
+<div aria-describedby="tbl-args-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <table class="caption-top table">
 <colgroup>
-<col style="width: 13%">
-<col style="width: 4%">
-<col style="width: 82%">
+<col style="width: 33%">
+<col style="width: 33%">
+<col style="width: 33%">
 </colgroup>
 <thead>
 <tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
+<th style="text-align: left;">Argument</th>
+<th style="text-align: left;">Type</th>
+<th style="text-align: left;">Description</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>steps</td>
-<td></td>
-<td>Number of observations used to be predicted in each fold.</td>
+<td style="text-align: left;"><code>forecaster</code></td>
+<td style="text-align: left;">object</td>
+<td style="text-align: left;">The base forecaster model to be tuned (e.g., <code>ForecasterRecursive</code>).</td>
 </tr>
 <tr class="even">
-<td>initial_train_size</td>
-<td></td>
-<td>Number of observations used for initial training. If <code>None</code> or 0, the initial forecaster is not trained in the first fold.</td>
+<td style="text-align: left;"><code>y</code></td>
+<td style="text-align: left;">pd.Series</td>
+<td style="text-align: left;">The target training time series. Must have a datetime or numeric index.</td>
 </tr>
 <tr class="odd">
-<td>fold_stride</td>
-<td></td>
-<td>Number of observations that the start of the test set advances between consecutive folds.</td>
+<td style="text-align: left;"><code>cv</code></td>
+<td style="text-align: left;">TimeSeriesFold | OneStepAheadFold</td>
+<td style="text-align: left;">The cross-validation strategy used to evaluate configurations during the search.</td>
 </tr>
 <tr class="even">
-<td>overlapping_folds</td>
-<td></td>
-<td>Whether the folds overlap.</td>
+<td style="text-align: left;"><code>search_space</code></td>
+<td style="text-align: left;">ParameterSet | dict</td>
+<td style="text-align: left;">The boundaries and categories of the hyperparameters to explore.</td>
 </tr>
 <tr class="odd">
-<td>window_size</td>
-<td></td>
-<td>Number of observations needed to generate the autoregressive predictors.</td>
+<td style="text-align: left;"><code>metric</code></td>
+<td style="text-align: left;">str | Callable | list</td>
+<td style="text-align: left;">The metric(s) used to evaluate forecaster performance. First metric dictates sorting.</td>
 </tr>
 <tr class="even">
-<td>differentiation</td>
-<td></td>
-<td>Number of observations to use for differentiation. This is used to extend the <code>last_window</code> as many observations as the differentiation order.</td>
+<td style="text-align: left;"><code>exog</code></td>
+<td style="text-align: left;">pd.Series | pd.DataFrame | None</td>
+<td style="text-align: left;">Optional exogenous variables to include during modeling.</td>
 </tr>
 <tr class="odd">
-<td>refit</td>
-<td></td>
-<td>Whether to refit the forecaster in each fold.</td>
+<td style="text-align: left;"><code>n_trials</code></td>
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">The total number of evaluations to perform throughout the entire search.</td>
 </tr>
 <tr class="even">
-<td>fixed_train_size</td>
-<td></td>
-<td>Whether the training size is fixed or increases in each fold.</td>
+<td style="text-align: left;"><code>n_initial</code></td>
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">The number of random initial design points before the surrogate model takes over.</td>
 </tr>
 <tr class="odd">
-<td>gap</td>
-<td></td>
-<td>Number of observations between the end of the training set and the start of the test set.</td>
+<td style="text-align: left;"><code>random_state</code></td>
+<td style="text-align: left;">int</td>
+<td style="text-align: left;">RNG seed ensuring reproducible designs and sampling.</td>
 </tr>
 <tr class="even">
-<td>skip_folds</td>
-<td></td>
-<td>Number of folds to skip.</td>
+<td style="text-align: left;"><code>return_best</code></td>
+<td style="text-align: left;">bool</td>
+<td style="text-align: left;">If True, the passed <code>forecaster</code> is automatically refit on the <em>entire</em> <code>y</code> using the best found configuration.</td>
 </tr>
 <tr class="odd">
-<td>allow_incomplete_fold</td>
-<td></td>
-<td>Whether to allow the last fold to include fewer observations than <code>steps</code>.</td>
+<td style="text-align: left;"><code>n_jobs</code></td>
+<td style="text-align: left;">int | str</td>
+<td style="text-align: left;">Number of parallel jobs for backtesting parallelization. Use <code>"auto"</code> for automatic CPU detection.</td>
 </tr>
 <tr class="even">
-<td>return_all_indexes</td>
-<td></td>
-<td>Whether to return all indexes or only the start and end indexes of each fold.</td>
+<td style="text-align: left;"><code>verbose</code></td>
+<td style="text-align: left;">bool</td>
+<td style="text-align: left;">Print detailed SpotOptim engine optimization logs to stdout.</td>
 </tr>
 <tr class="odd">
-<td>verbose</td>
-<td></td>
-<td>Whether to print information about generated folds.</td>
+<td style="text-align: left;"><code>show_progress</code></td>
+<td style="text-align: left;">bool</td>
+<td style="text-align: left;">Display a tqdm progress bar for evaluation progression.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>suppress_warnings</code></td>
+<td style="text-align: left;">bool</td>
+<td style="text-align: left;">Temporarily suppress <code>spotforecast2</code> warnings during rapid evaluation cycles.</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;"><code>output_file</code></td>
+<td style="text-align: left;">str | None</td>
+<td style="text-align: left;">Path to save the trial results incrementally as a TSV file.</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;"><code>kwargs_spotoptim</code></td>
+<td style="text-align: left;">dict | None</td>
+<td style="text-align: left;">Advanced dictionary passed directly to the underlying <code>SpotOptim</code> engine (e.g., custom surrogate configurations, acquisition functions).</td>
 </tr>
 </tbody>
 </table>
+</div>
+</figure>
+</div>
 </section>
-<section id="examples" class="level4 doc-section doc-section-examples">
-<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
-<p>Basic usage with fixed train size:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> numpy <span class="im">as</span> np</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.model_selection <span class="im">import</span> TimeSeriesFold</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Create sample time series data</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> dates <span class="op">=</span> pd.date_range(<span class="st">'2020-01-01'</span>, periods<span class="op">=</span><span class="dv">100</span>, freq<span class="op">=</span><span class="st">'D'</span>)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> y <span class="op">=</span> pd.Series(np.arange(<span class="dv">100</span>), index<span class="op">=</span>dates)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Create fold splitter</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> cv <span class="op">=</span> TimeSeriesFold(</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>...     steps<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>...     initial_train_size<span class="op">=</span><span class="dv">50</span>,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>...     refit<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>...     fixed_train_size<span class="op">=</span><span class="va">True</span></span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>... )</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Get folds</span></span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> folds <span class="op">=</span> cv.split(y)</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="ss">f"Number of folds: </span><span class="sc">{</span><span class="bu">len</span>(folds)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>Number of folds: <span class="dv">4</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Overlapping folds with custom stride:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> cv <span class="op">=</span> TimeSeriesFold(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>...     steps<span class="op">=</span><span class="dv">30</span>,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>...     initial_train_size<span class="op">=</span><span class="dv">50</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>...     fold_stride<span class="op">=</span><span class="dv">7</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>...     fixed_train_size<span class="op">=</span><span class="va">False</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>... )</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> folds <span class="op">=</span> cv.split(y)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># First test fold covers [50, 80), second [57, 87), etc.</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Return as pandas DataFrame:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> cv <span class="op">=</span> TimeSeriesFold(steps<span class="op">=</span><span class="dv">10</span>, initial_train_size<span class="op">=</span><span class="dv">50</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> folds_df <span class="op">=</span> cv.split(y, as_pandas<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(folds_df.columns.tolist())</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>[<span class="st">'fold'</span>, <span class="st">'train_start'</span>, <span class="st">'train_end'</span>, <span class="st">'last_window_start'</span>, <span class="st">'last_window_end'</span>, <span class="st">'test_start'</span>, <span class="st">'test_end'</span>, <span class="st">'test_start_with_gap'</span>, <span class="st">'test_end_with_gap'</span>, <span class="st">'fit_forecaster'</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Skip folds for faster evaluation:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> cv <span class="op">=</span> TimeSeriesFold(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>...     steps<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>...     initial_train_size<span class="op">=</span><span class="dv">50</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>...     skip_folds<span class="op">=</span><span class="dv">2</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>... )</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> folds <span class="op">=</span> cv.split(y)</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Returns folds 0, 2, 4, 6, ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="simple-tuning-example" class="level2">
+<h2 class="anchored" data-anchor-id="simple-tuning-example">Simple Tuning Example</h2>
+<p>In this first example, we want to tune a basic Ridge regression forecaster. We will evaluate configurations using a simple cross-validation fold, passing the <code>search_space</code> as a standard dictionary.</p>
+<div id="7d43545e" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Ridge</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.forecaster.recursive <span class="im">import</span> ForecasterRecursive</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection <span class="im">import</span> (</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    TimeSeriesFold,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    spotoptim_search_forecaster,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Generate realistic target data</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>np.random.seed(<span class="dv">42</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>y <span class="op">=</span> pd.Series(</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    np.random.randn(<span class="dv">200</span>).cumsum(),</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>pd.date_range(<span class="st">"2022-01-01"</span>, periods<span class="op">=</span><span class="dv">200</span>, freq<span class="op">=</span><span class="st">"h"</span>),</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"load"</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Define Forecaster and Validation</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>forecaster <span class="op">=</span> ForecasterRecursive(estimator<span class="op">=</span>Ridge(), lags<span class="op">=</span><span class="dv">5</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>cv <span class="op">=</span> TimeSeriesFold(</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    steps<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    initial_train_size<span class="op">=</span><span class="dv">150</span>,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    refit<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Define a simple search space using a dictionary</span></span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a>search_space <span class="op">=</span> {<span class="st">"alpha"</span>: (<span class="fl">0.01</span>, <span class="fl">10.0</span>)}</span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. execute SpotOptim Search</span></span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>results, optimizer <span class="op">=</span> spotoptim_search_forecaster(</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>    forecaster<span class="op">=</span>forecaster,</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>y,</span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>cv,</span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>    search_space<span class="op">=</span>search_space,</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>    metric<span class="op">=</span><span class="st">"mean_absolute_error"</span>,</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>    n_trials<span class="op">=</span><span class="dv">5</span>,      <span class="co"># 5 total trials</span></span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>    n_initial<span class="op">=</span><span class="dv">3</span>,     <span class="co"># 3 random, 2 surrogate-guided</span></span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">42</span>,</span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>    return_best<span class="op">=</span><span class="va">True</span>, <span class="co"># Automatically refits the `forecaster` object</span></span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(results.head(<span class="dv">3</span>))</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Best found alpha: </span><span class="sc">{</span>results<span class="sc">.</span>loc[<span class="dv">0</span>, <span class="st">'alpha'</span>]<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>`Forecaster` refitted using the best-found lags and parameters, and the whole data set: 
+  Lags: [1 2 3 4 5] 
+  Parameters: {'alpha': 7.422726358308641}
+  Backtesting metric: 1.019885673261824
+              lags                         params  mean_absolute_error  \
+0  [1, 2, 3, 4, 5]   {'alpha': 7.422726358308641}             1.019886   
+1  [1, 2, 3, 4, 5]   {'alpha': 1.878534795625666}             1.019886   
+2  [1, 2, 3, 4, 5]  {'alpha': 3.8108689266950964}             1.019886   
+
+      alpha  
+0  7.422726  
+1  1.878535  
+2  3.810869  
+Best found alpha: 7.422726358308641</code></pre>
+</div>
+</div>
+<p>Because <code>return_best=True</code>, the <code>forecaster</code> object is now perfectly equipped to make predictions immediately, using <code>alpha</code> configuration <code>results.loc[0, "alpha"]</code>.</p>
 </section>
-<section id="note" class="level4 doc-section doc-section-note">
-<h4 class="doc-section doc-section-note anchored" data-anchor-id="note">Note</h4>
-<p>Returned values are the positions of the observations and not the actual values of the index, so they can be used to slice the data directly using iloc. For example, if the input series is <code>X = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19]</code>, the <code>initial_train_size = 3</code>, <code>window_size = 2</code>, <code>steps = 4</code>, and <code>gap = 1</code>, the output of the first fold will: [0, [0, 3], [1, 3], [3, 8], [4, 8], True].</p>
-<p>The first element is the fold number, the first list <code>[0, 3]</code> indicates that the training set goes from the first to the third observation. The second list <code>[1, 3]</code> indicates that the last window seen by the forecaster during training goes from the second to the third observation. The third list <code>[3, 8]</code> indicates that the test set goes from the fourth to the eighth observation. The fourth list <code>[4, 8]</code> indicates that the test set including the gap goes from the fifth to the eighth observation. The boolean <code>False</code> indicates that the forecaster should not be trained in this fold.</p>
-<p>Following the python convention, the start index is inclusive and the end index is exclusive. This means that the last index is not included in the slice.</p>
-<p>As an example, with <code>initial_train_size=50</code>, <code>steps=30</code>, and <code>fold_stride=7</code>, the first test fold will cover observations [50, 80), the second fold [57, 87), and the third fold [64, 94). This configuration produces multiple forecasts for the same observations, which is often desirable in rolling-origin evaluation.</p>
-</section>
-<section id="methods" class="level4">
-<h4 class="anchored" data-anchor-id="methods">Methods</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="#spotforecast2.model_selection.split_ts_cv.TimeSeriesFold.split">split</a></td>
-<td>Split the time series data into train and test folds.</td>
-</tr>
-</tbody>
-</table>
-<section id="spotforecast2.model_selection.split_ts_cv.TimeSeriesFold.split" class="level5">
-<h5 class="anchored" data-anchor-id="spotforecast2.model_selection.split_ts_cv.TimeSeriesFold.split">split</h5>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>model_selection.split_ts_cv.TimeSeriesFold.split(X, as_pandas<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Split the time series data into train and test folds.</p>
-<section id="parameters-1" class="level6 doc-section doc-section-parameters">
-<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h6>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>X</td>
-<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Index.html#pandas.Index">Index</a> | <a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
-<td>Time series data or index to split. Can be a pandas Series, DataFrame, Index, or a dictionary of Series/DataFrames.</td>
-<td><em>required</em></td>
-</tr>
-<tr class="even">
-<td>as_pandas</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>If True, the folds are returned as a DataFrame. This is useful to visualize the folds in a more interpretable way. Defaults to False.</td>
-<td><code>False</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns" class="level6 doc-section doc-section-returns">
-<h6 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h6>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>A list of lists containing the indices (position) for each fold, or a</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>DataFrame if <code>as_pandas=True</code>. Each list contains 4 lists and a boolean</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>with the following information:</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>- <strong>fold</strong>: fold number.</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>- <strong>[train_start, train_end]</strong>: list with the start and end positions of the training set.</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>- <strong>[last_window_start, last_window_end]</strong>: list with the start and end positions of the last window seen by the forecaster during training. The last window is used to generate the lags use as predictors. If <code>differentiation</code> is included, the interval is extended as many observations as the differentiation order. If the argument <code>window_size</code> is <code>None</code>, this list is empty.</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>- <strong>[test_start, test_end]</strong>: list with the start and end positions of the test set. These are the observations used to evaluate the forecaster.</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>- <strong>[test_start_with_gap, test_end_with_gap]</strong>: list with the start and end positions of the test set including the gap. The gap is the number of observations between the end of the training set and the start of the test set.</td>
-</tr>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a> | <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>- <strong>fit_forecaster</strong>: boolean indicating whether the forecaster should be fitted in this fold.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="note-1" class="level6 doc-section doc-section-note">
-<h6 class="doc-section doc-section-note anchored" data-anchor-id="note-1">Note</h6>
-<p>The returned values are the positions of the observations and not the actual values of the index, so they can be used to slice the data directly using iloc.</p>
-<p>If <code>as_pandas</code> is <code>True</code>, the folds are returned as a DataFrame with the following columns: ‘fold’, ‘train_start’, ‘train_end’, ‘last_window_start’, ‘last_window_end’, ‘test_start’, ‘test_end’, ‘test_start_with_gap’, ‘test_end_with_gap’, ‘fit_forecaster’.</p>
-<p>Following the python convention, the start index is inclusive and the end index is exclusive. This means that the last index is not included in the slice.</p>
+<section id="advanced-tuning-example" class="level2">
+<h2 class="anchored" data-anchor-id="advanced-tuning-example">Advanced Tuning Example</h2>
+<p>Now, let’s explore an advanced configuration. We’ll use a <code>ParameterSet</code> object (from the <code>spotoptim</code> library) for more granular control over numerical types and transformations. We will also inject dictionary arguments explicitly to the <code>SpotOptim</code> engine.</p>
+<div id="ab30107a" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection <span class="im">import</span> OneStepAheadFold</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotoptim.hyperparameters <span class="im">import</span> ParameterSet</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Data generation</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>y_adv <span class="op">=</span> pd.Series(</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    np.random.randn(<span class="dv">300</span>).cumsum(),</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>pd.date_range(<span class="st">"2023-01-01"</span>, periods<span class="op">=</span><span class="dv">300</span>, freq<span class="op">=</span><span class="st">"h"</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"advanced_load"</span>,</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>exog_adv <span class="op">=</span> pd.Series(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    np.random.uniform(<span class="dv">10</span>, <span class="dv">20</span>, <span class="dv">300</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    index<span class="op">=</span>y_adv.index,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    name<span class="op">=</span><span class="st">"temp"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Advanced setup</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>forecaster_rf <span class="op">=</span> ForecasterRecursive(</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    estimator<span class="op">=</span>RandomForestRegressor(random_state<span class="op">=</span><span class="dv">123</span>), </span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>    lags<span class="op">=</span><span class="dv">12</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Fast screening validation approach</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>cv_fast <span class="op">=</span> OneStepAheadFold(initial_train_size<span class="op">=</span><span class="dv">100</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Granular Search Space using ParameterSet</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a>ps <span class="op">=</span> ParameterSet()</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>ps.add_int(<span class="st">"n_estimators"</span>, low<span class="op">=</span><span class="dv">10</span>, high<span class="op">=</span><span class="dv">50</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>ps.add_int(<span class="st">"max_depth"</span>, low<span class="op">=</span><span class="dv">2</span>, high<span class="op">=</span><span class="dv">10</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>ps.add_float(<span class="st">"max_features"</span>, low<span class="op">=</span><span class="fl">0.1</span>, high<span class="op">=</span><span class="fl">1.0</span>)</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="co"># We can also tune `lags` systematically</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>ps.add_factor(<span class="st">"lags"</span>, [<span class="st">"[1, 2, 3]"</span>, <span class="st">"[1, 2, 3, 4, 5, 6]"</span>])</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. SpotOptim execution with advanced Engine Control</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>results_adv, optimizer_adv <span class="op">=</span> spotoptim_search_forecaster(</span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    forecaster<span class="op">=</span>forecaster_rf,</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    y<span class="op">=</span>y_adv,</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    exog<span class="op">=</span>exog_adv,</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    cv<span class="op">=</span>cv_fast,</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    search_space<span class="op">=</span>ps,</span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    metric<span class="op">=</span>[<span class="st">"mean_absolute_error"</span>, <span class="st">"mean_squared_error"</span>], <span class="co"># Multiple metrics tracked</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    n_trials<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    n_initial<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">99</span>,</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    return_best<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    n_jobs<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>    suppress_warnings<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    kwargs_spotoptim<span class="op">=</span>{</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>        <span class="st">"surrogate"</span>: RandomForestRegressor(random_state<span class="op">=</span><span class="dv">42</span>), <span class="co"># Custom surrogate model</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(results_adv[[<span class="st">"n_estimators"</span>, <span class="st">"max_depth"</span>, <span class="st">"lags"</span>, <span class="st">"mean_absolute_error"</span>]].head(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>   n_estimators  max_depth       lags  mean_absolute_error
+0          24.0        9.0  [1, 2, 3]             1.091275
+1          49.0        9.0  [1, 2, 3]             1.091275
+2          46.0        9.0  [1, 2, 3]             1.091275</code></pre>
+</div>
+</div>
+<p>This advanced setup illustrates how <code>spotoptim_search_forecaster</code> acts as an extremely flexible orchestration bridge, allowing you to efficiently explore your state space while capturing comprehensive performance metadata.</p>
 
 
-</section>
-</section>
-</section>
-</section>
-</section>
 </section>
 
 </main> <!-- /main -->
@@ -1581,7 +1463,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </div>   
     <div class="nav-footer-center">
 <p>Copyright © 2024-2026 bartzbeielstein | <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/model_selection.split_ts_cv.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/model_selection/spotoptim_intro.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>

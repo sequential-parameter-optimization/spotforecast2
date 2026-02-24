@@ -966,6 +966,50 @@
     ]
   },
   {
+    "objectID": "docs/model_selection/spotoptim_intro.html",
+    "href": "docs/model_selection/spotoptim_intro.html",
+    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
+    "section": "",
+    "text": "SpotOptim provides an advanced surrogate-model-based optimization engine integrated directly into spotforecast2. It acts as a powerful, drop-in alternative to bayesian_search_forecaster, leveraging surrogate modeling (such as Kriging/Gaussian Processes, Random Forests, etc.) rather than Optuna’s TPE sampler, often discovering better hyperparameter configurations with fewer evaluations.\nThis guide will walk you through the core function spotoptim_search_forecaster(), from a simple baseline example up to an advanced configuration, explaining every argument available.",
+    "crumbs": [
+      "Model Selection Guides",
+      "Intro to SpotOptim"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_intro.html#core-arguments-overview",
+    "href": "docs/model_selection/spotoptim_intro.html#core-arguments-overview",
+    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
+    "section": "Core Arguments Overview",
+    "text": "Core Arguments Overview\nWhen calling spotoptim_search_forecaster(), you can comprehensively control the optimization environment. Table 1 shows a breakdown of every available argument:\n\n\n\nTable 1: Available arguments for spotoptim_search_forecaster().\n\n\n\n\n\n\n\n\n\n\nArgument\nType\nDescription\n\n\n\n\nforecaster\nobject\nThe base forecaster model to be tuned (e.g., ForecasterRecursive).\n\n\ny\npd.Series\nThe target training time series. Must have a datetime or numeric index.\n\n\ncv\nTimeSeriesFold | OneStepAheadFold\nThe cross-validation strategy used to evaluate configurations during the search.\n\n\nsearch_space\nParameterSet | dict\nThe boundaries and categories of the hyperparameters to explore.\n\n\nmetric\nstr | Callable | list\nThe metric(s) used to evaluate forecaster performance. First metric dictates sorting.\n\n\nexog\npd.Series | pd.DataFrame | None\nOptional exogenous variables to include during modeling.\n\n\nn_trials\nint\nThe total number of evaluations to perform throughout the entire search.\n\n\nn_initial\nint\nThe number of random initial design points before the surrogate model takes over.\n\n\nrandom_state\nint\nRNG seed ensuring reproducible designs and sampling.\n\n\nreturn_best\nbool\nIf True, the passed forecaster is automatically refit on the entire y using the best found configuration.\n\n\nn_jobs\nint | str\nNumber of parallel jobs for backtesting parallelization. Use \"auto\" for automatic CPU detection.\n\n\nverbose\nbool\nPrint detailed SpotOptim engine optimization logs to stdout.\n\n\nshow_progress\nbool\nDisplay a tqdm progress bar for evaluation progression.\n\n\nsuppress_warnings\nbool\nTemporarily suppress spotforecast2 warnings during rapid evaluation cycles.\n\n\noutput_file\nstr | None\nPath to save the trial results incrementally as a TSV file.\n\n\nkwargs_spotoptim\ndict | None\nAdvanced dictionary passed directly to the underlying SpotOptim engine (e.g., custom surrogate configurations, acquisition functions).",
+    "crumbs": [
+      "Model Selection Guides",
+      "Intro to SpotOptim"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_intro.html#simple-tuning-example",
+    "href": "docs/model_selection/spotoptim_intro.html#simple-tuning-example",
+    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
+    "section": "Simple Tuning Example",
+    "text": "Simple Tuning Example\nIn this first example, we want to tune a basic Ridge regression forecaster. We will evaluate configurations using a simple cross-validation fold, passing the search_space as a standard dictionary.\n\nimport numpy as np\nimport pandas as pd\nfrom sklearn.linear_model import Ridge\nfrom spotforecast2_safe.forecaster.recursive import ForecasterRecursive\nfrom spotforecast2.model_selection import (\n    TimeSeriesFold,\n    spotoptim_search_forecaster,\n)\n\n# 1. Generate realistic target data\nnp.random.seed(42)\ny = pd.Series(\n    np.random.randn(200).cumsum(),\n    index=pd.date_range(\"2022-01-01\", periods=200, freq=\"h\"),\n    name=\"load\",\n)\n\n# 2. Define Forecaster and Validation\nforecaster = ForecasterRecursive(estimator=Ridge(), lags=5)\ncv = TimeSeriesFold(\n    steps=5,\n    initial_train_size=150,\n    refit=False,\n)\n\n# 3. Define a simple search space using a dictionary\nsearch_space = {\"alpha\": (0.01, 10.0)}\n\n# 4. execute SpotOptim Search\nresults, optimizer = spotoptim_search_forecaster(\n    forecaster=forecaster,\n    y=y,\n    cv=cv,\n    search_space=search_space,\n    metric=\"mean_absolute_error\",\n    n_trials=5,      # 5 total trials\n    n_initial=3,     # 3 random, 2 surrogate-guided\n    random_state=42,\n    return_best=True, # Automatically refits the `forecaster` object\n    show_progress=False,\n)\n\nprint(results.head(3))\nprint(f\"Best found alpha: {results.loc[0, 'alpha']}\")\n\n`Forecaster` refitted using the best-found lags and parameters, and the whole data set: \n  Lags: [1 2 3 4 5] \n  Parameters: {'alpha': 7.422726358308641}\n  Backtesting metric: 1.019885673261824\n              lags                         params  mean_absolute_error  \\\n0  [1, 2, 3, 4, 5]   {'alpha': 7.422726358308641}             1.019886   \n1  [1, 2, 3, 4, 5]   {'alpha': 1.878534795625666}             1.019886   \n2  [1, 2, 3, 4, 5]  {'alpha': 3.8108689266950964}             1.019886   \n\n      alpha  \n0  7.422726  \n1  1.878535  \n2  3.810869  \nBest found alpha: 7.422726358308641\n\n\nBecause return_best=True, the forecaster object is now perfectly equipped to make predictions immediately, using alpha configuration results.loc[0, \"alpha\"].",
+    "crumbs": [
+      "Model Selection Guides",
+      "Intro to SpotOptim"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_intro.html#advanced-tuning-example",
+    "href": "docs/model_selection/spotoptim_intro.html#advanced-tuning-example",
+    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
+    "section": "Advanced Tuning Example",
+    "text": "Advanced Tuning Example\nNow, let’s explore an advanced configuration. We’ll use a ParameterSet object (from the spotoptim library) for more granular control over numerical types and transformations. We will also inject dictionary arguments explicitly to the SpotOptim engine.\n\nfrom sklearn.ensemble import RandomForestRegressor\nfrom spotforecast2.model_selection import OneStepAheadFold\nfrom spotoptim.hyperparameters import ParameterSet\n\n# Data generation\ny_adv = pd.Series(\n    np.random.randn(300).cumsum(),\n    index=pd.date_range(\"2023-01-01\", periods=300, freq=\"h\"),\n    name=\"advanced_load\",\n)\nexog_adv = pd.Series(\n    np.random.uniform(10, 20, 300),\n    index=y_adv.index,\n    name=\"temp\",\n)\n\n# 1. Advanced setup\nforecaster_rf = ForecasterRecursive(\n    estimator=RandomForestRegressor(random_state=123), \n    lags=12\n)\n\n# Fast screening validation approach\ncv_fast = OneStepAheadFold(initial_train_size=100)\n\n# 2. Granular Search Space using ParameterSet\nps = ParameterSet()\nps.add_int(\"n_estimators\", low=10, high=50)\nps.add_int(\"max_depth\", low=2, high=10)\nps.add_float(\"max_features\", low=0.1, high=1.0)\n# We can also tune `lags` systematically\nps.add_factor(\"lags\", [\"[1, 2, 3]\", \"[1, 2, 3, 4, 5, 6]\"])\n\n# 3. SpotOptim execution with advanced Engine Control\nresults_adv, optimizer_adv = spotoptim_search_forecaster(\n    forecaster=forecaster_rf,\n    y=y_adv,\n    exog=exog_adv,\n    cv=cv_fast,\n    search_space=ps,\n    metric=[\"mean_absolute_error\", \"mean_squared_error\"], # Multiple metrics tracked\n    n_trials=10,\n    n_initial=5,\n    random_state=99,\n    return_best=False,\n    n_jobs=1,\n    verbose=False,\n    show_progress=False,\n    suppress_warnings=True,\n    kwargs_spotoptim={\n        \"surrogate\": RandomForestRegressor(random_state=42), # Custom surrogate model\n    }\n)\n\nprint(results_adv[[\"n_estimators\", \"max_depth\", \"lags\", \"mean_absolute_error\"]].head(3))\n\n   n_estimators  max_depth       lags  mean_absolute_error\n0          24.0        9.0  [1, 2, 3]             1.091275\n1          49.0        9.0  [1, 2, 3]             1.091275\n2          46.0        9.0  [1, 2, 3]             1.091275\n\n\nThis advanced setup illustrates how spotoptim_search_forecaster acts as an extremely flexible orchestration bridge, allowing you to efficiently explore your state space while capturing comprehensive performance metadata.",
+    "crumbs": [
+      "Model Selection Guides",
+      "Intro to SpotOptim"
+    ]
+  },
+  {
     "objectID": "index.html",
     "href": "index.html",
     "title": "Welcome to spotforecast2",
@@ -980,7 +1024,7 @@
     "href": "index.html#quick-links",
     "title": "Welcome to spotforecast2",
     "section": "Quick Links",
-    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 0.8.1",
+    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 0.8.1-rc.1",
     "crumbs": [
       "Home"
     ]
