@@ -66,6 +66,6 @@ In the categorical search space, lists of lags are provided as strings (e.g., `"
 The mapping is handled via two internal utilities:
 
 - `_convert_search_space`: Converts the dictionary into SpotOptim's `bounds`, `var_type`, and `var_name` arrays.
-- `_parse_lags_from_string`: Converts the selected choice back into a usable lag object (integer or list).
+- `parse_lags_from_strings`: Converts the selected choice back into a usable lag object (integer or list).
 
 These utilities ensure that the optimization process is seamless, regardless of whether you are searching across a continuous range or a discrete set of domain-specific lag patterns.

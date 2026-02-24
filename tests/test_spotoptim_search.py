@@ -19,7 +19,7 @@ from spotforecast2.model_selection import (
 from spotforecast2.model_selection.spotoptim_search import (
     _array_to_params,
     _convert_search_space,
-    _parse_lags_from_string,
+    parse_lags_from_strings,
 )
 from spotoptim.hyperparameters import ParameterSet
 
@@ -49,22 +49,24 @@ def cv():
 
 
 # ------------------------------------------------------------------
-# _parse_lags_from_string
+# parse_lags_from_strings
 # ------------------------------------------------------------------
 
 
-class TestParseLagsFromString:
-    def test_integer_string(self):
-        assert _parse_lags_from_string("24") == 24
+class TestParseLagsFromStrings:
+    """Tests for parse_lags_from_strings utility."""
 
-    def test_list_string(self):
-        assert _parse_lags_from_string("[1, 2, 3]") == [1, 2, 3]
+    def test_parse_integer(self):
+        assert parse_lags_from_strings("24") == 24
 
-    def test_whitespace_handling(self):
-        assert _parse_lags_from_string("  12  ") == 12
+    def test_parse_list(self):
+        assert parse_lags_from_strings("[1, 2, 3]") == [1, 2, 3]
 
-    def test_list_with_whitespace(self):
-        assert _parse_lags_from_string("  [4, 5, 6]  ") == [4, 5, 6]
+    def test_parse_integer_whitespace(self):
+        assert parse_lags_from_strings("  12  ") == 12
+
+    def test_parse_list_whitespace(self):
+        assert parse_lags_from_strings("  [4, 5, 6]  ") == [4, 5, 6]
 
 
 # ------------------------------------------------------------------

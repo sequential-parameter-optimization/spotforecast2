@@ -7,17 +7,17 @@ from spotforecast2.model_selection import (
     spotoptim_search_forecaster,
 )
 from spotforecast2.model_selection.spotoptim_search import (
-    _parse_lags_from_string,
+    parse_lags_from_strings,
     _convert_search_space,
 )
 
 
-def test_parse_lags_from_string():
+def test_parse_lags_from_strings():
     """Test the internal lag string parser."""
-    assert _parse_lags_from_string("24") == 24
-    assert _parse_lags_from_string("[1, 2, 3]") == [1, 2, 3]
-    assert _parse_lags_from_string(" [24, 48] ") == [24, 48]
-    assert _parse_lags_from_string("lag_name") == "lag_name"
+    assert parse_lags_from_strings(24) == 24
+    assert parse_lags_from_strings("[1, 2, 3]") == [1, 2, 3]
+    assert parse_lags_from_strings(" [24, 48] ") == [24, 48]
+    assert parse_lags_from_strings("lag_name") == "lag_name"
 
 
 def test_convert_search_space_lags():
