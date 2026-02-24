@@ -1,3 +1,9 @@
+## [0.10.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.9.1-rc.1...v0.10.0-rc.1) (2026-02-24)
+
+### Features
+
+* model training examples ([b864764](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b8647642120eacf63ce61c7a0b9fe36dd920921e))
+
 ## [0.9.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.9.0...v0.9.1-rc.1) (2026-02-24)
 
 ### Bug Fixes
