@@ -50,13 +50,17 @@ class MockForecaster:
 
 # 2. Start a basic training run explicitly overriding the cutoff
 # Note: we disable saving to prevent dumping a joblib locally during the example
+from spotforecast2_safe.data.fetch_data import get_package_data_home
+demo_file = get_package_data_home() / "demo01.csv"
+
 model_basic = train_new_model(
     model_class=MockForecaster,
     n_iteration=1,
     model_name="baseline_mock",
     end_dev="2023-01-01 00:00+00:00",
     train_size=None, # Use the entire history
-    save_to_file=False
+    save_to_file=False,
+    data_filename=str(demo_file)
 )
 
 print(f"Constructed class type: {type(model_basic).__name__}")
@@ -71,6 +75,9 @@ We can combine `train_size` constraint generation dynamically with extra paramet
 
 ```{python}
 # 1. Start an advanced tuning workflow
+from spotforecast2_safe.data.fetch_data import get_package_data_home
+demo_file = get_package_data_home() / "demo01.csv"
+
 model_advanced = train_new_model(
     model_class=MockForecaster,
     n_iteration=3,
@@ -78,6 +85,7 @@ model_advanced = train_new_model(
     train_size=pd.Timedelta(days=365), # Force exactly 1 year backward logic
     end_dev="2024-03-15 00:00+00:00",
     save_to_file=False,
+    data_filename=str(demo_file),
     # Inject specific kwargs dynamically
     lags=48,
     advanced_regularization=True,

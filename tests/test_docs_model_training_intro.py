@@ -29,6 +29,9 @@ def test_model_training_intro_simple():
     with patch(
         "spotforecast2.manager.trainer_full.fetch_data", return_value=dummy_data
     ):
+        from spotforecast2_safe.data.fetch_data import get_package_data_home
+        demo_file = get_package_data_home() / "demo01.csv"
+
         # 2. Start a basic training run explicitly overriding the cutoff
         model_basic = train_new_model(
             model_class=MockForecaster,
@@ -37,6 +40,7 @@ def test_model_training_intro_simple():
             end_dev="2023-01-01 00:00+00:00",
             train_size=None,  # Use the entire history
             save_to_file=False,
+            data_filename=str(demo_file)
         )
 
         assert isinstance(model_basic, MockForecaster)
@@ -68,6 +72,9 @@ def test_model_training_intro_advanced():
     with patch(
         "spotforecast2.manager.trainer_full.fetch_data", return_value=dummy_data
     ):
+        from spotforecast2_safe.data.fetch_data import get_package_data_home
+        demo_file = get_package_data_home() / "demo01.csv"
+
         # 1. Start an advanced tuning workflow
         model_advanced = train_new_model(
             model_class=MockForecaster,
@@ -76,6 +83,7 @@ def test_model_training_intro_advanced():
             train_size=pd.Timedelta(days=365),  # Force exactly 1 year backward logic
             end_dev="2024-03-15 00:00+00:00",
             save_to_file=False,
+            data_filename=str(demo_file),
             # Inject specific kwargs dynamically
             lags=48,
             advanced_regularization=True,
