@@ -8,7 +8,7 @@ from spotforecast2.model_selection import (
 )
 from spotforecast2.model_selection.spotoptim_search import (
     parse_lags_from_strings,
-    _convert_search_space,
+    convert_search_space,
 )
 
 
@@ -24,14 +24,14 @@ def test_convert_search_space_lags():
     """Test that lag search spaces are converted correctly."""
     # 1. Integer range
     ss_int = {"lags": (2, 24)}
-    bounds, vt, vn, vtrans = _convert_search_space(ss_int)
+    bounds, vt, vn, vtrans = convert_search_space(ss_int)
     assert vn == ["lags"]
     assert vt == ["int"]
     assert bounds == [(2, 24)]
 
     # 2. Factor (list of strings representing lags)
     ss_factor = {"lags": ["24", "48", "[1, 2, 24]"]}
-    bounds, vt, vn, vtrans = _convert_search_space(ss_factor)
+    bounds, vt, vn, vtrans = convert_search_space(ss_factor)
     assert vn == ["lags"]
     assert vt == ["factor"]
     assert bounds == [["24", "48", "[1, 2, 24]"]]

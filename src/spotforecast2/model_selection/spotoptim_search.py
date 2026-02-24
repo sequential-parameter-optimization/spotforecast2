@@ -359,7 +359,7 @@ def _spotoptim_search(
         n_jobs = 1
 
     # --- Convert search space to SpotOptim arrays -------------------------
-    bounds, var_type, var_name, var_trans = _convert_search_space(search_space)
+    bounds, var_type, var_name, var_trans = convert_search_space(search_space)
 
     all_metric_values: list[list[float]] = []
     all_lags: list = []
@@ -369,7 +369,7 @@ def _spotoptim_search(
     def _objective(X: np.ndarray) -> np.ndarray:
         results_arr = []
         for params_array in X:
-            params_dict = _array_to_params(params_array, var_name, var_type, bounds)
+            params_dict = array_to_params(params_array, var_name, var_type, bounds)
             sample_params = {k: v for k, v in params_dict.items() if k != "lags"}
 
             f_search = deepcopy(forecaster_search)
@@ -483,48 +483,52 @@ def _spotoptim_search(
 # ======================================================================
 
 
-def _convert_search_space(
-    search_space: ParameterSet | Dict[str, Any],
-) -> tuple[list, list, list, list]:
-    """Convert a search space to the SpotOptim internal format.
-
-    Accepts either a :class:`~spotoptim.hyperparameters.ParameterSet`
-    or a plain ``dict``.  Three dict flavours are supported:
-
-    1. **Raw SpotOptim dict** — keys ``bounds``, ``var_type``,
-       ``var_name``, ``var_trans``.
-    2. **Simple tuples** — ``{"param_name": (low, high), ...}``
-       (int or float are inferred).
-    3. **Factor list** — ``{"param_name": ["a", "b", "c"]}``
+def convert_search_space(
+    search_space: ParameterSet | dict[str, Any],
+) -> tuple[list[Any], list[str], list[str], list[Callable | None]]:
+    """Convert search space into SpotOptim compatible format.
 
     Args:
-        search_space: The search space to convert.
+        search_space: Search space as a SpotOptim ParameterSet or a dictionary.
 
     Returns:
-        Tuple ``(bounds, var_type, var_name, var_trans)``.
-
-    Raises:
-        TypeError: If *search_space* is not a supported type.
-        ValueError: If a dict value is not a valid bound description.
+        tuple containing:
+        - bounds: List of parameter bounds or categories.
+        - var_type: List of variable types ('float', 'int', or 'factor').
+        - var_name: List of variable names.
+        - var_trans: List of transformation functions (e.g., log10) or None.
 
     Examples:
-        >>> from spotforecast2.model_selection.spotoptim_search import (
-        ...     _convert_search_space,
-        ... )
-        >>> bounds, vt, vn, vtrans = _convert_search_space(
-        ...     {"alpha": (0.01, 10.0), "max_depth": (2, 8)}
-        ... )
-        >>> vn
-        ['alpha', 'max_depth']
-        >>> vt
-        ['float', 'int']
+        Basic usage:
 
         >>> from spotoptim.hyperparameters import ParameterSet
+        >>> from spotforecast2.model_selection.spotoptim_search import (
+        ...     convert_search_space,
+        ... )
         >>> ps = ParameterSet()
-        >>> _ = ps.add_float("lr", low=0.001, high=0.1)
-        >>> b, t, n, tr = _convert_search_space(ps)
-        >>> n
-        ['lr']
+        >>> _ = ps.add_float("alpha", 0.01, 10.0)
+        >>> b, t, n, tr = convert_search_space(ps)
+        >>> b
+        [(0.01, 10.0)]
+        >>> t
+        ['float']
+
+        Converting a complex dictionary search space:
+
+        ```{python}
+        from spotforecast2.model_selection.spotoptim_search import convert_search_space
+
+        search_space = {
+            "learning_rate": (0.001, 0.1, "log10"),
+            "max_depth": (2, 10),
+            "model_type": ["RandomForest", "XGBoost"]
+        }
+
+        bounds, vt, vn, vtr = convert_search_space(search_space)
+
+        for name, typ, bound, trans in zip(vn, vt, bounds, vtr):
+            print(f"{name} ({typ}): {bound} | transform: {trans}")
+        ```
     """
     if isinstance(search_space, ParameterSet):
         return (
@@ -554,7 +558,7 @@ def _convert_search_space(
             # 3-element tuple/list (low, high, trans) -> var_trans = trans
 
             if (
-                isinstance(value, (list, tuple))
+                isinstance(value, tuple)
                 and len(value) in (2, 3)
                 and isinstance(value[0], (int, float))
                 and isinstance(value[1], (int, float))
@@ -586,7 +590,7 @@ def _convert_search_space(
     )
 
 
-def _array_to_params(
+def array_to_params(
     params_array: np.ndarray,
     var_name: list,
     var_type: list,
@@ -607,17 +611,36 @@ def _array_to_params(
         Dictionary mapping parameter names to typed values.
 
     Examples:
+        Basic usage:
+
         >>> import numpy as np
         >>> from spotforecast2.model_selection.spotoptim_search import (
-        ...     _array_to_params,
+        ...     array_to_params,
         ... )
-        >>> _array_to_params(
+        >>> array_to_params(
         ...     np.array([100.0, 0.05]),
         ...     var_name=["n_estimators", "lr"],
         ...     var_type=["int", "float"],
         ...     bounds=[(50, 200), (0.01, 0.3)],
         ... )
         {'n_estimators': 100, 'lr': 0.05}
+
+        Generating textual output of parameter mapping:
+
+        ```{python}
+        import numpy as np
+        from spotforecast2.model_selection.spotoptim_search import array_to_params
+
+        params_array = np.array([0.05, 5.0, 2.0])
+        var_name = ["alpha", "max_depth", "model"]
+        var_type = ["float", "int", "factor"]
+        bounds = [(0.01, 10.0), (2, 8), ["Ridge", "Lasso", "ElasticNet"]]
+
+        params_dict = array_to_params(params_array, var_name, var_type, bounds)
+
+        for k, v in params_dict.items():
+            print(f"{k}: {v} (type: {type(v).__name__})")
+        ```
     """
     params_dict: Dict[str, Any] = {}
     for i, (name, ptype, value) in enumerate(zip(var_name, var_type, params_array)):
