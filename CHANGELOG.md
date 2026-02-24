@@ -1,3 +1,13 @@
+## [0.7.0-rc.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.7.0-rc.2...v0.7.0-rc.3) (2026-02-24)
+
+### Features
+
+* parse_lags_from_strings ([b1e85ab](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b1e85abd0d8433907f8e296425f8a954712c8256))
+
+### Bug Fixes
+
+* added matplotlib example ([be8d255](https://github.com/sequential-parameter-optimization/spotforecast2/commit/be8d2555e424ed72dd744be92de332d2794631ea))
+
 ## [0.7.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.7.0-rc.1...v0.7.0-rc.2) (2026-02-23)
 
 ### Features
