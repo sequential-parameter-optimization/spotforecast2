@@ -29,7 +29,7 @@ uv pip install plotly
 
 ### Basic Visualization
 
-```python
+```{python}
 import pandas as pd
 import numpy as np
 from spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly
@@ -67,18 +67,18 @@ visualize_ts_plotly(dataframes)
 
 ### Single Dataset Visualization
 
-```python
+```{python}
 # Visualize a single dataset
-dataframes = {'Data': data_train}
-visualize_ts_plotly(dataframes, columns=['temperature'])
+dataframes_single = {'Data': data_train}
+visualize_ts_plotly(dataframes_single, columns=['temperature'])
 ```
 
 ### Custom Styling
 
-```python
+```{python}
 # Customize colors and template
 visualize_ts_plotly(
-    dataframes,
+    dataframes,  # From Basic Visualization
     template='plotly_dark',
     colors={
         'Train': 'blue',
@@ -132,21 +132,21 @@ None. Displays Plotly figures.
 
 **Example:**
 
-```python
+```{python}
 import pandas as pd
 import numpy as np
 from spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly
 
 # Create sample data
 np.random.seed(42)
-dates = pd.date_range('2024-01-01', periods=100, freq='h')
-df = pd.DataFrame({
+dates_api = pd.date_range('2024-01-01', periods=100, freq='h')
+df_api = pd.DataFrame({
     'temperature': np.random.normal(20, 5, 100),
     'humidity': np.random.normal(60, 10, 100)
-}, index=dates)
+}, index=dates_api)
 
 # Visualize single dataset
-visualize_ts_plotly({'Data': df})
+visualize_ts_plotly({'Data': df_api})
 ```
 
 ### visualize_ts_comparison()
@@ -191,7 +191,7 @@ None. Displays Plotly figures.
 
 **Example:**
 
-```python
+```{python}
 import pandas as pd
 import numpy as np
 from spotforecast2.preprocessing.time_series_visualization import visualize_ts_comparison
@@ -216,39 +216,109 @@ visualize_ts_comparison(
 )
 ```
 
+## API Reference (Matplotlib)
+
+While `visualize_ts_plotly` provides highly dynamic web-interactivity, mathematical reporting often requires static, publication-ready vector graphics natively supported by Matplotlib.
+
+### `plot_zoomed_timeseries()`
+
+Creates a two-panel vector plot: The top panel shows the full time series with a highlighted zoom region, and the bottom panel provides a detailed view of that focused local segment.
+
+**Signature:**
+```python
+def plot_zoomed_timeseries(
+    data: pd.DataFrame,
+    target: str,
+    zoom: tuple[str, str],
+    title: Optional[str] = None,
+    figsize: tuple[int, int] = (8, 4),
+    show: bool = True,
+) -> plt.Figure:
+```
+
+**Example:**
+```{python}
+import pandas as pd
+import matplotlib.pyplot as plt
+from spotforecast2.preprocessing.time_series_visualization import plot_zoomed_timeseries
+
+dates = pd.date_range("2024-01-01", periods=100, freq="h")
+df_zoom = pd.DataFrame({"value": range(100)}, index=dates)
+
+fig1 = plot_zoomed_timeseries(
+    data=df_zoom,
+    target="value",
+    zoom=("2024-01-02 00:00", "2024-01-03 00:00"),
+    show=False
+)
+plt.close(fig1) # Prevent automatic display during test suites
+```
+
+### `plot_seasonality()`
+
+Evaluates cyclic distributions (annual, weekly, daily) using boxplots mapping density and target variance tracking.
+
+**Signature:**
+```python
+def plot_seasonality(
+    data: pd.DataFrame,
+    target: str,
+    figsize: tuple[int, int] = (8, 5),
+    show: bool = True,
+    logscale: Union[bool, list[bool]] = False,
+) -> plt.Figure:
+```
+
+**Example:**
+```{python}
+from spotforecast2.preprocessing.time_series_visualization import plot_seasonality
+import numpy as np
+
+dates = pd.date_range("2024-01-01", periods=1000, freq="h")
+# Simulating a basic daily sine wave
+cyclical_data = np.sin(np.linspace(0, 50, 1000)) * 10 
+df_season = pd.DataFrame({"value": cyclical_data}, index=dates)
+
+fig2 = plot_seasonality(
+    data=df_season, 
+    target="value", 
+    logscale=False, 
+    show=False
+)
+plt.close(fig2)
+```
+
 ## Complete Workflow Examples
 
 ### Train/Validation/Test Split Visualization
 
-```python
+```{python}
 import pandas as pd
 import numpy as np
 from spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly
 
 # Create time series data
 np.random.seed(42)
-full_data = pd.DataFrame({
+wf_data = pd.DataFrame({
     'temperature': np.sin(np.linspace(0, 10, 300)) + np.random.normal(0, 0.1, 300),
     'humidity': np.cos(np.linspace(0, 10, 300)) * 100 + np.random.normal(50, 5, 300)
 }, index=pd.date_range('2024-01-01', periods=300, freq='h'))
 
 # Split data
-split1 = int(0.6 * len(full_data))
-split2 = int(0.8 * len(full_data))
+split1 = int(0.6 * len(wf_data))
+split2 = int(0.8 * len(wf_data))
 
-data_train = full_data.iloc[:split1]
-data_val = full_data.iloc[split1:split2]
-data_test = full_data.iloc[split2:]
+wf_train = wf_data.iloc[:split1]
+wf_val = wf_data.iloc[split1:split2]
+wf_test = wf_data.iloc[split2:]
 
 # Visualize
-dataframes = {
-    'Train': data_train,
-    'Validation': data_val,
-    'Test': data_test
-}
-
 visualize_ts_plotly(
-    dataframes,
+    {
+        'Train': wf_train,
+        'Validation': wf_val,
+        'Test': wf_test
+    },
     template='plotly_white',
     figsize=(1200, 600)
 )
@@ -256,56 +326,44 @@ visualize_ts_plotly(
 
 ### Multiple Datasets Comparison
 
-```python
+```{python}
 from spotforecast2.preprocessing.time_series_visualization import visualize_ts_comparison
 
 # Create datasets from different time periods
-dates1 = pd.date_range('2024-01-01', periods=100, freq='h')
-dates2 = pd.date_range('2024-04-01', periods=100, freq='h')
-dates3 = pd.date_range('2024-07-01', periods=100, freq='h')
+dates_w = pd.date_range('2024-01-01', periods=100, freq='h')
+dates_s = pd.date_range('2024-04-01', periods=100, freq='h')
+dates_m = pd.date_range('2024-07-01', periods=100, freq='h')
 
-df1 = pd.DataFrame({
-    'temperature': np.random.normal(15, 3, 100)
-}, index=dates1)
-
-df2 = pd.DataFrame({
-    'temperature': np.random.normal(22, 3, 100)
-}, index=dates2)
-
-df3 = pd.DataFrame({
-    'temperature': np.random.normal(25, 3, 100)
-}, index=dates3)
+df_w = pd.DataFrame({'temperature': np.random.normal(15, 3, 100)}, index=dates_w)
+df_s = pd.DataFrame({'temperature': np.random.normal(22, 3, 100)}, index=dates_s)
+df_m = pd.DataFrame({'temperature': np.random.normal(25, 3, 100)}, index=dates_m)
 
 # Compare with mean
 visualize_ts_comparison(
     {
-        'Winter': df1,
-        'Spring': df2,
-        'Summer': df3
+        'Winter': df_w,
+        'Spring': df_s,
+        'Summer': df_m
     },
     show_mean=True,
-    colors={
-        'Winter': 'blue',
-        'Spring': 'green',
-        'Summer': 'red'
-    }
+    colors={'Winter': 'blue', 'Spring': 'green', 'Summer': 'red'}
 )
 ```
 
 ### Dynamic Dataset Handling
 
-```python
+```{python}
 # Function works with any number of datasets
-dataframes = {}
+dataframes_dyn = {}
 
 for i in range(5):
-    dates = pd.date_range(f'2024-{i+1:02d}-01', periods=50, freq='h')
-    dataframes[f'Month_{i+1}'] = pd.DataFrame({
+    dates_dyn = pd.date_range(f'2024-{i+1:02d}-01', periods=50, freq='h')
+    dataframes_dyn[f'Month_{i+1}'] = pd.DataFrame({
         'sales': np.random.gamma(2, 2, 50) * 1000
-    }, index=dates)
+    }, index=dates_dyn)
 
 visualize_ts_plotly(
-    dataframes,
+    dataframes_dyn,
     title_suffix='[USD]',
     figsize=(1400, 600)
 )
@@ -317,54 +375,58 @@ visualize_ts_plotly(
 
 Figure size as (width, height) in pixels:
 
-```python
+```{python}
 # Small figure
-visualize_ts_plotly(dataframes, figsize=(800, 400))
+visualize_ts_plotly(dataframes_dyn, figsize=(800, 400))
 
 # Large figure for detailed inspection
-visualize_ts_plotly(dataframes, figsize=(1600, 800))
+visualize_ts_plotly(dataframes_dyn, figsize=(1600, 800))
 ```
 
 ### Template Options
 
 Plotly provides several built-in templates:
 
-```python
+```{python}
 # Light theme (default)
-visualize_ts_plotly(dataframes, template='plotly_white')
+visualize_ts_plotly(dataframes_dyn, template='plotly_white')
 
 # Dark theme
-visualize_ts_plotly(dataframes, template='plotly_dark')
+visualize_ts_plotly(dataframes_dyn, template='plotly_dark')
 
 # Minimal theme
-visualize_ts_plotly(dataframes, template='plotly')
+visualize_ts_plotly(dataframes_dyn, template='plotly')
 
 # Other themes
-visualize_ts_plotly(dataframes, template='ggplot2')
-visualize_ts_plotly(dataframes, template='seaborn')
+visualize_ts_plotly(dataframes_dyn, template='ggplot2')
+visualize_ts_plotly(dataframes_dyn, template='seaborn')
 ```
 
 ### Color Customization
 
 Define custom colors for each dataset:
 
-```python
-colors = {
+```{python}
+colors_custom = {
     'Train': '#1f77b4',      # Blue
     'Validation': '#ff7f0e', # Orange
     'Test': '#2ca02c'        # Green
 }
 
-visualize_ts_plotly(dataframes, colors=colors)
+visualize_ts_plotly({
+    'Train': wf_train,
+    'Validation': wf_val,
+    'Test': wf_test
+}, colors=colors_custom)
 ```
 
 ### Advanced Scatter Customization
 
 Pass additional options to Plotly Scatter:
 
-```python
+```{python}
 visualize_ts_plotly(
-    dataframes,
+    dataframes_dyn,
     fill='tozeroy',           # Fill area under line
     line=dict(width=2),       # Line width
     opacity=0.8               # Transparency
@@ -377,22 +439,22 @@ visualize_ts_plotly(
 
 Always use pandas datetime index for proper time axis handling:
 
-```python
+```{python}
 # Good
-df = pd.DataFrame(data, index=pd.date_range('2024-01-01', periods=len(data), freq='h'))
+df_good = pd.DataFrame(df_api.values, columns=df_api.columns, index=pd.date_range('2024-01-01', periods=len(df_api), freq='h'))
 
 # Avoid
-df = pd.DataFrame(data)  # Will use default integer index
+df_bad = pd.DataFrame(df_api.values, columns=df_api.columns)  # Will use default integer index
 ```
 
 ### 2. Consistent Data Shapes
 
 Ensure all DataFrames have consistent columns for comparison:
 
-```python
+```{python}
 # Verify columns match
-columns = set(df1.columns) & set(df2.columns) & set(df3.columns)
-if not columns:
+columns_shared = set(df_w.columns) & set(df_s.columns) & set(df_m.columns)
+if not columns_shared:
     raise ValueError("DataFrames have no common columns")
 ```
 
@@ -400,9 +462,9 @@ if not columns:
 
 For large time series, consider subsampling:
 
-```python
+```{python}
 # Subsample every 10th point
-df_sub = df[::10]
+df_sub = wf_data[::10]
 visualize_ts_plotly({'Data': df_sub})
 ```
 
@@ -410,19 +472,19 @@ visualize_ts_plotly({'Data': df_sub})
 
 Use descriptive names for datasets:
 
-```python
+```{python}
 # Good
-dataframes = {
-    'Training (2023)': data_train,
-    'Validation (Jan 2024)': data_val,
-    'Testing (Feb 2024)': data_test
+dataframes_good = {
+    'Training (2023)': wf_train,
+    'Validation (Jan 2024)': wf_val,
+    'Testing (Feb 2024)': wf_test
 }
 
 # Avoid
-dataframes = {
-    'A': data_train,
-    'B': data_val,
-    'C': data_test
+dataframes_bad = {
+    'A': wf_train,
+    'B': wf_val,
+    'C': wf_test
 }
 ```
 
@@ -432,29 +494,30 @@ dataframes = {
 
 If datasets overlap in time, use separate figures:
 
-```python
+```{python}
 # Visualize one column at a time
-for col in dataframes[list(dataframes.keys())[0]].columns:
-    visualize_ts_plotly(dataframes, columns=[col])
+for col in dataframes_dyn[list(dataframes_dyn.keys())[0]].columns:
+    visualize_ts_plotly(dataframes_dyn, columns=[col])
 ```
 
 ### Issue: Memory Issues with Large Datasets
 
 Downsample before visualization:
 
-```python
-# Downsample to hourly
-df_downsampled = df.resample('1H').mean()
-visualize_ts_plotly({'Data': df_downsampled})
+```{python}
+# Downsample to hourly (using the dense season data from earlier)
+df_downsampled = df_season.resample('1D').mean()
+fig_down = plot_seasonality(df_downsampled, target="value", show=False)
+plt.close(fig_down)
 ```
 
 ### Issue: Missing Data in Visualization
 
 Handle missing values before visualization:
 
-```python
+```{python}
 # Forward fill missing values
-df_filled = df.fillna(method='ffill')
+df_filled = df_api.fillna(method='ffill')
 visualize_ts_plotly({'Data': df_filled})
 ```
 
