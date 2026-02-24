@@ -767,3 +767,57 @@ class TestSafetyCritical:
         # Same seed should produce identical data
         for key in data1:
             pd.testing.assert_frame_equal(data1[key], data2[key])
+
+
+# ============================================================================
+# Tests for Matplotlib API Examples from Documentation
+# ============================================================================
+
+
+class TestMatplotlibAPIExamples:
+    """Test exact Matplotlib examples from API documentation.
+
+    Ensures all documented Matplotlib examples work as shown.
+    """
+
+    @patch("matplotlib.pyplot.show")
+    def test_api_example_plot_zoomed_timeseries(self, mock_show):
+        """Test API example for plot_zoomed_timeseries."""
+        import pandas as pd
+        import matplotlib.pyplot as plt
+        from spotforecast2.preprocessing.time_series_visualization import (
+            plot_zoomed_timeseries,
+        )
+
+        dates = pd.date_range("2024-01-01", periods=100, freq="h")
+        df_zoom = pd.DataFrame({"value": range(100)}, index=dates)
+
+        fig1 = plot_zoomed_timeseries(
+            data=df_zoom,
+            target="value",
+            zoom=("2024-01-02 00:00", "2024-01-03 00:00"),
+            show=False,
+        )
+        assert fig1 is not None
+        plt.close(fig1)
+
+    @patch("matplotlib.pyplot.show")
+    def test_api_example_plot_seasonality(self, mock_show):
+        """Test API example for plot_seasonality."""
+        import pandas as pd
+        import numpy as np
+        import matplotlib.pyplot as plt
+        from spotforecast2.preprocessing.time_series_visualization import (
+            plot_seasonality,
+        )
+
+        dates = pd.date_range("2024-01-01", periods=1000, freq="h")
+        # Simulating a basic daily sine wave
+        cyclical_data = np.sin(np.linspace(0, 50, 1000)) * 10
+        df_season = pd.DataFrame({"value": cyclical_data}, index=dates)
+
+        fig2 = plot_seasonality(
+            data=df_season, target="value", logscale=False, show=False
+        )
+        assert fig2 is not None
+        plt.close(fig2)

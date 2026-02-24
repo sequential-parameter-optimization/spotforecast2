@@ -30,7 +30,7 @@ uv pip install matplotlib plotly
 
 ### Basic Outlier Detection
 
-```python
+```{python}
 import pandas as pd
 import numpy as np
 from spotforecast2_safe.preprocessing.outlier import get_outliers
@@ -57,7 +57,7 @@ for col, outlier_vals in outliers.items():
 
 ### Histogram Visualization
 
-```python
+```{python}
 from spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist
 
 # Create sample data
@@ -83,7 +83,7 @@ visualize_outliers_hist(
 
 ### Interactive Plotly Visualization
 
-```python
+```{python}
 from spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter
 
 # Create time series data
@@ -141,7 +141,7 @@ A dictionary mapping column names to pandas Series of outlier values.
 
 **Example:**
 
-```python
+```{python}
 import pandas as pd
 import numpy as np
 from spotforecast2_safe.preprocessing.outlier import get_outliers
@@ -200,7 +200,7 @@ None. Displays matplotlib figures.
 
 **Example:**
 
-```python
+```{python}
 import pandas as pd
 import numpy as np
 from spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist
@@ -269,7 +269,7 @@ None. Displays Plotly figures.
 
 **Example:**
 
-```python
+```{python}
 import pandas as pd
 import numpy as np
 from spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter
@@ -304,7 +304,7 @@ visualize_outliers_plotly_scatter(
 
 Here's a complete example showing the typical workflow for outlier detection and visualization:
 
-```python
+```{python}
 import pandas as pd
 import numpy as np
 from spotforecast2_safe.preprocessing.outlier import get_outliers
@@ -389,7 +389,7 @@ Choose based on your domain knowledge and data characteristics.
 
 The `random_state` parameter ensures reproducibility:
 
-```python
+```{python}
 # Same random_state produces consistent results
 outliers1 = get_outliers(data, random_state=42)
 outliers2 = get_outliers(data, random_state=42)
@@ -400,7 +400,7 @@ outliers2 = get_outliers(data, random_state=42)
 
 When using `visualize_outliers_hist()`, you can pass additional matplotlib histogram options:
 
-```python
+```{python}
 visualize_outliers_hist(
     data_cleaned,
     data_original,
@@ -415,7 +415,7 @@ visualize_outliers_hist(
 
 When using `visualize_outliers_plotly_scatter()`, you can customize the Plotly figure:
 
-```python
+```{python}
 visualize_outliers_plotly_scatter(
     data_cleaned,
     data_original,
@@ -449,7 +449,7 @@ The underlying algorithm uses scikit-learn's `IsolationForest`, which:
 
 Clean your data before outlier detection:
 
-```python
+```{python}
 # Remove missing values
 data_clean = data.dropna()
 
@@ -467,7 +467,7 @@ data_scaled = pd.DataFrame(
 
 Estimate contamination based on domain knowledge:
 
-```python
+```{python}
 # For known outlier percentage
 contamination = n_outliers / len(data)
 
@@ -481,7 +481,7 @@ for cont in [0.01, 0.02, 0.05]:
 
 Always visualize results:
 
-```python
+```{python}
 # Histogram for distribution analysis
 visualize_outliers_hist(data_cleaned, data_original)
 
@@ -493,7 +493,7 @@ visualize_outliers_plotly_scatter(data_cleaned, data_original)
 
 Verify outliers make sense in context:
 
-```python
+```{python}
 outliers = get_outliers(data, contamination=0.02)
 
 for col, vals in outliers.items():
@@ -533,7 +533,7 @@ uv run pytest tests/test_docs_outliers_examples.py --tb=no -q
 
 **Solution:** Increase the `contamination` parameter:
 
-```python
+```{python}
 # Try higher contamination
 outliers = get_outliers(data, contamination=0.05)
 ```
@@ -542,7 +542,7 @@ outliers = get_outliers(data, contamination=0.05)
 
 **Solution:** Decrease the `contamination` parameter:
 
-```python
+```{python}
 # Be more conservative
 outliers = get_outliers(data, contamination=0.01)
 ```
@@ -557,7 +557,7 @@ pip install plotly
 
 Or use histogram visualization instead:
 
-```python
+```{python}
 visualize_outliers_hist(data_cleaned, data_original)
 ```
 

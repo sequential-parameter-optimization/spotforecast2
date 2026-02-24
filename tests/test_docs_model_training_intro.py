@@ -30,6 +30,7 @@ def test_model_training_intro_simple():
         "spotforecast2.manager.trainer_full.fetch_data", return_value=dummy_data
     ):
         from spotforecast2_safe.data.fetch_data import get_package_data_home
+
         demo_file = get_package_data_home() / "demo01.csv"
 
         # 2. Start a basic training run explicitly overriding the cutoff
@@ -40,7 +41,7 @@ def test_model_training_intro_simple():
             end_dev="2023-01-01 00:00+00:00",
             train_size=None,  # Use the entire history
             save_to_file=False,
-            data_filename=str(demo_file)
+            data_filename=str(demo_file),
         )
 
         assert isinstance(model_basic, MockForecaster)
@@ -73,6 +74,7 @@ def test_model_training_intro_advanced():
         "spotforecast2.manager.trainer_full.fetch_data", return_value=dummy_data
     ):
         from spotforecast2_safe.data.fetch_data import get_package_data_home
+
         demo_file = get_package_data_home() / "demo01.csv"
 
         # 1. Start an advanced tuning workflow
@@ -235,18 +237,18 @@ def test_model_training_intro_visualization_lgbm():
             self.end_dev = end_dev
             self.train_size = train_size
             self.dataset_path = dataset_path
-            
+
             self.forecaster = ForecasterRecursive(
-                estimator=LGBMRegressor(n_estimators=100, learning_rate=0.05, random_state=42, verbose=-1), 
-                lags=24
+                estimator=LGBMRegressor(
+                    n_estimators=100, learning_rate=0.05, random_state=42, verbose=-1
+                ),
+                lags=24,
             )
             self.name = "demo02_lgbm_model"
 
         def tune(self):
             df = fetch_data(filename=self.dataset_path)
-            y = (
-                df["A"].groupby(level=0).mean().asfreq("h").ffill()
-            ) 
+            y = df["A"].groupby(level=0).mean().asfreq("h").ffill()
             y_train = y.loc[: self.end_dev]
 
             if self.train_size is not None:
@@ -294,3 +296,88 @@ def test_model_training_intro_visualization_lgbm():
     )
 
     assert len(fig.data) == 2
+
+
+class SimpleModel:
+    def __init__(self, iteration, end_dev, train_size, **kwargs):
+        self.iteration = iteration
+        self.end_dev = end_dev
+        self.train_size = train_size
+
+    def tune(self):
+        print(f"  [Output] Tuning triggered for iteration {self.iteration}")
+
+    def get_params(self):
+        return {}
+
+
+def test_model_training_intro_handle_training_simple(tmp_path):
+    """Validates the Simple handle_training Example from model_training_intro.qmd."""
+    from spotforecast2_safe.data.fetch_data import get_package_data_home
+    from spotforecast2.manager.trainer_full import handle_training
+    from pathlib import Path
+
+    demo_file = get_package_data_home() / "demo01.csv"
+
+    # 1. Trigger handler
+    handle_training(
+        model_class=SimpleModel,
+        model_name="simple_demo",
+        model_dir=tmp_path,
+        data_filename=str(demo_file),
+    )
+
+    # 2. Verify disk state
+    files_on_disk = list(Path(tmp_path).glob("*.joblib"))
+    assert len(files_on_disk) == 1
+    assert files_on_disk[0].name == "simple_demo_forecaster_0.joblib"
+
+
+class AdvancedModel:
+    def __init__(self, iteration, end_dev, train_size, **kwargs):
+        self.iteration = iteration
+        self.end_dev = end_dev
+        self.train_size = train_size
+        self.kwargs = kwargs
+
+    def tune(self):
+        print(
+            f"  [Output] Tuned AdvancedModel {self.iteration} | Mode: {self.kwargs.get('mode')}"
+        )
+
+    def get_params(self):
+        return {}
+
+
+def test_model_training_intro_handle_training_advanced(tmp_path):
+    """Validates the Advanced Forced handle_training Example from model_training_intro.qmd."""
+    from spotforecast2_safe.data.fetch_data import get_package_data_home
+    from spotforecast2.manager.trainer_full import handle_training
+    from pathlib import Path
+
+    demo_file = get_package_data_home() / "demo01.csv"
+
+    # 1. Simulate the initial Monday morning cron job
+    handle_training(
+        model_class=AdvancedModel,
+        model_name="advanced_model",
+        model_dir=tmp_path,
+        data_filename=str(demo_file),
+        mode="baseline",
+    )
+
+    # 2. Simulate an emergency Friday redeployment constraint via `force`
+    handle_training(
+        model_class=AdvancedModel,
+        model_name="advanced_model",
+        model_dir=tmp_path,
+        force=True,  # Bypass expiration
+        data_filename=str(demo_file),
+        mode="emergency_update",
+    )
+
+    # 3. Observe the structured historical retention
+    files = sorted([f.name for f in Path(tmp_path).glob("*.joblib")])
+    assert len(files) == 2
+    assert files[0] == "advanced_model_forecaster_0.joblib"
+    assert files[1] == "advanced_model_forecaster_1.joblib"
