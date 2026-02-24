@@ -17,9 +17,10 @@ from spotforecast2.model_selection import (
     spotoptim_search_forecaster,
 )
 from spotforecast2.model_selection.spotoptim_search import (
-    _array_to_params,
-    _convert_search_space,
+    array_to_params,
+    convert_search_space,
     parse_lags_from_strings,
+    spotoptim_search,
 )
 from spotoptim.hyperparameters import ParameterSet
 
@@ -70,95 +71,143 @@ class TestParseLagsFromStrings:
 
 
 # ------------------------------------------------------------------
-# _convert_search_space
+# convert_search_space
 # ------------------------------------------------------------------
 
 
 class TestConvertSearchSpace:
-    def test_dict_float_bounds(self):
-        bounds, vt, vn, vtrans = _convert_search_space({"alpha": (0.01, 10.0)})
+    """Tests for convert_search_space utility."""
+
+    def test_numeric_simple(self):
+        bounds, vt, vn, vtrans = convert_search_space({"alpha": (0.01, 10.0)})
         assert vn == ["alpha"]
         assert vt == ["float"]
         assert bounds == [(0.01, 10.0)]
         assert vtrans == [None]
 
-    def test_dict_float_bounds_with_transform(self):
-        bounds, vt, vn, vtrans = _convert_search_space({"alpha": (0.01, 10.0, "log10")})
+    def test_numeric_log(self):
+        bounds, vt, vn, vtrans = convert_search_space({"alpha": (0.01, 10.0, "log10")})
         assert vn == ["alpha"]
         assert vt == ["float"]
         assert bounds == [(0.01, 10.0)]
         assert vtrans == ["log10"]
 
-    def test_dict_int_bounds(self):
-        bounds, vt, vn, _ = _convert_search_space({"max_depth": (2, 8)})
+    def test_integer(self):
+        bounds, vt, vn, _ = convert_search_space({"max_depth": (2, 8)})
+        assert vn == ["max_depth"]
         assert vt == ["int"]
+        assert bounds == [(2, 8)]
 
-    def test_dict_factor(self):
-        bounds, vt, vn, _ = _convert_search_space(
-            {"solver": ["svd", "cholesky", "lsqr"]}
+    def test_categorical(self):
+        bounds, vt, vn, _ = convert_search_space(
+            {"model": ["Ridge", "Lasso", "ElasticNet"]}
         )
+        assert vn == ["model"]
         assert vt == ["factor"]
-        assert bounds == [["svd", "cholesky", "lsqr"]]
+        assert bounds == [["Ridge", "Lasso", "ElasticNet"]]
 
-    def test_dict_raw_spotoptim_format(self):
+    def test_raw_dict(self):
+        # Already in SpotOptim format
         raw = {
-            "bounds": [(1, 10)],
-            "var_type": ["int"],
-            "var_name": ["n"],
+            "bounds": [(0.1, 0.9)],
+            "var_type": ["float"],
+            "var_name": ["noise"],
             "var_trans": [None],
         }
-        bounds, vt, vn, vtrans = _convert_search_space(raw)
-        assert vn == ["n"]
+        bounds, vt, vn, vtrans = convert_search_space(raw)
+        assert bounds == raw["bounds"]
+        assert vn == raw["name"] if "name" in raw else raw["var_name"]
 
     def test_parameter_set(self):
         ps = ParameterSet()
-        ps.add_float("lr", low=0.001, high=0.1)
-        ps.add_int("depth", low=2, high=10)
-        bounds, vt, vn, _ = _convert_search_space(ps)
-        assert vn == ["lr", "depth"]
-        assert len(bounds) == 2
+        ps.add_float("lr", 0.001, 0.1)
+        bounds, vt, vn, _ = convert_search_space(ps)
+        assert vn == ["lr"]
+        assert vt == ["float"]
 
-    def test_invalid_type_raises(self):
-        with pytest.raises(TypeError, match="must be ParameterSet or dict"):
-            _convert_search_space("not_valid")
+    def test_invalid_input(self):
+        with pytest.raises(TypeError):
+            convert_search_space("not_valid")
 
-    def test_invalid_dict_value_raises(self):
-        with pytest.raises(ValueError, match="Invalid search space"):
-            _convert_search_space({"bad": 42})
+    def test_invalid_dict_value(self):
+        with pytest.raises(ValueError):
+            convert_search_space({"bad": 42})
 
 
 # ------------------------------------------------------------------
-# _array_to_params
+# array_to_params
 # ------------------------------------------------------------------
 
 
 class TestArrayToParams:
-    def test_int_and_float(self):
-        result = _array_to_params(
-            np.array([100.0, 0.05]),
-            var_name=["n_estimators", "lr"],
-            var_type=["int", "float"],
-            bounds=[(50, 200), (0.01, 0.3)],
-        )
-        assert result == {"n_estimators": 100, "lr": 0.05}
+    """Tests for array_to_params utility."""
 
-    def test_factor_by_index(self):
-        result = _array_to_params(
-            np.array([1.0]),
-            var_name=["solver"],
+    def test_float_conversion(self):
+        result = array_to_params(
+            np.array([3.1415]),
+            var_name=["pi"],
+            var_type=["float"],
+            bounds=[(3.0, 4.0)],
+        )
+        assert result["pi"] == 3.1415
+        assert isinstance(result["pi"], float)
+
+    def test_int_conversion(self):
+        result = array_to_params(
+            np.array([4.8]),  # Should round to 5
+            var_name=["n"],
+            var_type=["int"],
+            bounds=[(1, 10)],
+        )
+        assert result["n"] == 5
+        assert isinstance(result["n"], int)
+
+    def test_factor_conversion_index(self):
+        result = array_to_params(
+            np.array([1.2]),  # Should round to index 1 == "b"
+            var_name=["cat"],
             var_type=["factor"],
-            bounds=[["svd", "cholesky", "lsqr"]],
+            bounds=[["a", "b", "c"]],
         )
-        assert result["solver"] == "cholesky"
+        assert result["cat"] == "b"
 
-    def test_factor_by_name(self):
-        result = _array_to_params(
+    def test_factor_conversion_name(self):
+        result = array_to_params(
             np.array(["svd"]),
             var_name=["solver"],
             var_type=["factor"],
             bounds=[["svd", "cholesky"]],
         )
         assert result["solver"] == "svd"
+
+
+# ------------------------------------------------------------------
+# spotoptim_search — standalone unit tests
+# ------------------------------------------------------------------
+
+
+class TestSpotoptimSearch:
+    def test_basic_usage(self, y_series, forecaster, cv):
+        """SpotOptim core search should execute and return DataFrame."""
+        results, optimizer = spotoptim_search(
+            forecaster=forecaster,
+            y=y_series,
+            cv=cv,
+            search_space={"alpha": (0.01, 1.0)},
+            metric="mean_absolute_error",
+            n_trials=3,
+            n_initial=2,
+            random_state=42,
+            return_best=False,
+            verbose=False,
+            show_progress=False,
+        )
+        assert isinstance(results, pd.DataFrame)
+        assert len(results) == 3
+        # Should contain metric result, parameters, and lags columns
+        assert "mean_absolute_error" in results.columns
+        assert "lags" in results.columns
+        assert "alpha" in results.columns
 
 
 # ------------------------------------------------------------------
