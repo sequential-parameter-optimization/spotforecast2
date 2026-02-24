@@ -159,19 +159,26 @@ def visualize_ts_plotly(
             for i, name in enumerate(dataframes.keys())
         }
 
+    # Extract user-provided line properties securely
+    user_line = kwargs.pop('line', {})
+
     # Create figures for each column
     for col in columns_to_plot:
         fig = go.Figure()
 
         # Add trace for each dataset
         for dataset_name, df in dataframes.items():
+            base_line = dict(color=colors[dataset_name])
+            if isinstance(user_line, dict):
+                base_line.update(user_line)
+
             fig.add_trace(
                 go.Scatter(
                     x=df.index,
                     y=df[col],
                     mode="lines",
                     name=dataset_name,
-                    line=dict(color=colors[dataset_name]),
+                    line=base_line,
                     **kwargs,
                 )
             )
@@ -287,6 +294,9 @@ def visualize_ts_comparison(
 
         columns_to_plot = columns if columns is not None else sorted(list(all_columns))
 
+        # Extract user-provided line properties mapping securely for the mean plot comparisons
+        user_line = kwargs.pop('line', {})
+
         for col in columns_to_plot:
             fig = go.Figure()
 
@@ -307,13 +317,17 @@ def visualize_ts_comparison(
                 colors_dict = colors
 
             for dataset_name, df in dataframes.items():
+                base_line = dict(color=colors_dict[dataset_name], width=1)
+                if isinstance(user_line, dict):
+                    base_line.update(user_line)
+
                 fig.add_trace(
                     go.Scatter(
                         x=df.index,
                         y=df[col],
                         mode="lines",
                         name=dataset_name,
-                        line=dict(color=colors_dict[dataset_name], width=1),
+                        line=base_line,
                         opacity=0.5,
                         **kwargs,
                     )

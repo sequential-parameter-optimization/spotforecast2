@@ -157,9 +157,9 @@ website:
       - section: "Preprocessing Guides"
         contents:
           - text: "Outlier Detection"
-            file: docs/preprocessing/outliers.md
+            file: docs/preprocessing/outliers.qmd
           - text: "Time Series Visualization"
-            file: docs/preprocessing/time_series_visualization.md
+            file: docs/preprocessing/time_series_visualization.qmd
 
       - section: "Model Selection Guides"
         contents:
