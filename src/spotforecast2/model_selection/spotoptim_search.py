@@ -50,7 +50,7 @@ from spotforecast2_safe.model_selection import OneStepAheadFold, _backtesting_fo
 logger = logging.getLogger(__name__)
 
 
-def _parse_lags_from_string(lags_str: str | int | list) -> int | list:
+def parse_lags_from_strings(lags_str: str | int | list) -> int | list:
     """Parse a lags representation back to a Python object.
 
     Handles three input scenarios:
@@ -65,13 +65,34 @@ def _parse_lags_from_string(lags_str: str | int | list) -> int | list:
         Either an integer or a list of integers representing lags.
 
     Examples:
+        Basic parsing:
+
         >>> from spotforecast2.model_selection.spotoptim_search import (
-        ...     _parse_lags_from_string,
+        ...     parse_lags_from_strings,
         ... )
-        >>> _parse_lags_from_string(24)
+        >>> parse_lags_from_strings(24)
         24
-        >>> _parse_lags_from_string("[1, 2, 3]")
+        >>> parse_lags_from_strings("[1, 2, 3]")
         [1, 2, 3]
+
+        Visualizing the safety threshold (Example of dynamic documentation):
+
+        ```{python}
+        import matplotlib.pyplot as plt
+        import numpy as np
+
+        def check_safety_threshold(val, threshold):
+            return 1 if val >= threshold else 0
+
+        threshold = 0.95
+        x = np.linspace(0.8, 1.0, 50)
+        y = [check_safety_threshold(val, threshold) for val in x]
+
+        plt.step(x, y, where='post')
+        plt.axvline(threshold, color='red', linestyle='--')
+        plt.title("Safety Status Transition")
+        # plt.show()  # Commented for non-interactive environments
+        ```
     """
     if isinstance(lags_str, (int, list)):
         return lags_str
@@ -355,7 +376,7 @@ def _spotoptim_search(
             f_search.set_params(**sample_params)
 
             if "lags" in params_dict:
-                lags_value = _parse_lags_from_string(params_dict["lags"])
+                lags_value = parse_lags_from_strings(params_dict["lags"])
                 f_search.set_lags(lags_value)
 
             if cv_name == "TimeSeriesFold":
@@ -391,7 +412,7 @@ def _spotoptim_search(
                 "lags", f_search.lags if hasattr(f_search, "lags") else None
             )
             if isinstance(lags_val, str):
-                lags_val = _parse_lags_from_string(lags_val)
+                lags_val = parse_lags_from_strings(lags_val)
             all_lags.append(lags_val)
             all_params.append(sample_params)
             results_arr.append(metrics_list[0])

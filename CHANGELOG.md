@@ -1,3 +1,22 @@
+## [0.8.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.7.0...v0.8.0-rc.1) (2026-02-24)
+
+### Features
+
+* parse_lags_from_strings ([b1e85ab](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b1e85abd0d8433907f8e296425f8a954712c8256))
+
+### Bug Fixes
+
+* added matplotlib example ([be8d255](https://github.com/sequential-parameter-optimization/spotforecast2/commit/be8d2555e424ed72dd744be92de332d2794631ea))
+
+## [0.7.0-rc.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.7.0-rc.2...v0.7.0-rc.3) (2026-02-24)
+
+### Features
+
+* parse_lags_from_strings ([b1e85ab](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b1e85abd0d8433907f8e296425f8a954712c8256))
+
+### Bug Fixes
+
+* added matplotlib example ([be8d255](https://github.com/sequential-parameter-optimization/spotforecast2/commit/be8d2555e424ed72dd744be92de332d2794631ea))
 ## [0.7.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.6.2...v0.7.0) (2026-02-23)
 
 ### Features
@@ -17,11 +36,8 @@
 
 * show progress ([05bbd68](https://github.com/sequential-parameter-optimization/spotforecast2/commit/05bbd684c7be84f6cd5ec29aa8e8555b169743b5))
 
-<<<<<<< develop
 ## [0.6.2-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.6.1...v0.6.2-rc.1) (2026-02-23)
-=======
 ## [0.6.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.6.1...v0.6.2) (2026-02-23)
->>>>>>> main
 
 ### Bug Fixes
 
