@@ -1,3 +1,9 @@
+## [0.9.0-rc.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.9.0-rc.2...v0.9.0-rc.3) (2026-02-24)
+
+### Bug Fixes
+
+* trainer uses correct input file name ([fcc17ac](https://github.com/sequential-parameter-optimization/spotforecast2/commit/fcc17acad1d42c4079e7c1e120a12be02bddd49e))
+
 ## [0.9.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.9.0-rc.1...v0.9.0-rc.2) (2026-02-24)
 
 ### Bug Fixes
