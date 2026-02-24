@@ -1,0 +1,149 @@
+---
+title: "Introduction to Hyperparameter Tuning with SpotOptim"
+---
+
+SpotOptim provides an advanced surrogate-model-based optimization engine integrated directly into `spotforecast2`. It acts as a powerful, drop-in alternative to `bayesian_search_forecaster`, leveraging surrogate modeling (such as Kriging/Gaussian Processes, Random Forests, etc.) rather than Optuna's TPE sampler, often discovering better hyperparameter configurations with fewer evaluations.
+
+This guide will walk you through the core function `spotoptim_search_forecaster()`, from a simple baseline example up to an advanced configuration, explaining every argument available.
+
+## Core Arguments Overview
+
+When calling `spotoptim_search_forecaster()`, you can comprehensively control the optimization environment. @tbl-args shows a breakdown of every available argument:
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `forecaster` | object | The base forecaster model to be tuned (e.g., `ForecasterRecursive`). |
+| `y` | pd.Series | The target training time series. Must have a datetime or numeric index. |
+| `cv` | TimeSeriesFold \| OneStepAheadFold | The cross-validation strategy used to evaluate configurations during the search. |
+| `search_space` | ParameterSet \| dict | The boundaries and categories of the hyperparameters to explore. |
+| `metric` | str \| Callable \| list | The metric(s) used to evaluate forecaster performance. First metric dictates sorting. |
+| `exog` | pd.Series \| pd.DataFrame \| None | Optional exogenous variables to include during modeling. |
+| `n_trials` | int | The total number of evaluations to perform throughout the entire search. |
+| `n_initial` | int | The number of random initial design points before the surrogate model takes over. |
+| `random_state` | int | RNG seed ensuring reproducible designs and sampling. |
+| `return_best` | bool | If True, the passed `forecaster` is automatically refit on the *entire* `y` using the best found configuration. |
+| `n_jobs` | int \| str | Number of parallel jobs for backtesting parallelization. Use `"auto"` for automatic CPU detection. |
+| `verbose` | bool | Print detailed SpotOptim engine optimization logs to stdout. |
+| `show_progress` | bool | Display a tqdm progress bar for evaluation progression. |
+| `suppress_warnings` | bool | Temporarily suppress `spotforecast2` warnings during rapid evaluation cycles. |
+| `output_file` | str \| None | Path to save the trial results incrementally as a TSV file. |
+| `kwargs_spotoptim` | dict \| None | Advanced dictionary passed directly to the underlying `SpotOptim` engine (e.g., custom surrogate configurations, acquisition functions). |
+
+:  Available arguments for `spotoptim_search_forecaster()`. {#tbl-args}
+
+## Simple Tuning Example
+
+In this first example, we want to tune a basic Ridge regression forecaster. We will evaluate configurations using a simple cross-validation fold, passing the `search_space` as a standard dictionary. 
+
+```{python}
+import numpy as np
+import pandas as pd
+from sklearn.linear_model import Ridge
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2.model_selection import (
+    TimeSeriesFold,
+    spotoptim_search_forecaster,
+)
+
+# 1. Generate realistic target data
+np.random.seed(42)
+y = pd.Series(
+    np.random.randn(200).cumsum(),
+    index=pd.date_range("2022-01-01", periods=200, freq="h"),
+    name="load",
+)
+
+# 2. Define Forecaster and Validation
+forecaster = ForecasterRecursive(estimator=Ridge(), lags=5)
+cv = TimeSeriesFold(
+    steps=5,
+    initial_train_size=150,
+    refit=False,
+)
+
+# 3. Define a simple search space using a dictionary
+search_space = {"alpha": (0.01, 10.0)}
+
+# 4. execute SpotOptim Search
+results, optimizer = spotoptim_search_forecaster(
+    forecaster=forecaster,
+    y=y,
+    cv=cv,
+    search_space=search_space,
+    metric="mean_absolute_error",
+    n_trials=5,      # 5 total trials
+    n_initial=3,     # 3 random, 2 surrogate-guided
+    random_state=42,
+    return_best=True, # Automatically refits the `forecaster` object
+    show_progress=False,
+)
+
+print(results.head(3))
+print(f"Best found alpha: {results.loc[0, 'alpha']}")
+```
+
+Because `return_best=True`, the `forecaster` object is now perfectly equipped to make predictions immediately, using `alpha` configuration `results.loc[0, "alpha"]`.
+
+## Advanced Tuning Example
+
+Now, let's explore an advanced configuration. We'll use a `ParameterSet` object (from the `spotoptim` library) for more granular control over numerical types and transformations. We will also inject dictionary arguments explicitly to the `SpotOptim` engine.
+
+```{python}
+from sklearn.ensemble import RandomForestRegressor
+from spotforecast2.model_selection import OneStepAheadFold
+from spotoptim.hyperparameters import ParameterSet
+
+# Data generation
+y_adv = pd.Series(
+    np.random.randn(300).cumsum(),
+    index=pd.date_range("2023-01-01", periods=300, freq="h"),
+    name="advanced_load",
+)
+exog_adv = pd.Series(
+    np.random.uniform(10, 20, 300),
+    index=y_adv.index,
+    name="temp",
+)
+
+# 1. Advanced setup
+forecaster_rf = ForecasterRecursive(
+    estimator=RandomForestRegressor(random_state=123), 
+    lags=12
+)
+
+# Fast screening validation approach
+cv_fast = OneStepAheadFold(initial_train_size=100)
+
+# 2. Granular Search Space using ParameterSet
+ps = ParameterSet()
+ps.add_int("n_estimators", low=10, high=50)
+ps.add_int("max_depth", low=2, high=10)
+ps.add_float("max_features", low=0.1, high=1.0)
+# We can also tune `lags` systematically
+ps.add_factor("lags", ["[1, 2, 3]", "[1, 2, 3, 4, 5, 6]"])
+
+# 3. SpotOptim execution with advanced Engine Control
+results_adv, optimizer_adv = spotoptim_search_forecaster(
+    forecaster=forecaster_rf,
+    y=y_adv,
+    exog=exog_adv,
+    cv=cv_fast,
+    search_space=ps,
+    metric=["mean_absolute_error", "mean_squared_error"], # Multiple metrics tracked
+    n_trials=10,
+    n_initial=5,
+    random_state=99,
+    return_best=False,
+    n_jobs=1,
+    verbose=False,
+    show_progress=False,
+    suppress_warnings=True,
+    kwargs_spotoptim={
+        "surrogate": RandomForestRegressor(random_state=42), # Custom surrogate model
+    }
+)
+
+print(results_adv[["n_estimators", "max_depth", "lags", "mean_absolute_error"]].head(3))
+```
+
+This advanced setup illustrates how `spotoptim_search_forecaster` acts as an extremely flexible orchestration bridge, allowing you to efficiently explore your state space while capturing comprehensive performance metadata.
