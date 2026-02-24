@@ -20,6 +20,7 @@ from spotforecast2.model_selection.spotoptim_search import (
     array_to_params,
     convert_search_space,
     parse_lags_from_strings,
+    spotoptim_search,
 )
 from spotoptim.hyperparameters import ParameterSet
 
@@ -178,6 +179,35 @@ class TestArrayToParams:
             bounds=[["svd", "cholesky"]],
         )
         assert result["solver"] == "svd"
+
+
+# ------------------------------------------------------------------
+# spotoptim_search — standalone unit tests
+# ------------------------------------------------------------------
+
+
+class TestSpotoptimSearch:
+    def test_basic_usage(self, y_series, forecaster, cv):
+        """SpotOptim core search should execute and return DataFrame."""
+        results, optimizer = spotoptim_search(
+            forecaster=forecaster,
+            y=y_series,
+            cv=cv,
+            search_space={"alpha": (0.01, 1.0)},
+            metric="mean_absolute_error",
+            n_trials=3,
+            n_initial=2,
+            random_state=42,
+            return_best=False,
+            verbose=False,
+            show_progress=False,
+        )
+        assert isinstance(results, pd.DataFrame)
+        assert len(results) == 3
+        # Should contain metric result, parameters, and lags columns
+        assert "mean_absolute_error" in results.columns
+        assert "lags" in results.columns
+        assert "alpha" in results.columns
 
 
 # ------------------------------------------------------------------

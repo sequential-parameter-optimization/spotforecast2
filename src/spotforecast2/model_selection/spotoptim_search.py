@@ -241,7 +241,7 @@ def spotoptim_search_forecaster(
             f"length `exog`: ({len(exog)}), length `y`: ({len(y)})"
         )
 
-    results, optimizer = _spotoptim_search(
+    results, optimizer = spotoptim_search(
         forecaster=forecaster,
         y=y,
         cv=cv,
@@ -389,7 +389,7 @@ def spotoptim_objective(
     return np.array(results_arr)
 
 
-def _spotoptim_search(
+def spotoptim_search(
     forecaster: object,
     y: pd.Series,
     cv: TimeSeriesFold | OneStepAheadFold,
@@ -407,13 +407,64 @@ def _spotoptim_search(
     output_file: str | None = None,
     kwargs_spotoptim: dict | None = None,
 ) -> tuple[pd.DataFrame, object]:
-    """Internal implementation of the SpotOptim search.
+    """Core implementation of the SpotOptim search logic.
 
-    This function is not intended to be called directly. Use
-    :func:`spotoptim_search_forecaster` instead.
+    This function performs the hyperparameter optimization process using SpotOptim,
+    evaluating configurations via cross-validation or one-step-ahead forecasting.
+
+    Args:
+        forecaster: The initial forecaster object.
+        y: The target time series.
+        cv: Cross-validation or one-step-ahead configuration.
+        search_space: Parameter bounds for SpotOptim.
+        metric: Optimization metric(s).
+        exog: Exogenous variables.
+        n_trials: Maximum number of trials.
+        n_initial: Number of initial evaluations.
+        random_state: Random seed.
+        return_best: Refit internal forecaster with best params.
+        n_jobs: Number of parallel jobs.
+        verbose: Verbosity flag.
+        show_progress: Show progress bar flag.
+        suppress_warnings: Suppress warnings during evaluation.
+        output_file: File to save results to.
+        kwargs_spotoptim: Additional args for SpotOptim.
 
     Returns:
         tuple: ``(results_df, optimizer)``
+
+    Examples:
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from sklearn.linear_model import Ridge
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from spotforecast2.model_selection import TimeSeriesFold
+        from spotforecast2.model_selection.spotoptim_search import spotoptim_search
+
+        np.random.seed(42)
+        y = pd.Series(
+            np.random.randn(100).cumsum(),
+            index=pd.date_range("2022-01-01", periods=100, freq="h"),
+        )
+        forecaster = ForecasterRecursive(estimator=Ridge(), lags=3)
+        cv = TimeSeriesFold(steps=5, initial_train_size=80, refit=False)
+        search_space = {"alpha": (0.01, 10.0)}
+
+        results, _ = spotoptim_search(
+            forecaster=forecaster,
+            y=y,
+            cv=cv,
+            search_space=search_space,
+            metric="mean_absolute_error",
+            n_trials=2,
+            n_initial=1,
+            return_best=False,
+            show_progress=False,
+        )
+
+        print(f"Evaluated {len(results)} configurations.")
+        ```
     """
 
     set_skforecast_warnings(suppress_warnings, action="ignore")
