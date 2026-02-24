@@ -163,6 +163,8 @@ website:
 
       - section: "Model Selection Guides"
         contents:
+          - text: "Intro to SpotOptim"
+            file: docs/model_selection/spotoptim_intro.qmd
           - text: "SpotOptim Lag Handling"
             file: docs/model_selection/spotoptim_lags.qmd
 
