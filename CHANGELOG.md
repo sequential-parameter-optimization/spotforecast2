@@ -3,6 +3,11 @@
 ### Features
 
 * model training examples ([b864764](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b8647642120eacf63ce61c7a0b9fe36dd920921e))
+## [0.9.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.9.0...v0.9.1) (2026-02-24)
+
+### Bug Fixes
+
+* trainer uses correct input file name ([fcc17ac](https://github.com/sequential-parameter-optimization/spotforecast2/commit/fcc17acad1d42c4079e7c1e120a12be02bddd49e))
 
 ## [0.9.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.9.0...v0.9.1-rc.1) (2026-02-24)
 
