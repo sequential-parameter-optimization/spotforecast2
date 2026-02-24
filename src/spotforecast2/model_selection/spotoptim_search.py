@@ -166,64 +166,73 @@ def spotoptim_search_forecaster(
     Examples:
         **1 — Dict-based search space (no ParameterSet needed):**
 
-        >>> import numpy as np
-        >>> import pandas as pd
-        >>> from sklearn.linear_model import Ridge
-        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-        >>> from spotforecast2.model_selection import (
-        ...     TimeSeriesFold,
-        ...     spotoptim_search_forecaster,
-        ... )
-        >>> np.random.seed(42)
-        >>> y = pd.Series(
-        ...     np.random.randn(200).cumsum(),
-        ...     index=pd.date_range("2022-01-01", periods=200, freq="h"),
-        ...     name="load",
-        ... )
-        >>> forecaster = ForecasterRecursive(estimator=Ridge(), lags=5)
-        >>> cv = TimeSeriesFold(
-        ...     steps=5,
-        ...     initial_train_size=150,
-        ...     refit=False,
-        ... )
-        >>> search_space = {"alpha": (0.01, 10.0)}
-        >>> results, optimizer = spotoptim_search_forecaster(
-        ...     forecaster=forecaster,
-        ...     y=y,
-        ...     cv=cv,
-        ...     search_space=search_space,
-        ...     metric="mean_absolute_error",
-        ...     n_trials=5,
-        ...     n_initial=3,
-        ...     random_state=42,
-        ...     return_best=False,
-        ...     verbose=False,
-        ...     show_progress=False,
-        ... )
-        >>> isinstance(results, pd.DataFrame)
-        True
-        >>> "alpha" in results.columns
-        True
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from sklearn.linear_model import Ridge
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from spotforecast2.model_selection import (
+            TimeSeriesFold,
+            spotoptim_search_forecaster,
+        )
+
+        np.random.seed(42)
+        y = pd.Series(
+            np.random.randn(200).cumsum(),
+            index=pd.date_range("2022-01-01", periods=200, freq="h"),
+            name="load",
+        )
+
+        forecaster = ForecasterRecursive(estimator=Ridge(), lags=5)
+        cv = TimeSeriesFold(
+            steps=5,
+            initial_train_size=150,
+            refit=False,
+        )
+
+        search_space = {"alpha": (0.01, 10.0)}
+
+        results, optimizer = spotoptim_search_forecaster(
+            forecaster=forecaster,
+            y=y,
+            cv=cv,
+            search_space=search_space,
+            metric="mean_absolute_error",
+            n_trials=5,
+            n_initial=3,
+            random_state=42,
+            return_best=False,
+            verbose=False,
+            show_progress=False,
+        )
+
+        print(f"Is DataFrame: {isinstance(results, pd.DataFrame)}")
+        print(f"Contains 'alpha': {'alpha' in results.columns}")
+        ```
 
         **2 — ParameterSet-based search space:**
 
-        >>> from spotoptim.hyperparameters import ParameterSet
-        >>> ps = ParameterSet()
-        >>> _ = ps.add_float("alpha", low=0.01, high=10.0)
-        >>> results2, _ = spotoptim_search_forecaster(
-        ...     forecaster=ForecasterRecursive(estimator=Ridge(), lags=5),
-        ...     y=y,
-        ...     cv=cv,
-        ...     search_space=ps,
-        ...     metric="mean_absolute_error",
-        ...     n_trials=5,
-        ...     n_initial=3,
-        ...     return_best=False,
-        ...     verbose=False,
-        ...     show_progress=False,
-        ... )
-        >>> len(results2) == 5
-        True
+        ```{python}
+        from spotoptim.hyperparameters import ParameterSet
+
+        ps = ParameterSet()
+        _ = ps.add_float("alpha", low=0.01, high=10.0)
+
+        results2, _ = spotoptim_search_forecaster(
+            forecaster=ForecasterRecursive(estimator=Ridge(), lags=5),
+            y=y,
+            cv=cv,
+            search_space=ps,
+            metric="mean_absolute_error",
+            n_trials=5,
+            n_initial=3,
+            return_best=False,
+            verbose=False,
+            show_progress=False,
+        )
+
+        print(f"Number of configurations evaluated: {len(results2)}")
+        ```
     """
 
     if return_best and exog is not None and (len(exog) != len(y)):
@@ -252,6 +261,132 @@ def spotoptim_search_forecaster(
     )
 
     return results, optimizer
+
+
+def spotoptim_objective(
+    X: np.ndarray,
+    forecaster_search: object,
+    cv_name: str,
+    cv: TimeSeriesFold | OneStepAheadFold,
+    metric: list[Callable],
+    y: pd.Series,
+    exog: pd.Series | pd.DataFrame | None,
+    n_jobs: int,
+    verbose: bool,
+    show_progress: bool,
+    suppress_warnings: bool,
+    var_name: list,
+    var_type: list,
+    bounds: list,
+    all_metric_values: list[list[float]],
+    all_lags: list,
+    all_params: list[dict],
+) -> np.ndarray:
+    """SpotOptim objective function to evaluate hyperparameter sets.
+
+    Evaluates a given array of hyperparameter configurations `X` and returns an array
+    of the primary metric errors.
+
+    Args:
+        X: 2D array of hyperparameters from SpotOptim.
+        forecaster_search: The forecaster to evaluate.
+        cv_name: Type of cross-validation ("TimeSeriesFold" or "OneStepAheadFold").
+        cv: Cross-validation configuration.
+        metric: List of metrics to compute.
+        y: Target time series.
+        exog: Exogenous variables.
+        n_jobs: Number of parallel jobs.
+        verbose: Verbosity level flag.
+        show_progress: Show progress bar flag.
+        suppress_warnings: Suppress warnings flag.
+        var_name: Parameter names.
+        var_type: Parameter types.
+        bounds: Parameter bounds.
+        all_metric_values: List to record all metric results.
+        all_lags: List to record all evaluated lag configurations.
+        all_params: List to record all evaluated parameters.
+
+    Returns:
+        np.ndarray: 1D array of results for the primary metric.
+
+    Examples:
+        Generating textual output of parameter evaluation:
+
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from spotforecast2_safe.model_selection import TimeSeriesFold
+        from spotforecast2.model_selection.spotoptim_search import spotoptim_objective
+
+        # Mock forecaster for documentation
+        class MockForecaster:
+            def set_params(self, **kwargs): pass
+            def set_lags(self, lags): pass
+
+        # Provide dummy data and configuration
+        X = np.array([[0.05], [0.1]])
+        cv = TimeSeriesFold(initial_train_size=10, steps=2)
+        metric = [lambda y_true, y_pred: np.mean(np.abs(y_true - y_pred))]
+
+        # Track results
+        metric_vals, lags, params = [], [], []
+
+        # When evaluated for real, the mock objects would produce metrics.
+        # Here we just show the call structure.
+        print("Ready to evaluate hyperparameters.")
+        ```
+    """
+    results_arr = []
+    for params_array in X:
+        params_dict = array_to_params(params_array, var_name, var_type, bounds)
+        sample_params = {k: v for k, v in params_dict.items() if k != "lags"}
+
+        f_search = deepcopy(forecaster_search)
+        f_search.set_params(**sample_params)
+
+        if "lags" in params_dict:
+            lags_value = parse_lags_from_strings(params_dict["lags"])
+            f_search.set_lags(lags_value)
+
+        if cv_name == "TimeSeriesFold":
+            metrics_df, _ = _backtesting_forecaster(
+                forecaster=f_search,
+                y=y,
+                cv=cv,
+                exog=exog,
+                metric=metric,
+                n_jobs=n_jobs,
+                verbose=verbose,
+                show_progress=show_progress,
+                suppress_warnings=suppress_warnings,
+            )
+            metrics_list = metrics_df.iloc[0, :].to_list()
+        else:
+            X_train, y_train, X_test, y_test = (
+                f_search._train_test_split_one_step_ahead(
+                    y=y, initial_train_size=cv.initial_train_size, exog=exog
+                )
+            )
+            metrics_list = _calculate_metrics_one_step_ahead(
+                forecaster=f_search,
+                metrics=metric,
+                X_train=X_train,
+                y_train=y_train,
+                X_test=X_test,
+                y_test=y_test,
+            )
+
+        all_metric_values.append(metrics_list)
+        lags_val = params_dict.get(
+            "lags", f_search.lags if hasattr(f_search, "lags") else None
+        )
+        if isinstance(lags_val, str):
+            lags_val = parse_lags_from_strings(lags_val)
+        all_lags.append(lags_val)
+        all_params.append(sample_params)
+        results_arr.append(metrics_list[0])
+
+    return np.array(results_arr)
 
 
 def _spotoptim_search(
@@ -366,62 +501,30 @@ def _spotoptim_search(
     all_params: list[dict] = []
 
     # --- Objective function -----------------------------------------------
-    def _objective(X: np.ndarray) -> np.ndarray:
-        results_arr = []
-        for params_array in X:
-            params_dict = array_to_params(params_array, var_name, var_type, bounds)
-            sample_params = {k: v for k, v in params_dict.items() if k != "lags"}
-
-            f_search = deepcopy(forecaster_search)
-            f_search.set_params(**sample_params)
-
-            if "lags" in params_dict:
-                lags_value = parse_lags_from_strings(params_dict["lags"])
-                f_search.set_lags(lags_value)
-
-            if cv_name == "TimeSeriesFold":
-                metrics_df, _ = _backtesting_forecaster(
-                    forecaster=f_search,
-                    y=y,
-                    cv=cv,
-                    exog=exog,
-                    metric=metric,
-                    n_jobs=n_jobs,
-                    verbose=verbose,
-                    show_progress=show_progress,
-                    suppress_warnings=suppress_warnings,
-                )
-                metrics_list = metrics_df.iloc[0, :].to_list()
-            else:
-                X_train, y_train, X_test, y_test = (
-                    f_search._train_test_split_one_step_ahead(
-                        y=y, initial_train_size=cv.initial_train_size, exog=exog
-                    )
-                )
-                metrics_list = _calculate_metrics_one_step_ahead(
-                    forecaster=f_search,
-                    metrics=metric,
-                    X_train=X_train,
-                    y_train=y_train,
-                    X_test=X_test,
-                    y_test=y_test,
-                )
-
-            all_metric_values.append(metrics_list)
-            lags_val = params_dict.get(
-                "lags", f_search.lags if hasattr(f_search, "lags") else None
-            )
-            if isinstance(lags_val, str):
-                lags_val = parse_lags_from_strings(lags_val)
-            all_lags.append(lags_val)
-            all_params.append(sample_params)
-            results_arr.append(metrics_list[0])
-
-        return np.array(results_arr)
+    def _objective_wrapper(X: np.ndarray) -> np.ndarray:
+        return spotoptim_objective(
+            X=X,
+            forecaster_search=forecaster_search,
+            cv_name=cv_name,
+            cv=cv,
+            metric=metric,
+            y=y,
+            exog=exog,
+            n_jobs=n_jobs,
+            verbose=verbose,
+            show_progress=show_progress,
+            suppress_warnings=suppress_warnings,
+            var_name=var_name,
+            var_type=var_type,
+            bounds=bounds,
+            all_metric_values=all_metric_values,
+            all_lags=all_lags,
+            all_params=all_params,
+        )
 
     # --- Run SpotOptim ----------------------------------------------------
     optimizer = SpotOptim(
-        fun=_objective,
+        fun=_objective_wrapper,
         bounds=bounds,
         var_type=var_type,
         var_name=var_name,
