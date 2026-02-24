@@ -88,138 +88,6 @@
     ]
   },
   {
-    "objectID": "docs/preprocessing/time_series_visualization.html",
-    "href": "docs/preprocessing/time_series_visualization.html",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "This module provides interactive time series visualization using Plotly, with support for multiple datasets and flexible customization options.\n\n\nThe time series visualization module includes two main functions:\n\nvisualize_ts_plotly() - Visualize multiple time series datasets with Plotly\nvisualize_ts_comparison() - Compare datasets with optional statistical overlays\n\nThese functions provide a flexible, interactive way to explore time series data with support for train/validation/test splits or any custom dataset groupings.\n\n\n\nThe time series visualization functions require plotly:\nUsing pip:\npip install plotly\nUsing uv:\nuv pip install plotly\n\n\n\n\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly\n\n# Create sample datasets\nnp.random.seed(42)\ndates_train = pd.date_range('2024-01-01', periods=100, freq='h')\ndates_val = pd.date_range('2024-05-11', periods=50, freq='h')\ndates_test = pd.date_range('2024-07-01', periods=30, freq='h')\n\ndata_train = pd.DataFrame({\n    'temperature': np.random.normal(20, 5, 100),\n    'humidity': np.random.normal(60, 10, 100)\n}, index=dates_train)\n\ndata_val = pd.DataFrame({\n    'temperature': np.random.normal(22, 5, 50),\n    'humidity': np.random.normal(55, 10, 50)\n}, index=dates_val)\n\ndata_test = pd.DataFrame({\n    'temperature': np.random.normal(25, 5, 30),\n    'humidity': np.random.normal(50, 10, 30)\n}, index=dates_test)\n\n# Visualize all datasets\ndataframes = {\n    'Train': data_train,\n    'Validation': data_val,\n    'Test': data_test\n}\n\nvisualize_ts_plotly(dataframes)\n\n\n\n# Visualize a single dataset\ndataframes = {'Data': data_train}\nvisualize_ts_plotly(dataframes, columns=['temperature'])\n\n\n\n# Customize colors and template\nvisualize_ts_plotly(\n    dataframes,\n    template='plotly_dark',\n    colors={\n        'Train': 'blue',\n        'Validation': 'green',\n        'Test': 'red'\n    },\n    figsize=(1400, 600)\n)\n\n\n\n\n\n\nVisualize multiple time series datasets interactively with Plotly.\nSignature:\ndef visualize_ts_plotly(\n    dataframes: Dict[str, pd.DataFrame],\n    columns: Optional[List[str]] = None,\n    title_suffix: str = \"\",\n    figsize: tuple[int, int] = (1000, 500),\n    template: str = \"plotly_white\",\n    colors: Optional[Dict[str, str]] = None,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndataframes\nDict[str, DataFrame]\nRequired\nDictionary mapping dataset names to DataFrames with datetime index\n\n\ncolumns\nlist[str]\nNone\nColumns to visualize. If None, all columns are used\n\n\ntitle_suffix\nstr\n“”\nSuffix to append to column names in titles (e.g., “[°C]”)\n\n\nfigsize\ntuple[int, int]\n(1000, 500)\nFigure size as (width, height) in pixels\n\n\ntemplate\nstr\n“plotly_white”\nPlotly template name (“plotly_white”, “plotly_dark”, “ggplot2”, etc.)\n\n\ncolors\nDict[str, str]\nNone\nDictionary mapping dataset names to colors. If None, uses default colors\n\n\n**kwargs\nAny\n-\nAdditional arguments passed to go.Scatter() (e.g., fill=‘tozeroy’)\n\n\n\nReturns:\nNone. Displays Plotly figures.\nRaises:\n\nValueError - If dataframes dict is empty, contains empty DataFrames, or if specified columns don’t exist\nImportError - If plotly is not installed\nTypeError - If dataframes parameter is not a dictionary\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly\n\n# Create sample data\nnp.random.seed(42)\ndates = pd.date_range('2024-01-01', periods=100, freq='h')\ndf = pd.DataFrame({\n    'temperature': np.random.normal(20, 5, 100),\n    'humidity': np.random.normal(60, 10, 100)\n}, index=dates)\n\n# Visualize single dataset\nvisualize_ts_plotly({'Data': df})\n\n\n\nCompare multiple datasets with optional statistical overlays.\nSignature:\ndef visualize_ts_comparison(\n    dataframes: Dict[str, pd.DataFrame],\n    columns: Optional[List[str]] = None,\n    title_suffix: str = \"\",\n    figsize: tuple[int, int] = (1000, 500),\n    template: str = \"plotly_white\",\n    colors: Optional[Dict[str, str]] = None,\n    show_mean: bool = False,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndataframes\nDict[str, DataFrame]\nRequired\nDictionary mapping dataset names to DataFrames\n\n\ncolumns\nlist[str]\nNone\nColumns to visualize. If None, all columns are used\n\n\ntitle_suffix\nstr\n“”\nSuffix to append to titles\n\n\nfigsize\ntuple[int, int]\n(1000, 500)\nFigure size as (width, height) in pixels\n\n\ntemplate\nstr\n“plotly_white”\nPlotly template\n\n\ncolors\nDict[str, str]\nNone\nDictionary mapping dataset names to colors\n\n\nshow_mean\nbool\nFalse\nIf True, overlay the mean of all datasets\n\n\n**kwargs\nAny\n-\nAdditional arguments for go.Scatter()\n\n\n\nReturns:\nNone. Displays Plotly figures.\nRaises:\n\nValueError - If dataframes dict is empty\nImportError - If plotly is not installed\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_comparison\n\n# Create sample data\nnp.random.seed(42)\ndates1 = pd.date_range('2024-01-01', periods=100, freq='h')\ndates2 = pd.date_range('2024-05-11', periods=100, freq='h')\n\ndf1 = pd.DataFrame({\n    'value': np.random.normal(20, 5, 100)\n}, index=dates1)\n\ndf2 = pd.DataFrame({\n    'value': np.random.normal(22, 5, 100)\n}, index=dates2)\n\n# Compare with mean overlay\nvisualize_ts_comparison(\n    {'Dataset1': df1, 'Dataset2': df2},\n    show_mean=True\n)\n\n\n\n\n\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly\n\n# Create time series data\nnp.random.seed(42)\nfull_data = pd.DataFrame({\n    'temperature': np.sin(np.linspace(0, 10, 300)) + np.random.normal(0, 0.1, 300),\n    'humidity': np.cos(np.linspace(0, 10, 300)) * 100 + np.random.normal(50, 5, 300)\n}, index=pd.date_range('2024-01-01', periods=300, freq='h'))\n\n# Split data\nsplit1 = int(0.6 * len(full_data))\nsplit2 = int(0.8 * len(full_data))\n\ndata_train = full_data.iloc[:split1]\ndata_val = full_data.iloc[split1:split2]\ndata_test = full_data.iloc[split2:]\n\n# Visualize\ndataframes = {\n    'Train': data_train,\n    'Validation': data_val,\n    'Test': data_test\n}\n\nvisualize_ts_plotly(\n    dataframes,\n    template='plotly_white',\n    figsize=(1200, 600)\n)\n\n\n\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_comparison\n\n# Create datasets from different time periods\ndates1 = pd.date_range('2024-01-01', periods=100, freq='h')\ndates2 = pd.date_range('2024-04-01', periods=100, freq='h')\ndates3 = pd.date_range('2024-07-01', periods=100, freq='h')\n\ndf1 = pd.DataFrame({\n    'temperature': np.random.normal(15, 3, 100)\n}, index=dates1)\n\ndf2 = pd.DataFrame({\n    'temperature': np.random.normal(22, 3, 100)\n}, index=dates2)\n\ndf3 = pd.DataFrame({\n    'temperature': np.random.normal(25, 3, 100)\n}, index=dates3)\n\n# Compare with mean\nvisualize_ts_comparison(\n    {\n        'Winter': df1,\n        'Spring': df2,\n        'Summer': df3\n    },\n    show_mean=True,\n    colors={\n        'Winter': 'blue',\n        'Spring': 'green',\n        'Summer': 'red'\n    }\n)\n\n\n\n# Function works with any number of datasets\ndataframes = {}\n\nfor i in range(5):\n    dates = pd.date_range(f'2024-{i+1:02d}-01', periods=50, freq='h')\n    dataframes[f'Month_{i+1}'] = pd.DataFrame({\n        'sales': np.random.gamma(2, 2, 50) * 1000\n    }, index=dates)\n\nvisualize_ts_plotly(\n    dataframes,\n    title_suffix='[USD]',\n    figsize=(1400, 600)\n)\n\n\n\n\n\n\nFigure size as (width, height) in pixels:\n# Small figure\nvisualize_ts_plotly(dataframes, figsize=(800, 400))\n\n# Large figure for detailed inspection\nvisualize_ts_plotly(dataframes, figsize=(1600, 800))\n\n\n\nPlotly provides several built-in templates:\n# Light theme (default)\nvisualize_ts_plotly(dataframes, template='plotly_white')\n\n# Dark theme\nvisualize_ts_plotly(dataframes, template='plotly_dark')\n\n# Minimal theme\nvisualize_ts_plotly(dataframes, template='plotly')\n\n# Other themes\nvisualize_ts_plotly(dataframes, template='ggplot2')\nvisualize_ts_plotly(dataframes, template='seaborn')\n\n\n\nDefine custom colors for each dataset:\ncolors = {\n    'Train': '#1f77b4',      # Blue\n    'Validation': '#ff7f0e', # Orange\n    'Test': '#2ca02c'        # Green\n}\n\nvisualize_ts_plotly(dataframes, colors=colors)\n\n\n\nPass additional options to Plotly Scatter:\nvisualize_ts_plotly(\n    dataframes,\n    fill='tozeroy',           # Fill area under line\n    line=dict(width=2),       # Line width\n    opacity=0.8               # Transparency\n)\n\n\n\n\n\n\nAlways use pandas datetime index for proper time axis handling:\n# Good\ndf = pd.DataFrame(data, index=pd.date_range('2024-01-01', periods=len(data), freq='h'))\n\n# Avoid\ndf = pd.DataFrame(data)  # Will use default integer index\n\n\n\nEnsure all DataFrames have consistent columns for comparison:\n# Verify columns match\ncolumns = set(df1.columns) & set(df2.columns) & set(df3.columns)\nif not columns:\n    raise ValueError(\"DataFrames have no common columns\")\n\n\n\nFor large time series, consider subsampling:\n# Subsample every 10th point\ndf_sub = df[::10]\nvisualize_ts_plotly({'Data': df_sub})\n\n\n\nUse descriptive names for datasets:\n# Good\ndataframes = {\n    'Training (2023)': data_train,\n    'Validation (Jan 2024)': data_val,\n    'Testing (Feb 2024)': data_test\n}\n\n# Avoid\ndataframes = {\n    'A': data_train,\n    'B': data_val,\n    'C': data_test\n}\n\n\n\n\n\n\nIf datasets overlap in time, use separate figures:\n# Visualize one column at a time\nfor col in dataframes[list(dataframes.keys())[0]].columns:\n    visualize_ts_plotly(dataframes, columns=[col])\n\n\n\nDownsample before visualization:\n# Downsample to hourly\ndf_downsampled = df.resample('1H').mean()\nvisualize_ts_plotly({'Data': df_downsampled})\n\n\n\nHandle missing values before visualization:\n# Forward fill missing values\ndf_filled = df.fillna(method='ffill')\nvisualize_ts_plotly({'Data': df_filled})\n\n\n\n\nThis module includes comprehensive pytest tests validating all documentation examples and API functionality. Tests are located in tests/test_docs_time_series_visualization_examples.py.\n\n\nRun all time series visualization tests:\nuv run pytest tests/test_docs_time_series_visualization_examples.py -v\nRun specific test class:\nuv run pytest tests/test_docs_time_series_visualization_examples.py::TestVisualizeTimeSeriesPlotlyBasic -v\n\n\n\nThe test suite includes 50 comprehensive tests covering:\n\nBasic Visualization (9 tests): Single/multiple dataset visualization, column selection, custom parameters\nComparison Functionality (6 tests): Dataset comparison, statistical overlays, customization\nComplete Workflows (3 tests): Train/val/test split visualization, multi-dataset comparison, dynamic datasets\nParameters & Configuration (8 tests): figsize options, template variations, color customization\nBest Practices (4 tests): Datetime index handling, consistent shapes, subsampling for large datasets\nEdge Cases (7 tests): Single value, constant values, NaN handling, negative/large values, many columns\nAPI Examples (5 tests): Quick start examples, API function validation\nData Integrity (3 tests): Index preservation, data value preservation, dataset independence\nSafety-Critical (5 tests): Error handling, empty input validation, determinism\n\n\n\n\nVerify all time series visualization tests pass:\nuv run pytest tests/test_docs_time_series_visualization_examples.py --tb=short -q\nExpected output: 50 passed\n\n\n\nAll code examples in this documentation have been validated with pytest: - Quick start examples (all variants) - Complete workflow examples (train/val/test split, comparison, dynamic) - Parameter configuration examples (figsize, templates, colors) - Best practices examples (datetime index, consistent shapes, large datasets) - Troubleshooting examples (overlapping datasets, memory issues, missing data)\n\n\n\n\n\nOutlier Detection and Visualization\nPlotly Documentation\n\n\n\n\n\nPlotly Dash and Plotly.py documentation: https://plotly.com/python/\nPandas datetime index: https://pandas.pydata.org/docs/user_guide/timeseries.html",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#overview",
-    "href": "docs/preprocessing/time_series_visualization.html#overview",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "The time series visualization module includes two main functions:\n\nvisualize_ts_plotly() - Visualize multiple time series datasets with Plotly\nvisualize_ts_comparison() - Compare datasets with optional statistical overlays\n\nThese functions provide a flexible, interactive way to explore time series data with support for train/validation/test splits or any custom dataset groupings.",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#installation",
-    "href": "docs/preprocessing/time_series_visualization.html#installation",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "The time series visualization functions require plotly:\nUsing pip:\npip install plotly\nUsing uv:\nuv pip install plotly",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#quick-start",
-    "href": "docs/preprocessing/time_series_visualization.html#quick-start",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "import pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly\n\n# Create sample datasets\nnp.random.seed(42)\ndates_train = pd.date_range('2024-01-01', periods=100, freq='h')\ndates_val = pd.date_range('2024-05-11', periods=50, freq='h')\ndates_test = pd.date_range('2024-07-01', periods=30, freq='h')\n\ndata_train = pd.DataFrame({\n    'temperature': np.random.normal(20, 5, 100),\n    'humidity': np.random.normal(60, 10, 100)\n}, index=dates_train)\n\ndata_val = pd.DataFrame({\n    'temperature': np.random.normal(22, 5, 50),\n    'humidity': np.random.normal(55, 10, 50)\n}, index=dates_val)\n\ndata_test = pd.DataFrame({\n    'temperature': np.random.normal(25, 5, 30),\n    'humidity': np.random.normal(50, 10, 30)\n}, index=dates_test)\n\n# Visualize all datasets\ndataframes = {\n    'Train': data_train,\n    'Validation': data_val,\n    'Test': data_test\n}\n\nvisualize_ts_plotly(dataframes)\n\n\n\n# Visualize a single dataset\ndataframes = {'Data': data_train}\nvisualize_ts_plotly(dataframes, columns=['temperature'])\n\n\n\n# Customize colors and template\nvisualize_ts_plotly(\n    dataframes,\n    template='plotly_dark',\n    colors={\n        'Train': 'blue',\n        'Validation': 'green',\n        'Test': 'red'\n    },\n    figsize=(1400, 600)\n)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#api-reference",
-    "href": "docs/preprocessing/time_series_visualization.html#api-reference",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "Visualize multiple time series datasets interactively with Plotly.\nSignature:\ndef visualize_ts_plotly(\n    dataframes: Dict[str, pd.DataFrame],\n    columns: Optional[List[str]] = None,\n    title_suffix: str = \"\",\n    figsize: tuple[int, int] = (1000, 500),\n    template: str = \"plotly_white\",\n    colors: Optional[Dict[str, str]] = None,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndataframes\nDict[str, DataFrame]\nRequired\nDictionary mapping dataset names to DataFrames with datetime index\n\n\ncolumns\nlist[str]\nNone\nColumns to visualize. If None, all columns are used\n\n\ntitle_suffix\nstr\n“”\nSuffix to append to column names in titles (e.g., “[°C]”)\n\n\nfigsize\ntuple[int, int]\n(1000, 500)\nFigure size as (width, height) in pixels\n\n\ntemplate\nstr\n“plotly_white”\nPlotly template name (“plotly_white”, “plotly_dark”, “ggplot2”, etc.)\n\n\ncolors\nDict[str, str]\nNone\nDictionary mapping dataset names to colors. If None, uses default colors\n\n\n**kwargs\nAny\n-\nAdditional arguments passed to go.Scatter() (e.g., fill=‘tozeroy’)\n\n\n\nReturns:\nNone. Displays Plotly figures.\nRaises:\n\nValueError - If dataframes dict is empty, contains empty DataFrames, or if specified columns don’t exist\nImportError - If plotly is not installed\nTypeError - If dataframes parameter is not a dictionary\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly\n\n# Create sample data\nnp.random.seed(42)\ndates = pd.date_range('2024-01-01', periods=100, freq='h')\ndf = pd.DataFrame({\n    'temperature': np.random.normal(20, 5, 100),\n    'humidity': np.random.normal(60, 10, 100)\n}, index=dates)\n\n# Visualize single dataset\nvisualize_ts_plotly({'Data': df})\n\n\n\nCompare multiple datasets with optional statistical overlays.\nSignature:\ndef visualize_ts_comparison(\n    dataframes: Dict[str, pd.DataFrame],\n    columns: Optional[List[str]] = None,\n    title_suffix: str = \"\",\n    figsize: tuple[int, int] = (1000, 500),\n    template: str = \"plotly_white\",\n    colors: Optional[Dict[str, str]] = None,\n    show_mean: bool = False,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndataframes\nDict[str, DataFrame]\nRequired\nDictionary mapping dataset names to DataFrames\n\n\ncolumns\nlist[str]\nNone\nColumns to visualize. If None, all columns are used\n\n\ntitle_suffix\nstr\n“”\nSuffix to append to titles\n\n\nfigsize\ntuple[int, int]\n(1000, 500)\nFigure size as (width, height) in pixels\n\n\ntemplate\nstr\n“plotly_white”\nPlotly template\n\n\ncolors\nDict[str, str]\nNone\nDictionary mapping dataset names to colors\n\n\nshow_mean\nbool\nFalse\nIf True, overlay the mean of all datasets\n\n\n**kwargs\nAny\n-\nAdditional arguments for go.Scatter()\n\n\n\nReturns:\nNone. Displays Plotly figures.\nRaises:\n\nValueError - If dataframes dict is empty\nImportError - If plotly is not installed\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_comparison\n\n# Create sample data\nnp.random.seed(42)\ndates1 = pd.date_range('2024-01-01', periods=100, freq='h')\ndates2 = pd.date_range('2024-05-11', periods=100, freq='h')\n\ndf1 = pd.DataFrame({\n    'value': np.random.normal(20, 5, 100)\n}, index=dates1)\n\ndf2 = pd.DataFrame({\n    'value': np.random.normal(22, 5, 100)\n}, index=dates2)\n\n# Compare with mean overlay\nvisualize_ts_comparison(\n    {'Dataset1': df1, 'Dataset2': df2},\n    show_mean=True\n)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#complete-workflow-examples",
-    "href": "docs/preprocessing/time_series_visualization.html#complete-workflow-examples",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "import pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly\n\n# Create time series data\nnp.random.seed(42)\nfull_data = pd.DataFrame({\n    'temperature': np.sin(np.linspace(0, 10, 300)) + np.random.normal(0, 0.1, 300),\n    'humidity': np.cos(np.linspace(0, 10, 300)) * 100 + np.random.normal(50, 5, 300)\n}, index=pd.date_range('2024-01-01', periods=300, freq='h'))\n\n# Split data\nsplit1 = int(0.6 * len(full_data))\nsplit2 = int(0.8 * len(full_data))\n\ndata_train = full_data.iloc[:split1]\ndata_val = full_data.iloc[split1:split2]\ndata_test = full_data.iloc[split2:]\n\n# Visualize\ndataframes = {\n    'Train': data_train,\n    'Validation': data_val,\n    'Test': data_test\n}\n\nvisualize_ts_plotly(\n    dataframes,\n    template='plotly_white',\n    figsize=(1200, 600)\n)\n\n\n\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_comparison\n\n# Create datasets from different time periods\ndates1 = pd.date_range('2024-01-01', periods=100, freq='h')\ndates2 = pd.date_range('2024-04-01', periods=100, freq='h')\ndates3 = pd.date_range('2024-07-01', periods=100, freq='h')\n\ndf1 = pd.DataFrame({\n    'temperature': np.random.normal(15, 3, 100)\n}, index=dates1)\n\ndf2 = pd.DataFrame({\n    'temperature': np.random.normal(22, 3, 100)\n}, index=dates2)\n\ndf3 = pd.DataFrame({\n    'temperature': np.random.normal(25, 3, 100)\n}, index=dates3)\n\n# Compare with mean\nvisualize_ts_comparison(\n    {\n        'Winter': df1,\n        'Spring': df2,\n        'Summer': df3\n    },\n    show_mean=True,\n    colors={\n        'Winter': 'blue',\n        'Spring': 'green',\n        'Summer': 'red'\n    }\n)\n\n\n\n# Function works with any number of datasets\ndataframes = {}\n\nfor i in range(5):\n    dates = pd.date_range(f'2024-{i+1:02d}-01', periods=50, freq='h')\n    dataframes[f'Month_{i+1}'] = pd.DataFrame({\n        'sales': np.random.gamma(2, 2, 50) * 1000\n    }, index=dates)\n\nvisualize_ts_plotly(\n    dataframes,\n    title_suffix='[USD]',\n    figsize=(1400, 600)\n)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#parameters-and-configuration",
-    "href": "docs/preprocessing/time_series_visualization.html#parameters-and-configuration",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "Figure size as (width, height) in pixels:\n# Small figure\nvisualize_ts_plotly(dataframes, figsize=(800, 400))\n\n# Large figure for detailed inspection\nvisualize_ts_plotly(dataframes, figsize=(1600, 800))\n\n\n\nPlotly provides several built-in templates:\n# Light theme (default)\nvisualize_ts_plotly(dataframes, template='plotly_white')\n\n# Dark theme\nvisualize_ts_plotly(dataframes, template='plotly_dark')\n\n# Minimal theme\nvisualize_ts_plotly(dataframes, template='plotly')\n\n# Other themes\nvisualize_ts_plotly(dataframes, template='ggplot2')\nvisualize_ts_plotly(dataframes, template='seaborn')\n\n\n\nDefine custom colors for each dataset:\ncolors = {\n    'Train': '#1f77b4',      # Blue\n    'Validation': '#ff7f0e', # Orange\n    'Test': '#2ca02c'        # Green\n}\n\nvisualize_ts_plotly(dataframes, colors=colors)\n\n\n\nPass additional options to Plotly Scatter:\nvisualize_ts_plotly(\n    dataframes,\n    fill='tozeroy',           # Fill area under line\n    line=dict(width=2),       # Line width\n    opacity=0.8               # Transparency\n)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#best-practices",
-    "href": "docs/preprocessing/time_series_visualization.html#best-practices",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "Always use pandas datetime index for proper time axis handling:\n# Good\ndf = pd.DataFrame(data, index=pd.date_range('2024-01-01', periods=len(data), freq='h'))\n\n# Avoid\ndf = pd.DataFrame(data)  # Will use default integer index\n\n\n\nEnsure all DataFrames have consistent columns for comparison:\n# Verify columns match\ncolumns = set(df1.columns) & set(df2.columns) & set(df3.columns)\nif not columns:\n    raise ValueError(\"DataFrames have no common columns\")\n\n\n\nFor large time series, consider subsampling:\n# Subsample every 10th point\ndf_sub = df[::10]\nvisualize_ts_plotly({'Data': df_sub})\n\n\n\nUse descriptive names for datasets:\n# Good\ndataframes = {\n    'Training (2023)': data_train,\n    'Validation (Jan 2024)': data_val,\n    'Testing (Feb 2024)': data_test\n}\n\n# Avoid\ndataframes = {\n    'A': data_train,\n    'B': data_val,\n    'C': data_test\n}",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#troubleshooting",
-    "href": "docs/preprocessing/time_series_visualization.html#troubleshooting",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "If datasets overlap in time, use separate figures:\n# Visualize one column at a time\nfor col in dataframes[list(dataframes.keys())[0]].columns:\n    visualize_ts_plotly(dataframes, columns=[col])\n\n\n\nDownsample before visualization:\n# Downsample to hourly\ndf_downsampled = df.resample('1H').mean()\nvisualize_ts_plotly({'Data': df_downsampled})\n\n\n\nHandle missing values before visualization:\n# Forward fill missing values\ndf_filled = df.fillna(method='ffill')\nvisualize_ts_plotly({'Data': df_filled})",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#testing",
-    "href": "docs/preprocessing/time_series_visualization.html#testing",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "This module includes comprehensive pytest tests validating all documentation examples and API functionality. Tests are located in tests/test_docs_time_series_visualization_examples.py.\n\n\nRun all time series visualization tests:\nuv run pytest tests/test_docs_time_series_visualization_examples.py -v\nRun specific test class:\nuv run pytest tests/test_docs_time_series_visualization_examples.py::TestVisualizeTimeSeriesPlotlyBasic -v\n\n\n\nThe test suite includes 50 comprehensive tests covering:\n\nBasic Visualization (9 tests): Single/multiple dataset visualization, column selection, custom parameters\nComparison Functionality (6 tests): Dataset comparison, statistical overlays, customization\nComplete Workflows (3 tests): Train/val/test split visualization, multi-dataset comparison, dynamic datasets\nParameters & Configuration (8 tests): figsize options, template variations, color customization\nBest Practices (4 tests): Datetime index handling, consistent shapes, subsampling for large datasets\nEdge Cases (7 tests): Single value, constant values, NaN handling, negative/large values, many columns\nAPI Examples (5 tests): Quick start examples, API function validation\nData Integrity (3 tests): Index preservation, data value preservation, dataset independence\nSafety-Critical (5 tests): Error handling, empty input validation, determinism\n\n\n\n\nVerify all time series visualization tests pass:\nuv run pytest tests/test_docs_time_series_visualization_examples.py --tb=short -q\nExpected output: 50 passed\n\n\n\nAll code examples in this documentation have been validated with pytest: - Quick start examples (all variants) - Complete workflow examples (train/val/test split, comparison, dynamic) - Parameter configuration examples (figsize, templates, colors) - Best practices examples (datetime index, consistent shapes, large datasets) - Troubleshooting examples (overlapping datasets, memory issues, missing data)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#see-also",
-    "href": "docs/preprocessing/time_series_visualization.html#see-also",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "Outlier Detection and Visualization\nPlotly Documentation",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/time_series_visualization.html#references",
-    "href": "docs/preprocessing/time_series_visualization.html#references",
-    "title": "Time Series Visualization",
-    "section": "",
-    "text": "Plotly Dash and Plotly.py documentation: https://plotly.com/python/\nPandas datetime index: https://pandas.pydata.org/docs/user_guide/timeseries.html",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Time Series Visualization"
-    ]
-  },
-  {
     "objectID": "docs/entsoe.html",
     "href": "docs/entsoe.html",
     "title": "ENTSO-E Energy Forecasting Guide",
@@ -966,6 +834,138 @@
     ]
   },
   {
+    "objectID": "docs/preprocessing/outliers.html",
+    "href": "docs/preprocessing/outliers.html",
+    "title": "Outlier Detection and Visualization",
+    "section": "",
+    "text": "This module provides comprehensive tools for detecting and visualizing outliers in time series data using the Isolation Forest algorithm.",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#overview",
+    "href": "docs/preprocessing/outliers.html#overview",
+    "title": "Outlier Detection and Visualization",
+    "section": "Overview",
+    "text": "Overview\nThe outlier detection module includes three main functions:\n\nget_outliers() - Detect outliers using Isolation Forest\nvisualize_outliers_hist() - Visualize outliers with static histograms\nvisualize_outliers_plotly_scatter() - Visualize outliers with interactive Plotly scatter plots\n\nThese functions work together to provide a complete workflow for outlier analysis in time series data.",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#installation",
+    "href": "docs/preprocessing/outliers.html#installation",
+    "title": "Outlier Detection and Visualization",
+    "section": "Installation",
+    "text": "Installation\nThe outlier visualization functions require matplotlib for histograms and plotly for interactive scatter plots.\nUsing pip:\npip install matplotlib plotly\nUsing uv:\nuv pip install matplotlib plotly",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#quick-start",
+    "href": "docs/preprocessing/outliers.html#quick-start",
+    "title": "Outlier Detection and Visualization",
+    "section": "Quick Start",
+    "text": "Quick Start\n\nBasic Outlier Detection\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2_safe.preprocessing.outlier import get_outliers\n\n# Create sample data with outliers\nnp.random.seed(42)\ndata = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 100),\n        [95, 98, 99]  # outliers\n    ])\n})\n\n# Detect outliers\noutliers = get_outliers(data, contamination=0.03)\n\nfor col, outlier_vals in outliers.items():\n    print(f\"{col}: {len(outlier_vals)} outliers detected\")\n\ntemperature: 4 outliers detected\nhumidity: 4 outliers detected\n\n\n\n\nHistogram Visualization\n\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist\n\n# Create sample data\nnp.random.seed(42)\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ])\n})\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    figsize=(12, 5),\n    alpha=0.7\n)\n\n\n\n\n\n\n\n\n\n\nInteractive Plotly Visualization\n\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter\n\n# Create time series data\ndates = pd.date_range('2024-01-01', periods=103, freq='h')\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ])\n}, index=dates)\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers with interactive plot\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    template='plotly_white'\n)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#api-reference",
+    "href": "docs/preprocessing/outliers.html#api-reference",
+    "title": "Outlier Detection and Visualization",
+    "section": "API Reference",
+    "text": "API Reference\n\nget_outliers()\nDetect outliers in each column using Isolation Forest.\nSignature:\ndef get_outliers(\n    data: pd.DataFrame,\n    data_original: Optional[pd.DataFrame] = None,\n    contamination: float = 0.01,\n    random_state: int = 1234,\n) -&gt; Dict[str, pd.Series]\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndata\nDataFrame\nRequired\nThe input DataFrame to check for outliers\n\n\ndata_original\nDataFrame\nNone\nOptional original DataFrame before outlier detection. If provided, helps identify which values became NaN due to outlier detection\n\n\ncontamination\nfloat\n0.01\nThe estimated proportion of outliers in the dataset (between 0 and 1)\n\n\nrandom_state\nint\n1234\nRandom seed for reproducibility\n\n\n\nReturns:\nA dictionary mapping column names to pandas Series of outlier values.\nRaises:\n\nValueError - If data is empty or contains no columns\n\nExample:\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2_safe.preprocessing.outlier import get_outliers\n\n# Create sample data\nnp.random.seed(42)\ndata = pd.DataFrame({\n    'A': np.concatenate([np.random.normal(0, 1, 100), [10, 11, 12]]),\n    'B': np.concatenate([np.random.normal(5, 2, 100), [100, 110, 120]])\n})\n\n# Detect outliers\noutliers = get_outliers(data, contamination=0.03)\nfor col, outlier_vals in outliers.items():\n    print(f\"{col}: {len(outlier_vals)} outliers detected\")\n\nA: 4 outliers detected\nB: 4 outliers detected\n\n\n\n\nvisualize_outliers_hist()\nVisualize outliers using stacked histograms.\nSignature:\ndef visualize_outliers_hist(\n    data: pd.DataFrame,\n    data_original: pd.DataFrame,\n    columns: Optional[list[str]] = None,\n    contamination: float = 0.01,\n    random_state: int = 1234,\n    figsize: tuple[int, int] = (10, 5),\n    bins: int = 50,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndata\nDataFrame\nRequired\nThe DataFrame with cleaned data (outliers may be NaN)\n\n\ndata_original\nDataFrame\nRequired\nThe original DataFrame before outlier detection\n\n\ncolumns\nlist[str]\nNone\nList of column names to visualize. If None, all columns are used\n\n\ncontamination\nfloat\n0.01\nThe estimated proportion of outliers in the dataset\n\n\nrandom_state\nint\n1234\nRandom seed for reproducibility\n\n\nfigsize\ntuple[int, int]\n(10, 5)\nFigure size as (width, height)\n\n\nbins\nint\n50\nNumber of histogram bins\n\n\n**kwargs\nAny\n-\nAdditional keyword arguments passed to plt.hist() (e.g., color, alpha, edgecolor)\n\n\n\nReturns:\nNone. Displays matplotlib figures.\nRaises:\n\nValueError - If data or data_original is empty, or if specified columns don’t exist\n\nExample:\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist\n\n# Create sample data\nnp.random.seed(42)\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 100),\n        [95, 98, 99]  # outliers\n    ])\n})\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    figsize=(12, 5),\n    alpha=0.7,\n    edgecolor='black'\n)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nvisualize_outliers_plotly_scatter()\nVisualize outliers using interactive Plotly scatter plots.\nSignature:\ndef visualize_outliers_plotly_scatter(\n    data: pd.DataFrame,\n    data_original: pd.DataFrame,\n    columns: Optional[list[str]] = None,\n    contamination: float = 0.01,\n    random_state: int = 1234,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndata\nDataFrame\nRequired\nThe DataFrame with cleaned data (outliers may be NaN)\n\n\ndata_original\nDataFrame\nRequired\nThe original DataFrame before outlier detection\n\n\ncolumns\nlist[str]\nNone\nList of column names to visualize. If None, all columns are used\n\n\ncontamination\nfloat\n0.01\nThe estimated proportion of outliers in the dataset\n\n\nrandom_state\nint\n1234\nRandom seed for reproducibility\n\n\n**kwargs\nAny\n-\nAdditional keyword arguments passed to go.Figure.update_layout() (e.g., template, height)\n\n\n\nReturns:\nNone. Displays Plotly figures.\nRaises:\n\nValueError - If data or data_original is empty, or if specified columns don’t exist\nImportError - If plotly is not installed\n\nExample:\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter\n\n# Create time series data\nnp.random.seed(42)\ndates = pd.date_range('2024-01-01', periods=103, freq='h')\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 100),\n        [95, 98, 99]  # outliers\n    ])\n}, index=dates)\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    template='plotly_white',\n    height=600\n)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#complete-workflow-example",
+    "href": "docs/preprocessing/outliers.html#complete-workflow-example",
+    "title": "Outlier Detection and Visualization",
+    "section": "Complete Workflow Example",
+    "text": "Complete Workflow Example\nHere’s a complete example showing the typical workflow for outlier detection and visualization:\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2_safe.preprocessing.outlier import get_outliers\nfrom spotforecast2.preprocessing.outlier_plots import (\n    visualize_outliers_hist,\n    visualize_outliers_plotly_scatter)\n\n# Create realistic time series data with outliers\nnp.random.seed(42)\ndates = pd.date_range('2024-01-01', periods=200, freq='h')\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 197),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 197),\n        [95, 98, 99]  # outliers\n    ]),\n    'pressure': np.concatenate([\n        np.random.normal(1013, 10, 197),\n        [800, 1200, 950]  # outliers\n    ])\n}, index=dates)\n\n# Make a copy for cleaning\ndata_cleaned = data_original.copy()\n\n# Step 1: Detect outliers\nprint(\"=== Outlier Detection ===\")\noutliers = get_outliers(\n    data_original,\n    contamination=0.015\n)\n\nfor col, outlier_vals in outliers.items():\n    pct = (len(outlier_vals) / len(data_original)) * 100\n    print(f\"{col}: {len(outlier_vals)} outliers ({pct:.2f}%)\")\n\n# Step 2: Visualize with histograms\nprint(\"\\n=== Histogram Visualization ===\")\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    contamination=0.015,\n    figsize=(14, 4),\n    alpha=0.7\n)\n\n# Step 3: Visualize with Plotly (interactive)\nprint(\"\\n=== Interactive Plotly Visualization ===\")\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    contamination=0.015,\n    template='plotly_white'\n)\n\n# Step 4: Selective column visualization\nprint(\"\\n=== Selective Column Analysis ===\")\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    columns=['temperature', 'humidity'],\n    contamination=0.015\n)\n\n=== Outlier Detection ===\ntemperature: 3 outliers (1.50%)\nhumidity: 3 outliers (1.50%)\npressure: 3 outliers (1.50%)\n\n=== Histogram Visualization ===\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n=== Interactive Plotly Visualization ===\n\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n=== Selective Column Analysis ===",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#parameters-and-configuration",
+    "href": "docs/preprocessing/outliers.html#parameters-and-configuration",
+    "title": "Outlier Detection and Visualization",
+    "section": "Parameters and Configuration",
+    "text": "Parameters and Configuration\n\ncontamination parameter\nThe contamination parameter controls the expected proportion of outliers in the dataset:\n\n0.01 (1%) - Conservative, detects severe outliers only\n0.02 (2%) - Moderate, typical for most applications\n0.05 (5%) - Liberal, detects more potential anomalies\n\nChoose based on your domain knowledge and data characteristics.\n\n\nrandom_state parameter\nThe random_state parameter ensures reproducibility:\n\n# Same random_state produces consistent results\noutliers1 = get_outliers(data, random_state=42)\noutliers2 = get_outliers(data, random_state=42)\n# outliers1 == outliers2\n\n\n\nMatplotlib histogram options\nWhen using visualize_outliers_hist(), you can pass additional matplotlib histogram options:\n\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    bins=100,           # More granular bins\n    alpha=0.5,          # Transparency\n    edgecolor='black',  # Border around bars\n    linewidth=0.5       # Border thickness\n)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nPlotly layout options\nWhen using visualize_outliers_plotly_scatter(), you can customize the Plotly figure:\n\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    template='plotly_dark',    # Dark theme\n    height=700,                 # Figure height\n    width=1200                  # Figure width\n)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#algorithm-details",
+    "href": "docs/preprocessing/outliers.html#algorithm-details",
+    "title": "Outlier Detection and Visualization",
+    "section": "Algorithm Details",
+    "text": "Algorithm Details\n\nIsolation Forest\nThe underlying algorithm uses scikit-learn’s IsolationForest, which:\n\nRandomly selects features and split values\nIsolates anomalies by exploiting their rarity\nAssigns anomaly scores based on path lengths\nMarks points with scores exceeding the contamination threshold as outliers\n\nKey characteristics:\n\nNo distance computation needed (efficient for high dimensions)\nScales well with number of features\nRobust to varying scales\nNo hyperparameter tuning required beyond contamination",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#best-practices",
+    "href": "docs/preprocessing/outliers.html#best-practices",
+    "title": "Outlier Detection and Visualization",
+    "section": "Best Practices",
+    "text": "Best Practices\n\n1. Preprocessing\nClean your data before outlier detection:\n\n# Remove missing values\ndata_clean = data.dropna()\n\n# Standardize if needed\nfrom sklearn.preprocessing import StandardScaler\nscaler = StandardScaler()\ndata_scaled = pd.DataFrame(\n    scaler.fit_transform(data),\n    index=data.index,\n    columns=data.columns\n)\n\n\n\n2. Contamination Estimation\nEstimate contamination based on domain knowledge:\n\n# For known outlier percentage\nn_outliers = 5  # Example: Domain logic expects ~5 corrupted sensor readings\ncontamination = n_outliers / len(data)\n\n# For exploratory analysis, try multiple values\nfor cont in [0.01, 0.02, 0.05]:\n    outliers = get_outliers(data, contamination=cont)\n    print(f\"Contamination {cont}: {len(outliers)} outliers\")\n\nContamination 0.01: 2 outliers\nContamination 0.02: 2 outliers\nContamination 0.05: 2 outliers\n\n\n\n\n3. Visual Inspection\nAlways visualize results:\n\n# Histogram for distribution analysis\nvisualize_outliers_hist(data_cleaned, data_original)\n\n# Time series plot for temporal patterns\nvisualize_outliers_plotly_scatter(data_cleaned, data_original)\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n\n4. Validation\nVerify outliers make sense in context:\n\noutliers = get_outliers(data, contamination=0.02)\n\nfor col, vals in outliers.items():\n    print(f\"\\n{col}:\")\n    print(f\"  Regular range: {data[col].min():.2f} - {data[col].max():.2f}\")\n    print(f\"  Outlier values: {sorted(vals.unique())}\")\n    print(f\"  Outlier indices: {list(vals.index)}\")\n\n\nA:\n  Regular range: -2.62 - 12.00\n  Outlier values: [np.float64(10.0), np.float64(11.0), np.float64(12.0)]\n  Outlier indices: [100, 101, 102]\n\nB:\n  Regular range: 1.16 - 120.00\n  Outlier values: [np.float64(100.0), np.float64(110.0), np.float64(120.0)]\n  Outlier indices: [100, 101, 102]",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#testing",
+    "href": "docs/preprocessing/outliers.html#testing",
+    "title": "Outlier Detection and Visualization",
+    "section": "Testing",
+    "text": "Testing\nAll examples in this guide are validated by tests/test_docs_outliers_examples.py with 43 comprehensive pytest cases covering:\n\nBasic outlier detection functionality\nContamination parameter variations (0.01, 0.02, 0.05)\nRandom state reproducibility\nData integrity and value validation\nComplete workflow integration\nEdge cases (small/large datasets, extreme values, NaN handling)\nTimeseries data with DatetimeIndex\nAPI examples and return types\nSafety-critical behavior validation\n\nRun the tests:\n# Run outliers documentation tests\nuv run pytest tests/test_docs_outliers_examples.py -v\n\n# Quick check\nuv run pytest tests/test_docs_outliers_examples.py --tb=no -q",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#troubleshooting",
+    "href": "docs/preprocessing/outliers.html#troubleshooting",
+    "title": "Outlier Detection and Visualization",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\n\nIssue: No outliers detected\nSolution: Increase the contamination parameter:\n\n# Try higher contamination\noutliers = get_outliers(data, contamination=0.05)\n\n\n\nIssue: Too many false positives\nSolution: Decrease the contamination parameter:\n\n# Be more conservative\noutliers = get_outliers(data, contamination=0.01)\n\n\n\nIssue: ImportError for plotly\nSolution: Install plotly:\npip install plotly\nOr use histogram visualization instead:\n\nvisualize_outliers_hist(data_cleaned, data_original)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/outliers.html#see-also",
+    "href": "docs/preprocessing/outliers.html#see-also",
+    "title": "Outlier Detection and Visualization",
+    "section": "See Also",
+    "text": "See Also\n\nIsolation Forest Algorithm",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Outlier Detection"
+    ]
+  },
+  {
     "objectID": "docs/model_selection/spotoptim_intro.html",
     "href": "docs/model_selection/spotoptim_intro.html",
     "title": "Introduction to Hyperparameter Tuning with SpotOptim",
@@ -1024,7 +1024,7 @@
     "href": "index.html#quick-links",
     "title": "Welcome to spotforecast2",
     "section": "Quick Links",
-    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 0.10.0-rc.1",
+    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 0.10.0-rc.3",
     "crumbs": [
       "Home"
     ]
@@ -1200,6 +1200,149 @@
     "crumbs": [
       "Model Selection Guides",
       "SpotOptim Lag Handling"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html",
+    "href": "docs/preprocessing/time_series_visualization.html",
+    "title": "Time Series Visualization",
+    "section": "",
+    "text": "This module provides interactive time series visualization using Plotly, with support for multiple datasets and flexible customization options.",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#overview",
+    "href": "docs/preprocessing/time_series_visualization.html#overview",
+    "title": "Time Series Visualization",
+    "section": "Overview",
+    "text": "Overview\nThe time series visualization module includes two main functions:\n\nvisualize_ts_plotly() - Visualize multiple time series datasets with Plotly\nvisualize_ts_comparison() - Compare datasets with optional statistical overlays\n\nThese functions provide a flexible, interactive way to explore time series data with support for train/validation/test splits or any custom dataset groupings.",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#installation",
+    "href": "docs/preprocessing/time_series_visualization.html#installation",
+    "title": "Time Series Visualization",
+    "section": "Installation",
+    "text": "Installation\nThe time series visualization functions require plotly:\nUsing pip:\npip install plotly\nUsing uv:\nuv pip install plotly",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#quick-start",
+    "href": "docs/preprocessing/time_series_visualization.html#quick-start",
+    "title": "Time Series Visualization",
+    "section": "Quick Start",
+    "text": "Quick Start\n\nBasic Visualization\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly\n\n# Create sample datasets\nnp.random.seed(42)\ndates_train = pd.date_range('2024-01-01', periods=100, freq='h')\ndates_val = pd.date_range('2024-05-11', periods=50, freq='h')\ndates_test = pd.date_range('2024-07-01', periods=30, freq='h')\n\ndata_train = pd.DataFrame({\n    'temperature': np.random.normal(20, 5, 100),\n    'humidity': np.random.normal(60, 10, 100)\n}, index=dates_train)\n\ndata_val = pd.DataFrame({\n    'temperature': np.random.normal(22, 5, 50),\n    'humidity': np.random.normal(55, 10, 50)\n}, index=dates_val)\n\ndata_test = pd.DataFrame({\n    'temperature': np.random.normal(25, 5, 30),\n    'humidity': np.random.normal(50, 10, 30)\n}, index=dates_test)\n\n# Visualize all datasets\ndataframes = {\n    'Train': data_train,\n    'Validation': data_val,\n    'Test': data_test\n}\n\nvisualize_ts_plotly(dataframes)\n\n        \n        \n        \n\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n\nSingle Dataset Visualization\n\n# Visualize a single dataset\ndataframes_single = {'Data': data_train}\nvisualize_ts_plotly(dataframes_single, columns=['temperature'])\n\n                            \n                                            \n\n\n\n\nCustom Styling\n\n# Customize colors and template\nvisualize_ts_plotly(\n    dataframes,  # From Basic Visualization\n    template='plotly_dark',\n    colors={\n        'Train': 'blue',\n        'Validation': 'green',\n        'Test': 'red'\n    },\n    figsize=(1400, 600)\n)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#api-reference",
+    "href": "docs/preprocessing/time_series_visualization.html#api-reference",
+    "title": "Time Series Visualization",
+    "section": "API Reference",
+    "text": "API Reference\n\nvisualize_ts_plotly()\nVisualize multiple time series datasets interactively with Plotly.\nSignature:\ndef visualize_ts_plotly(\n    dataframes: Dict[str, pd.DataFrame],\n    columns: Optional[List[str]] = None,\n    title_suffix: str = \"\",\n    figsize: tuple[int, int] = (1000, 500),\n    template: str = \"plotly_white\",\n    colors: Optional[Dict[str, str]] = None,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndataframes\nDict[str, DataFrame]\nRequired\nDictionary mapping dataset names to DataFrames with datetime index\n\n\ncolumns\nlist[str]\nNone\nColumns to visualize. If None, all columns are used\n\n\ntitle_suffix\nstr\n“”\nSuffix to append to column names in titles (e.g., “[°C]”)\n\n\nfigsize\ntuple[int, int]\n(1000, 500)\nFigure size as (width, height) in pixels\n\n\ntemplate\nstr\n“plotly_white”\nPlotly template name (“plotly_white”, “plotly_dark”, “ggplot2”, etc.)\n\n\ncolors\nDict[str, str]\nNone\nDictionary mapping dataset names to colors. If None, uses default colors\n\n\n**kwargs\nAny\n-\nAdditional arguments passed to go.Scatter() (e.g., fill=‘tozeroy’)\n\n\n\nReturns:\nNone. Displays Plotly figures.\nRaises:\n\nValueError - If dataframes dict is empty, contains empty DataFrames, or if specified columns don’t exist\nImportError - If plotly is not installed\nTypeError - If dataframes parameter is not a dictionary\n\nExample:\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly\n\n# Create sample data\nnp.random.seed(42)\ndates_api = pd.date_range('2024-01-01', periods=100, freq='h')\ndf_api = pd.DataFrame({\n    'temperature': np.random.normal(20, 5, 100),\n    'humidity': np.random.normal(60, 10, 100)\n}, index=dates_api)\n\n# Visualize single dataset\nvisualize_ts_plotly({'Data': df_api})\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n\nvisualize_ts_comparison()\nCompare multiple datasets with optional statistical overlays.\nSignature:\ndef visualize_ts_comparison(\n    dataframes: Dict[str, pd.DataFrame],\n    columns: Optional[List[str]] = None,\n    title_suffix: str = \"\",\n    figsize: tuple[int, int] = (1000, 500),\n    template: str = \"plotly_white\",\n    colors: Optional[Dict[str, str]] = None,\n    show_mean: bool = False,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndataframes\nDict[str, DataFrame]\nRequired\nDictionary mapping dataset names to DataFrames\n\n\ncolumns\nlist[str]\nNone\nColumns to visualize. If None, all columns are used\n\n\ntitle_suffix\nstr\n“”\nSuffix to append to titles\n\n\nfigsize\ntuple[int, int]\n(1000, 500)\nFigure size as (width, height) in pixels\n\n\ntemplate\nstr\n“plotly_white”\nPlotly template\n\n\ncolors\nDict[str, str]\nNone\nDictionary mapping dataset names to colors\n\n\nshow_mean\nbool\nFalse\nIf True, overlay the mean of all datasets\n\n\n**kwargs\nAny\n-\nAdditional arguments for go.Scatter()\n\n\n\nReturns:\nNone. Displays Plotly figures.\nRaises:\n\nValueError - If dataframes dict is empty\nImportError - If plotly is not installed\n\nExample:\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_comparison\n\n# Create sample data\nnp.random.seed(42)\ndates1 = pd.date_range('2024-01-01', periods=100, freq='h')\ndates2 = pd.date_range('2024-05-11', periods=100, freq='h')\n\ndf1 = pd.DataFrame({\n    'value': np.random.normal(20, 5, 100)\n}, index=dates1)\n\ndf2 = pd.DataFrame({\n    'value': np.random.normal(22, 5, 100)\n}, index=dates2)\n\n# Compare with mean overlay\nvisualize_ts_comparison(\n    {'Dataset1': df1, 'Dataset2': df2},\n    show_mean=True\n)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#api-reference-matplotlib",
+    "href": "docs/preprocessing/time_series_visualization.html#api-reference-matplotlib",
+    "title": "Time Series Visualization",
+    "section": "API Reference (Matplotlib)",
+    "text": "API Reference (Matplotlib)\nWhile visualize_ts_plotly provides highly dynamic web-interactivity, mathematical reporting often requires static, publication-ready vector graphics natively supported by Matplotlib.\n\nplot_zoomed_timeseries()\nCreates a two-panel vector plot: The top panel shows the full time series with a highlighted zoom region, and the bottom panel provides a detailed view of that focused local segment.\nSignature:\ndef plot_zoomed_timeseries(\n    data: pd.DataFrame,\n    target: str,\n    zoom: tuple[str, str],\n    title: Optional[str] = None,\n    figsize: tuple[int, int] = (8, 4),\n    show: bool = True,\n) -&gt; plt.Figure:\nExample:\n\nimport pandas as pd\nimport matplotlib.pyplot as plt\nfrom spotforecast2.preprocessing.time_series_visualization import plot_zoomed_timeseries\n\ndates = pd.date_range(\"2024-01-01\", periods=100, freq=\"h\")\ndf_zoom = pd.DataFrame({\"value\": range(100)}, index=dates)\n\nfig1 = plot_zoomed_timeseries(\n    data=df_zoom,\n    target=\"value\",\n    zoom=(\"2024-01-02 00:00\", \"2024-01-03 00:00\"),\n    show=False\n)\nplt.close(fig1) # Prevent automatic display during test suites\n\n\n\nplot_seasonality()\nEvaluates cyclic distributions (annual, weekly, daily) using boxplots mapping density and target variance tracking.\nSignature:\ndef plot_seasonality(\n    data: pd.DataFrame,\n    target: str,\n    figsize: tuple[int, int] = (8, 5),\n    show: bool = True,\n    logscale: Union[bool, list[bool]] = False,\n) -&gt; plt.Figure:\nExample:\n\nfrom spotforecast2.preprocessing.time_series_visualization import plot_seasonality\nimport numpy as np\n\ndates = pd.date_range(\"2024-01-01\", periods=1000, freq=\"h\")\n# Simulating a basic daily sine wave\ncyclical_data = np.sin(np.linspace(0, 50, 1000)) * 10 \ndf_season = pd.DataFrame({\"value\": cyclical_data}, index=dates)\n\nfig2 = plot_seasonality(\n    data=df_season, \n    target=\"value\", \n    logscale=False, \n    show=False\n)\nplt.close(fig2)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#complete-workflow-examples",
+    "href": "docs/preprocessing/time_series_visualization.html#complete-workflow-examples",
+    "title": "Time Series Visualization",
+    "section": "Complete Workflow Examples",
+    "text": "Complete Workflow Examples\n\nTrain/Validation/Test Split Visualization\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_plotly\n\n# Create time series data\nnp.random.seed(42)\nwf_data = pd.DataFrame({\n    'temperature': np.sin(np.linspace(0, 10, 300)) + np.random.normal(0, 0.1, 300),\n    'humidity': np.cos(np.linspace(0, 10, 300)) * 100 + np.random.normal(50, 5, 300)\n}, index=pd.date_range('2024-01-01', periods=300, freq='h'))\n\n# Split data\nsplit1 = int(0.6 * len(wf_data))\nsplit2 = int(0.8 * len(wf_data))\n\nwf_train = wf_data.iloc[:split1]\nwf_val = wf_data.iloc[split1:split2]\nwf_test = wf_data.iloc[split2:]\n\n# Visualize\nvisualize_ts_plotly(\n    {\n        'Train': wf_train,\n        'Validation': wf_val,\n        'Test': wf_test\n    },\n    template='plotly_white',\n    figsize=(1200, 600)\n)\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n\nMultiple Datasets Comparison\n\nfrom spotforecast2.preprocessing.time_series_visualization import visualize_ts_comparison\n\n# Create datasets from different time periods\ndates_w = pd.date_range('2024-01-01', periods=100, freq='h')\ndates_s = pd.date_range('2024-04-01', periods=100, freq='h')\ndates_m = pd.date_range('2024-07-01', periods=100, freq='h')\n\ndf_w = pd.DataFrame({'temperature': np.random.normal(15, 3, 100)}, index=dates_w)\ndf_s = pd.DataFrame({'temperature': np.random.normal(22, 3, 100)}, index=dates_s)\ndf_m = pd.DataFrame({'temperature': np.random.normal(25, 3, 100)}, index=dates_m)\n\n# Compare with mean\nvisualize_ts_comparison(\n    {\n        'Winter': df_w,\n        'Spring': df_s,\n        'Summer': df_m\n    },\n    show_mean=True,\n    colors={'Winter': 'blue', 'Spring': 'green', 'Summer': 'red'}\n)\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n\nDynamic Dataset Handling\n\n# Function works with any number of datasets\ndataframes_dyn = {}\n\nfor i in range(5):\n    dates_dyn = pd.date_range(f'2024-{i+1:02d}-01', periods=50, freq='h')\n    dataframes_dyn[f'Month_{i+1}'] = pd.DataFrame({\n        'sales': np.random.gamma(2, 2, 50) * 1000\n    }, index=dates_dyn)\n\nvisualize_ts_plotly(\n    dataframes_dyn,\n    title_suffix='[USD]',\n    figsize=(1400, 600)\n)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#parameters-and-configuration",
+    "href": "docs/preprocessing/time_series_visualization.html#parameters-and-configuration",
+    "title": "Time Series Visualization",
+    "section": "Parameters and Configuration",
+    "text": "Parameters and Configuration\n\nfigsize Parameter\nFigure size as (width, height) in pixels:\n\n# Small figure\nvisualize_ts_plotly(dataframes_dyn, figsize=(800, 400))\n\n# Large figure for detailed inspection\nvisualize_ts_plotly(dataframes_dyn, figsize=(1600, 800))\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n\nTemplate Options\nPlotly provides several built-in templates:\n\n# Light theme (default)\nvisualize_ts_plotly(dataframes_dyn, template='plotly_white')\n\n# Dark theme\nvisualize_ts_plotly(dataframes_dyn, template='plotly_dark')\n\n# Minimal theme\nvisualize_ts_plotly(dataframes_dyn, template='plotly')\n\n# Other themes\nvisualize_ts_plotly(dataframes_dyn, template='ggplot2')\nvisualize_ts_plotly(dataframes_dyn, template='seaborn')\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n\nColor Customization\nDefine custom colors for each dataset:\n\ncolors_custom = {\n    'Train': '#1f77b4',      # Blue\n    'Validation': '#ff7f0e', # Orange\n    'Test': '#2ca02c'        # Green\n}\n\nvisualize_ts_plotly({\n    'Train': wf_train,\n    'Validation': wf_val,\n    'Test': wf_test\n}, colors=colors_custom)\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n\nAdvanced Scatter Customization\nPass additional options to Plotly Scatter:\n\nvisualize_ts_plotly(\n    dataframes_dyn,\n    fill='tozeroy',           # Fill area under line\n    line=dict(width=2),       # Line width\n    opacity=0.8               # Transparency\n)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#best-practices",
+    "href": "docs/preprocessing/time_series_visualization.html#best-practices",
+    "title": "Time Series Visualization",
+    "section": "Best Practices",
+    "text": "Best Practices\n\n1. Use Datetime Index\nAlways use pandas datetime index for proper time axis handling:\n\n# Good\ndf_good = pd.DataFrame(df_api.values, columns=df_api.columns, index=pd.date_range('2024-01-01', periods=len(df_api), freq='h'))\n\n# Avoid\ndf_bad = pd.DataFrame(df_api.values, columns=df_api.columns)  # Will use default integer index\n\n\n\n2. Consistent Data Shapes\nEnsure all DataFrames have consistent columns for comparison:\n\n# Verify columns match\ncolumns_shared = set(df_w.columns) & set(df_s.columns) & set(df_m.columns)\nif not columns_shared:\n    raise ValueError(\"DataFrames have no common columns\")\n\n\n\n3. Handle Large Datasets\nFor large time series, consider subsampling:\n\n# Subsample every 10th point\ndf_sub = wf_data[::10]\nvisualize_ts_plotly({'Data': df_sub})\n\n                            \n                                            \n\n\n                            \n                                            \n\n\n\n\n4. Meaningful Dataset Names\nUse descriptive names for datasets:\n\n# Good\ndataframes_good = {\n    'Training (2023)': wf_train,\n    'Validation (Jan 2024)': wf_val,\n    'Testing (Feb 2024)': wf_test\n}\n\n# Avoid\ndataframes_bad = {\n    'A': wf_train,\n    'B': wf_val,\n    'C': wf_test\n}",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#troubleshooting",
+    "href": "docs/preprocessing/time_series_visualization.html#troubleshooting",
+    "title": "Time Series Visualization",
+    "section": "Troubleshooting",
+    "text": "Troubleshooting\n\nIssue: Overlapping Datasets\nIf datasets overlap in time, use separate figures:\n\n# Visualize one column at a time\nfor col in dataframes_dyn[list(dataframes_dyn.keys())[0]].columns:\n    visualize_ts_plotly(dataframes_dyn, columns=[col])\n\n                            \n                                            \n\n\n\n\nIssue: Memory Issues with Large Datasets\nDownsample before visualization:\n\n# Downsample to hourly (using the dense season data from earlier)\ndf_downsampled = df_season.resample('1D').mean()\nfig_down = plot_seasonality(df_downsampled, target=\"value\", show=False)\nplt.close(fig_down)\n\n\n\nIssue: Missing Data in Visualization\nHandle missing values before visualization:\n\n# Forward fill missing values\ndf_filled = df_api.ffill()\nvisualize_ts_plotly({'Data': df_filled})",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#testing",
+    "href": "docs/preprocessing/time_series_visualization.html#testing",
+    "title": "Time Series Visualization",
+    "section": "Testing",
+    "text": "Testing\nThis module includes comprehensive pytest tests validating all documentation examples and API functionality. Tests are located in tests/test_docs_time_series_visualization_examples.py.\n\nRunning Tests\nRun all time series visualization tests:\nuv run pytest tests/test_docs_time_series_visualization_examples.py -v\nRun specific test class:\nuv run pytest tests/test_docs_time_series_visualization_examples.py::TestVisualizeTimeSeriesPlotlyBasic -v\n\n\nTest Coverage\nThe test suite includes 50 comprehensive tests covering:\n\nBasic Visualization (9 tests): Single/multiple dataset visualization, column selection, custom parameters\nComparison Functionality (6 tests): Dataset comparison, statistical overlays, customization\nComplete Workflows (3 tests): Train/val/test split visualization, multi-dataset comparison, dynamic datasets\nParameters & Configuration (8 tests): figsize options, template variations, color customization\nBest Practices (4 tests): Datetime index handling, consistent shapes, subsampling for large datasets\nEdge Cases (7 tests): Single value, constant values, NaN handling, negative/large values, many columns\nAPI Examples (5 tests): Quick start examples, API function validation\nData Integrity (3 tests): Index preservation, data value preservation, dataset independence\nSafety-Critical (5 tests): Error handling, empty input validation, determinism\n\n\n\nTest Validation Command\nVerify all time series visualization tests pass:\nuv run pytest tests/test_docs_time_series_visualization_examples.py --tb=short -q\nExpected output: 50 passed\n\n\nDocumentation Examples Tested\nAll code examples in this documentation have been validated with pytest: - Quick start examples (all variants) - Complete workflow examples (train/val/test split, comparison, dynamic) - Parameter configuration examples (figsize, templates, colors) - Best practices examples (datetime index, consistent shapes, large datasets) - Troubleshooting examples (overlapping datasets, memory issues, missing data)",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#see-also",
+    "href": "docs/preprocessing/time_series_visualization.html#see-also",
+    "title": "Time Series Visualization",
+    "section": "See Also",
+    "text": "See Also\n\nOutlier Detection and Visualization\nPlotly Documentation",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
+    ]
+  },
+  {
+    "objectID": "docs/preprocessing/time_series_visualization.html#references",
+    "href": "docs/preprocessing/time_series_visualization.html#references",
+    "title": "Time Series Visualization",
+    "section": "References",
+    "text": "References\n\nPlotly Dash and Plotly.py documentation: https://plotly.com/python/\nPandas datetime index: https://pandas.pydata.org/docs/user_guide/timeseries.html",
+    "crumbs": [
+      "Preprocessing Guides",
+      "Time Series Visualization"
     ]
   },
   {
@@ -1692,138 +1835,6 @@
       "API Reference",
       "Weather",
       "weather_client"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html",
-    "href": "docs/preprocessing/outliers.html",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "This module provides comprehensive tools for detecting and visualizing outliers in time series data using the Isolation Forest algorithm.\n\n\nThe outlier detection module includes three main functions:\n\nget_outliers() - Detect outliers using Isolation Forest\nvisualize_outliers_hist() - Visualize outliers with static histograms\nvisualize_outliers_plotly_scatter() - Visualize outliers with interactive Plotly scatter plots\n\nThese functions work together to provide a complete workflow for outlier analysis in time series data.\n\n\n\nThe outlier visualization functions require matplotlib for histograms and plotly for interactive scatter plots.\nUsing pip:\npip install matplotlib plotly\nUsing uv:\nuv pip install matplotlib plotly\n\n\n\n\n\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2_safe.preprocessing.outlier import get_outliers\n\n# Create sample data with outliers\nnp.random.seed(42)\ndata = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 100),\n        [95, 98, 99]  # outliers\n    ])\n})\n\n# Detect outliers\noutliers = get_outliers(data, contamination=0.03)\n\nfor col, outlier_vals in outliers.items():\n    print(f\"{col}: {len(outlier_vals)} outliers detected\")\n\n\n\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist\n\n# Create sample data\nnp.random.seed(42)\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ])\n})\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    figsize=(12, 5),\n    alpha=0.7\n)\n\n\n\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter\n\n# Create time series data\ndates = pd.date_range('2024-01-01', periods=103, freq='h')\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ])\n}, index=dates)\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers with interactive plot\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    template='plotly_white'\n)\n\n\n\n\n\n\nDetect outliers in each column using Isolation Forest.\nSignature:\ndef get_outliers(\n    data: pd.DataFrame,\n    data_original: Optional[pd.DataFrame] = None,\n    contamination: float = 0.01,\n    random_state: int = 1234,\n) -&gt; Dict[str, pd.Series]\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndata\nDataFrame\nRequired\nThe input DataFrame to check for outliers\n\n\ndata_original\nDataFrame\nNone\nOptional original DataFrame before outlier detection. If provided, helps identify which values became NaN due to outlier detection\n\n\ncontamination\nfloat\n0.01\nThe estimated proportion of outliers in the dataset (between 0 and 1)\n\n\nrandom_state\nint\n1234\nRandom seed for reproducibility\n\n\n\nReturns:\nA dictionary mapping column names to pandas Series of outlier values.\nRaises:\n\nValueError - If data is empty or contains no columns\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2_safe.preprocessing.outlier import get_outliers\n\n# Create sample data\nnp.random.seed(42)\ndata = pd.DataFrame({\n    'A': np.concatenate([np.random.normal(0, 1, 100), [10, 11, 12]]),\n    'B': np.concatenate([np.random.normal(5, 2, 100), [100, 110, 120]])\n})\n\n# Detect outliers\noutliers = get_outliers(data, contamination=0.03)\nfor col, outlier_vals in outliers.items():\n    print(f\"{col}: {len(outlier_vals)} outliers detected\")\n\n\n\nVisualize outliers using stacked histograms.\nSignature:\ndef visualize_outliers_hist(\n    data: pd.DataFrame,\n    data_original: pd.DataFrame,\n    columns: Optional[list[str]] = None,\n    contamination: float = 0.01,\n    random_state: int = 1234,\n    figsize: tuple[int, int] = (10, 5),\n    bins: int = 50,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndata\nDataFrame\nRequired\nThe DataFrame with cleaned data (outliers may be NaN)\n\n\ndata_original\nDataFrame\nRequired\nThe original DataFrame before outlier detection\n\n\ncolumns\nlist[str]\nNone\nList of column names to visualize. If None, all columns are used\n\n\ncontamination\nfloat\n0.01\nThe estimated proportion of outliers in the dataset\n\n\nrandom_state\nint\n1234\nRandom seed for reproducibility\n\n\nfigsize\ntuple[int, int]\n(10, 5)\nFigure size as (width, height)\n\n\nbins\nint\n50\nNumber of histogram bins\n\n\n**kwargs\nAny\n-\nAdditional keyword arguments passed to plt.hist() (e.g., color, alpha, edgecolor)\n\n\n\nReturns:\nNone. Displays matplotlib figures.\nRaises:\n\nValueError - If data or data_original is empty, or if specified columns don’t exist\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist\n\n# Create sample data\nnp.random.seed(42)\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 100),\n        [95, 98, 99]  # outliers\n    ])\n})\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    figsize=(12, 5),\n    alpha=0.7,\n    edgecolor='black'\n)\n\n\n\nVisualize outliers using interactive Plotly scatter plots.\nSignature:\ndef visualize_outliers_plotly_scatter(\n    data: pd.DataFrame,\n    data_original: pd.DataFrame,\n    columns: Optional[list[str]] = None,\n    contamination: float = 0.01,\n    random_state: int = 1234,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndata\nDataFrame\nRequired\nThe DataFrame with cleaned data (outliers may be NaN)\n\n\ndata_original\nDataFrame\nRequired\nThe original DataFrame before outlier detection\n\n\ncolumns\nlist[str]\nNone\nList of column names to visualize. If None, all columns are used\n\n\ncontamination\nfloat\n0.01\nThe estimated proportion of outliers in the dataset\n\n\nrandom_state\nint\n1234\nRandom seed for reproducibility\n\n\n**kwargs\nAny\n-\nAdditional keyword arguments passed to go.Figure.update_layout() (e.g., template, height)\n\n\n\nReturns:\nNone. Displays Plotly figures.\nRaises:\n\nValueError - If data or data_original is empty, or if specified columns don’t exist\nImportError - If plotly is not installed\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter\n\n# Create time series data\nnp.random.seed(42)\ndates = pd.date_range('2024-01-01', periods=103, freq='h')\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 100),\n        [95, 98, 99]  # outliers\n    ])\n}, index=dates)\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    template='plotly_white',\n    height=600\n)\n\n\n\n\nHere’s a complete example showing the typical workflow for outlier detection and visualization:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2_safe.preprocessing.outlier import get_outliers\nfrom spotforecast2.preprocessing.outlier_plots import (\n    visualize_outliers_hist,\n    visualize_outliers_plotly_scatter)\n\n# Create realistic time series data with outliers\nnp.random.seed(42)\ndates = pd.date_range('2024-01-01', periods=200, freq='h')\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 197),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 197),\n        [95, 98, 99]  # outliers\n    ]),\n    'pressure': np.concatenate([\n        np.random.normal(1013, 10, 197),\n        [800, 1200, 950]  # outliers\n    ])\n}, index=dates)\n\n# Make a copy for cleaning\ndata_cleaned = data_original.copy()\n\n# Step 1: Detect outliers\nprint(\"=== Outlier Detection ===\")\noutliers = get_outliers(\n    data_original,\n    contamination=0.015\n)\n\nfor col, outlier_vals in outliers.items():\n    pct = (len(outlier_vals) / len(data_original)) * 100\n    print(f\"{col}: {len(outlier_vals)} outliers ({pct:.2f}%)\")\n\n# Step 2: Visualize with histograms\nprint(\"\\n=== Histogram Visualization ===\")\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    contamination=0.015,\n    figsize=(14, 4),\n    alpha=0.7\n)\n\n# Step 3: Visualize with Plotly (interactive)\nprint(\"\\n=== Interactive Plotly Visualization ===\")\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    contamination=0.015,\n    template='plotly_white'\n)\n\n# Step 4: Selective column visualization\nprint(\"\\n=== Selective Column Analysis ===\")\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    columns=['temperature', 'humidity'],\n    contamination=0.015\n)\n\n\n\n\n\nThe contamination parameter controls the expected proportion of outliers in the dataset:\n\n0.01 (1%) - Conservative, detects severe outliers only\n0.02 (2%) - Moderate, typical for most applications\n0.05 (5%) - Liberal, detects more potential anomalies\n\nChoose based on your domain knowledge and data characteristics.\n\n\n\nThe random_state parameter ensures reproducibility:\n# Same random_state produces consistent results\noutliers1 = get_outliers(data, random_state=42)\noutliers2 = get_outliers(data, random_state=42)\n# outliers1 == outliers2\n\n\n\nWhen using visualize_outliers_hist(), you can pass additional matplotlib histogram options:\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    bins=100,           # More granular bins\n    alpha=0.5,          # Transparency\n    edgecolor='black',  # Border around bars\n    linewidth=0.5       # Border thickness\n)\n\n\n\nWhen using visualize_outliers_plotly_scatter(), you can customize the Plotly figure:\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    template='plotly_dark',    # Dark theme\n    height=700,                 # Figure height\n    width=1200                  # Figure width\n)\n\n\n\n\n\n\nThe underlying algorithm uses scikit-learn’s IsolationForest, which:\n\nRandomly selects features and split values\nIsolates anomalies by exploiting their rarity\nAssigns anomaly scores based on path lengths\nMarks points with scores exceeding the contamination threshold as outliers\n\nKey characteristics:\n\nNo distance computation needed (efficient for high dimensions)\nScales well with number of features\nRobust to varying scales\nNo hyperparameter tuning required beyond contamination\n\n\n\n\n\n\n\nClean your data before outlier detection:\n# Remove missing values\ndata_clean = data.dropna()\n\n# Standardize if needed\nfrom sklearn.preprocessing import StandardScaler\nscaler = StandardScaler()\ndata_scaled = pd.DataFrame(\n    scaler.fit_transform(data),\n    index=data.index,\n    columns=data.columns\n)\n\n\n\nEstimate contamination based on domain knowledge:\n# For known outlier percentage\ncontamination = n_outliers / len(data)\n\n# For exploratory analysis, try multiple values\nfor cont in [0.01, 0.02, 0.05]:\n    outliers = get_outliers(data, contamination=cont)\n    print(f\"Contamination {cont}: {len(outliers)} outliers\")\n\n\n\nAlways visualize results:\n# Histogram for distribution analysis\nvisualize_outliers_hist(data_cleaned, data_original)\n\n# Time series plot for temporal patterns\nvisualize_outliers_plotly_scatter(data_cleaned, data_original)\n\n\n\nVerify outliers make sense in context:\noutliers = get_outliers(data, contamination=0.02)\n\nfor col, vals in outliers.items():\n    print(f\"\\n{col}:\")\n    print(f\"  Regular range: {data[col].min():.2f} - {data[col].max():.2f}\")\n    print(f\"  Outlier values: {sorted(vals.unique())}\")\n    print(f\"  Outlier indices: {list(vals.index)}\")\n\n\n\n\nAll examples in this guide are validated by tests/test_docs_outliers_examples.py with 43 comprehensive pytest cases covering:\n\nBasic outlier detection functionality\nContamination parameter variations (0.01, 0.02, 0.05)\nRandom state reproducibility\nData integrity and value validation\nComplete workflow integration\nEdge cases (small/large datasets, extreme values, NaN handling)\nTimeseries data with DatetimeIndex\nAPI examples and return types\nSafety-critical behavior validation\n\nRun the tests:\n# Run outliers documentation tests\nuv run pytest tests/test_docs_outliers_examples.py -v\n\n# Quick check\nuv run pytest tests/test_docs_outliers_examples.py --tb=no -q\n\n\n\n\n\nSolution: Increase the contamination parameter:\n# Try higher contamination\noutliers = get_outliers(data, contamination=0.05)\n\n\n\nSolution: Decrease the contamination parameter:\n# Be more conservative\noutliers = get_outliers(data, contamination=0.01)\n\n\n\nSolution: Install plotly:\npip install plotly\nOr use histogram visualization instead:\nvisualize_outliers_hist(data_cleaned, data_original)\n\n\n\n\n\nIsolation Forest Algorithm",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#overview",
-    "href": "docs/preprocessing/outliers.html#overview",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "The outlier detection module includes three main functions:\n\nget_outliers() - Detect outliers using Isolation Forest\nvisualize_outliers_hist() - Visualize outliers with static histograms\nvisualize_outliers_plotly_scatter() - Visualize outliers with interactive Plotly scatter plots\n\nThese functions work together to provide a complete workflow for outlier analysis in time series data.",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#installation",
-    "href": "docs/preprocessing/outliers.html#installation",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "The outlier visualization functions require matplotlib for histograms and plotly for interactive scatter plots.\nUsing pip:\npip install matplotlib plotly\nUsing uv:\nuv pip install matplotlib plotly",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#quick-start",
-    "href": "docs/preprocessing/outliers.html#quick-start",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "import pandas as pd\nimport numpy as np\nfrom spotforecast2_safe.preprocessing.outlier import get_outliers\n\n# Create sample data with outliers\nnp.random.seed(42)\ndata = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 100),\n        [95, 98, 99]  # outliers\n    ])\n})\n\n# Detect outliers\noutliers = get_outliers(data, contamination=0.03)\n\nfor col, outlier_vals in outliers.items():\n    print(f\"{col}: {len(outlier_vals)} outliers detected\")\n\n\n\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist\n\n# Create sample data\nnp.random.seed(42)\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ])\n})\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    figsize=(12, 5),\n    alpha=0.7\n)\n\n\n\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter\n\n# Create time series data\ndates = pd.date_range('2024-01-01', periods=103, freq='h')\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ])\n}, index=dates)\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers with interactive plot\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    template='plotly_white'\n)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#api-reference",
-    "href": "docs/preprocessing/outliers.html#api-reference",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "Detect outliers in each column using Isolation Forest.\nSignature:\ndef get_outliers(\n    data: pd.DataFrame,\n    data_original: Optional[pd.DataFrame] = None,\n    contamination: float = 0.01,\n    random_state: int = 1234,\n) -&gt; Dict[str, pd.Series]\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndata\nDataFrame\nRequired\nThe input DataFrame to check for outliers\n\n\ndata_original\nDataFrame\nNone\nOptional original DataFrame before outlier detection. If provided, helps identify which values became NaN due to outlier detection\n\n\ncontamination\nfloat\n0.01\nThe estimated proportion of outliers in the dataset (between 0 and 1)\n\n\nrandom_state\nint\n1234\nRandom seed for reproducibility\n\n\n\nReturns:\nA dictionary mapping column names to pandas Series of outlier values.\nRaises:\n\nValueError - If data is empty or contains no columns\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2_safe.preprocessing.outlier import get_outliers\n\n# Create sample data\nnp.random.seed(42)\ndata = pd.DataFrame({\n    'A': np.concatenate([np.random.normal(0, 1, 100), [10, 11, 12]]),\n    'B': np.concatenate([np.random.normal(5, 2, 100), [100, 110, 120]])\n})\n\n# Detect outliers\noutliers = get_outliers(data, contamination=0.03)\nfor col, outlier_vals in outliers.items():\n    print(f\"{col}: {len(outlier_vals)} outliers detected\")\n\n\n\nVisualize outliers using stacked histograms.\nSignature:\ndef visualize_outliers_hist(\n    data: pd.DataFrame,\n    data_original: pd.DataFrame,\n    columns: Optional[list[str]] = None,\n    contamination: float = 0.01,\n    random_state: int = 1234,\n    figsize: tuple[int, int] = (10, 5),\n    bins: int = 50,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndata\nDataFrame\nRequired\nThe DataFrame with cleaned data (outliers may be NaN)\n\n\ndata_original\nDataFrame\nRequired\nThe original DataFrame before outlier detection\n\n\ncolumns\nlist[str]\nNone\nList of column names to visualize. If None, all columns are used\n\n\ncontamination\nfloat\n0.01\nThe estimated proportion of outliers in the dataset\n\n\nrandom_state\nint\n1234\nRandom seed for reproducibility\n\n\nfigsize\ntuple[int, int]\n(10, 5)\nFigure size as (width, height)\n\n\nbins\nint\n50\nNumber of histogram bins\n\n\n**kwargs\nAny\n-\nAdditional keyword arguments passed to plt.hist() (e.g., color, alpha, edgecolor)\n\n\n\nReturns:\nNone. Displays matplotlib figures.\nRaises:\n\nValueError - If data or data_original is empty, or if specified columns don’t exist\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_hist\n\n# Create sample data\nnp.random.seed(42)\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 100),\n        [95, 98, 99]  # outliers\n    ])\n})\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    figsize=(12, 5),\n    alpha=0.7,\n    edgecolor='black'\n)\n\n\n\nVisualize outliers using interactive Plotly scatter plots.\nSignature:\ndef visualize_outliers_plotly_scatter(\n    data: pd.DataFrame,\n    data_original: pd.DataFrame,\n    columns: Optional[list[str]] = None,\n    contamination: float = 0.01,\n    random_state: int = 1234,\n    **kwargs: Any,\n) -&gt; None\nParameters:\n\n\n\n\n\n\n\n\n\nParameter\nType\nDefault\nDescription\n\n\n\n\ndata\nDataFrame\nRequired\nThe DataFrame with cleaned data (outliers may be NaN)\n\n\ndata_original\nDataFrame\nRequired\nThe original DataFrame before outlier detection\n\n\ncolumns\nlist[str]\nNone\nList of column names to visualize. If None, all columns are used\n\n\ncontamination\nfloat\n0.01\nThe estimated proportion of outliers in the dataset\n\n\nrandom_state\nint\n1234\nRandom seed for reproducibility\n\n\n**kwargs\nAny\n-\nAdditional keyword arguments passed to go.Figure.update_layout() (e.g., template, height)\n\n\n\nReturns:\nNone. Displays Plotly figures.\nRaises:\n\nValueError - If data or data_original is empty, or if specified columns don’t exist\nImportError - If plotly is not installed\n\nExample:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2.preprocessing.outlier_plots import visualize_outliers_plotly_scatter\n\n# Create time series data\nnp.random.seed(42)\ndates = pd.date_range('2024-01-01', periods=103, freq='h')\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 100),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 100),\n        [95, 98, 99]  # outliers\n    ])\n}, index=dates)\n\ndata_cleaned = data_original.copy()\n\n# Visualize outliers\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    contamination=0.03,\n    template='plotly_white',\n    height=600\n)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#complete-workflow-example",
-    "href": "docs/preprocessing/outliers.html#complete-workflow-example",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "Here’s a complete example showing the typical workflow for outlier detection and visualization:\nimport pandas as pd\nimport numpy as np\nfrom spotforecast2_safe.preprocessing.outlier import get_outliers\nfrom spotforecast2.preprocessing.outlier_plots import (\n    visualize_outliers_hist,\n    visualize_outliers_plotly_scatter)\n\n# Create realistic time series data with outliers\nnp.random.seed(42)\ndates = pd.date_range('2024-01-01', periods=200, freq='h')\ndata_original = pd.DataFrame({\n    'temperature': np.concatenate([\n        np.random.normal(20, 5, 197),\n        [50, 60, 70]  # outliers\n    ]),\n    'humidity': np.concatenate([\n        np.random.normal(60, 10, 197),\n        [95, 98, 99]  # outliers\n    ]),\n    'pressure': np.concatenate([\n        np.random.normal(1013, 10, 197),\n        [800, 1200, 950]  # outliers\n    ])\n}, index=dates)\n\n# Make a copy for cleaning\ndata_cleaned = data_original.copy()\n\n# Step 1: Detect outliers\nprint(\"=== Outlier Detection ===\")\noutliers = get_outliers(\n    data_original,\n    contamination=0.015\n)\n\nfor col, outlier_vals in outliers.items():\n    pct = (len(outlier_vals) / len(data_original)) * 100\n    print(f\"{col}: {len(outlier_vals)} outliers ({pct:.2f}%)\")\n\n# Step 2: Visualize with histograms\nprint(\"\\n=== Histogram Visualization ===\")\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    contamination=0.015,\n    figsize=(14, 4),\n    alpha=0.7\n)\n\n# Step 3: Visualize with Plotly (interactive)\nprint(\"\\n=== Interactive Plotly Visualization ===\")\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    contamination=0.015,\n    template='plotly_white'\n)\n\n# Step 4: Selective column visualization\nprint(\"\\n=== Selective Column Analysis ===\")\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    columns=['temperature', 'humidity'],\n    contamination=0.015\n)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#parameters-and-configuration",
-    "href": "docs/preprocessing/outliers.html#parameters-and-configuration",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "The contamination parameter controls the expected proportion of outliers in the dataset:\n\n0.01 (1%) - Conservative, detects severe outliers only\n0.02 (2%) - Moderate, typical for most applications\n0.05 (5%) - Liberal, detects more potential anomalies\n\nChoose based on your domain knowledge and data characteristics.\n\n\n\nThe random_state parameter ensures reproducibility:\n# Same random_state produces consistent results\noutliers1 = get_outliers(data, random_state=42)\noutliers2 = get_outliers(data, random_state=42)\n# outliers1 == outliers2\n\n\n\nWhen using visualize_outliers_hist(), you can pass additional matplotlib histogram options:\nvisualize_outliers_hist(\n    data_cleaned,\n    data_original,\n    bins=100,           # More granular bins\n    alpha=0.5,          # Transparency\n    edgecolor='black',  # Border around bars\n    linewidth=0.5       # Border thickness\n)\n\n\n\nWhen using visualize_outliers_plotly_scatter(), you can customize the Plotly figure:\nvisualize_outliers_plotly_scatter(\n    data_cleaned,\n    data_original,\n    template='plotly_dark',    # Dark theme\n    height=700,                 # Figure height\n    width=1200                  # Figure width\n)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#algorithm-details",
-    "href": "docs/preprocessing/outliers.html#algorithm-details",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "The underlying algorithm uses scikit-learn’s IsolationForest, which:\n\nRandomly selects features and split values\nIsolates anomalies by exploiting their rarity\nAssigns anomaly scores based on path lengths\nMarks points with scores exceeding the contamination threshold as outliers\n\nKey characteristics:\n\nNo distance computation needed (efficient for high dimensions)\nScales well with number of features\nRobust to varying scales\nNo hyperparameter tuning required beyond contamination",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#best-practices",
-    "href": "docs/preprocessing/outliers.html#best-practices",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "Clean your data before outlier detection:\n# Remove missing values\ndata_clean = data.dropna()\n\n# Standardize if needed\nfrom sklearn.preprocessing import StandardScaler\nscaler = StandardScaler()\ndata_scaled = pd.DataFrame(\n    scaler.fit_transform(data),\n    index=data.index,\n    columns=data.columns\n)\n\n\n\nEstimate contamination based on domain knowledge:\n# For known outlier percentage\ncontamination = n_outliers / len(data)\n\n# For exploratory analysis, try multiple values\nfor cont in [0.01, 0.02, 0.05]:\n    outliers = get_outliers(data, contamination=cont)\n    print(f\"Contamination {cont}: {len(outliers)} outliers\")\n\n\n\nAlways visualize results:\n# Histogram for distribution analysis\nvisualize_outliers_hist(data_cleaned, data_original)\n\n# Time series plot for temporal patterns\nvisualize_outliers_plotly_scatter(data_cleaned, data_original)\n\n\n\nVerify outliers make sense in context:\noutliers = get_outliers(data, contamination=0.02)\n\nfor col, vals in outliers.items():\n    print(f\"\\n{col}:\")\n    print(f\"  Regular range: {data[col].min():.2f} - {data[col].max():.2f}\")\n    print(f\"  Outlier values: {sorted(vals.unique())}\")\n    print(f\"  Outlier indices: {list(vals.index)}\")",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#testing",
-    "href": "docs/preprocessing/outliers.html#testing",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "All examples in this guide are validated by tests/test_docs_outliers_examples.py with 43 comprehensive pytest cases covering:\n\nBasic outlier detection functionality\nContamination parameter variations (0.01, 0.02, 0.05)\nRandom state reproducibility\nData integrity and value validation\nComplete workflow integration\nEdge cases (small/large datasets, extreme values, NaN handling)\nTimeseries data with DatetimeIndex\nAPI examples and return types\nSafety-critical behavior validation\n\nRun the tests:\n# Run outliers documentation tests\nuv run pytest tests/test_docs_outliers_examples.py -v\n\n# Quick check\nuv run pytest tests/test_docs_outliers_examples.py --tb=no -q",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#troubleshooting",
-    "href": "docs/preprocessing/outliers.html#troubleshooting",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "Solution: Increase the contamination parameter:\n# Try higher contamination\noutliers = get_outliers(data, contamination=0.05)\n\n\n\nSolution: Decrease the contamination parameter:\n# Be more conservative\noutliers = get_outliers(data, contamination=0.01)\n\n\n\nSolution: Install plotly:\npip install plotly\nOr use histogram visualization instead:\nvisualize_outliers_hist(data_cleaned, data_original)",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
-    ]
-  },
-  {
-    "objectID": "docs/preprocessing/outliers.html#see-also",
-    "href": "docs/preprocessing/outliers.html#see-also",
-    "title": "Outlier Detection and Visualization",
-    "section": "",
-    "text": "Isolation Forest Algorithm",
-    "crumbs": [
-      "Preprocessing Guides",
-      "Outlier Detection"
     ]
   },
   {
