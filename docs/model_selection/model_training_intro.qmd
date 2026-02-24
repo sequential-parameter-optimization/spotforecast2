@@ -336,6 +336,122 @@ fig.update_layout(
     template="plotly_white",
     hovermode="x unified"
 )
+fig.update_layout(
+    title=f"demo02.csv LightGBM Quality Appraisal (MAE: {mae:.3f})",
+    xaxis_title="Time (UTC)",
+    yaxis_title="Target Sensor: A",
+    template="plotly_white",
+    hovermode="x unified"
+)
 # fig.show() 
+```
+
+## Automated Run Orchestration with `handle_training`
+
+While `train_new_model` handles the mechanics of model tuning and serialization, manual invocation forces you to manage version tracking and retrain cadences. For real MLOps deployments—like weekly cron jobs—you need an orchestrator that determines *if* a model actually needs retraining before wasting compute.
+
+The `handle_training()` function serves as this smart orchestrator layer. It checks the default library cache (or a specified directory) to find the most recent version of your model. If the existing model is older than 7 days, or if no model exists, it orchestrates a new `train_new_model` run and increments the iteration counter automatically (e.g., `<model>_forecaster_0.joblib` to `<model>_forecaster_1.joblib`).
+
+### `handle_training` Arguments
+
+| Argument | Type | Description |
+| :--- | :--- | :--- |
+| `model_class` | type | The class of the forecaster model to train. (e.g., `ForecasterLGBM` or custom wrappers). |
+| `model_name` | str \| None | Base tracking tag used for standardizing the disk file name. If None, inferred automatically from `model_class.__name__`. |
+| `model_dir` | str \| Path \| None | Output directory for the `.joblib` assets. Defaults to the framework's `.cache`. |
+| `force` | bool | If `True`, overrides the age check and forces a retraining iteration regardless of how recent the previous model is. Defaults to `False`. |
+| `train_size` | pd.Timedelta \| None | Total duration of the time series training window. |
+| `end_dev` | str \| pd.Timestamp \| None | Hard chronological cutoff separating training data from future inference data. |
+| `data_filename` | str \| None | Target csv path inside the dataset dir to load via `fetch_data`. |
+| `**kwargs` | Any | Key-value arguments streamed dynamically right into the `model_class` initialization. |
+
+### Simple Example: Initializing the Pipeline
+
+In this first example, assume we have an empty production environment. We invoke `handle_training()`. Because no model currently exists in our temporary directory, it will execute an initial training cycle matching iteration `0`.
+
+```{python}
+import tempfile
+from pathlib import Path
+import pandas as pd
+from spotforecast2_safe.data.fetch_data import get_package_data_home
+from spotforecast2.manager.trainer_full import handle_training
+
+# We define a lightweight dummy model for demonstration.
+# In reality, this would be a full ForecasterRecursive implementation.
+class SimpleModel:
+    def __init__(self, iteration, end_dev, train_size, **kwargs):
+        self.iteration = iteration
+        self.end_dev = end_dev
+        self.train_size = train_size
+    def tune(self):
+        print(f"  [Output] Tuning triggered for iteration {self.iteration}")
+    def get_params(self): return {}
+
+demo_file = get_package_data_home() / "demo01.csv"
+
+# Use a temporary directory as our "server disk" to avoid cluttering local files
+with tempfile.TemporaryDirectory() as tmpdir:
+    print("Executing standard handle_training request...")
+    
+    # 1. Trigger handler
+    handle_training(
+        model_class=SimpleModel,
+        model_name="simple_demo",
+        model_dir=tmpdir,
+        data_filename=str(demo_file)
+    )
+    
+    # 2. Verify disk state
+    files_on_disk = list(Path(tmpdir).glob("*.joblib"))
+    print(f"Files saved to disk: {[f.name for f in files_on_disk]}")
+```
+
+### Advanced Example: Forcing Retraining Updates
+
+Now consider a scenario where time has passed, and we want to actively force the pipeline to recalibrate utilizing the `force=True` command. Even if the loaded model hasn't mathematically "expired" past the 7-day default limit, `handle_training` detects the file, increments the iteration sequence natively, and archives the latest representation safely on disk alongside the predecessor.
+
+```{python}
+import tempfile
+from pathlib import Path
+from spotforecast2_safe.data.fetch_data import get_package_data_home
+from spotforecast2.manager.trainer_full import handle_training
+
+class AdvancedModel:
+    def __init__(self, iteration, end_dev, train_size, **kwargs):
+        self.iteration = iteration
+        self.end_dev = end_dev
+        self.train_size = train_size
+        self.kwargs = kwargs
+    def tune(self): 
+        print(f"  [Output] Tuned AdvancedModel {self.iteration} | Mode: {self.kwargs.get('mode')}")
+    def get_params(self): return {}
+
+demo_file = get_package_data_home() / "demo01.csv"
+
+with tempfile.TemporaryDirectory() as tmpdir:
+    # 1. Simulate the initial Monday morning cron job
+    print("--- Stage 1: Initial Cron Execution ---")
+    handle_training(
+        model_class=AdvancedModel,
+        model_name="advanced_model",
+        model_dir=tmpdir,
+        data_filename=str(demo_file),
+        mode="baseline"
+    )
+    
+    # 2. Simulate an emergency Friday redeployment constraint via `force`
+    print("\n--- Stage 2: Forced Redeployment ---")
+    handle_training(
+        model_class=AdvancedModel,
+        model_name="advanced_model",
+        model_dir=tmpdir,
+        force=True, # Bypass expiration
+        data_filename=str(demo_file),
+        mode="emergency_update"
+    )
+    
+    # 3. Observe the structured historical retention
+    files = sorted([f.name for f in Path(tmpdir).glob("*.joblib")])
+    print(f"\nFinal Directory State:\n{files}")
 ```
 
