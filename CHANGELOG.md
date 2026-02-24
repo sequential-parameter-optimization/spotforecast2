@@ -9,6 +9,15 @@
 ### Bug Fixes
 
 *  convert_search_space ([605035c](https://github.com/sequential-parameter-optimization/spotforecast2/commit/605035c9235c8d84546905b06746798b50ad8348))
+## [0.8.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.7.0...v0.8.0) (2026-02-24)
+
+### Features
+
+* parse_lags_from_strings ([b1e85ab](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b1e85abd0d8433907f8e296425f8a954712c8256))
+
+### Bug Fixes
+
+* added matplotlib example ([be8d255](https://github.com/sequential-parameter-optimization/spotforecast2/commit/be8d2555e424ed72dd744be92de332d2794631ea))
 
 ## [0.8.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.7.0...v0.8.0-rc.1) (2026-02-24)
 
