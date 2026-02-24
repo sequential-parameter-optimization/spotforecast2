@@ -219,3 +219,78 @@ def test_model_training_intro_visualization():
     )
 
     assert len(fig.data) == 2
+
+
+def test_model_training_intro_visualization_lgbm():
+    """Validates the LightGBM Visualizing Prediction Example from model_training_intro.qmd."""
+    from lightgbm import LGBMRegressor
+    from sklearn.metrics import mean_absolute_error
+    from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+    from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+    import plotly.graph_objects as go
+
+    class LGBMVisualizingForecaster:
+        def __init__(self, iteration, end_dev, train_size, dataset_path=None, **kwargs):
+            self.iteration = iteration
+            self.end_dev = end_dev
+            self.train_size = train_size
+            self.dataset_path = dataset_path
+            
+            self.forecaster = ForecasterRecursive(
+                estimator=LGBMRegressor(n_estimators=100, learning_rate=0.05, random_state=42, verbose=-1), 
+                lags=24
+            )
+            self.name = "demo02_lgbm_model"
+
+        def tune(self):
+            df = fetch_data(filename=self.dataset_path)
+            y = (
+                df["A"].groupby(level=0).mean().asfreq("h").ffill()
+            ) 
+            y_train = y.loc[: self.end_dev]
+
+            if self.train_size is not None:
+                start_date = pd.to_datetime(self.end_dev, utc=True) - self.train_size
+                y_train = y_train.loc[start_date:]
+
+            self.forecaster.fit(y=y_train)
+
+        def get_params(self):
+            return {}
+
+    demo_file = get_package_data_home() / "demo02.csv"
+    df_full = fetch_data(filename=str(demo_file))
+    y_full = df_full["A"].groupby(level=0).mean().asfreq("h").ffill()
+
+    test_duration = pd.Timedelta(days=7)
+    cutoff_date = y_full.index.max() - test_duration
+
+    model_lgbm = train_new_model(
+        model_class=LGBMVisualizingForecaster,
+        n_iteration=1,
+        train_size=pd.Timedelta(days=60),
+        end_dev=cutoff_date,
+        data_filename=str(demo_file),
+        save_to_file=False,
+        dataset_path=str(demo_file),
+    )
+
+    y_test = y_full.loc[cutoff_date + pd.Timedelta(hours=1) :]
+    preds = model_lgbm.forecaster.predict(steps=len(y_test))
+    preds.index = y_test.index
+
+    mae = mean_absolute_error(y_test, preds)
+
+    assert mae > 0.0
+    assert len(preds) == len(y_test)
+    assert model_lgbm.forecaster.is_fitted is True
+
+    fig = go.Figure()
+    fig.add_trace(
+        go.Scatter(x=y_test.index, y=y_test, mode="lines", name="Actual Truth")
+    )
+    fig.add_trace(
+        go.Scatter(x=preds.index, y=preds, mode="lines", name="LGBM Projection")
+    )
+
+    assert len(fig.data) == 2

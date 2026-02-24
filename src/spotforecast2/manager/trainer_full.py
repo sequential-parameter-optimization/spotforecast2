@@ -183,13 +183,16 @@ def train_new_model(
         # Train using exactly 3 years of data leading up to the end of 2025:
         # Note: In a real scenario, this fetches data and saves a joblib file.
         # We pass save_to_file=False to avoid writing disk artifacts in the doc example.
+        from spotforecast2_safe.data.fetch_data import get_package_data_home
+        demo_file = get_package_data_home() / "demo01.csv"
+
         model = train_new_model(
             model_class=MyModel,
             n_iteration=0,
             train_size=pd.Timedelta(days=3*365),
             end_dev="2025-12-31 00:00+00:00",
             save_to_file=False,
-            # (data_filename="interim/energy_load.csv" # If you wanted specific data)
+            data_filename=str(demo_file)
         )
         ```
 
