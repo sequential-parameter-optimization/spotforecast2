@@ -1,3 +1,9 @@
+## [0.8.0-rc.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.8.0-rc.2...v0.8.0-rc.3) (2026-02-24)
+
+### Code Refactoring
+
+* spotoptim_search ([d8be72c](https://github.com/sequential-parameter-optimization/spotforecast2/commit/d8be72ceacbc41fa3b0a544191172994e490286f))
+
 ## [0.8.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.8.0-rc.1...v0.8.0-rc.2) (2026-02-24)
 
 ### Bug Fixes
