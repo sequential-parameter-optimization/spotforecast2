@@ -165,16 +165,33 @@ def train_new_model(
           be empty and the forecaster will fail to fit.
 
     Examples:
-        >>> import pandas as pd
-        >>> from spotforecast2.manager.trainer_full import train_new_model
-        >>> # Train using all available history up to the end of 2025:
-        >>> # train_new_model(..., train_size=None, end_dev="2025-12-31 00:00+00:00")
-        >>>
-        >>> # Train using exactly 3 years of data leading up to the end of 2025:
-        >>> # train_new_model(..., train_size=pd.Timedelta(days=3*365), end_dev="2025-12-31 00:00+00:00")
-        >>>
-        >>> # Train using the latest available data minus 1 day (default behavior):
-        >>> # train_new_model(..., train_size=pd.Timedelta(days=3*365), end_dev=None)
+        ```{python}
+        import pandas as pd
+        from spotforecast2.manager.trainer_full import train_new_model
+
+        # Define a mock model class for demonstration
+        class MyModel:
+            def __init__(self, iteration, end_dev, train_size, **kwargs):
+                self.iteration = iteration
+                self.end_dev = end_dev
+                self.train_size = train_size
+            def tune(self): print(f"Tuning model {self.iteration} up to {self.end_dev}!")
+            def get_params(self): return {}
+            @property
+            def name(self): return "mymodel"
+
+        # Train using exactly 3 years of data leading up to the end of 2025:
+        # Note: In a real scenario, this fetches data and saves a joblib file.
+        # We pass save_to_file=False to avoid writing disk artifacts in the doc example.
+        model = train_new_model(
+            model_class=MyModel,
+            n_iteration=0,
+            train_size=pd.Timedelta(days=3*365),
+            end_dev="2025-12-31 00:00+00:00",
+            save_to_file=False,
+            # (data_filename="interim/energy_load.csv" # If you wanted specific data)
+        )
+        ```
 
     Returns:
         The trained model instance.
