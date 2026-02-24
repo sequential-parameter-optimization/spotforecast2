@@ -1,3 +1,9 @@
+## [0.8.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.8.0-rc.1...v0.8.0-rc.2) (2026-02-24)
+
+### Bug Fixes
+
+*  convert_search_space ([605035c](https://github.com/sequential-parameter-optimization/spotforecast2/commit/605035c9235c8d84546905b06746798b50ad8348))
+
 ## [0.8.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.7.0...v0.8.0-rc.1) (2026-02-24)
 
 ### Features
