@@ -768,10 +768,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#available-commands" id="toc-available-commands" class="nav-link" data-scroll-target="#available-commands">Available Commands</a></li>
   <li><a href="#entso-e-task" id="toc-entso-e-task" class="nav-link" data-scroll-target="#entso-e-task">ENTSO-E Task</a>
   <ul class="collapse">
+  <li><a href="#tip-api-key-management" id="toc-tip-api-key-management" class="nav-link" data-scroll-target="#tip-api-key-management">Tip “API Key Management”</a></li>
   <li><a href="#subcommands" id="toc-subcommands" class="nav-link" data-scroll-target="#subcommands">Subcommands</a></li>
   <li><a href="#download-arguments-and-time-format" id="toc-download-arguments-and-time-format" class="nav-link" data-scroll-target="#download-arguments-and-time-format">Download arguments and time format</a></li>
   <li><a href="#configuration" id="toc-configuration" class="nav-link" data-scroll-target="#configuration">Configuration</a></li>
   <li><a href="#time-intervals-for-download-training-prediction-validation-and-testing" id="toc-time-intervals-for-download-training-prediction-validation-and-testing" class="nav-link" data-scroll-target="#time-intervals-for-download-training-prediction-validation-and-testing">Time intervals for download, training, prediction, validation, and testing</a></li>
+  <li><a href="#note-customizing-configuration" id="toc-note-customizing-configuration" class="nav-link" data-scroll-target="#note-customizing-configuration">Note “Customizing Configuration”</a></li>
   <li><a href="#visualize-results" id="toc-visualize-results" class="nav-link" data-scroll-target="#visualize-results">Visualize Results</a></li>
   </ul></li>
   <li><a href="#demo-task" id="toc-demo-task" class="nav-link" data-scroll-target="#demo-task">Demo Task</a></li>
@@ -848,32 +850,42 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="entso-e-task" class="level2">
 <h2 class="anchored" data-anchor-id="entso-e-task">ENTSO-E Task</h2>
 <p>The <code>spotforecast2-entsoe</code> command provides a unified CLI for the ENTSO-E energy forecasting pipeline.</p>
+<section id="tip-api-key-management" class="level3">
+<h3 class="anchored" data-anchor-id="tip-api-key-management">Tip “API Key Management”</h3>
+<p>Store your ENTSO-E API key in the <code>ENTSOE_API_KEY</code> environment variable to avoid passing it on every command:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">ENTSOE_API_KEY</span><span class="op">=</span><span class="st">"your-api-key-here"</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="bu">echo</span> <span class="va">$ENTSOE_API_KEY</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe download 202301010000</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Or set up a script with the following content:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/zsh</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">ENTSOE_API_KEY</span><span class="op">=</span>your_api_key</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
 <section id="subcommands" class="level3">
 <h3 class="anchored" data-anchor-id="subcommands">Subcommands</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download data from ENTSO-E</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe download <span class="at">--api-key</span> YOUR_API_KEY 202301010000</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Train a model (lgbm or xgb)</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe train lgbm <span class="at">--force</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate predictions and plot (defaults to lgbm)</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe predict <span class="at">--plot</span></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate predictions with explicit model selection</span></span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe predict lgbm <span class="at">--plot</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe predict xgb <span class="at">--plot</span></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge raw data files</span></span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe merge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Download data from ENTSO-E</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe download <span class="at">--api-key</span> YOUR_API_KEY 202301010000</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Train a model (lgbm or xgb)</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe train lgbm <span class="at">--force</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate predictions and plot (defaults to lgbm)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe predict <span class="at">--plot</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># Generate predictions with explicit model selection</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe predict lgbm <span class="at">--plot</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe predict xgb <span class="at">--plot</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Merge raw data files</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe merge</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="download-arguments-and-time-format" class="level3">
 <h3 class="anchored" data-anchor-id="download-arguments-and-time-format">Download arguments and time format</h3>
 <p>The positional argument 202301010000 is a UTC timestamp in the format YYYYMMDDHHMM. It represents the start of the download window. You can provide either one timestamp (start only) or two timestamps (start and end).</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start only (end defaults to now, UTC)</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe download 202301010000</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Start and end (UTC)</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe download 202301010000 202312312300</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Start only (end defaults to now, UTC)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe download 202301010000</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Start and end (UTC)</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe download 202301010000 202312312300</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Hidden arguments and defaults for download:</p>
 <ul>
 <li>–api-key or ENTSOE_API_KEY environment variable</li>
@@ -886,33 +898,33 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The ENTSO-E task uses a configuration class that can be customized programmatically. All configuration parameters have sensible defaults but can be overridden when needed.</p>
 <section id="using-default-configuration" class="level4">
 <h4 class="anchored" data-anchor-id="using-default-configuration">Using Default Configuration</h4>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2 <span class="im">import</span> Config</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create default configuration instance</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> Config()</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Access configuration values</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(config.API_COUNTRY_CODE)  <span class="co"># 'DE'</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(config.predict_size)      <span class="co"># 24</span></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(config.train_size)        <span class="co"># Timedelta(days=1095)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2 <span class="im">import</span> Config</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create default configuration instance</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> Config()</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Access configuration values</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(config.API_COUNTRY_CODE)  <span class="co"># 'DE'</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(config.predict_size)      <span class="co"># 24</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(config.train_size)        <span class="co"># Timedelta(days=1095)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="custom-configuration" class="level4">
 <h4 class="anchored" data-anchor-id="custom-configuration">Custom Configuration</h4>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2 <span class="im">import</span> Config</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create custom configuration</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>custom_config <span class="op">=</span> Config(</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    api_country_code<span class="op">=</span><span class="st">'DE'</span>,</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">48</span>,</span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a>    refit_size<span class="op">=</span><span class="dv">14</span>,</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>pd.Timedelta(days<span class="op">=</span><span class="dv">365</span>),</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">42</span></span>
-<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Use in your code</span></span>
-<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(custom_config.API_COUNTRY_CODE)  <span class="co"># 'DE'</span></span>
-<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(custom_config.predict_size)      <span class="co"># 48</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2 <span class="im">import</span> Config</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create custom configuration</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>custom_config <span class="op">=</span> Config(</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    api_country_code<span class="op">=</span><span class="st">'DE'</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">48</span>,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    refit_size<span class="op">=</span><span class="dv">14</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>pd.Timedelta(days<span class="op">=</span><span class="dv">365</span>),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    random_state<span class="op">=</span><span class="dv">42</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Use in your code</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(custom_config.API_COUNTRY_CODE)  <span class="co"># 'DE'</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(custom_config.predict_size)      <span class="co"># 48</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="available-configuration-parameters" class="level4">
 <h4 class="anchored" data-anchor-id="available-configuration-parameters">Available Configuration Parameters</h4>
@@ -1011,8 +1023,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li>validation metrics use the first 24 hours of the prediction window</li>
 <li>testing metrics use the full prediction window</li>
 </ul>
-<p>!!! note “Customizing Configuration” To use custom configuration values, you’ll need to modify the task script to create a Config instance with your desired parameters. See the <a href="#configuration">Configuration</a> section above for examples.</p>
-<p>!!! tip “API Key Management” Store your ENTSO-E API key in the <code>ENTSOE_API_KEY</code> environment variable to avoid passing it on every command: <code>bash     export ENTSOE_API_KEY="your-api-key-here"     echo $ENTSOE_API_KEY     uv run spotforecast2-entsoe download 202301010000</code></p>
+</section>
+<section id="note-customizing-configuration" class="level3">
+<h3 class="anchored" data-anchor-id="note-customizing-configuration">Note “Customizing Configuration”</h3>
+<pre><code>To use custom configuration values, you'll need to modify the task script
+to create a Config instance with your desired parameters. See the
+[Configuration](#configuration) section above for examples.</code></pre>
 </section>
 <section id="visualize-results" class="level3">
 <h3 class="anchored" data-anchor-id="visualize-results">Visualize Results</h3>
@@ -1024,11 +1040,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Actual (last week)</strong>: The actual system load from exactly one week ago at the same time, which serves as a seasonal baseline comparison.</li>
 </ul>
 <p>The prediction plot is saved as an HTML file named <code>index.html</code> in the data home directory. By default this is <code>~/spotforecast2_data/index.html</code> or the path defined by <code>SPOTFORECAST2_DATA</code>.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Default location on macOS/Linux</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/spotforecast2_data/index.html</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="co"># If you use a custom data home</span></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> <span class="st">"</span><span class="va">$SPOTFORECAST2_DATA</span><span class="st">/index.html"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Default location on macOS/Linux</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> ~/spotforecast2_data/index.html</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co"># If you use a custom data home</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="ex">open</span> <span class="st">"</span><span class="va">$SPOTFORECAST2_DATA</span><span class="st">/index.html"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Check the CLI logs for the exact path (look for “Plot saved to …”).</p>
 <hr>
 </section>
@@ -1041,11 +1057,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Covariate-enhanced</strong>: Includes weather, holidays, and cyclical features</li>
 <li><strong>Custom LightGBM</strong>: Optimized hyperparameters</li>
 </ol>
-<div class="sourceCode" id="cb6"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run with default settings</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-demo</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force retraining and save plot</span></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-demo <span class="at">--force_train</span> true <span class="at">--html</span> task_demo_plot.html</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run with default settings</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-demo</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Force retraining and save plot</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-demo <span class="at">--force_train</span> true <span class="at">--html</span> task_demo_plot.html</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="n-to-1-forecasting-tasks" class="level2">
@@ -1053,20 +1069,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>These tasks implement multi-output time series forecasting with weighted aggregation.</p>
 <section id="basic-n-to-1" class="level3">
 <h3 class="anchored" data-anchor-id="basic-n-to-1">Basic N-to-1</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-n2o1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-n2o1</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="n-to-1-with-dataframe-input" class="level3">
 <h3 class="anchored" data-anchor-id="n-to-1-with-dataframe-input">N-to-1 with DataFrame Input</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-n2o1-df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-n2o1-df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="n-to-1-with-covariates" class="level3">
 <h3 class="anchored" data-anchor-id="n-to-1-with-covariates">N-to-1 with Covariates</h3>
 <p>Includes weather data, holiday indicators, and cyclical time features.</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-n2o1-cov</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-n2o1-cov</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="n-to-1-with-covariates-and-dataframe" class="level3">
 <h3 class="anchored" data-anchor-id="n-to-1-with-covariates-and-dataframe">N-to-1 with Covariates and DataFrame</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-n2o1-cov-df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-n2o1-cov-df</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 </section>
@@ -1078,9 +1094,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><strong>Command-line arguments</strong> (use <code>--help</code> for details)</li>
 <li><strong>Configuration files</strong> stored in <code>~/spotforecast2_models/</code></li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View available options for any command</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-demo <span class="at">--help</span></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe predict <span class="at">--help</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="co"># View available options for any command</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast-demo <span class="at">--help</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run spotforecast2-entsoe predict <span class="at">--help</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <hr>
 </section>
 <section id="model-persistence" class="level2">
@@ -1100,16 +1116,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="running-tests" class="level3">
 <h3 class="anchored" data-anchor-id="running-tests">Running Tests</h3>
 <p>Run all ENTSO-E task tests:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pytest tests/test_tasks_entsoe.py <span class="at">-v</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pytest tests/test_tasks_entsoe.py <span class="at">-v</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Run specific test categories:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run only safety-critical tests</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pytest tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe <span class="at">-v</span></span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run parameter validation tests</span></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pytest tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe::test_train_lgbm_model_parameter_correctness <span class="at">-v</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Run with coverage</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pytest tests/test_tasks_entsoe.py <span class="at">--cov</span><span class="op">=</span>spotforecast2.tasks.task_entsoe <span class="at">--cov-report</span><span class="op">=</span>html</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run only safety-critical tests</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pytest tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe <span class="at">-v</span></span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run parameter validation tests</span></span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pytest tests/test_tasks_entsoe.py::TestSafetyCriticalEntsoe::test_train_lgbm_model_parameter_correctness <span class="at">-v</span></span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Run with coverage</span></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a><span class="ex">uv</span> run pytest tests/test_tasks_entsoe.py <span class="at">--cov</span><span class="op">=</span>spotforecast2.tasks.task_entsoe <span class="at">--cov-report</span><span class="op">=</span>html</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="test-categories" class="level3">
 <h3 class="anchored" data-anchor-id="test-categories">Test Categories</h3>
