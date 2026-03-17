@@ -6,7 +6,6 @@ authors:
     corresponding: true
     affiliation: "Department of Computational Intelligence, TH Köln"
 date: "February 7, 2026"
-jupyter: spotforecast2
 eval: true
 format:
   html:

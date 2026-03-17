@@ -256,3 +256,4 @@ mkdocs.yml.bak
 site/
 /.local
 .claude/settings.json
+docs/tasks/improved2.quarto_ipynb_1
