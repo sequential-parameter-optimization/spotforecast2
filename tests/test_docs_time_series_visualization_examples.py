@@ -1,7 +1,7 @@
 """
 Test suite for time series visualization documentation examples.
 
-Implements pytest tests for all examples from docs/preprocessing/time_series_visualization.md
+Implements pytest tests for all examples from docs/preprocessing/time_series_visualization.qmd
 to ensure documentation accuracy and example functionality.
 
 Safety-critical validation scope:

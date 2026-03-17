@@ -1,12 +1,18 @@
-## [0.10.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.9.1...v0.10.0) (2026-02-24)
-
-### Features
-
-* model training examples ([b864764](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b8647642120eacf63ce61c7a0b9fe36dd920921e))
+## [0.10.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.0...v0.10.1-rc.1) (2026-03-17)
 
 ### Bug Fixes
 
-* documentation live ([ad7c112](https://github.com/sequential-parameter-optimization/spotforecast2/commit/ad7c11245905f2d03ccd4053417c8af2ec8828c2))
+* quarto render ([3c45246](https://github.com/sequential-parameter-optimization/spotforecast2/commit/3c45246a9b23b513a5c9a4e70fdd153b6165d149))
+
+### Documentation
+
+* update tasks.md ([1f76d42](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1f76d42f330cc2f269c51ff00ef48132ebc89615))
+
+## [0.10.0-rc.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.0-rc.2...v0.10.0-rc.3) (2026-02-24)
+
+### Bug Fixes
+
+* quarto render ([3c45246](https://github.com/sequential-parameter-optimization/spotforecast2/commit/3c45246a9b23b513a5c9a4e70fdd153b6165d149))
 
 ## [0.10.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.0-rc.1...v0.10.0-rc.2) (2026-02-24)
 

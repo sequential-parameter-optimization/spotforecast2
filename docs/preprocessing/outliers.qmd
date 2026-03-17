@@ -469,6 +469,7 @@ Estimate contamination based on domain knowledge:
 
 ```{python}
 # For known outlier percentage
+n_outliers = 5  # Example: Domain logic expects ~5 corrupted sensor readings
 contamination = n_outliers / len(data)
 
 # For exploratory analysis, try multiple values

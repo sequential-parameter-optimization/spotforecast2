@@ -19,6 +19,23 @@
 
 The `spotforecast2-entsoe` command provides a unified CLI for the ENTSO-E energy forecasting pipeline.
 
+
+
+### Tip "API Key Management"
+
+Store your ENTSO-E API key in the `ENTSOE_API_KEY` environment variable to avoid passing it on every command:
+```bash
+export ENTSOE_API_KEY="your-api-key-here"
+echo $ENTSOE_API_KEY
+uv run spotforecast2-entsoe download 202301010000
+```
+Or set up a script with the following content:
+
+```bash
+#!/bin/zsh
+export ENTSOE_API_KEY=your_api_key
+```
+
 ### Subcommands
 
 ```bash
@@ -131,18 +148,12 @@ Validation and testing are derived from the prediction window:
 - validation metrics use the first 24 hours of the prediction window
 - testing metrics use the full prediction window
 
-!!! note "Customizing Configuration"
+
+###  Note "Customizing Configuration"
     To use custom configuration values, you'll need to modify the task script
     to create a Config instance with your desired parameters. See the
     [Configuration](#configuration) section above for examples.
 
-!!! tip "API Key Management"
-    Store your ENTSO-E API key in the `ENTSOE_API_KEY` environment variable to avoid passing it on every command:
-    ```bash
-    export ENTSOE_API_KEY="your-api-key-here"
-    echo $ENTSOE_API_KEY
-    uv run spotforecast2-entsoe download 202301010000
-    ```
 
 ### Visualize Results
 
