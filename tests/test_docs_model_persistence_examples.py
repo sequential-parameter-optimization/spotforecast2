@@ -1,7 +1,7 @@
 """
 Test suite for model persistence documentation examples.
 
-Implements pytest tests for all examples from docs/processing/model_persistence.md
+Implements pytest tests for all examples from docs/processing/model_persistence.qmd
 to ensure documentation accuracy and example functionality.
 
 Safety-critical validation scope:
@@ -401,7 +401,7 @@ class TestHelperFunctions:
 class TestDocumentationExamples:
     """Test exact examples from documentation.
 
-    Ensures all code samples in model_persistence.md work as documented.
+    Ensures all code samples in model_persistence.qmd work as documented.
     """
 
     def test_weight_function_basic_example(self):

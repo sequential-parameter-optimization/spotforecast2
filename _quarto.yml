@@ -152,7 +152,7 @@ website:
       - section: "Processing Guides"
         contents:
           - text: "Model Persistence"
-            file: docs/processing/model_persistence.md
+            file: docs/processing/model_persistence.qmd
             
       - section: "Preprocessing Guides"
         contents:
@@ -173,9 +173,9 @@ website:
       - section: "Tasks Guide"
         contents:
           - text: "Overview"
-            file: docs/tasks.md
+            file: docs/tasks/tasks.qmd
           - text: "ENTSO-E Guide"
-            file: docs/entsoe.md
+            file: docs/tasks/entsoe.qmd
 
   page-footer:
     center: |
