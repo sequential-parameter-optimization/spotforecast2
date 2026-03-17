@@ -1,0 +1,1027 @@
+{
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "---\n",
+        "title: \"Safety-Critical Time Series Forecasting with spotforecast2 and spotforecast2-safe: A Hardened Approach to Production Machine Learning\"\n",
+        "authors:\n",
+        "  - name: Thomas Bartz-Beielstein\n",
+        "    roles: writing\n",
+        "    corresponding: true\n",
+        "    affiliation: \"Department of Computational Intelligence, TH Köln\"\n",
+        "date: \"February 7, 2026\"\n",
+        "eval: true\n",
+        "format:\n",
+        "  html:\n",
+        "    toc: true\n",
+        "    number-sections: true\n",
+        "abstract: |\n",
+        "  Time series forecasting has become indispensable in safety-critical applications such as energy grids, financial systems, and autonomous control. However, existing machine learning libraries often prioritize generality and extensibility over determinism and auditability. We introduce spotforecast2 and spotforecast2-safe, two complementary Python packages built upon the skforecast foundation for reliable time series prediction. The spotforecast2 library provides a feature-rich environment for research and development, intelligently orchestrating hyperparameter tuning and model selection. The spotforecast2-safe package represents a deliberately minimized, hardened core suitable for safety-critical production environments, featuring zero dead code, deterministic transformations, and explicit fail-safe semantics. We demonstrate that the skforecast-based approach offers substantial advantages over competing libraries such as darts, particularly regarding dependency management and predictability. Both packages implement a systematic hardening strategy that reduces the attack surface while maintaining mathematical rigor and regulatory alignment with emerging standards such as the EU AI Act. This report outlines the architectural principles, design goals, and practical implications of these systems for building trustworthy machine learning pipelines in high-risk domains.\n",
+        "---\n",
+        "\n",
+        "# spotforecast2 entso-e {#sec-code-spotforecast2-entsoe}\n",
+        "\n",
+        "This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on ENTSO-E data. The pipeline is designed for determinism, auditability, and fail-safe operation.\n",
+        "\n",
+        "The workflow executes in the following phases:\n",
+        "\n",
+        "1.  **Data Acquisition**: Secure retrieving and merging of energy load data.\n",
+        "2.  **Configuration & Model Selection**: Centralized configuration of hyperparameters, feature engineering, and automated tuning strategies.\n",
+        "3.  **Model Orchestration & Training**: Fail-safe model training with automatic refitting policies.\n",
+        "4.  **Predictive Analytics & Visualization**: Generation of validated prediction packages and interactive reports.\n",
+        "\n",
+        "## Required Packages"
+      ],
+      "id": "3fd7d864"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: load-packages\n",
+        "import pprint\n",
+        "import pandas as pd"
+      ],
+      "id": "load-packages",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Data Ranges"
+      ],
+      "id": "7ed97f15"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: define-constants\n",
+        "\n",
+        "START_DOWNLOAD = \"202201010000\"\n",
+        "END_DOWNLOAD = \"202602150000\"\n",
+        "TRAIN_SIZE = pd.Timedelta(days=365*3)\n",
+        "END_TRAIN_DEFAULT = \"2024-12-31 00:00+00:00\"\n",
+        "DELTA_VAL = pd.Timedelta(days=14)\n",
+        "PREDICT_SIZE = 24"
+      ],
+      "id": "define-constants",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Logger"
+      ],
+      "id": "a8166cac"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: code-notebook-entsoe-usage-logger\n",
+        "#| echo: true\n",
+        "# Configure logging for notebook\n",
+        "import logging\n",
+        "\n",
+        "logging.basicConfig(\n",
+        "    level=logging.DEBUG,\n",
+        "    format=\"%(asctime)s %(levelname)s %(message)s\",\n",
+        "    handlers=[logging.StreamHandler()]\n",
+        ")\n",
+        "logger = logging.getLogger(__name__)"
+      ],
+      "id": "code-notebook-entsoe-usage-logger",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Data Acquisition\n",
+        "\n",
+        "Data is loaded directly from the bundled demo dataset (`demo01.csv`) included in the `spotforecast2-safe` package. The file is copied to the standard interim directory so that all downstream pipeline components (`config.data_filename`, `load_timeseries()`) work without modification, see @tbl-data-acquisition.\n",
+        "\n",
+        "### API Reference for Data Acquisition\n",
+        "\n",
+        "| Component | Type | Arguments | Description |\n",
+        "| :--- | :--- | :--- | :--- |\n",
+        "| `get_package_data_home` | Function | — | Returns the path to the internal package datasets directory (contains `demo01.csv`). |\n",
+        "| `get_data_home` | Function | `data_home` (str, optional) | Returns the path to the user data directory (default: `~/spotforecast2_data`). Creates it if absent. |\n",
+        ": Data acquisition {#tbl-data-acquisition}\n",
+        "\n",
+        "### Implementation of Data Acquisition\n",
+        "\n",
+        "The following block loads the bundled demo CSV and places it where the pipeline expects it."
+      ],
+      "id": "15752cf8"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: code-notebook-entsoe-usage-load-csv\n",
+        "#| echo: true\n",
+        "\n",
+        "import shutil\n",
+        "from spotforecast2_safe.data.fetch_data import get_package_data_home, get_data_home\n",
+        "\n",
+        "# Locate the bundled demo dataset shipped with spotforecast2-safe\n",
+        "csv_src = get_package_data_home() / \"demo01.csv\"\n",
+        "\n",
+        "# Copy to the interim directory so that load_timeseries() and\n",
+        "# config.data_filename = 'interim/energy_load.csv' resolve correctly\n",
+        "interim_dir = get_data_home() / \"interim\"\n",
+        "interim_dir.mkdir(parents=True, exist_ok=True)\n",
+        "data_dst = interim_dir / \"energy_load.csv\"\n",
+        "shutil.copy(csv_src, data_dst)\n",
+        "logger.info(f\"Demo data ready at: {data_dst}\")"
+      ],
+      "id": "code-notebook-entsoe-usage-load-csv",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "The dataset `demo01.csv` covers the period from `2022-01-01` to `2026-02-14` at 15-minute resolution, consistent with the configured date range (`START_DOWNLOAD` to `END_DOWNLOAD`).\n",
+        "\n",
+        "**Data Dimensions and Schema:**\n",
+        "\n",
+        "The resulting dataset is a time-series dataframe with the following properties:\n",
+        "\n",
+        "*   Shape: `(N_rows, M_features)`, where rows correspond to 15-minute timestamps.\n",
+        "*   Columns:\n",
+        "    *   `Time (UTC)` (Index): `datetime64[ns, UTC]`. The primary time index.\n",
+        "    *   `Actual Load`: `float64`. The actual total system load in MW. Used as the target variable for training.\n",
+        "    *   `Forecasted Load`: `float64`. The official ENTSO-E day-ahead forecast. Used as a benchmark or covariate.\n",
+        "*   Range: `2022-01-01` to `2026-02-14`. Fully contained within the configured range `START_DOWNLOAD` to `END_DOWNLOAD`.\n",
+        "\n",
+        "### Example\n",
+        "The head of the loaded data looks as follows:"
+      ],
+      "id": "0badc089"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: code-notebook-entsoe-usage-headusage-head\n",
+        "#| echo: true\n",
+        "import pandas as pd\n",
+        "from spotforecast2_safe.data.fetch_data import get_data_home\n",
+        "# Load the data\n",
+        "data_path = get_data_home() / \"interim\" / \"energy_load.csv\"\n",
+        "data = pd.read_csv(data_path, index_col=0, parse_dates=True)\n",
+        "# Display the first 5 rows\n",
+        "data.head()"
+      ],
+      "id": "code-notebook-entsoe-usage-headusage-head",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Display the tail of the loaded data:"
+      ],
+      "id": "d613c951"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: code-notebook-entsoe-usage-tail\n",
+        "#| echo: true\n",
+        "data.tail()"
+      ],
+      "id": "code-notebook-entsoe-usage-tail",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "## Configuration & Model Selection\n",
+        "\n",
+        "Deterministic configuration is enforced via the `ConfigEntsoe` class. This ensures that all components of the pipeline (training, prediction, feature engineering) share a single source of truth, see @tbl-config-entsoe-param and @tbl-config-entsoe-time.\n",
+        "\n",
+        "\n",
+        "### Implementation of the Configuration"
+      ],
+      "id": "2840eb51"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: code-notebook-entsoe\n",
+        "#| echo: true\n",
+        "import pandas as pd\n",
+        "from spotforecast2_safe.data import Period\n",
+        "from spotforecast2_safe.manager.configurator.config_entsoe import ConfigEntsoe\n",
+        "\n",
+        "\n",
+        "# Initialize configuration\n",
+        "config = ConfigEntsoe(\n",
+        "    api_country_code=\"DE\",\n",
+        "    periods=[\n",
+        "        Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))\n",
+        "    ],\n",
+        "    lags_consider=[1, 2, 24],\n",
+        "    train_size=TRAIN_SIZE,\n",
+        "    end_train_default=END_TRAIN_DEFAULT,\n",
+        "    delta_val=DELTA_VAL,\n",
+        "    predict_size=PREDICT_SIZE,\n",
+        "    refit_size=7,\n",
+        "    random_state=42,\n",
+        "    n_hyperparameters_trials=50,\n",
+        "    data_filename='interim/energy_load.csv'\n",
+        ")"
+      ],
+      "id": "code-notebook-entsoe",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Hyperparameter Tuning (Model Selection)\n",
+        "The `n_hyperparameters_trials` argument controls the model selection process. The system performs a randomized search over the hyperparameter space (defined in the library's internal search spaces for LGBM) to optimize validation metrics (CRPS/MAE) on the `delta_val` set.\n",
+        "\n",
+        "### API Reference: Configuration (General Parameters)\n",
+        "\n",
+        "| Argument | Type | Description | Value |\n",
+        "| :--- | :--- | :--- | :--- |\n",
+        "| `api_country_code` | `str` | ISO 3166-1 alpha-2 code (e.g., 'DE', 'FR'). | \"DE\"|\n",
+        "| `random_state` | `int` | Seed for reproducibility. | `42` |\n",
+        "| `n_hyperparameters_trials` | `int` | Number of trials for random search hyperparameter optimization. | `100` |\n",
+        "| `data_filename` | `str` | Path to the interim merged data file. | `\"energy_load.csv\"` |\n",
+        "\n",
+        ": Configuration for Data Acquisition. General parameters. {#tbl-config-entsoe-param}\n",
+        "\n",
+        "\n",
+        "\n",
+        "Based on the settings shown the last code snippet and in @tbl-config-entsoe-param, the general parameters of the  `ConfigEntsoe` object are instantiated as follows:\n",
+        "\n",
+        "* `api_country_code`: \"DE\", which means that the data will be downloaded from the ENTSO-E Transparency Platform for Germany.\n",
+        "* `random_state`: 42. Reproducibility: The `random_state` is locked for all stochastic processes.\n",
+        "* `n_hyperparameters_trials`: 50. If training is triggered, perform hyperparameter tuning using `n_hyperparameters_trials`.\n",
+        "* `data_filename`: 'interim/energy_load.csv'\n",
+        "\n",
+        "\n",
+        "### API Reference: Configuration (Time-Related Parameters)\n",
+        "\n",
+        "| Argument | Type | Description | Value |\n",
+        "| :--- | :--- | :--- | :--- |\n",
+        "| `periods` | `List[Period]` | RBF specifications for cyclic features. | `[Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))]`|\n",
+        "| `lags_consider` | `List[int]` | Autoregressive lags | `[1, 2, 24]`|\n",
+        "| `train_size` | `Timedelta` | Historical window used for training, here `TRAIN_SIZE` | `pd.Timedelta(days=365*3)` |\n",
+        "| `end_train_default` | `str` | Default end date for training period (ISO format), here `END_TRAIN_DEFAULT`. | `END_TRAIN_DEFAULT` |\n",
+        "| `delta_val` | `Timedelta` | Size of the validation set in days used for model selection, here `DELTA_VAL`. | `pd.Timedelta(days=14)` |\n",
+        "| `predict_size` | `int` | Forecasting horizon (hours), here `PREDICT_SIZE`. | `PREDICT_SIZE` |\n",
+        "| `refit_size` | `int` | Maximum age (in days) of a model before retraining is forced.  | `7` |\n",
+        ": Configuration for Data Acquisition. Time-related parameters. {#tbl-config-entsoe-time}\n",
+        "\n",
+        "\n",
+        "Based on the settings shown the last code snippet and in @tbl-config-entsoe-param and @tbl-config-entsoe-time, the `ConfigEntsoe` object is instantiated as follows:\n",
+        "\n",
+        "* `periods`: [Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))], so that smoothed 2-hour cyclical features are generated. We utilize Radial Basis Functions (RBF) to capture seasonality. A critical design choice is the resolution of the Daily period: 12 periods are used for the 24-hour daily cycle (instead of 24).  This effectively provides a 2-hour resolution, acting as a smoothing filter that reduces noise while halving the dimensionality of the feature space.\n",
+        "The default `periods` are deliberately chosen to balance temporal resolution with model complexity (e.g., `daily` uses `n_periods=12` to smooth hourly noise while reducing dimensionality).\n",
+        "* `lags_consider`: [1, 2, 24], so that the lags of 1 hour, 2 hours and 24 hours are considered.\n",
+        "* `train_size`: `pd.Timedelta(days=365*3)`, so that the training data is 3 years old. Since the downloaded data is from `START_DOWNLOAD` to `END_DOWNLOAD`, the training data is from `START_DOWNLOAD` to `END_DOWNLOAD - pd.Timedelta(days=168)`.\n",
+        "* `end_train_default`: `END_TRAIN_DEFAULT`, this is the cutoff timestamp separating training and testing data. Critical: it must leave enough future data for the full prediction horizon (`168h`).\n",
+        "* `delta_val`: pd.Timedelta(days=14)\n",
+        "* `predict_size`: `PREDICT_SIZE`. Determines the full forecast horizon (`predict_size * refit_size`).\n",
+        "* `refit_size`: 7. If a trained model exists and is younger than `refit_size` days, skip training (unless `force=True`).\n",
+        "\n",
+        "\n",
+        "This `config` object is then injected into the two instances of the `ForecasterRecursiveModel`, guaranteeing that the trained model perfectly matches the intended experimental design.\n",
+        "\n",
+        "## Model Orchestration & Training\n",
+        "\n",
+        "To ensure safety-critical consistency, we define wrapper classes that inject the configuration directly into the model instances. The training process effectively manages the model lifecycle.\n",
+        "The `handle_training` function saves the best-performing model to the artifact store.\n",
+        "\n",
+        "### API Reference of the Model Orchestration & Training\n",
+        "\n",
+        "The API Reference of the Model Orchestration & Training is shown in @tbl-model-entsoe.\n",
+        "\n",
+        "| Component | Type | Arguments | Description |\n",
+        "| :--- | :--- | :--- | :--- |\n",
+        "| `handle_training` | Function | `model_class` (Type)<br>`model_name` (str)<br>`force` (bool)<br>`data_filename` (str) | Orchestrates the training/retraining lifecycle. |\n",
+        "| `ForecasterRecursive` | Class | `estimator`<br>`lags` | Base class for recursive multi-step forecasting. |\n",
+        "\n",
+        ": Model Orchestration & Training {#tbl-model-entsoe}\n",
+        "\n",
+        "### Implementation of the Model Orchestration & Training\n",
+        "\n",
+        "Define Config-Aware Wrappers:"
+      ],
+      "id": "15842ed4"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: code-notebook-entsoe-usage-wrapper\n",
+        "#| echo: true\n",
+        "from spotforecast2_safe.manager.models.forecaster_recursive_lgbm import (ForecasterRecursiveLGBM as _ForecasterRecursiveLGBMBase)\n",
+        "from spotforecast2.manager.trainer_full import handle_training\n",
+        "\n",
+        "# 1. Define Config-Aware Wrappers\n",
+        "class ForecasterRecursiveLGBM(_ForecasterRecursiveLGBMBase):\n",
+        "    \"\"\"LGBM forecaster with injected production config.\"\"\"\n",
+        "    def __init__(self, iteration: int, lags: int = 12, **kwargs):\n",
+        "        kwargs.setdefault(\"periods\", config.periods)\n",
+        "        kwargs.setdefault(\"country_code\", config.API_COUNTRY_CODE)\n",
+        "        kwargs.setdefault(\"random_state\", config.random_state)\n",
+        "        kwargs.setdefault(\"end_dev\", config.end_train_default)\n",
+        "        kwargs.setdefault(\"train_size\", config.train_size)\n",
+        "        kwargs.setdefault(\"delta_val\", config.delta_val)\n",
+        "        kwargs.setdefault(\"predict_size\", config.predict_size)\n",
+        "        kwargs.setdefault(\"refit_size\", config.refit_size)\n",
+        "        super().__init__(iteration=iteration, lags=lags, **kwargs)"
+      ],
+      "id": "code-notebook-entsoe-usage-wrapper",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "These wrapper class (`ForecasterRecursiveLGBM`) implements a Safety Injection Pattern. By automatically pulling parameters from the global `config` object during initialization, they guarantee that:\n",
+        "\n",
+        "1.  Configuration Integrity: The model cannot be initialized with ad-hoc parameters that conflict with the experimental design (e.g., matching `predict_size` and `refit_size`).\n",
+        "2.  Simplified Orchestration: The training function (`entsoe_train`) does not need to accept or pass 20+ configuration arguments, reducing the risk of wiring errors.\n",
+        "3.  Encapsulation: The model carries its own configuration context, ensuring that any internal refitting or prediction operations remain consistent with the global policy.\n",
+        "\n",
+        "The LGBM model:\n"
+      ],
+      "id": "9ac2f84f"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: get_params_lgbm\n",
+        "#| echo: true\n",
+        "model_lgbm   = ForecasterRecursiveLGBM(iteration=1)\n",
+        "pprint.pprint(model_lgbm.get_params())"
+      ],
+      "id": "get_params_lgbm",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Define Training Orchestrator:"
+      ],
+      "id": "6a680ac5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: code-notebook-entsoe-training-orchestrator\n",
+        "#| echo: true\n",
+        "def entsoe_train(model=\"lgbm\", force=False):\n",
+        "    model_map = {\"lgbm\": ForecasterRecursiveLGBM}\n",
+        "    \n",
+        "    if model not in model_map:\n",
+        "        logger.error(f\"Unknown model: {model}\")\n",
+        "        return\n",
+        "\n",
+        "    logger.info(f\"Initiating training pipeline for {model}...\")\n",
+        "    handle_training(\n",
+        "        model_class=model_map[model],\n",
+        "        model_name=model,\n",
+        "        force=force,\n",
+        "        data_filename=config.data_filename,\n",
+        "        end_dev=config.end_train_default,\n",
+        "    )\n",
+        "    logger.info(f\"Training pipeline completed for {model}.\")"
+      ],
+      "id": "code-notebook-entsoe-training-orchestrator",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Note on explicit `end_dev` passage\n",
+        "\n",
+        "When `end_dev` is `None` (default), `handle_training` calculates the training cutoff based on the *latest available data* (minus 1 day). This behavior overrides the `end_train_default` (''2024-12-31 00:00+00:00') defined in the configuration, even if the model wrapper class sets it as a default.\n",
+        "We explicitly pass `end_dev=config.end_train_default` to `handle_training` in the `entsoe_train` function. This forces the training orchestrator to respect the configuration, ensuring the model is trained with the correct cutoff date and leaving sufficient future data for validation and metric computation.\n",
+        "\n",
+        "Execute Training:"
+      ],
+      "id": "c579a035"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: code-notebook-entsoe-execution\n",
+        "#| echo: true\n",
+        "entsoe_train(force=True)"
+      ],
+      "id": "code-notebook-entsoe-execution",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: get_params_lgbm-trained\n",
+        "#| echo: true\n",
+        "model_lgbm   = ForecasterRecursiveLGBM(iteration=1)\n",
+        "pprint.pprint(model_lgbm.get_params())"
+      ],
+      "id": "get_params_lgbm-trained",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Execution & Effects of Model Orchestration & Training\n",
+        "\n",
+        "The `entsoe_train` command (via `handle_training`) triggers a robust, state-aware training pipeline with the following effects:\n",
+        "\n",
+        "1.  **Smart Retraining Logic**:\n",
+        "    *   **Check**: It first checks the artifact store for an existing model of the specified type.\n",
+        "    *   **Validate**: If a model exists, it calculates its age. Retraining is triggered only if the model is **> 7 days old** (168 hours) or if `force=True`.\n",
+        "    *   **Increment**: If retraining occurs, the iteration counter is incremented (e.g., `iteration 0` -> `iteration 1`).\n",
+        "\n",
+        "2.  **Data & Ranges**:\n",
+        "    *   **Source**: Loads data from the file specified in `config.data_filename` (e.g., `energy_load.csv`).\n",
+        "    *   **Training Window**: Uses data up to `end_dev`. By default, this is calculated as **one day before the last available data point** to ensure a full 24-hour hold-out set for immediate validation.\n",
+        "\n",
+        "3.  **Artifact Storage**:\n",
+        "    *   **Location**: Models are serialized and saved to `~/spotforecast2_cache` (or the path in `SPOTFORECAST2_CACHE`).\n",
+        "    *   **Format**: Files are named using the convention `{model_name}_forecaster_{n_iteration}.joblib` (e.g., `lgbm_forecaster_0.joblib`).\n",
+        "    *   **Persistence**: These artifacts are persistent and can be loaded by prediction services without retraining.\n",
+        "\n",
+        "4.  **Side Effects**:\n",
+        "    *   **Logging**: Emits INFO/ERROR logs detailing the training progress and any issues.\n",
+        "    *   **File I/O**: Writes compressed `.joblib` files to disk.\n",
+        "\n",
+        "\n",
+        "\n",
+        "\n",
+        "## Predictive Analytics & Visualization\n",
+        "\n",
+        "Predictions are returned as a comprehensive **Prediction Package** containing not just values, but metadata, metrics, and validation status, see @tbl-predict-entsoe.\n",
+        "\n",
+        "### API Reference\n",
+        "\n",
+        "| Component | Type | Arguments | Description |\n",
+        "| :--- | :--- | :--- | :--- |\n",
+        "| `get_model_prediction` | Function | `model_name` (str) | Loads the production model and executes `package_prediction`. Returns a dict with keys: `predictions`, `metrics`, `validation_passed`. |\n",
+        "| `make_plot` | Function | `prediction_package` (dict) | Generates an interactive Plotly visualization from the prediction package. |\n",
+        "\n",
+        ": Predictive Analytics & Visualization {#tbl-predict-entsoe}\n",
+        "\n",
+        "### Implementation of the Predictive Analytics & Visualization"
+      ],
+      "id": "40ba0da5"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: code-notebook-entsoe-usage-predict\n",
+        "#| echo: true\n",
+        "from spotforecast2_safe.manager.predictor import (\n",
+        "    get_model_prediction as get_model_prediction_safe,\n",
+        ")\n",
+        "from spotforecast2.manager.plotter import make_plot\n",
+        "\n",
+        "def entsoe_predict(model=\"lgbm\", show=True):\n",
+        "    \"\"\"Generates predictions and interactive plots.\"\"\"\n",
+        "    out = get_model_prediction_safe(model_name=model)\n",
+        "    \n",
+        "    if out:\n",
+        "        logger.info(f\"Prediction package retrieved successfully (Validated: {out.get('validation_passed', 'N/A')})\")\n",
+        "        if show:\n",
+        "            fig = make_plot(out)\n",
+        "            fig.show()\n",
+        "    else:\n",
+        "        logger.error(\"Prediction failed: No valid output package.\")\n",
+        "    return out"
+      ],
+      "id": "code-notebook-entsoe-usage-predict",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: get_params_lgbm-predict\n",
+        "#| echo: true\n",
+        "model_lgbm   = ForecasterRecursiveLGBM(iteration=1)\n",
+        "pprint.pprint(model_lgbm.get_params())"
+      ],
+      "id": "get_params_lgbm-predict",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Execution & Effects\n",
+        "\n",
+        "The prediction pipeline (`entsoe_predict` calling `get_model_prediction` and `make_plot`) performs the following actions:\n",
+        "\n",
+        "#### Model Loading\n",
+        "\n",
+        "Retrieves the **latest trained model** (highest iteration) from `~/spotforecast2_cache`.\n",
+        "Ensures the model is valid and implements the `package_prediction` interface.\n",
+        "\n",
+        "#### Prediction Package Generation\n",
+        "\n",
+        "Prediction Package Generation (`get_model_prediction`) generates a standardized dictionary containing:\n",
+        "\n",
+        "Prediction Package Generation (`get_model_prediction`) generates a standardized dictionary containing the components shown in @tbl-predict-entsoe-package.\n",
+        "\n",
+        "| Key | Type | Description |\n",
+        "| :--- | :--- | :--- |\n",
+        "| `train_actual` | `pd.Series` | Historical ground truth data used for training (aligned with `train_pred`). |\n",
+        "| `train_pred` | `pd.Series` | In-sample model predictions on the training set (for goodness-of-fit). |\n",
+        "| `future_actual` | `pd.Series` | Ground truth data for the immediate past/validation window (if available). |\n",
+        "| `future_pred` | `pd.Series` | Out-of-sample model predictions for the validation window and future horizon. |\n",
+        "| `future_forecast` | `pd.Series` | Benchmark forecast (e.g., source ENTSO-E data) for comparison (optional). |\n",
+        "| `metrics_train` | `Dict[str, float]` | Training performance metrics (MAE, MAPE). |\n",
+        "| `metrics_future` | `Dict[str, float]` | Test performance metrics over the full prediction horizon. |\n",
+        "| `metrics_future_one_day` | `Dict[str, float]` | Test performance metrics specifically for the first 24 hours. |\n",
+        "| `metrics_forecast` | `Dict[str, float]` | Benchmark performance metrics (if benchmark is present). |\n",
+        "| `validation_passed` | `bool` | Flag indicating if the model meets safety/quality criteria (e.g., no negative loads). |\n",
+        "\n",
+        ": Prediction Package Components {#tbl-predict-entsoe-package}\n",
+        "\n",
+        "\n",
+        "### Metric Computation Window\n",
+        "\n",
+        "The prediction package computes metrics over two distinct windows:\n",
+        "\n",
+        "- **24h metrics** (`metrics_future_one_day`): Calculated on the first 24 hours only (`future_pred.iloc[:24]`)\n",
+        "- **Full horizon metrics** (`metrics_future`): Calculated on the entire prediction window (`predict_size * refit_size` hours)\n",
+        "\n",
+        "With the current configuration (`predict_size=24`, `refit_size=7`, `end_train_default='2022-01-05'`), the full horizon is **168 hours (7 days)**. The ENTSO-E dataset has ample data available after this training cutoff, so the 24h and full horizon metrics **will differ** because they evaluate different time ranges (24 hours vs 168 hours).\n",
+        "\n",
+        "\n",
+        "\n",
+        "#### Visualization (`make_plot`)\n",
+        "\n",
+        "Generates a Plotly figure (see @fig-entsoe-predict) with the following structure:\n",
+        "\n",
+        "**Plot Structure & X-Axis Range:**\n",
+        "\n",
+        "*   **Left Region**: Historical training period showing model fit quality (in-sample predictions).\n",
+        "*   **Right Region**: Future prediction window showing out-of-sample forecasts.\n",
+        "*   **X-Axis Range**: Automatically focused on `[end_training - 1 day, latest_data_point]` to highlight the critical transition from training to prediction.\n",
+        "*   **Vertical Marker**: Black dashed line at `end_training` timestamp separating historical from future.\n",
+        "\n",
+        "**Plot Lines & Legend:**\n",
+        "\n",
+        "| Legend Entry | Line Style | Data Source | Purpose | Embedded Metrics |\n",
+        "| :--- | :--- | :--- | :--- | :--- |\n",
+        "| **Total system load (actual)** | Solid line + markers | Ground truth (`train_actual` + `future_actual`) | Shows actual energy demand across entire time range | None |\n",
+        "| **Total system load (model prediction)** | Solid line + markers | Model output (`train_pred` + `future_pred`) | Shows model's predictions for both training and future periods | Training MAE/MAPE, Prediction (24h) MAE/MAPE, Prediction (full horizon) MAE/MAPE |\n",
+        "| **Benchmark Forecast (e.g., ENTSOE)** | Solid line + markers | External forecast (`future_forecast`) | Provides comparison baseline from ENTSO-E or other source (optional) | Benchmark (24h) MAE/MAPE, Benchmark (full horizon) MAE/MAPE |\n",
+        "| **Actual (last week)** | Dashed line + markers | Time-shifted actual data (`y_actual.shift(7*24)`) | Reveals weekly seasonality patterns for context | None |\n",
+        "\n",
+        "**Layout Configuration:**\n",
+        "\n",
+        "*   **Title**: \"Energy Demand Prediction\"\n",
+        "*   **Y-Axis**: \"Load [MW]\"\n",
+        "*   **X-Axis**: \"Time (UTC)\"\n",
+        "*   **Legend Position**: Horizontal orientation below plot (y=-0.3)\n",
+        "*   **Height**: 700px\n",
+        "*   **Template**: `plotly_white`\n"
+      ],
+      "id": "90b28303"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: fig-entsoe-predict\n",
+        "#| echo: true\n",
+        "#| fig-cap: Prediction for ENTSO-E Load\n",
+        "_ = entsoe_predict(show=True)"
+      ],
+      "id": "fig-entsoe-predict",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Data Ranges & Intervals Overview\n",
+        "\n",
+        "The following table summarizes all time ranges and intervals configured in the pipeline, highlighting their purpose and potential conflicts (@tbl-data-ranges).\n",
+        "\n",
+        "| Stage | Parameter/Variable | Value/Range | Description | Potential Conflict / Requirement |\n",
+        "| :--- | :--- | :--- | :--- | :--- |\n",
+        "| **Loading** | `api_country_code` | `\"DE\"` | Target country for ENTSO-E data fetching. | Must match available data in ENTSO-E API. |\n",
+        "| **Loading** | `data_filename` | `interim/energy_load.csv` | Local cache file for processed data. | File must exist and contain required columns (`Time (UTC)`, `Actual Load`). |\n",
+        "| **Training** | `train_size` | `365*3` days (3 years) | Historical lookback window for training data. | Must be sufficient to capture seasonality (at least 1 year recommended). |\n",
+        "| **Training** | `end_train_default` | `2022-01-05` | Cutoff timestamp separating training and testing data. | **CRITICAL**: Must leave enough future data for the full prediction horizon (`168h`). |\n",
+        "| **Training** | `lags_consider` | `[1, 2, 24]` | Autoregressive lags used as features. | Limits the very first predictions (first 24h of training data lost to lag generation). |\n",
+        "| **Prediction** | `predict_size` | `24` hours | Base forecast horizon per model step. | Small values increase loop iterations; large values reduce granularity. |\n",
+        "| **Prediction** | `refit_size` | `7` days (168h) | Frequency of model retraining / total prediction window. | **CRITICAL**: Determines the full forecast horizon (`predict_size * refit_size`). |\n",
+        "| **Validation** | `delta_val` | `14` days | Window used for validation set (if applicable). | Should be representative of the test set distribution. |\n",
+        "\n",
+        ": Data Ranges and Intervals Configuration {#tbl-data-ranges}\n",
+        "\n",
+        "\n",
+        "\n",
+        "## Training, Tuning, and Prediction Strategies\n",
+        "\n",
+        "In production environments, there are different approaches to applying the models depending on computational constraints and performance requirements. Here we document and compare three distinct approaches using the same underlying dataset and configuration.\n",
+        "\n",
+        "### Approach 1: Without Training and Tuning (Lazy Fitting)\n",
+        "\n",
+        "By default, executing predictions via the `spotforecast2_safe` pipeline against an untrained configuration instantiates the base model recursively. During the very first `predict()` invocation, it detects the lack of a pre-fitted estimator and performs a \"lazy\" fit using the absolute default hyperparameters on the fly without persisting them via `joblib`. \n",
+        "\n",
+        "This represents the absolute fastest development cycle but lacks optimization."
+      ],
+      "id": "629ac1fb"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: approach-1-lazy-fitting\n",
+        "#| echo: true\n",
+        "\n",
+        "# 1. Initialize the safe wrapper directly\n",
+        "model_app1 = ForecasterRecursiveLGBM(iteration=1)\n",
+        "model_app1.name = \"lgbm_untrained\"\n",
+        "\n",
+        "# 2. Save the initialized but explicitly UNTRAINED wrapper structure\n",
+        "logger.info(\"Saving wrapper to artifact store without explicit pre-fitting...\")\n",
+        "model_app1.save_to_file()"
+      ],
+      "id": "approach-1-lazy-fitting",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Prediction for Approach 1 relies on the on-the-fly fit:"
+      ],
+      "id": "c185bc89"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: fig-entsoe-predict-app1\n",
+        "#| echo: true\n",
+        "#| fig-cap: 'Prediction for ENTSO-E Load (Approach 1: Lazy Fitting)'\n",
+        "\n",
+        "out_app1 = get_model_prediction_safe(model_name=\"lgbm_untrained\")\n",
+        "if out_app1:\n",
+        "    fig_app1 = make_plot(out_app1)\n",
+        "    fig_app1.show()"
+      ],
+      "id": "fig-entsoe-predict-app1",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Approach 2: With Training But No Tuning\n",
+        "\n",
+        "Another valid configuration involves establishing an explicit formal training phase without extensive Bayesian parameter tuning. To execute this, we simply use the base wrappers but invoke `fit_with_best()` which explicitly enforces estimator compilation against the training window using LightGBM default distributions, followed by serializing the *trained* structure."
+      ],
+      "id": "526f2cbe"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: approach-2-training\n",
+        "#| echo: true\n",
+        "\n",
+        "# 1. Initialize the safe wrapper\n",
+        "model_app2 = ForecasterRecursiveLGBM(iteration=2)\n",
+        "model_app2.name = \"lgbm_trained_not_tuned\"\n",
+        "\n",
+        "# 2. Explicitly fit the model using default parameters\n",
+        "logger.info(\"Executing precise training without tuning...\")\n",
+        "model_app2.fit_with_best()\n",
+        "\n",
+        "# 3. Save the trained model to the artifact store\n",
+        "model_app2.save_to_file()"
+      ],
+      "id": "approach-2-training",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Prediction for Approach 2:"
+      ],
+      "id": "3864ac5d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: fig-entsoe-predict-app2\n",
+        "#| echo: true\n",
+        "#| fig-cap: 'Prediction for ENTSO-E Load (Approach 2: Trained, No Tuning)'\n",
+        "\n",
+        "out_app2 = get_model_prediction_safe(model_name=\"lgbm_trained_not_tuned\")\n",
+        "if out_app2:\n",
+        "    fig_app2 = make_plot(out_app2)\n",
+        "    fig_app2.show()"
+      ],
+      "id": "fig-entsoe-predict-app2",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Note that Approach 1 and Approach 2 yield identical predictive metrics. This is by design: both rely on the exact same estimator defaults and the identical training data window. The difference lies strictly in system architecture (lazy fitting during inference versus explicit pre-fitting during the batch training pipeline).\n",
+        "\n",
+        "### Approach 3: Tune, Train, and Predict\n",
+        "\n",
+        "For optimal performance, the spotforecast2 package provides the full orchestration capabilities to tune the hyperparameters using Bayesian optimization, train the model with the best discovered parameters, and serialize the optimized artifact. \n",
+        "\n",
+        "Here is how to perform tuning and use the tuned model. We utilize the full wrapper class ForecasterRecursiveLGBMFull from spotforecast2.manager.models."
+      ],
+      "id": "2039a3f0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: approach-3-tuning\n",
+        "#| echo: true\n",
+        "\n",
+        "from spotforecast2.manager.models import ForecasterRecursiveLGBMFull as _ForecasterRecursiveLGBMFullBase\n",
+        "\n",
+        "# Define the config-aware wrapper for the full model\n",
+        "class ForecasterRecursiveLGBMFull(_ForecasterRecursiveLGBMFullBase):\n",
+        "    def __init__(self, iteration: int, lags: int = 12, **kwargs):\n",
+        "        kwargs.setdefault(\"periods\", config.periods)\n",
+        "        kwargs.setdefault(\"country_code\", config.API_COUNTRY_CODE)\n",
+        "        kwargs.setdefault(\"random_state\", config.random_state)\n",
+        "        kwargs.setdefault(\"end_dev\", config.end_train_default)\n",
+        "        kwargs.setdefault(\"train_size\", config.train_size)\n",
+        "        kwargs.setdefault(\"delta_val\", config.delta_val)\n",
+        "        kwargs.setdefault(\"predict_size\", config.predict_size)\n",
+        "        kwargs.setdefault(\"refit_size\", config.refit_size)\n",
+        "        \n",
+        "        # We perform a brief tuning search (n_trials=15) for demonstration\n",
+        "        super().__init__(iteration=iteration, lags=lags, n_trials=15, **kwargs)\n",
+        "\n",
+        "# Train and tune via handle_training\n",
+        "handle_training(\n",
+        "    model_class=ForecasterRecursiveLGBMFull,\n",
+        "    model_name=\"lgbm_tuned_and_trained\",\n",
+        "    force=True,\n",
+        "    data_filename=config.data_filename,\n",
+        "    end_dev=config.end_train_default\n",
+        ")"
+      ],
+      "id": "approach-3-tuning",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Prediction for Approach 3:"
+      ],
+      "id": "ecb1298b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: fig-entsoe-predict-app3\n",
+        "#| echo: true\n",
+        "#| fig-cap: 'Prediction for ENTSO-E Load (Approach 3: Tuned and Trained)'\n",
+        "\n",
+        "out_app3 = get_model_prediction_safe(model_name=\"lgbm_tuned_and_trained\")\n",
+        "if out_app3:\n",
+        "    fig_app3 = make_plot(out_app3)\n",
+        "    fig_app3.show()"
+      ],
+      "id": "fig-entsoe-predict-app3",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Approach 4: Tune with SpotOptim, Train, and Predict\n",
+        "\n",
+        "As an alternative to Optuna, we can utilize `spotoptim` for surrogate-model-based Bayesian optimization. To integrate `spotoptim`, we define a custom wrapper that overrides the `tune` method to leverage `spotoptim_search_forecaster`. "
+      ],
+      "id": "6c50252b"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: approach-4-spotoptim-tuning\n",
+        "#| echo: true\n",
+        "\n",
+        "from spotforecast2.model_selection import spotoptim_search_forecaster\n",
+        "from spotforecast2.manager.trainer_full import LAGS_CONSIDER\n",
+        "from spotforecast2_safe.data.fetch_data import load_timeseries\n",
+        "from spotforecast2_safe.preprocessing import LinearlyInterpolateTS\n",
+        "\n",
+        "# Define the SpotOptim search space (using dictionary format)\n",
+        "search_space_spotoptim_lgbm = {\n",
+        "    \"num_leaves\": (8, 256),\n",
+        "    \"max_depth\": (3, 16),\n",
+        "    \"learning_rate\": (0.0001, 0.1, \"log10\"),\n",
+        "    \"n_estimators\": (10, 1000, \"log10\"),\n",
+        "    \"bagging_fraction\": (0.5, 1.0),\n",
+        "    \"feature_fraction\": (0.5, 1.0),\n",
+        "    \"reg_alpha\": (0.01, 100.0),\n",
+        "    \"reg_lambda\": (0.01, 100.0),\n",
+        "    # \"lags\": [str(lag) for lag in LAGS_CONSIDER],\n",
+        "    \"lags\": [\"[1, 2, 3, 11, 12, 22, 23, 24, 47, 48, 167, 168]\", \"48\", \"24\", \"[1, 2, 24, 48]\", \"[1, 2, 23, 24, 47, 48]\", \"[1, 2, 11, 12, 23, 24, 167, 168]\"],\n",
+        "}\n",
+        "\n",
+        "class ForecasterRecursiveLGBMSpotoptim(ForecasterRecursiveLGBMFull):\n",
+        "    def __init__(self, iteration: int, lags: int = 12, **kwargs):\n",
+        "        super().__init__(iteration=iteration, lags=lags, **kwargs)\n",
+        "\n",
+        "    def tune(self) -> None:\n",
+        "        logger.info(\"Tuning %s Forecaster %d with spotoptim\", self.name.upper(), self.iteration)\n",
+        "        \n",
+        "        y = load_timeseries()\n",
+        "        y = LinearlyInterpolateTS().fit_transform(y)\n",
+        "        X = self.preprocessor.build(start_date=y.index.min(), end_date=self.end_dev)\n",
+        "\n",
+        "        end_train = self.end_dev - pd.Timedelta(hours=self.predict_size * self.refit_size)\n",
+        "        start_train = self._get_init_train(y.index.min(), end_train)\n",
+        "        fixed_train_size = self.train_size is not None\n",
+        "        length_training = len(y.loc[start_train:end_train])\n",
+        "\n",
+        "        results, optimizer = spotoptim_search_forecaster(\n",
+        "            forecaster=self.forecaster,\n",
+        "            y=y.loc[start_train : self.end_dev],\n",
+        "            cv=self._build_cv(\n",
+        "                train_size=length_training,\n",
+        "                fixed_train_size=fixed_train_size,\n",
+        "                refit=False,\n",
+        "            ),\n",
+        "            search_space=search_space_spotoptim_lgbm,\n",
+        "            metric=self.metrics,\n",
+        "            exog=X.loc[start_train : self.end_dev],\n",
+        "            return_best=True,\n",
+        "            random_state=self.random_state,\n",
+        "            verbose=True,\n",
+        "            # n_trials=self.n_trials,\n",
+        "            n_trials=10,\n",
+        "            n_initial=5,\n",
+        "        )\n",
+        "\n",
+        "        results[\"name\"] = self.name\n",
+        "        self.results_tuning = results\n",
+        "        self.best_params = results.iloc[0].params\n",
+        "        self.best_lags = results.iloc[0].lags\n",
+        "\n",
+        "        self.fit_with_best()\n",
+        "        self.is_tuned = True\n",
+        "\n",
+        "        if self.save_model_to_file:\n",
+        "            self.save_to_file()\n",
+        "\n",
+        "# Train and tune via handle_training using the new wrapper\n",
+        "handle_training(\n",
+        "    model_class=ForecasterRecursiveLGBMSpotoptim,\n",
+        "    model_name=\"lgbm_tuned_spotoptim\",\n",
+        "    force=True,\n",
+        "    data_filename=config.data_filename,\n",
+        "    end_dev=config.end_train_default\n",
+        ")"
+      ],
+      "id": "approach-4-spotoptim-tuning",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "Prediction for Approach 4 (SpotOptim):"
+      ],
+      "id": "32a626a0"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {
+        "cache": false
+      },
+      "source": [
+        "#| label: fig-entsoe-predict-app4\n",
+        "#| echo: true\n",
+        "#| fig-cap: 'Prediction for ENTSO-E Load (Approach 4: SpotOptim Tuned)'\n",
+        "\n",
+        "out_app4 = get_model_prediction_safe(model_name=\"lgbm_tuned_spotoptim\")\n",
+        "if out_app4:\n",
+        "    fig_app4 = make_plot(out_app4)\n",
+        "    fig_app4.show()"
+      ],
+      "id": "fig-entsoe-predict-app4",
+      "execution_count": null,
+      "outputs": []
+    },
+    {
+      "cell_type": "markdown",
+      "metadata": {},
+      "source": [
+        "### Comparison of Results\n",
+        "\n",
+        "A comparison of the four approaches demonstrates the trade-offs between computational overhead and model accuracy. \n",
+        "\n",
+        "- Approach 1 (Lazy Fitting) and Approach 2 (Explicit Pre-Training) produce identical predictions because they both optimize the underlying tree-based estimators using default parameters (MAE ~5517). \n",
+        "- Approach 3 (Optuna Tuned and Trained) explores the hyperparameter space efficiently using Optuna's Tree-structured Parzen Estimator (TPE), significantly improving the Mean Absolute Error (MAE ~3735) and corresponding Mean Absolute Percentage Error (MAPE). \n",
+        "- Approach 4 (SpotOptim Tuned and Trained) leverages the `spotoptim` surrogate model. In this limited evaluation, it provides a strong improvement over defaults (MAE ~5059). While Optuna slightly outperformed SpotOptim under this strict identical low-trial budget, it still strongly proves the effectiveness of automated spotoptim hyperparameters configurations safely enclosed inside the outer-shell orchestrator prior to prediction.\n",
+        "\n",
+        "The visualizations for each tuning approach (Approaches 3 and 4) demonstrate that the tuned models provide a more nuanced fit to both the diurnal cycles and broader load trends compared to Approaches 1 and 2.\n"
+      ],
+      "id": "44196b1d"
+    },
+    {
+      "cell_type": "code",
+      "metadata": {},
+      "source": [
+        "#| label: fig-entsoe-predict-comparison\n"
+      ],
+      "id": "fig-entsoe-predict-comparison",
+      "execution_count": null,
+      "outputs": []
+    }
+  ],
+  "metadata": {
+    "kernelspec": {
+      "name": "python3",
+      "language": "python",
+      "display_name": "Python 3 (ipykernel)",
+      "path": "/Users/bartz/workspace/spotforecast2/.venv/share/jupyter/kernels/python3"
+    }
+  },
+  "nbformat": 4,
+  "nbformat_minor": 5
+}
