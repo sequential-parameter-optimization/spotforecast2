@@ -76,9 +76,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bcbce66894bfa8e7e94e40e0186b9bb8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-dae36b7b209a5a9f0102814064d699d0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-090e59de8c83bcb5ac477581d78b478d.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-dae36b7b209a5a9f0102814064d699d0.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-84acb973695ec2d34aa8fbb1426e6acd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-9869d8b7442de1229a34c2db70b9e7b6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-84acb973695ec2d34aa8fbb1426e6acd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -906,7 +906,7 @@ Table&nbsp;1: Available arguments for <code>spotoptim_search_forecaster()</code>
 <section id="simple-tuning-example" class="level2">
 <h2 class="anchored" data-anchor-id="simple-tuning-example">Simple Tuning Example</h2>
 <p>In this first example, we want to tune a basic Ridge regression forecaster. We will evaluate configurations using a simple cross-validation fold, passing the <code>search_space</code> as a standard dictionary.</p>
-<div id="98c1808c" class="cell" data-execution_count="1">
+<div id="1a5aa1ce" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.linear_model <span class="im">import</span> Ridge</span>
@@ -954,18 +954,18 @@ Table&nbsp;1: Available arguments for <code>spotoptim_search_forecaster()</code>
 <div class="cell-output cell-output-stdout">
 <pre><code>`Forecaster` refitted using the best-found lags and parameters, and the whole data set: 
   Lags: [1 2 3 4 5] 
-  Parameters: {'alpha': 7.422726358308641}
+  Parameters: {'alpha': 6.947241955342156}
   Backtesting metric: 1.019885673261824
-              lags                         params  mean_absolute_error  \
-0  [1, 2, 3, 4, 5]   {'alpha': 7.422726358308641}             1.019886   
-1  [1, 2, 3, 4, 5]   {'alpha': 1.878534795625666}             1.019886   
-2  [1, 2, 3, 4, 5]  {'alpha': 3.8108689266950964}             1.019886   
+              lags                          params  mean_absolute_error  \
+0  [1, 2, 3, 4, 5]    {'alpha': 6.947241955342156}             1.019886   
+1  [1, 2, 3, 4, 5]   {'alpha': 3.6364143967777034}             1.019886   
+2  [1, 2, 3, 4, 5]  {'alpha': 0.42094695964921375}             1.019886   
 
       alpha  
-0  7.422726  
-1  1.878535  
-2  3.810869  
-Best found alpha: 7.422726358308641</code></pre>
+0  6.947242  
+1  3.636414  
+2  0.420947  
+Best found alpha: 6.947241955342156</code></pre>
 </div>
 </div>
 <p>Because <code>return_best=True</code>, the <code>forecaster</code> object is now perfectly equipped to make predictions immediately, using <code>alpha</code> configuration <code>results.loc[0, "alpha"]</code>.</p>
@@ -973,7 +973,7 @@ Best found alpha: 7.422726358308641</code></pre>
 <section id="advanced-tuning-example" class="level2">
 <h2 class="anchored" data-anchor-id="advanced-tuning-example">Advanced Tuning Example</h2>
 <p>Now, let’s explore an advanced configuration. We’ll use a <code>ParameterSet</code> object (from the <code>spotoptim</code> library) for more granular control over numerical types and transformations. We will also inject dictionary arguments explicitly to the <code>SpotOptim</code> engine.</p>
-<div id="21d7713d" class="cell" data-execution_count="2">
+<div id="4dec0a04" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestRegressor</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection <span class="im">import</span> OneStepAheadFold</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotoptim.hyperparameters <span class="im">import</span> ParameterSet</span>
@@ -1031,9 +1031,9 @@ Best found alpha: 7.422726358308641</code></pre>
 <span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(results_adv[[<span class="st">"n_estimators"</span>, <span class="st">"max_depth"</span>, <span class="st">"lags"</span>, <span class="st">"mean_absolute_error"</span>]].head(<span class="dv">3</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>   n_estimators  max_depth       lags  mean_absolute_error
-0          24.0        9.0  [1, 2, 3]             1.091275
-1          49.0        9.0  [1, 2, 3]             1.091275
-2          46.0        9.0  [1, 2, 3]             1.091275</code></pre>
+0          42.0        7.0  [1, 2, 3]             1.091275
+1          30.0        6.0  [1, 2, 3]             1.091275
+2          46.0        7.0  [1, 2, 3]             1.091275</code></pre>
 </div>
 </div>
 <p>This advanced setup illustrates how <code>spotoptim_search_forecaster</code> acts as an extremely flexible orchestration bridge, allowing you to efficiently explore your state space while capturing comprehensive performance metadata.</p>
