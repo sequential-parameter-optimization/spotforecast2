@@ -1,3 +1,13 @@
+## [0.10.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.2...v0.10.3) (2026-03-17)
+
+### Bug Fixes
+
+* jupyter kernel ([62d781a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/62d781aa1d0e82a9170bccdf6e8e41beed121287))
+
+### Documentation
+
+* improvt2 (experimental) ([484131a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/484131a68ab7899b85d729fad70af2488f185a54))
+
 ## [0.10.3-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.2...v0.10.3-rc.1) (2026-03-17)
 
 ### Bug Fixes
