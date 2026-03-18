@@ -17,14 +17,14 @@ abstract: |
 
 # spotforecast2 multi-target demo {#sec-code-spotforecast2-multitarget}
 
-This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on an eleven-target dataset. The primary data source is `data_in.csv` (located in `~/spotforecast2_data/`), containing eleven independent measurement columns mapped to labels **A** through **K**. If `data_in.csv` is absent, the pipeline falls back to the bundled `demo02.csv`. A separate LGBM model is trained per target. `END_TRAIN_DEFAULT` is always the last timestamp in the loaded data; the model then forecasts the **next 24 hours** beyond that point.
+This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on an eleven-target dataset. The primary data source is `data_in.csv` (located in `~/spotforecast2_data/`), containing eleven independent measurement columns mapped to labels `A` through `K`. If `data_in.csv` is absent, the pipeline falls back to the bundled `demo02.csv`. A separate LGBM model is trained per target. `END_TRAIN_DEFAULT` is always the last timestamp in the loaded data; the model then forecasts the next 24 hours beyond that point.
 
 The workflow executes in the following phases:
 
-1.  **Data Acquisition**: Loading `data_in.csv` (with automatic fallback to `demo02.csv`) and preparing each target for the pipeline.
-2.  **Configuration & Model Selection**: Centralized configuration of hyperparameters, feature engineering, and automated tuning strategies.
-3.  **Model Orchestration & Training**: Fail-safe model training with automatic refitting policies, executed for each of the eleven targets.
-4.  **Predictive Analytics & Visualization**: Generation of validated prediction packages and interactive reports for each target.
+1.  Data Acquisition: Loading `data_in.csv` (with automatic fallback to `demo02.csv`) and preparing each target for the pipeline.
+2.  Configuration & Model Selection: Centralized configuration of hyperparameters, feature engineering, and automated tuning strategies.
+3.  Model Orchestration & Training: Fail-safe model training with automatic refitting policies, executed for each of the eleven targets.
+4.  Predictive Analytics & Visualization: Generation of validated prediction packages and interactive reports for each target.
 
 ## Required Packages
 
@@ -36,16 +36,21 @@ import pandas as pd
 
 ## Data Ranges
 
+`START_DOWNLOAD`, `END_DOWNLOAD`, and `END_TRAIN_DEFAULT` are set
+ dynamically in the Data Acquisition section after the dataset is loaded.
+`END_TRAIN_DEFAULT` is always set to the last timestamp in the loaded dataset, ensuring that the training window always covers the most recent year of data.
+`TRAIN_SIZE` is the time-span relative to `END_TRAIN_DEFAULT` that defines the training window.
+`DELTA_VAL` is the size of the validation set in days used for model selection,
+and `PREDICT_SIZE` is the forecasting horizon in hours. Both are defined as constants here for clarity and easy modification.
+`PREDICT_SIZE` is the genuine future forecast.
+
 ```{python}
 #| label: define-constants
+NUMBER_FOLDS=10
 TRAIN_SIZE = pd.Timedelta(days=365*1)
-DELTA_VAL = pd.Timedelta(days=7)
+DELTA_VAL = pd.Timedelta(days=7*NUMBER_FOLDS)
 PREDICT_SIZE = 24
-# START_DOWNLOAD, END_DOWNLOAD, and END_TRAIN_DEFAULT are set
-# dynamically in the Data Acquisition section after the dataset is loaded.
 ```
-
-
 
 
 ## Logger
@@ -55,7 +60,6 @@ PREDICT_SIZE = 24
 #| echo: true
 # Configure logging for notebook
 import logging
-
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s %(levelname)s %(message)s",
@@ -170,6 +174,7 @@ ALL_TARGETS = [c for c in demo_data.columns if c != "DateTime"]
 # Limit to first 2 targets for demonstration; set TARGETS = ALL_TARGETS for a full run.
 TARGETS = ALL_TARGETS[:2]
 
+from spotforecast2_safe.preprocessing.curate_data import remove_duplicate_timestamps
 
 def prepare_target(target: str) -> None:
     """Write interim/energy_load.csv with the chosen target column renamed to 'Actual Load'.
@@ -189,8 +194,7 @@ def prepare_target(target: str) -> None:
     df = demo_data[["DateTime", target]].copy()
     df = df.rename(columns={"DateTime": "Time (UTC)", target: "Actual Load"})
     # Resolve duplicate timestamps by averaging
-    df = df.groupby("Time (UTC)", as_index=False)["Actual Load"].mean()
-    df = df.sort_values("Time (UTC)").reset_index(drop=True)
+    df = remove_duplicate_timestamps(df=df, time_col="Time (UTC)", agg="mean")
     df.to_csv(data_dst, index=False)
     logger.info(f"Target '{target}' prepared at: {data_dst}")
 
@@ -224,7 +228,6 @@ The raw dataset is a time-series dataframe with the following properties:
     *   `J`: `float64`. Target series J (may contain missing values; filled via forward/backward fill).
     *   `K`: `float64`. Target series K.
 *   Range: Determined dynamically from the loaded dataset (`START_DOWNLOAD` to `END_DOWNLOAD`). For `data_in.csv` this starts at `2024-12-31`; for the fallback `demo02.csv` it starts at `1964-08-02`.
-*   **Note**: There is no `Forecasted Load` column. Benchmark forecast comparisons are therefore not available for this dataset.
 
 ### Example
 The head of the loaded data looks as follows:
@@ -355,7 +358,6 @@ Define Config-Aware Wrappers:
 #| label: code-notebook-entsoe-usage-wrapper
 #| echo: true
 from spotforecast2_safe.manager.models.forecaster_recursive_lgbm import (ForecasterRecursiveLGBM as _ForecasterRecursiveLGBMBase)
-from spotforecast2.manager.trainer_full import handle_training
 
 # 1. Define Config-Aware Wrappers
 class ForecasterRecursiveLGBM(_ForecasterRecursiveLGBMBase):
@@ -394,6 +396,9 @@ Define Training Orchestrator:
 ```{python}
 #| label: code-notebook-entsoe-training-orchestrator
 #| echo: true
+
+from spotforecast2.manager.trainer_full import handle_training
+
 def entsoe_train(model="lgbm", force=False):
     """Train a model for each target (A through K) in TARGETS."""
     model_map = {"lgbm": ForecasterRecursiveLGBM}
@@ -445,32 +450,30 @@ pprint.pprint(model_lgbm.get_params())
 
 ### Execution & Effects of Model Orchestration & Training
 
-The `entsoe_train` command (via `handle_training`) triggers a robust, state-aware training pipeline **for each of the eleven targets** with the following effects:
+The `entsoe_train` command (via `handle_training`) triggers a robust, state-aware training pipeline for each of the eleven targets with the following effects:
 
-1.  **Smart Retraining Logic**:
-    *   **Check**: It first checks the artifact store for an existing model of the specified type.
-    *   **Validate**: If a model exists, it calculates its age. Retraining is triggered only if the model is **> 7 days old** (168 hours) or if `force=True`.
-    *   **Increment**: If retraining occurs, the iteration counter is incremented (e.g., `iteration 0` -> `iteration 1`).
-
-2.  **Data & Ranges**:
-    *   **Source**: For each target, `prepare_target()` writes the corresponding column as `Actual Load` to `energy_load.csv` (with `DateTime` renamed to `Time (UTC)`), then loads data from the file specified in `config.data_filename`.
-    *   **Training Window**: Uses the most recent `TRAIN_SIZE` (1 year) of data ending at `end_dev` = last timestamp in the dataset. The subsequent 24-hour window is the **true future forecast** — no actual values are available for comparison.
-
-3.  **Artifact Storage**:
-    *   **Location**: Models are serialized and saved to `~/spotforecast2_cache` (or the path in `SPOTFORECAST2_CACHE`).
-    *   **Format**: Files are named using the convention `{model}_{target}_forecaster_{n_iteration}.joblib` (e.g., `lgbm_A_forecaster_0.joblib`, `lgbm_B_forecaster_0.joblib`, …, `lgbm_K_forecaster_0.joblib`).
-    *   **Persistence**: These artifacts are persistent and can be loaded by prediction services without retraining.
-
-4.  **Side Effects**:
-    *   **Logging**: Emits INFO/ERROR logs detailing the training progress and any issues.
-    *   **File I/O**: Writes compressed `.joblib` files to disk.
+1. Smart Retraining Logic:
+   *   Check: It first checks the artifact store for an existing model of the specified type.
+   *   Validate: If a model exists, it calculates its age. Retraining is triggered only if the model is **> 7 days old** (168 hours) or if `force=True`.
+   *   Increment: If retraining occurs, the iteration counter is incremented (e.g., `iteration 0` -> `iteration 1`).
+2. Data & Ranges:
+   *   Source: For each target, `prepare_target()` writes the corresponding column as `Actual Load` to `energy_load.csv` (with `DateTime` renamed to `Time (UTC)`), then loads data from the file specified in `config.data_filename`.
+   *   Training Window: Uses the most recent `TRAIN_SIZE` (1 year) of data ending at `end_dev` = last timestamp in the dataset. The subsequent 24-hour window is the true future forecast — no actual values are available for comparison.
+3. Artifact Storage:
+   *   Location: Models are serialized and saved to `~/spotforecast2_cache` (or the path in `SPOTFORECAST2_CACHE`).
+   *   Format: Files are named using the convention `{model}_{target}_forecaster_{n_iteration}.joblib` (e.g., `lgbm_A_forecaster_0.joblib`, `lgbm_B_forecaster_0.joblib`, …, `lgbm_K_forecaster_0.joblib`).
+   *   Persistence: These artifacts are persistent and can be loaded by prediction services without retraining.
+4.  Side Effects:
+   *   Logging: Emits INFO/ERROR logs detailing the training progress and any issues.
+   *   File I/O: Writes compressed `.joblib` files to disk.
 
 
 
 
 ## Predictive Analytics & Visualization
 
-Predictions are returned as a comprehensive **Prediction Package** containing values, metadata, metrics, and validation status, see @tbl-predict-entsoe. Because `END_TRAIN_DEFAULT` equals the last observed timestamp, the model predicts the **next 24 hours beyond the available data** — a genuine future forecast. No ground-truth future values exist, so `future_actual` will be empty and future-window metrics will not be available. The plot shows the training fit plus the 24 h forecast appended at the right edge.
+Predictions are returned as a comprehensive `Prediction Package` containing values, metadata, metrics, and validation status, see @tbl-predict-entsoe. Because `END_TRAIN_DEFAULT` equals the last observed timestamp, the model predicts the next 24 hours beyond the available data.
+No ground-truth future values exist, so `future_actual` will be empty and future-window metrics will not be available. The plot shows the training fit plus the 24 h forecast appended at the right edge.
 
 ### API Reference
 
