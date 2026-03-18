@@ -1,3 +1,13 @@
+## [0.10.5-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.4...v0.10.5-rc.1) (2026-03-18)
+
+### Bug Fixes
+
+* plotter.py ([e1b940f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e1b940f154bc3a60b8152bd7021da90c8e232373))
+
+### Documentation
+
+* get_prediction ([a9bd9c0](https://github.com/sequential-parameter-optimization/spotforecast2/commit/a9bd9c0d22c518572684afb294c8458f7c8c8639))
+
 ## [0.10.4](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.3...v0.10.4) (2026-03-18)
 
 ### Bug Fixes
