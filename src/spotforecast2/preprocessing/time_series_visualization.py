@@ -160,7 +160,7 @@ def visualize_ts_plotly(
         }
 
     # Extract user-provided line properties securely
-    user_line = kwargs.pop('line', {})
+    user_line = kwargs.pop("line", {})
 
     # Create figures for each column
     for col in columns_to_plot:
@@ -295,7 +295,7 @@ def visualize_ts_comparison(
         columns_to_plot = columns if columns is not None else sorted(list(all_columns))
 
         # Extract user-provided line properties mapping securely for the mean plot comparisons
-        user_line = kwargs.pop('line', {})
+        user_line = kwargs.pop("line", {})
 
         for col in columns_to_plot:
             fig = go.Figure()

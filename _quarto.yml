@@ -176,6 +176,8 @@ website:
             file: docs/tasks/tasks.qmd
           - text: "ENTSO-E Guide"
             file: docs/tasks/entsoe.qmd
+          - text: "improved2 Guide"
+            file: docs/tasks/improved2.qmd
 
   page-footer:
     center: |
