@@ -1,3 +1,16 @@
+## [0.10.4-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.3...v0.10.4-rc.1) (2026-03-18)
+
+### Bug Fixes
+
+* trainer_full updated ([5ecec0c](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5ecec0c84375164cfe95f47b437d2c28debb5260))
+
+### Documentation
+
+* impoved2 adaption to user specified data ([ea11462](https://github.com/sequential-parameter-optimization/spotforecast2/commit/ea11462b306f147f389bad8f2b851b3b1d87ce80))
+* improved2 ([a13e34d](https://github.com/sequential-parameter-optimization/spotforecast2/commit/a13e34d845dc3a3967e6c584a06e920625889768))
+* improvt2 update to A,B ([4e42fe9](https://github.com/sequential-parameter-optimization/spotforecast2/commit/4e42fe9c71c14583a77c852b34fe66e41f5ecaff))
+* no tuning ([358848e](https://github.com/sequential-parameter-optimization/spotforecast2/commit/358848e87678a963178a1b8c53a6b3a1878ba64e))
+
 ## [0.10.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.2...v0.10.3) (2026-03-17)
 
 ### Bug Fixes
