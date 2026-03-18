@@ -270,100 +270,105 @@ def handle_training(
     train_size: Optional[pd.Timedelta] = None,
     end_dev: Optional[Union[str, pd.Timestamp]] = None,
     data_filename: Optional[str] = None,
+    hours_until_retrain: int = 168,
     **kwargs: Any,
 ) -> None:
-    """
-    Check if a new model needs to be trained and trigger training if necessary.
+    """Check if a new model needs to be trained and trigger training if necessary.
 
-    Trains a new model if no model exists, if the existing model is older than
-    7 days, or if retraining is forced.
+    Inspects the most recently saved model (if any) and trains a new one when
+    the model cache is empty, the existing model's ``end_dev`` is older than
+    ``hours_until_retrain`` hours, or ``force=True`` is passed.  All training parameters
+    are forwarded verbatim to :func:`train_new_model`.
 
     Args:
-        model_class: The class of the forecaster model to train, for example
-            `spotforecast2_safe.forecaster.ForecasterLGBM`.
-        model_name: Name of the model (e.g., 'lgbm'). If None, it is inferred
-            from the model_class name.
+        model_class:
+            The class of the forecaster model to train, for example
+            ``spotforecast2_safe.forecaster.ForecasterLGBM``.  The class must
+            accept ``iteration``, ``end_dev``, and ``train_size`` in its
+            constructor and expose a ``tune()`` method.
+        model_name:
+            Short identifier for the model (e.g. ``'lgbm'``).  Used
+            to locate existing model files and to name the new one.  If
+            ``None``, the lower-cased class name is used.
         model_dir:
-            Directory where models are stored, see also get_cache_home().
+            Directory where model files are stored.  Forwarded to
+            :func:`~spotforecast2_safe.manager.trainer.get_last_model` and
+            :func:`train_new_model`.  Defaults to
+            :func:`~spotforecast2_safe.data.fetch_data.get_cache_home`.
         force:
-            If True, force retraining even if the current model is recent. Default is False.
+            If ``True``, retrain unconditionally regardless of the
+            existing model's age.  Default is ``False``.
         train_size:
-            Optional size of the training set. Default is None.
+            Length of the training window forwarded to the model
+            constructor.  ``None`` means all available data up to ``end_dev``.
         end_dev:
-            Optional cutoff date for training. Default is None.
+            Hard cutoff timestamp passed to the model constructor.  When
+            ``None``, :func:`train_new_model` calculates it automatically as
+            one day before the latest index in the dataset.
         data_filename:
-            Optional filename of the data used for training. Default is None.
+            Path to the CSV training file forwarded to
+            :func:`train_new_model`.  When ``None``, the library default is
+            used.
+        hours_until_retrain:
+            Number of hours after which the existing model is  considered stale and retraining is triggered.  Default is 168 hours (7 days).
         **kwargs:
-            Additional keyword arguments passed to the model constructor.
+            Extra keyword arguments forwarded to the model constructor.
+
+    Returns:
+        None
 
     Examples:
-        >>> import tempfile
-        >>> import pandas as pd
-        >>> from pathlib import Path
-        >>> from unittest.mock import patch
-        >>> from spotforecast2.manager.trainer_full import handle_training
-        >>>
-        >>> # Example 1: No existing model - triggers training
-        >>> class MockModel:  # doctest: +SKIP
-        ...     '''Mock model class'''
-        ...     def __init__(self, iteration, end_dev, train_size=None):
-        ...         self.iteration = iteration
-        ...         self.end_dev = end_dev
-        ...         self.name = 'test'
-        ...     def tune(self):
-        ...         pass
-        >>>
-        >>> with tempfile.TemporaryDirectory() as tmpdir:  # doctest: +SKIP
-        ...     with patch('spotforecast2.manager.trainer_full.get_last_model') as mock_get:
-        ...         with patch('spotforecast2.manager.trainer_full.train_new_model') as mock_train:
-        ...             mock_get.return_value = (-1, None)
-        ...             handle_training(MockModel, model_name='test', model_dir=tmpdir)
-        ...             print(f"Training called: {mock_train.called}")
-        ...             print(f"Iteration: {mock_train.call_args[0][1]}")
-        Training called: True
-        Iteration: 0
-        >>>
-        >>> # Example 2: Recent model exists - no retraining
-        >>> class RecentModel:  # doctest: +SKIP
-        ...     '''Model with recent training'''
-        ...     def __init__(self):
-        ...         self.end_dev = pd.Timestamp.now('UTC') - pd.Timedelta(hours=24)
-        >>>
-        >>> with tempfile.TemporaryDirectory() as tmpdir:  # doctest: +SKIP
-        ...     with patch('spotforecast2.manager.trainer_full.get_last_model') as mock_get:
-        ...         with patch('spotforecast2.manager.trainer_full.train_new_model') as mock_train:
-        ...             mock_existing = RecentModel()
-        ...             mock_get.return_value = (1, mock_existing)
-        ...             handle_training(MockModel, model_name='recent', model_dir=tmpdir)
-        ...             print(f"Training skipped: {not mock_train.called}")
-        Training skipped: True
-        >>>
-        >>> # Example 3: Old model exists - triggers retraining
-        >>> class OldModel:  # doctest: +SKIP
-        ...     '''Model with old training'''
-        ...     def __init__(self):
-        ...         self.end_dev = pd.Timestamp.now('UTC') - pd.Timedelta(days=10)
-        >>>
-        >>> with tempfile.TemporaryDirectory() as tmpdir:  # doctest: +SKIP
-        ...     with patch('spotforecast2.manager.trainer_full.get_last_model') as mock_get:
-        ...         with patch('spotforecast2.manager.trainer_full.train_new_model') as mock_train:
-        ...             mock_old = OldModel()
-        ...             mock_get.return_value = (2, mock_old)
-        ...             handle_training(MockModel, model_name='old', model_dir=tmpdir)
-        ...             print(f"Retraining triggered: {mock_train.called}")
-        ...             print(f"New iteration: {mock_train.call_args[0][1]}")
-        Retraining triggered: True
-        New iteration: 3
-        >>>
-        >>> # Example 4: Force retraining even with recent model
-        >>> with tempfile.TemporaryDirectory() as tmpdir:  # doctest: +SKIP
-        ...     with patch('spotforecast2.manager.trainer_full.get_last_model') as mock_get:
-        ...         with patch('spotforecast2.manager.trainer_full.train_new_model') as mock_train:
-        ...             mock_recent = RecentModel()
-        ...             mock_get.return_value = (0, mock_recent)
-        ...             handle_training(MockModel, model_name='forced', model_dir=tmpdir, force=True)
-        ...             print(f"Force training executed: {mock_train.called}")
-        Force training executed: True
+        ```{python}
+        import tempfile
+        import pandas as pd
+        from unittest.mock import patch
+        from spotforecast2.manager.trainer_full import handle_training
+
+        # Minimal model stub — no real ML libraries required
+        class StubForecaster:
+            name = "stub"
+            def __init__(self, iteration, end_dev, train_size=None, **kw):
+                self.iteration = iteration
+                self.end_dev = end_dev
+            def tune(self): pass
+            def get_params(self): return {}
+
+        # Scenario 1: empty cache → trains at iteration 0
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch("spotforecast2.manager.trainer_full.get_last_model",
+                       return_value=(-1, None)):
+                with patch("spotforecast2.manager.trainer_full.train_new_model") as m:
+                    handle_training(StubForecaster, model_name="stub", model_dir=tmpdir)
+                    print(f"Scenario 1 — first training at iteration {m.call_args[0][1]}")
+
+        # Scenario 2: recent model (24 h old) → skipped
+        recent = StubForecaster(0, pd.Timestamp.now("UTC") - pd.Timedelta(hours=24))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch("spotforecast2.manager.trainer_full.get_last_model",
+                       return_value=(0, recent)):
+                with patch("spotforecast2.manager.trainer_full.train_new_model") as m:
+                    handle_training(StubForecaster, model_name="stub", model_dir=tmpdir)
+                    print(f"Scenario 2 — recent model, retraining called: {m.called}")
+
+        # Scenario 3: stale model (10 days old) → retrains at iteration n+1
+        stale = StubForecaster(2, pd.Timestamp.now("UTC") - pd.Timedelta(days=10))
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch("spotforecast2.manager.trainer_full.get_last_model",
+                       return_value=(2, stale)):
+                with patch("spotforecast2.manager.trainer_full.train_new_model") as m:
+                    handle_training(StubForecaster, model_name="stub", model_dir=tmpdir)
+                    print(f"Scenario 3 — stale model retrained at iteration {m.call_args[0][1]}")
+
+        # Scenario 4: force=True with recent model → retrains unconditionally
+        with tempfile.TemporaryDirectory() as tmpdir:
+            with patch("spotforecast2.manager.trainer_full.get_last_model",
+                       return_value=(0, recent)):
+                with patch("spotforecast2.manager.trainer_full.train_new_model") as m:
+                    handle_training(
+                        StubForecaster, model_name="stub", model_dir=tmpdir, force=True
+                    )
+                    print(f"Scenario 4 — forced retraining called: {m.called}")
+        ```
     """
     if model_name is None:
         model_name = model_class.__name__.lower()
@@ -411,8 +416,8 @@ def handle_training(
     today = pd.Timestamp.now("UTC")
     hours_since_last_training = (today - last_training_date).total_seconds() // 3600
 
-    # Train a new model every seven days (168 hours)
-    if hours_since_last_training >= 168 or force:
+    # Train a new model  after `hours_until_retrain` hours or if forced. All training parameters
+    if hours_since_last_training >= hours_until_retrain or force:
         logger.info(
             "Model for %s is old enough (%.0f hours) or retraining forced. "
             "Training iteration %d...",
