@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>manager.models – spotforecast2</title>
+<title>manager.models.forecaster_recursive_lgbm_full – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -305,7 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.html">models</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_lgbm_full.html">models.forecaster_recursive_lgbm_full</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -395,8 +395,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.models.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">models</span></a>
+  <a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">models.forecaster_recursive_model_full</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.models.forecaster_recursive_lgbm_full.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">models.forecaster_recursive_lgbm_full</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.models.forecaster_recursive_xgb_full.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">models.forecaster_recursive_xgb_full</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -769,30 +781,51 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#spotforecast2.manager.models" id="toc-spotforecast2.manager.models" class="nav-link active" data-scroll-target="#spotforecast2.manager.models">manager.models</a>
-  <ul class="collapse">
+  <li><a href="#examples" id="toc-examples" class="nav-link active" data-scroll-target="#examples">Examples</a></li>
   <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
   <ul class="collapse">
-  <li><a href="#spotforecast2.manager.models.ForecasterRecursiveLGBMFull" id="toc-spotforecast2.manager.models.ForecasterRecursiveLGBMFull" class="nav-link" data-scroll-target="#spotforecast2.manager.models.ForecasterRecursiveLGBMFull">ForecasterRecursiveLGBMFull</a></li>
-  <li><a href="#spotforecast2.manager.models.ForecasterRecursiveModelFull" id="toc-spotforecast2.manager.models.ForecasterRecursiveModelFull" class="nav-link" data-scroll-target="#spotforecast2.manager.models.ForecasterRecursiveModelFull">ForecasterRecursiveModelFull</a></li>
-  <li><a href="#spotforecast2.manager.models.ForecasterRecursiveXGBFull" id="toc-spotforecast2.manager.models.ForecasterRecursiveXGBFull" class="nav-link" data-scroll-target="#spotforecast2.manager.models.ForecasterRecursiveXGBFull">ForecasterRecursiveXGBFull</a></li>
-  </ul></li>
+  <li><a href="#spotforecast2.manager.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull" id="toc-spotforecast2.manager.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull" class="nav-link" data-scroll-target="#spotforecast2.manager.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull">ForecasterRecursiveLGBMFull</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/manager.models.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/manager.models.forecaster_recursive_lgbm_full.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.html">models</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_lgbm_full.html">models.forecaster_recursive_lgbm_full</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">manager.models.forecaster_recursive_lgbm_full</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
 
 
-<section id="spotforecast2.manager.models" class="level1">
-<h1>manager.models</h1>
-<p><code>manager.models</code></p>
-<p>Full-featured forecasting model classes with Bayesian tuning and SHAP.</p>
-<p>This module extends the stub implementations in <code>spotforecast2-safe</code> with real Bayesian hyperparameter search (Optuna) and SHAP-based feature importance (<code>shap.TreeExplainer</code>).</p>
+</header>
+
+
+<p><code>manager.models.forecaster_recursive_lgbm_full</code></p>
+<p>LGBM forecaster with real Bayesian tuning and SHAP.</p>
+<p>This module provides :class:<code>ForecasterRecursiveLGBMFull</code>, which combines the LightGBM forecaster from <code>spotforecast2-safe</code> with Bayesian hyperparameter optimisation (Optuna) and SHAP-based feature importance from :class:<code>~spotforecast2.manager.models.ForecasterRecursiveModelFull</code>.</p>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.manager.models <span class="im">import</span> ForecasterRecursiveLGBMFull</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model <span class="op">=</span> ForecasterRecursiveLGBMFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.name</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">'lgbm'</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.forecaster <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="va">True</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.n_trials</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</section>
 <section id="classes" class="level2">
 <h2 class="anchored" data-anchor-id="classes">Classes</h2>
 <table class="caption-top table">
@@ -804,85 +837,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#spotforecast2.manager.models.ForecasterRecursiveLGBMFull">ForecasterRecursiveLGBMFull</a></td>
+<td><a href="#spotforecast2.manager.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull">ForecasterRecursiveLGBMFull</a></td>
 <td>LGBM forecaster with real Bayesian tuning and SHAP.</td>
 </tr>
-<tr class="even">
-<td><a href="#spotforecast2.manager.models.ForecasterRecursiveModelFull">ForecasterRecursiveModelFull</a></td>
-<td>ForecasterRecursiveModel with real Bayesian tuning and SHAP.</td>
-</tr>
-<tr class="odd">
-<td><a href="#spotforecast2.manager.models.ForecasterRecursiveXGBFull">ForecasterRecursiveXGBFull</a></td>
-<td>XGBoost forecaster with real Bayesian tuning and SHAP.</td>
-</tr>
 </tbody>
 </table>
-<section id="spotforecast2.manager.models.ForecasterRecursiveLGBMFull" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.manager.models.ForecasterRecursiveLGBMFull">ForecasterRecursiveLGBMFull</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manager.models.ForecasterRecursiveLGBMFull(iteration, lags<span class="op">=</span><span class="dv">12</span>, <span class="op">**</span>kwargs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="spotforecast2.manager.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.manager.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull">ForecasterRecursiveLGBMFull</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>manager.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull(</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    iteration,</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    lags<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>LGBM forecaster with real Bayesian tuning and SHAP.</p>
-<p>Inherits the LGBM forecaster initialisation from <code>ForecasterRecursiveLGBM</code> (<code>spotforecast2-safe</code>) and adds the real <code>tune()</code> and <code>get_global_shap_feature_importance()</code> from <code>ForecasterRecursiveModelFull</code>.</p>
-<section id="examples" class="level4 doc-section doc-section-examples">
-<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.manager.models <span class="im">import</span> ForecasterRecursiveLGBMFull</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model <span class="op">=</span> ForecasterRecursiveLGBMFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.name</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="co">'lgbm'</span></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.forecaster <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-</section>
-<section id="spotforecast2.manager.models.ForecasterRecursiveModelFull" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.manager.models.ForecasterRecursiveModelFull">ForecasterRecursiveModelFull</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>manager.models.ForecasterRecursiveModelFull(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    iteration,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    n_trials<span class="op">=</span>_DEFAULT_N_TRIALS,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>ForecasterRecursiveModel with real Bayesian tuning and SHAP.</p>
-<p>This class overrides the two stubs in <code>spotforecast2-safe</code>:</p>
-<ul>
-<li>:meth:<code>tune</code> — performs a full Bayesian hyperparameter search using <code>bayesian_search_forecaster</code> (Optuna).</li>
-<li>:meth:<code>get_global_shap_feature_importance</code> — computes global SHAP values using <code>shap.TreeExplainer</code>.</li>
-</ul>
-<section id="examples-1" class="level4 doc-section doc-section-examples">
-<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.manager.models <span class="im">import</span> ForecasterRecursiveModelFull</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model <span class="op">=</span> ForecasterRecursiveModelFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">hasattr</span>(model, <span class="st">'tune'</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="va">True</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">hasattr</span>(model, <span class="st">'get_global_shap_feature_importance'</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-<section id="methods" class="level4">
-<h4 class="anchored" data-anchor-id="methods">Methods</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td><a href="#spotforecast2.manager.models.ForecasterRecursiveModelFull.get_global_shap_feature_importance">get_global_shap_feature_importance</a></td>
-<td>Return global SHAP-based feature importances.</td>
-</tr>
-<tr class="even">
-<td><a href="#spotforecast2.manager.models.ForecasterRecursiveModelFull.tune">tune</a></td>
-<td>Tune the forecaster via Bayesian search (Optuna).</td>
-</tr>
-</tbody>
-</table>
-<section id="spotforecast2.manager.models.ForecasterRecursiveModelFull.get_global_shap_feature_importance" class="level5">
-<h5 class="anchored" data-anchor-id="spotforecast2.manager.models.ForecasterRecursiveModelFull.get_global_shap_feature_importance">get_global_shap_feature_importance</h5>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>manager.models.ForecasterRecursiveModelFull.get_global_shap_feature_importance(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    frac<span class="op">=</span><span class="fl">0.1</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Return global SHAP-based feature importances.</p>
-<p>Uses <code>shap.TreeExplainer</code> on the underlying estimator to compute mean absolute SHAP values across a random sample of the training data.</p>
-<section id="parameters" class="level6 doc-section doc-section-parameters">
-<h6 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h6>
+<p>Inherits the LightGBM forecaster initialisation from :class:<code>~spotforecast2_safe.manager.models.forecaster_recursive_lgbm.ForecasterRecursiveLGBM</code> (<code>spotforecast2-safe</code>) and adds the real :meth:<code>tune</code> and :meth:<code>get_global_shap_feature_importance</code> from :class:<code>~spotforecast2.manager.models.ForecasterRecursiveModelFull</code>.</p>
+<p>The MRO ensures that :meth:<code>tune</code> and SHAP methods resolve from <code>ForecasterRecursiveModelFull</code>, while the LightGBM-specific <code>__init__</code> (estimator wiring) comes from <code>ForecasterRecursiveLGBM</code>.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -894,100 +865,54 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>frac</td>
-<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
-<td>Fraction of training data to sample (0 &lt; frac &lt;= 1).</td>
-<td><code>0.1</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns" class="level6 doc-section doc-section-returns">
-<h6 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h6>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a></td>
-<td>pd.Series: Feature importances sorted descending. Empty</td>
+<td>iteration</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
+<td>Training iteration index (0-based).</td>
+<td><em>required</em></td>
 </tr>
 <tr class="even">
-<td></td>
-<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a></td>
-<td>if the model has not been tuned.</td>
+<td>lags</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
+<td>Number of lag features to use.</td>
+<td><code>12</code></td>
 </tr>
-</tbody>
-</table>
-</section>
-<section id="raises" class="level6 doc-section doc-section-raises">
-<h6 class="doc-section doc-section-raises anchored" data-anchor-id="raises">Raises</h6>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
 <tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
-<td>If the forecaster has not been initialized.</td>
+<td>**kwargs</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
+<td>Forwarded to parent classes (e.g., <code>n_trials</code>, <code>predict_size</code>, <code>train_size</code>).</td>
+<td><code>{}</code></td>
 </tr>
 </tbody>
 </table>
 </section>
-</section>
-<section id="spotforecast2.manager.models.ForecasterRecursiveModelFull.tune" class="level5">
-<h5 class="anchored" data-anchor-id="spotforecast2.manager.models.ForecasterRecursiveModelFull.tune">tune</h5>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>manager.models.ForecasterRecursiveModelFull.tune()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Tune the forecaster via Bayesian search (Optuna).</p>
-<p>Loads time-series data, builds exogenous features, and runs <code>bayesian_search_forecaster</code> over the search space registered for <code>self.name</code> in <code>SEARCH_SPACES</code>.</p>
-<p>After tuning the model is fitted with the best parameters and, if <code>self.save_model_to_file</code> is <em>True</em>, persisted to disk.</p>
-<section id="raises-1" class="level6 doc-section doc-section-raises">
-<h6 class="doc-section doc-section-raises anchored" data-anchor-id="raises-1">Raises</h6>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/exceptions.html#KeyError">KeyError</a></td>
-<td>If <code>self.name</code> is not in <code>SEARCH_SPACES</code>.</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-</section>
-</section>
-<section id="spotforecast2.manager.models.ForecasterRecursiveXGBFull" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.manager.models.ForecasterRecursiveXGBFull">ForecasterRecursiveXGBFull</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>manager.models.ForecasterRecursiveXGBFull(iteration, lags<span class="op">=</span><span class="dv">12</span>, <span class="op">**</span>kwargs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>XGBoost forecaster with real Bayesian tuning and SHAP.</p>
-<p>Inherits the XGBoost forecaster initialisation from <code>ForecasterRecursiveXGB</code> (<code>spotforecast2-safe</code>) and adds the real <code>tune()</code> and <code>get_global_shap_feature_importance()</code> from <code>ForecasterRecursiveModelFull</code>.</p>
-<section id="examples-2" class="level4 doc-section doc-section-examples">
-<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.manager.models <span class="im">import</span> ForecasterRecursiveXGBFull</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model <span class="op">=</span> ForecasterRecursiveXGBFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.name</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a><span class="co">'xgb'</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.manager.models <span class="im">import</span> ForecasterRecursiveLGBMFull</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model <span class="op">=</span> ForecasterRecursiveLGBMFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.name</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">'lgbm'</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.forecaster <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="va">True</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.n_trials</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.iteration</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="b0aca1c9" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.models <span class="im">import</span> ForecasterRecursiveLGBMFull</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> ForecasterRecursiveLGBMFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Model name: </span><span class="sc">{</span>model<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Trials: </span><span class="sc">{</span>model<span class="sc">.</span>n_trials<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Has tune: </span><span class="sc">{</span><span class="bu">callable</span>(model.tune)<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Has SHAP: </span><span class="sc">{</span><span class="bu">callable</span>(model.get_global_shap_feature_importance)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Model name: lgbm
+Trials: 10
+Has tune: True
+Has SHAP: True</code></pre>
+</div>
+</div>
 
 
-</section>
 </section>
 </section>
 </section>
@@ -1420,7 +1345,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </div>   
     <div class="nav-footer-center">
 <p>Copyright © 2024-2026 bartzbeielstein | <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/manager.models.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/manager.models.forecaster_recursive_lgbm_full.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
