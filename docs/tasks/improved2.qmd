@@ -251,7 +251,7 @@ demo_data.tail()
 
 ## Configuration & Model Selection
 
-Deterministic configuration is enforced via the `ConfigEntsoe` class. This ensures that all components of the pipeline (training, prediction, feature engineering) share a single source of truth, see @tbl-config-entsoe-param and @tbl-config-entsoe-time.
+Deterministic configuration is enforced via the `ConfigMulti` class. This ensures that all components of the pipeline (training, prediction, feature engineering) share a single source of truth, see @tbl-config-entsoe-param and @tbl-config-entsoe-time.
 
 
 ### Implementation of the Configuration
@@ -261,11 +261,11 @@ Deterministic configuration is enforced via the `ConfigEntsoe` class. This ensur
 #| echo: true
 import pandas as pd
 from spotforecast2_safe.data import Period
-from spotforecast2_safe.manager.configurator.config_entsoe import ConfigEntsoe
+from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
 
 
 # Initialize configuration
-config = ConfigEntsoe(
+config = ConfigMulti(
     api_country_code="DE",
     periods=[
         Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))
@@ -299,7 +299,7 @@ The `n_hyperparameters_trials` argument controls the model selection process. Th
 
 
 
-Based on the settings shown the last code snippet and in @tbl-config-entsoe-param, the general parameters of the  `ConfigEntsoe` object are instantiated as follows:
+Based on the settings shown the last code snippet and in @tbl-config-entsoe-param, the general parameters of the  `ConfigMulti` object are instantiated as follows:
 
 * `api_country_code`: "DE", which means that the data will be downloaded from the ENTSO-E Transparency Platform for Germany.
 * `random_state`: 42. Reproducibility: The `random_state` is locked for all stochastic processes.
@@ -321,7 +321,7 @@ Based on the settings shown the last code snippet and in @tbl-config-entsoe-para
 : Configuration for Data Acquisition. Time-related parameters. {#tbl-config-entsoe-time}
 
 
-Based on the settings shown the last code snippet and in @tbl-config-entsoe-param and @tbl-config-entsoe-time, the `ConfigEntsoe` object is instantiated as follows:
+Based on the settings shown the last code snippet and in @tbl-config-entsoe-param and @tbl-config-entsoe-time, the `ConfigMulti` object is instantiated as follows:
 
 * `periods`: [Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))], so that smoothed 2-hour cyclical features are generated. We utilize Radial Basis Functions (RBF) to capture seasonality. A critical design choice is the resolution of the Daily period: 12 periods are used for the 24-hour daily cycle (instead of 24).  This effectively provides a 2-hour resolution, acting as a smoothing filter that reduces noise while halving the dimensionality of the feature space.
 The default `periods` are deliberately chosen to balance temporal resolution with model complexity (e.g., `daily` uses `n_periods=12` to smooth hourly noise while reducing dimensionality).
@@ -353,40 +353,27 @@ The API Reference of the Model Orchestration & Training is shown in @tbl-model-e
 
 ### Implementation of the Model Orchestration & Training
 
-Define Config-Aware Wrappers:
+Import model classes and verify config injection via `from_config`:
 ```{python}
 #| label: code-notebook-entsoe-usage-wrapper
 #| echo: true
-from spotforecast2_safe.manager.models.forecaster_recursive_lgbm import (ForecasterRecursiveLGBM as _ForecasterRecursiveLGBMBase)
-
-# 1. Define Config-Aware Wrappers
-class ForecasterRecursiveLGBM(_ForecasterRecursiveLGBMBase):
-    """LGBM forecaster with injected production config."""
-    def __init__(self, iteration: int, lags: int = 12, **kwargs):
-        kwargs.setdefault("periods", config.periods)
-        kwargs.setdefault("country_code", config.API_COUNTRY_CODE)
-        kwargs.setdefault("random_state", config.random_state)
-        kwargs.setdefault("end_dev", config.end_train_default)
-        kwargs.setdefault("train_size", config.train_size)
-        kwargs.setdefault("delta_val", config.delta_val)
-        kwargs.setdefault("predict_size", config.predict_size)
-        kwargs.setdefault("refit_size", config.refit_size)
-        super().__init__(iteration=iteration, lags=lags, **kwargs)
+from spotforecast2_safe.manager.models.forecaster_recursive_lgbm import ForecasterRecursiveLGBM
 ```
 
-These wrapper class (`ForecasterRecursiveLGBM`) implements a Safety Injection Pattern. By automatically pulling parameters from the global `config` object during initialization, they guarantee that:
+Every model class inherits `from_config(iteration, config, **overrides)` from `ForecasterRecursiveModel`. This classmethod introspects the full `__init__` chain (including parent classes), extracts matching config attributes, and translates the two known name mismatches (`API_COUNTRY_CODE` → `country_code`, `end_train_default` → `end_dev`). Caller-supplied overrides always take precedence.
+
+Benefits:
 
 1.  Configuration Integrity: The model cannot be initialized with ad-hoc parameters that conflict with the experimental design (e.g., matching `predict_size` and `refit_size`).
-2.  Simplified Orchestration: The training function (`entsoe_train`) does not need to accept or pass 20+ configuration arguments, reducing the risk of wiring errors.
-3.  Encapsulation: The model carries its own configuration context, ensuring that any internal refitting or prediction operations remain consistent with the global policy.
+2.  Simplified Orchestration: No boilerplate wrapper classes or parameter maps needed — `from_config` lives on the model itself.
+3.  Extensibility: New config parameters that match an `__init__` kwarg are picked up automatically.
 
 The LGBM model:
-
 
 ```{python}
 #| label: get_params_lgbm
 #| echo: true
-model_lgbm   = ForecasterRecursiveLGBM(iteration=1)
+model_lgbm = ForecasterRecursiveLGBM.from_config(iteration=1, config=config)
 pprint.pprint(model_lgbm.get_params())
 ```
 
@@ -415,9 +402,15 @@ def entsoe_train(model="lgbm", force=False):
             model_class=model_map[model],
             model_name=model_name,
             force=force,
-            train_size=config.train_size,
             data_filename=config.data_filename,
+            # Config values forwarded to model_class() via **kwargs
             end_dev=config.end_train_default,
+            train_size=config.train_size,
+            periods=config.periods,
+            country_code=config.API_COUNTRY_CODE,
+            random_state=config.random_state,
+            predict_size=config.predict_size,
+            refit_size=config.refit_size,
         )
         logger.info(f"Training pipeline completed for {model_name}.")
 ```
@@ -443,7 +436,7 @@ entsoe_train(force=True)
 ```{python}
 #| label: get_params_lgbm-trained
 #| echo: true
-model_lgbm   = ForecasterRecursiveLGBM(iteration=1)
+model_lgbm = ForecasterRecursiveLGBM.from_config(iteration=1, config=config)
 pprint.pprint(model_lgbm.get_params())
 ```
 
@@ -537,7 +530,7 @@ def entsoe_predict(model="lgbm", show=True):
 ```{python}
 #| label: get_params_lgbm-predict
 #| echo: true
-model_lgbm   = ForecasterRecursiveLGBM(iteration=1)
+model_lgbm = ForecasterRecursiveLGBM.from_config(iteration=1, config=config)
 pprint.pprint(model_lgbm.get_params())
 ```
 
@@ -676,7 +669,7 @@ for target in TARGETS:
     model_name = f"lgbm_untrained_{target}"
 
     # 1. Initialize the safe wrapper directly
-    model_app1 = ForecasterRecursiveLGBM(iteration=1)
+    model_app1 = ForecasterRecursiveLGBM.from_config(iteration=1, config=config)
     model_app1.name = model_name
 
     # 2. Save the initialized but explicitly UNTRAINED wrapper structure
@@ -715,7 +708,7 @@ for target in TARGETS:
     model_name = f"lgbm_trained_not_tuned_{target}"
 
     # 1. Initialize the safe wrapper
-    model_app2 = ForecasterRecursiveLGBM(iteration=2)
+    model_app2 = ForecasterRecursiveLGBM.from_config(iteration=2, config=config)
     model_app2.name = model_name
 
     # 2. Explicitly fit the model using default parameters
@@ -757,24 +750,9 @@ Here is how to perform tuning and use the tuned model. We utilize the full wrapp
 #| cache: false
 #| eval: true
 
-from spotforecast2.manager.models import ForecasterRecursiveLGBMFull as _ForecasterRecursiveLGBMFullBase
+from spotforecast2.manager.models import ForecasterRecursiveLGBMFull
 
-# Define the config-aware wrapper for the full model
-class ForecasterRecursiveLGBMFull(_ForecasterRecursiveLGBMFullBase):
-    def __init__(self, iteration: int, lags: int = 12, **kwargs):
-        kwargs.setdefault("periods", config.periods)
-        kwargs.setdefault("country_code", config.API_COUNTRY_CODE)
-        kwargs.setdefault("random_state", config.random_state)
-        kwargs.setdefault("end_dev", config.end_train_default)
-        kwargs.setdefault("train_size", config.train_size)
-        kwargs.setdefault("delta_val", config.delta_val)
-        kwargs.setdefault("predict_size", config.predict_size)
-        kwargs.setdefault("refit_size", config.refit_size)
-
-        # We perform a brief tuning search (n_trials=15) for demonstration
-        super().__init__(iteration=iteration, lags=lags, n_trials=15, **kwargs)
-
-# Train and tune for each target
+# Train and tune for each target (n_trials=15 for demonstration)
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_and_trained_{target}"
@@ -784,7 +762,14 @@ for target in TARGETS:
         model_name=model_name,
         force=True,
         data_filename=config.data_filename,
-        end_dev=config.end_train_default
+        end_dev=config.end_train_default,
+        train_size=config.train_size,
+        periods=config.periods,
+        country_code=config.API_COUNTRY_CODE,
+        random_state=config.random_state,
+        predict_size=config.predict_size,
+        refit_size=config.refit_size,
+        n_trials=15,
     )
 ```
 
@@ -890,7 +875,14 @@ for target in TARGETS:
         model_name=model_name,
         force=True,
         data_filename=config.data_filename,
-        end_dev=config.end_train_default
+        end_dev=config.end_train_default,
+        train_size=config.train_size,
+        periods=config.periods,
+        country_code=config.API_COUNTRY_CODE,
+        random_state=config.random_state,
+        predict_size=config.predict_size,
+        refit_size=config.refit_size,
+        n_trials=15,
     )
 ```
 
