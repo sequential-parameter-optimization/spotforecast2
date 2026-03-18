@@ -16,9 +16,13 @@ from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.manager.models.forecaster_recursive_model import (
     ForecasterRecursiveModel,
 )
-from spotforecast2.manager.models import (
+from spotforecast2.manager.models.forecaster_recursive_model_full import (
     ForecasterRecursiveModelFull,
+)
+from spotforecast2.manager.models.forecaster_recursive_lgbm_full import (
     ForecasterRecursiveLGBMFull,
+)
+from spotforecast2.manager.models.forecaster_recursive_xgb_full import (
     ForecasterRecursiveXGBFull,
 )
 
@@ -87,8 +91,12 @@ class TestTune:
     @patch(
         "spotforecast2_safe.manager.models.forecaster_recursive_model.load_timeseries"
     )
-    @patch("spotforecast2.manager.models.load_timeseries")
-    @patch("spotforecast2.manager.models.bayesian_search_forecaster")
+    @patch(
+        "spotforecast2.manager.models.forecaster_recursive_model_full.load_timeseries"
+    )
+    @patch(
+        "spotforecast2.manager.models.forecaster_recursive_model_full.bayesian_search_forecaster"
+    )
     def test_tune_calls_bayesian_search(
         self, mock_bsf, mock_load_models, mock_load_safe, hourly_series
     ):
@@ -129,8 +137,12 @@ class TestTune:
     @patch(
         "spotforecast2_safe.manager.models.forecaster_recursive_model.load_timeseries"
     )
-    @patch("spotforecast2.manager.models.load_timeseries")
-    @patch("spotforecast2.manager.models.bayesian_search_forecaster")
+    @patch(
+        "spotforecast2.manager.models.forecaster_recursive_model_full.load_timeseries"
+    )
+    @patch(
+        "spotforecast2.manager.models.forecaster_recursive_model_full.bayesian_search_forecaster"
+    )
     def test_tune_saves_model_when_flag_set(
         self, mock_bsf, mock_load_models, mock_load_safe, hourly_series
     ):

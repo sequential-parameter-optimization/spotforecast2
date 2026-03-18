@@ -1,11 +1,19 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Full-featured forecasting model classes with Bayesian tuning and SHAP.
+"""Full-featured base forecasting model with Bayesian tuning and SHAP.
 
-This module extends the stub implementations in ``spotforecast2-safe``
-with real Bayesian hyperparameter search (Optuna) and SHAP-based
-feature importance (``shap.TreeExplainer``).
+This module extends :class:`~spotforecast2_safe.manager.models.forecaster_recursive_model.ForecasterRecursiveModel`
+from ``spotforecast2-safe`` with real Bayesian hyperparameter search (Optuna)
+and SHAP-based feature importance (``shap.TreeExplainer``).
+
+Examples:
+    >>> from spotforecast2.manager.models import ForecasterRecursiveModelFull
+    >>> model = ForecasterRecursiveModelFull(iteration=0)
+    >>> hasattr(model, 'tune')
+    True
+    >>> hasattr(model, 'get_global_shap_feature_importance')
+    True
 """
 
 from __future__ import annotations
@@ -19,14 +27,8 @@ import shap
 
 from spotforecast2.model_selection import bayesian_search_forecaster
 from spotforecast2_safe.data.fetch_data import load_timeseries
-from spotforecast2_safe.manager.models.forecaster_recursive_lgbm import (
-    ForecasterRecursiveLGBM,
-)
 from spotforecast2_safe.manager.models.forecaster_recursive_model import (
     ForecasterRecursiveModel,
-)
-from spotforecast2_safe.manager.models.forecaster_recursive_xgb import (
-    ForecasterRecursiveXGB,
 )
 from spotforecast2.manager.trainer_full import SEARCH_SPACES
 from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
@@ -47,9 +49,18 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
     * :meth:`get_global_shap_feature_importance` — computes global
       SHAP values using ``shap.TreeExplainer``.
 
+    Args:
+        iteration: Training iteration index (0-based).
+        n_trials: Number of Optuna trials for Bayesian search.
+        **kwargs: Forwarded to :class:`ForecasterRecursiveModel`.
+
     Examples:
         >>> from spotforecast2.manager.models import ForecasterRecursiveModelFull
         >>> model = ForecasterRecursiveModelFull(iteration=0)
+        >>> model.n_trials
+        10
+        >>> model.iteration
+        0
         >>> hasattr(model, 'tune')
         True
         >>> hasattr(model, 'get_global_shap_feature_importance')
@@ -81,6 +92,12 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
 
         Raises:
             KeyError: If ``self.name`` is not in ``SEARCH_SPACES``.
+
+        Examples:
+            >>> from spotforecast2.manager.models import ForecasterRecursiveLGBMFull
+            >>> model = ForecasterRecursiveLGBMFull(iteration=0)
+            >>> callable(model.tune)
+            True
         """
         logger.info("Tuning %s Forecaster %d", self.name.upper(), self.iteration)
 
@@ -154,6 +171,15 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
 
         Raises:
             ValueError: If the forecaster has not been initialized.
+
+        Examples:
+            >>> from spotforecast2.manager.models import ForecasterRecursiveLGBMFull
+            >>> model = ForecasterRecursiveLGBMFull(iteration=0)
+            >>> # Returns empty Series when model is not tuned
+            >>> result = model.get_global_shap_feature_importance()
+            >>> import pandas as pd
+            >>> isinstance(result, pd.Series)
+            True
         """
         X_train, y_train = self._get_training_data()
         X_train_sample = X_train.sample(frac=frac, random_state=self.random_state)
@@ -172,50 +198,3 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
             .sort_values(ascending=False)
         )
         return shap_importance
-
-
-# ------------------------------------------------------------------
-# Convenience subclasses
-# ------------------------------------------------------------------
-
-
-class ForecasterRecursiveLGBMFull(
-    ForecasterRecursiveModelFull, ForecasterRecursiveLGBM
-):
-    """LGBM forecaster with real Bayesian tuning and SHAP.
-
-    Inherits the LGBM forecaster initialisation from
-    ``ForecasterRecursiveLGBM`` (``spotforecast2-safe``) and adds
-    the real ``tune()`` and ``get_global_shap_feature_importance()``
-    from ``ForecasterRecursiveModelFull``.
-
-    Examples:
-        >>> from spotforecast2.manager.models import ForecasterRecursiveLGBMFull
-        >>> model = ForecasterRecursiveLGBMFull(iteration=0)
-        >>> model.name
-        'lgbm'
-        >>> model.forecaster is not None
-        True
-    """
-
-    def __init__(self, iteration: int, lags: int = 12, **kwargs: Any):
-        super().__init__(iteration=iteration, lags=lags, **kwargs)
-
-
-class ForecasterRecursiveXGBFull(ForecasterRecursiveModelFull, ForecasterRecursiveXGB):
-    """XGBoost forecaster with real Bayesian tuning and SHAP.
-
-    Inherits the XGBoost forecaster initialisation from
-    ``ForecasterRecursiveXGB`` (``spotforecast2-safe``) and adds
-    the real ``tune()`` and ``get_global_shap_feature_importance()``
-    from ``ForecasterRecursiveModelFull``.
-
-    Examples:
-        >>> from spotforecast2.manager.models import ForecasterRecursiveXGBFull
-        >>> model = ForecasterRecursiveXGBFull(iteration=0)
-        >>> model.name
-        'xgb'
-    """
-
-    def __init__(self, iteration: int, lags: int = 12, **kwargs: Any):
-        super().__init__(iteration=iteration, lags=lags, **kwargs)
