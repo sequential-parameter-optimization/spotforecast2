@@ -17,11 +17,11 @@ abstract: |
 
 # spotforecast2 multi-target demo {#sec-code-spotforecast2-multitarget}
 
-This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on an eleven-target dataset (`demo02.csv`). The dataset contains eleven independent target columns, **A** through **K**, each representing an independent time series. A separate LGBM model is trained and evaluated for each target.
+This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on an eleven-target dataset. The primary data source is `data_in.csv` (located in `~/spotforecast2_data/`), containing eleven independent measurement columns mapped to labels **A** through **K**. If `data_in.csv` is absent, the pipeline falls back to the bundled `demo02.csv`. A separate LGBM model is trained per target. `END_TRAIN_DEFAULT` is always the last timestamp in the loaded data; the model then forecasts the **next 24 hours** beyond that point.
 
 The workflow executes in the following phases:
 
-1.  **Data Acquisition**: Loading the bundled multi-target demo dataset and preparing each target for the pipeline.
+1.  **Data Acquisition**: Loading `data_in.csv` (with automatic fallback to `demo02.csv`) and preparing each target for the pipeline.
 2.  **Configuration & Model Selection**: Centralized configuration of hyperparameters, feature engineering, and automated tuning strategies.
 3.  **Model Orchestration & Training**: Fail-safe model training with automatic refitting policies, executed for each of the eleven targets.
 4.  **Predictive Analytics & Visualization**: Generation of validated prediction packages and interactive reports for each target.
@@ -38,12 +38,11 @@ import pandas as pd
 
 ```{python}
 #| label: define-constants
-START_DOWNLOAD = "196408020000"
-END_DOWNLOAD = "197506190000"
 TRAIN_SIZE = pd.Timedelta(days=365*1)
-END_TRAIN_DEFAULT = "1975-06-01 00:00+00:00"
 DELTA_VAL = pd.Timedelta(days=7)
 PREDICT_SIZE = 24
+# START_DOWNLOAD, END_DOWNLOAD, and END_TRAIN_DEFAULT are set
+# dynamically in the Data Acquisition section after the dataset is loaded.
 ```
 
 
@@ -67,7 +66,9 @@ logger = logging.getLogger(__name__)
 
 ## Data Acquisition
 
-Data is loaded directly from the bundled demo dataset (`demo02.csv`) included in the `spotforecast2-safe` package. The dataset contains **eleven independent target columns** named **A** through **K**, each representing a distinct time series at hourly resolution. There is no forecasted load column.
+Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo02.csv` included in the `spotforecast2-safe` package. Both datasets contain **eleven independent target columns** named **A** through **K** (column names are mapped from the instrument codes in `data_in.csv`). There is no forecasted load column.
+
+The download-range constants (`START_DOWNLOAD`, `END_DOWNLOAD`) and the training cut-off (`END_TRAIN_DEFAULT`) are derived **dynamically** from the loaded dataset, so they automatically update whenever `data_in.csv` is refreshed.
 
 A helper function `prepare_target()` writes one target column at a time to the standard interim location (`interim/energy_load.csv`), renaming the `DateTime` index to `Time (UTC)` and the target column to `Actual Load` so that all downstream pipeline components (`load_timeseries()`, `config.data_filename`) work without modification, see @tbl-data-acquisition.
 
@@ -75,42 +76,111 @@ A helper function `prepare_target()` writes one target column at a time to the s
 
 | Component | Type | Arguments | Description |
 | :--- | :--- | :--- | :--- |
+| `fetch_data` | Function | `filename` (str or Path) | Loads a CSV file from the user data directory, parses the datetime index, and returns a UTC-aware DataFrame. |
 | `get_package_data_home` | Function | — | Returns the path to the internal package datasets directory (contains `demo02.csv`). |
 | `get_data_home` | Function | `data_home` (str, optional) | Returns the path to the user data directory (default: `~/spotforecast2_data`). Creates it if absent. |
-| `prepare_target` | Function | `target` (str) | Writes the chosen target column ("A"–"K") from `demo02.csv` as `Actual Load` to `interim/energy_load.csv`, renaming `DateTime` to `Time (UTC)`. |
+| `prepare_target` | Function | `target` (str) | Writes the chosen target column (label detected dynamically from CSV headers) as `Actual Load` to `interim/energy_load.csv`, renaming `DateTime` to `Time (UTC)`. |
 : Data acquisition {#tbl-data-acquisition}
+
+### Column Mapping for `data_in.csv`
+
+When `data_in.csv` is present, its column headers are read at runtime and mapped to
+sequential short labels **A, B, C, …** in the order they appear in the file.
+No column names are hard-coded in this document — the mapping is built dynamically
+and printed to the log when the data block executes.
+The fallback dataset (`demo02.csv`) already uses short column labels and requires no mapping.
 
 ### Implementation of Data Acquisition
 
-The following block loads the bundled demo CSV and defines the target preparation helper.
+The following block loads the data (with automatic fallback) and defines the target preparation helper. `END_TRAIN_DEFAULT` is set to the last timestamp present in the loaded dataset, so re-running after a data refresh automatically extends the training window.
 
 ```{python}
 #| label: code-notebook-entsoe-usage-load-csv
 #| echo: true
 
+import string
 import pandas as pd
-from spotforecast2_safe.data.fetch_data import get_package_data_home, get_data_home
+from pathlib import Path
+from spotforecast2_safe.data.fetch_data import (
+    fetch_data,
+    get_package_data_home,
+    get_data_home,
+)
 
-# Locate the bundled demo dataset shipped with spotforecast2-safe
-csv_src = get_package_data_home() / "demo02.csv"
-demo_data = pd.read_csv(csv_src, parse_dates=["DateTime"])
+data_home = get_data_home()
+data_in_path = data_home / "data_in.csv"
 
-# Define all eleven target columns from demo02.csv
-# TARGETS = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K"]
-TARGETS = ["A", "B"]
+if data_in_path.exists():
+    logger.info(f"Loading primary dataset: {data_in_path}")
+    # fetch_data returns a UTC-aware DataFrame with DateTime as the index
+    df_raw = fetch_data(filename=str(data_in_path))
+    # Build the column→label mapping dynamically from CSV headers (order-based).
+    # Column names are NOT hard-coded; they are read from the file at runtime.
+    raw_cols = list(df_raw.columns)
+    DATA_IN_COL_MAP = {
+        col: string.ascii_uppercase[i]
+        for i, col in enumerate(raw_cols)
+        if i < 26
+    }
+    df_raw = df_raw.rename(columns=DATA_IN_COL_MAP)
+    # Reset index so DateTime becomes a regular column (matches demo02 layout)
+    df_raw.index.name = "DateTime"
+    demo_data = df_raw.reset_index()
+    DATA_SOURCE = "data_in.csv"
+    logger.info(
+        f"Mapped {len(DATA_IN_COL_MAP)} columns to labels: "
+        f"{list(DATA_IN_COL_MAP.values())}"
+    )
+else:
+    DATA_IN_COL_MAP = {}
+    logger.info("data_in.csv not found — falling back to bundled demo02.csv")
+    csv_src = get_package_data_home() / "demo02.csv"
+    demo_data = pd.read_csv(csv_src, parse_dates=["DateTime"])
+    DATA_SOURCE = "demo02.csv"
+
+# Check for data_test.csv (ground truth for forecast period comparison)
+data_test_path = data_home / "data_test.csv"
+if data_test_path.exists():
+    logger.info(f"Loading test dataset: {data_test_path}")
+    df_test_raw = fetch_data(filename=str(data_test_path))
+    df_test_raw = df_test_raw.rename(columns=DATA_IN_COL_MAP)
+    df_test_raw.index.name = "DateTime"
+    df_test = df_test_raw.reset_index()
+    logger.info(f"Test dataset loaded: shape={df_test.shape}")
+else:
+    logger.info("data_test.csv not found — no test comparison available.")
+    df_test = None
+
+# --- Dynamically derive download range and training cut-off ---
+first_ts = pd.Timestamp(demo_data["DateTime"].iloc[0])
+last_ts = pd.Timestamp(demo_data["DateTime"].iloc[-1])
+if first_ts.tzinfo is None:
+    first_ts = first_ts.tz_localize("UTC")
+if last_ts.tzinfo is None:
+    last_ts = last_ts.tz_localize("UTC")
+
+START_DOWNLOAD = first_ts.strftime("%Y%m%d%H%M")
+END_DOWNLOAD = last_ts.strftime("%Y%m%d%H%M")
+# END_TRAIN_DEFAULT is always the last available timestamp in the dataset.
+# This ensures that TRAIN_SIZE always covers the most recent year of data.
+END_TRAIN_DEFAULT = last_ts.isoformat()
+
+# Derive available targets from the loaded data columns (excludes DateTime).
+ALL_TARGETS = [c for c in demo_data.columns if c != "DateTime"]
+# Limit to first 2 targets for demonstration; set TARGETS = ALL_TARGETS for a full run.
+TARGETS = ALL_TARGETS[:2]
+
 
 def prepare_target(target: str) -> None:
     """Write interim/energy_load.csv with the chosen target column renamed to 'Actual Load'.
 
-    Renames the 'DateTime' index column to 'Time (UTC)' so that the existing
-    pipeline (load_timeseries, fit_with_best, package_prediction) works unchanged
-    -- they always read the 'Actual Load' column from energy_load.csv with a
-    'Time (UTC)' index.
+    Renames the 'DateTime' column to 'Time (UTC)' so that the existing pipeline
+    (load_timeseries, fit_with_best, package_prediction) works unchanged — they
+    always read the 'Actual Load' column from energy_load.csv with a 'Time (UTC)'
+    index.
 
-    demo02.csv contains duplicate timestamps (same hour recorded multiple times).
-    Duplicates are resolved by averaging all values for a given timestamp so that
-    no information is silently discarded and the resulting index is monotone-unique,
-    which is required by load_timeseries() -> df.asfreq("h").
+    Duplicate timestamps (if any) are resolved by averaging so that the resulting
+    index is monotone-unique, which is required by load_timeseries() -> df.asfreq("h").
     """
     interim_dir = get_data_home() / "interim"
     interim_dir.mkdir(parents=True, exist_ok=True)
@@ -118,18 +188,22 @@ def prepare_target(target: str) -> None:
 
     df = demo_data[["DateTime", target]].copy()
     df = df.rename(columns={"DateTime": "Time (UTC)", target: "Actual Load"})
-    # Resolve duplicate timestamps by averaging (demo02.csv has up to 4 duplicates)
+    # Resolve duplicate timestamps by averaging
     df = df.groupby("Time (UTC)", as_index=False)["Actual Load"].mean()
     df = df.sort_values("Time (UTC)").reset_index(drop=True)
     df.to_csv(data_dst, index=False)
     logger.info(f"Target '{target}' prepared at: {data_dst}")
 
+
 # Prepare target A by default (for the head/tail display below)
 prepare_target("A")
-logger.info(f"Demo data (demo02.csv) loaded: columns={list(demo_data.columns)}, shape={demo_data.shape}")
+logger.info(
+    f"Data source: {DATA_SOURCE} | shape={demo_data.shape} | "
+    f"range={START_DOWNLOAD} to {END_DOWNLOAD} | END_TRAIN_DEFAULT={END_TRAIN_DEFAULT}"
+)
 ```
 
-The dataset `demo02.csv` covers the period from `1964-08-02` to `1975-06-18` at hourly resolution, consistent with the configured date range (`START_DOWNLOAD` to `END_DOWNLOAD`).
+The active dataset covers the period from `START_DOWNLOAD` to `END_DOWNLOAD` at hourly resolution. `END_TRAIN_DEFAULT` is set to the last entry in the loaded dataset and automatically tracks updates to `data_in.csv`.
 
 **Data Dimensions and Schema:**
 
@@ -149,11 +223,11 @@ The raw dataset is a time-series dataframe with the following properties:
     *   `I`: `float64`. Target series I.
     *   `J`: `float64`. Target series J (may contain missing values; filled via forward/backward fill).
     *   `K`: `float64`. Target series K.
-*   Range: `1964-08-02` to `1975-06-18`. Fully contained within the configured range `START_DOWNLOAD` to `END_DOWNLOAD`.
+*   Range: Determined dynamically from the loaded dataset (`START_DOWNLOAD` to `END_DOWNLOAD`). For `data_in.csv` this starts at `2024-12-31`; for the fallback `demo02.csv` it starts at `1964-08-02`.
 *   **Note**: There is no `Forecasted Load` column. Benchmark forecast comparisons are therefore not available for this dataset.
 
 ### Example
-The head of the raw `demo02.csv` data looks as follows:
+The head of the loaded data looks as follows:
 
 ```{python}
 #| label: code-notebook-entsoe-usage-headusage-head
@@ -198,7 +272,7 @@ config = ConfigEntsoe(
     end_train_default=END_TRAIN_DEFAULT,
     delta_val=DELTA_VAL,
     predict_size=PREDICT_SIZE,
-    refit_size=7,
+    refit_size=1,
     random_state=42,
     n_hyperparameters_trials=50,
     data_filename='interim/energy_load.csv'
@@ -236,11 +310,11 @@ Based on the settings shown the last code snippet and in @tbl-config-entsoe-para
 | :--- | :--- | :--- | :--- |
 | `periods` | `List[Period]` | RBF specifications for cyclic features. | `[Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))]`|
 | `lags_consider` | `List[int]` | Autoregressive lags | `[1, 2, 24]`|
-| `train_size` | `Timedelta` | Historical window used for training, here `TRAIN_SIZE` | `pd.Timedelta(days=365*3)` |
-| `end_train_default` | `str` | Default end date for training period (ISO format), here `END_TRAIN_DEFAULT`. | `END_TRAIN_DEFAULT` |
-| `delta_val` | `Timedelta` | Size of the validation set in days used for model selection, here `DELTA_VAL`. | `pd.Timedelta(days=14)` |
+| `train_size` | `Timedelta` | Historical window used for training, here `TRAIN_SIZE` | `pd.Timedelta(days=365*1)` |
+| `end_train_default` | `str` | Default end date for training period (ISO format), here `END_TRAIN_DEFAULT` (last timestamp in dataset). | `END_TRAIN_DEFAULT` |
+| `delta_val` | `Timedelta` | Size of the validation set in days used for model selection, here `DELTA_VAL`. | `pd.Timedelta(days=7)` |
 | `predict_size` | `int` | Forecasting horizon (hours), here `PREDICT_SIZE`. | `PREDICT_SIZE` |
-| `refit_size` | `int` | Maximum age (in days) of a model before retraining is forced.  | `7` |
+| `refit_size` | `int` | Multiplier for total prediction window (`predict_size × refit_size` hours). Set to 1 for a 24 h horizon. | `1` |
 : Configuration for Data Acquisition. Time-related parameters. {#tbl-config-entsoe-time}
 
 
@@ -249,11 +323,11 @@ Based on the settings shown the last code snippet and in @tbl-config-entsoe-para
 * `periods`: [Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))], so that smoothed 2-hour cyclical features are generated. We utilize Radial Basis Functions (RBF) to capture seasonality. A critical design choice is the resolution of the Daily period: 12 periods are used for the 24-hour daily cycle (instead of 24).  This effectively provides a 2-hour resolution, acting as a smoothing filter that reduces noise while halving the dimensionality of the feature space.
 The default `periods` are deliberately chosen to balance temporal resolution with model complexity (e.g., `daily` uses `n_periods=12` to smooth hourly noise while reducing dimensionality).
 * `lags_consider`: [1, 2, 24], so that the lags of 1 hour, 2 hours and 24 hours are considered.
-* `train_size`: `pd.Timedelta(days=365*3)`, so that the training data is 3 years old. Since the downloaded data is from `START_DOWNLOAD` to `END_DOWNLOAD`, the training data is from `START_DOWNLOAD` to `END_DOWNLOAD - pd.Timedelta(days=168)`.
-* `end_train_default`: `END_TRAIN_DEFAULT`, this is the cutoff timestamp separating training and testing data. Critical: it must leave enough future data for the full prediction horizon (`168h`).
-* `delta_val`: pd.Timedelta(days=14)
-* `predict_size`: `PREDICT_SIZE`. Determines the full forecast horizon (`predict_size * refit_size`).
-* `refit_size`: 7. If a trained model exists and is younger than `refit_size` days, skip training (unless `force=True`).
+* `train_size`: `pd.Timedelta(days=365*1)`, so that the training window is one year. The training data always covers the year ending at `END_TRAIN_DEFAULT`.
+* `end_train_default`: `END_TRAIN_DEFAULT` — derived dynamically as the last timestamp in the loaded dataset. This is the cutoff separating training from the prediction horizon. Because it always equals the most recent data point, the model is always trained on the latest available year.
+* `delta_val`: `pd.Timedelta(days=7)`, the size of the validation window used during hyperparameter tuning.
+* `predict_size`: `PREDICT_SIZE` = 24. The model predicts 24 steps (hours) per call.
+* `refit_size`: 1. Total prediction horizon = `predict_size × refit_size` = 24 × 1 = **24 hours**. Setting this to 1 means each prediction call covers exactly the next 24 hours.
 
 
 This `config` object is then injected into the instances of the `ForecasterRecursiveModel`, guaranteeing that the trained model perfectly matches the intended experimental design. For the eleven-target dataset, the same configuration is used for all targets A through K.
@@ -336,16 +410,20 @@ def entsoe_train(model="lgbm", force=False):
             model_class=model_map[model],
             model_name=model_name,
             force=force,
+            train_size=config.train_size,
             data_filename=config.data_filename,
             end_dev=config.end_train_default,
         )
         logger.info(f"Training pipeline completed for {model_name}.")
 ```
 
-### Note on explicit `end_dev` passage
+### Note on explicit `end_dev` and `train_size` passage
 
-When `end_dev` is `None` (default), `handle_training` calculates the training cutoff based on the *latest available data* (minus 1 day). This behavior overrides the `end_train_default` defined in the configuration, even if the model wrapper class sets it as a default.
-We explicitly pass `end_dev=config.end_train_default` to `handle_training` in the `entsoe_train` function. This forces the training orchestrator to respect the configuration, ensuring the model is trained with the correct cutoff date and leaving sufficient future data for validation and metric computation.
+When `end_dev` is `None` (default), `handle_training` calculates the training cutoff as *latest data index minus 1 day*. We explicitly pass `end_dev=config.end_train_default` (= last timestamp in the dataset) so the model is always trained right up to the most recent available observation.
+
+We also pass `train_size=config.train_size` (`TRAIN_SIZE` = 1 year) so that `train_new_model` limits the lookback window to the latest 365 days ending at `end_dev`. This keeps training fast and ensures the model learns from recent patterns, regardless of how far back the raw CSV extends.
+
+Since `END_TRAIN_DEFAULT` equals the last data point, the **24 h prediction horizon begins immediately after the last known observation** — the model produces a genuine out-of-sample forecast for the next 24 hours. No future ground truth is available for comparison, so `future_actual` in the prediction package will be empty and metrics for the future window will not be computed.
 
 Execute Training (for all eleven targets A through K):
 ```{python}
@@ -376,7 +454,7 @@ The `entsoe_train` command (via `handle_training`) triggers a robust, state-awar
 
 2.  **Data & Ranges**:
     *   **Source**: For each target, `prepare_target()` writes the corresponding column as `Actual Load` to `energy_load.csv` (with `DateTime` renamed to `Time (UTC)`), then loads data from the file specified in `config.data_filename`.
-    *   **Training Window**: Uses data up to `end_dev`. By default, this is calculated as **one day before the last available data point** to ensure a full 24-hour hold-out set for immediate validation.
+    *   **Training Window**: Uses the most recent `TRAIN_SIZE` (1 year) of data ending at `end_dev` = last timestamp in the dataset. The subsequent 24-hour window is the **true future forecast** — no actual values are available for comparison.
 
 3.  **Artifact Storage**:
     *   **Location**: Models are serialized and saved to `~/spotforecast2_cache` (or the path in `SPOTFORECAST2_CACHE`).
@@ -392,14 +470,14 @@ The `entsoe_train` command (via `handle_training`) triggers a robust, state-awar
 
 ## Predictive Analytics & Visualization
 
-Predictions are returned as a comprehensive **Prediction Package** containing not just values, but metadata, metrics, and validation status, see @tbl-predict-entsoe. Since the dataset has no `Forecasted Load` column, benchmark forecast comparisons are not available; the plots will show actual vs. predicted values only.
+Predictions are returned as a comprehensive **Prediction Package** containing values, metadata, metrics, and validation status, see @tbl-predict-entsoe. Because `END_TRAIN_DEFAULT` equals the last observed timestamp, the model predicts the **next 24 hours beyond the available data** — a genuine future forecast. No ground-truth future values exist, so `future_actual` will be empty and future-window metrics will not be available. The plot shows the training fit plus the 24 h forecast appended at the right edge.
 
 ### API Reference
 
 | Component | Type | Arguments | Description |
 | :--- | :--- | :--- | :--- |
-| `get_model_prediction` | Function | `model_name` (str) | Loads the production model and executes `package_prediction`. Returns a dict with keys: `predictions`, `metrics`, `validation_passed`. |
-| `make_plot` | Function | `prediction_package` (dict) | Generates an interactive Plotly visualization from the prediction package. |
+| `get_future_prediction` | Function | `model_name` (str), `predict_hours` (int) | Loads the trained model, fits on training data, and forecasts `predict_hours` steps into the genuine future. Returns a prediction-package dict. |
+| `plot_prediction` | Function | `pkg` (dict), `title` (str) | Generates an interactive Plotly figure showing training fit and the 24 h future forecast. |
 
 : Predictive Analytics & Visualization {#tbl-predict-entsoe}
 
@@ -408,27 +486,200 @@ Predictions are returned as a comprehensive **Prediction Package** containing no
 ```{python}
 #| label: code-notebook-entsoe-usage-predict
 #| echo: true
-from spotforecast2_safe.manager.predictor import (
-    get_model_prediction as get_model_prediction_safe,
-)
-from spotforecast2.manager.plotter import make_plot
+import plotly.graph_objects as go
+from spotforecast2_safe.manager.trainer import get_last_model
+from spotforecast2_safe.data.fetch_data import load_timeseries
+from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
+from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
+
+
+def get_future_prediction(
+    model_name: str,
+    predict_hours: int = PREDICT_SIZE,
+    target: str = None,
+) -> dict | None:
+    """Load a trained model and produce a genuine future forecast.
+
+    The library's ``package_prediction`` uses ``steps=len(y_test)`` where
+    ``y_test = y.loc[end_dev:]``.  When ``end_dev`` equals the last timestamp
+    in the dataset, ``y_test`` has at most 1 row and the forecast is empty.
+
+    This function bypasses that limitation:
+    1. Load the trained model from the cache.
+    2. Load and interpolate the timeseries (``interim/energy_load.csv``).
+    3. Fit the forecaster on the training window (up to ``end_dev``).
+    4. Predict ``predict_hours`` steps **beyond** ``end_dev`` — a genuine
+       out-of-sample forecast.
+
+    If ``target`` is provided and ``data_test.csv`` was loaded, the
+    corresponding column is returned as ``test_actual`` for comparison.
+
+    Returns:
+        A prediction-package dict compatible with ``plot_prediction()``,
+        or ``None`` if no trained model is found.
+    """
+    n_iter, model = get_last_model(model_name)
+    if n_iter < 0 or model is None:
+        logger.error(f"No trained model found for '{model_name}'.")
+        return None
+
+    # Load target series (written by prepare_target)
+    y = load_timeseries()
+    y = LinearlyInterpolateTS().fit_transform(y)
+
+    end_dev = model.end_dev
+    y_train = y.loc[:end_dev]
+
+    # Fit on training data
+    model.forecaster.fit(y=y_train)
+
+    # -- In-sample predictions (training fit) --
+    train_pred = model.forecaster.predict(steps=len(y_train))
+    train_pred.index = y_train.index[-len(train_pred):]
+    y_train_aligned = y_train.loc[train_pred.index]
+
+    metrics_train = {
+        "mae": mean_absolute_error(y_train_aligned, train_pred),
+        "mape": mean_absolute_percentage_error(y_train_aligned, train_pred),
+    }
+
+    # -- Out-of-sample predictions (genuine future) --
+    future_pred = model.forecaster.predict(steps=predict_hours)
+    # The index is auto-generated starting at end_dev + 1h
+
+    logger.info(
+        f"[{model_name}] Forecast {predict_hours}h beyond {end_dev}: "
+        f"{future_pred.index.min()} → {future_pred.index.max()}"
+    )
+
+    # -- Test data (ground truth for forecast period, if available) --
+    test_actual = pd.Series(dtype="float64")
+    if target is not None and df_test is not None and target in df_test.columns:
+        ts = df_test.set_index("DateTime")[target]
+        if ts.index.tzinfo is None:
+            ts.index = ts.index.tz_localize("UTC")
+        test_actual = ts.reindex(future_pred.index).dropna()
+        logger.info(f"[{model_name}] Test data: {len(test_actual)} matching points")
+
+    return {
+        "train_actual": y_train_aligned,
+        "train_pred": train_pred,
+        "future_actual": pd.Series(dtype="float64"),   # empty — no ground truth
+        "future_pred": future_pred,
+        "test_actual": test_actual,
+        "metrics_train": metrics_train,
+    }
+
+
+def plot_prediction(pkg: dict, title: str = "Prediction") -> go.Figure:
+    """Build a Plotly figure showing training fit and future forecast.
+
+    Left of the dashed vertical line: training actuals vs in-sample predictions.
+    Right of the line: 24 h out-of-sample forecast (no actuals).
+    The x-axis is set to ``[end_training − 1 day, last_prediction + 1 h]``
+    so the full forecast window is always visible.  The y-axis range is
+    computed from the data visible in that window only, avoiding the wide
+    range caused by the full multi-year training series.
+    """
+    end_training = pkg["train_actual"].index.max()
+    future_pred = pkg["future_pred"]
+    pred_end = future_pred.index.max()
+    test_actual = pkg.get("test_actual", pd.Series(dtype="float64"))
+
+    # X-axis bounds
+    min_range = end_training - pd.Timedelta(days=1)
+    max_range = pred_end + pd.Timedelta(hours=1)
+
+    m = pkg.get("metrics_train", {})
+    pred_legend = (
+        f"Model prediction<br>"
+        f"Training: MAE={m.get('mae', 0):.2f}, MAPE={m.get('mape', 0):.4f}"
+    )
+
+    # Clip training traces to the visible x-window only.
+    # The full training series (up to 8760 points/year) must NOT be serialized
+    # into the Plotly JSON — only the visible slice is needed and dramatically
+    # reduces the output HTML size.
+    visible_train_actual = pkg["train_actual"][pkg["train_actual"].index >= min_range]
+    visible_train_pred = pkg["train_pred"][pkg["train_pred"].index >= min_range]
+
+    fig = go.Figure()
+
+    # Training actuals (clipped to visible window)
+    fig.add_trace(go.Scatter(
+        x=visible_train_actual.index,
+        y=visible_train_actual,
+        mode="lines",
+        name="Actual (training)",
+    ))
+    # Training predictions (clipped to visible window)
+    fig.add_trace(go.Scatter(
+        x=visible_train_pred.index,
+        y=visible_train_pred,
+        mode="lines",
+        name=pred_legend,
+    ))
+    # Future forecast (24 h)
+    fig.add_trace(go.Scatter(
+        x=future_pred.index,
+        y=future_pred,
+        mode="lines+markers",
+        name=f"Forecast ({len(future_pred)}h)",
+        line=dict(color="red", width=2),
+        marker=dict(size=5),
+    ))
+    # Test data — ground truth for forecast period (if available)
+    if test_actual is not None and len(test_actual) > 0:
+        fig.add_trace(go.Scatter(
+            x=test_actual.index,
+            y=test_actual,
+            mode="lines+markers",
+            name="Actual (test / ground truth)",
+            line=dict(color="green", width=2),
+            marker=dict(size=5),
+        ))
+
+    # Vertical line at end of training
+    fig.add_vline(x=end_training, line_width=2, line_color="black", line_dash="dash")
+    fig.add_annotation(
+        x=end_training, text="End of Training",
+        showarrow=False, yref="paper", y=1.05,
+    )
+
+    fig.update_xaxes(range=[min_range, max_range])
+
+    # Y-axis: range from the visible data (already clipped above)
+    all_visible = pd.concat([visible_train_actual, visible_train_pred, future_pred])
+    if test_actual is not None and len(test_actual) > 0:
+        all_visible = pd.concat([all_visible, test_actual])
+    y_min = all_visible.min()
+    y_max = all_visible.max()
+    y_margin = (y_max - y_min) * 0.05
+    fig.update_yaxes(range=[y_min - y_margin, y_max + y_margin])
+
+    fig.update_layout(
+        template="plotly_white",
+        title=title,
+        height=450,
+        xaxis=dict(title="Time (UTC)"),
+        yaxis=dict(title="Load"),
+        legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
+    )
+    return fig
+
 
 def entsoe_predict(model="lgbm", show=True):
-    """Generates predictions and interactive plots for each target (A through K)."""
+    """Generate predictions and interactive plots for each target in TARGETS."""
     results = {}
     for target in TARGETS:
         prepare_target(target)
         model_name = f"{model}_{target}"
-        out = get_model_prediction_safe(model_name=model_name)
+        out = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
 
         if out:
-            logger.info(
-                f"[{target}] Prediction package retrieved successfully "
-                f"(Validated: {out.get('validation_passed', 'N/A')})"
-            )
+            logger.info(f"[{target}] Prediction package OK.")
             if show:
-                fig = make_plot(out)
-                fig.update_layout(title=f"Prediction for Target '{target}'")
+                fig = plot_prediction(out, title=f"Prediction for Target '{target}'")
                 fig.show()
         else:
             logger.error(f"[{target}] Prediction failed: No valid output package.")
@@ -448,16 +699,15 @@ pprint.pprint(model_lgbm.get_params())
 
 ### Execution & Effects
 
-The prediction pipeline (`entsoe_predict` calling `get_model_prediction` and `make_plot`) performs the following actions **for each of the eleven targets**:
+The prediction pipeline (`entsoe_predict` calling `get_future_prediction` and `plot_prediction`) performs the following actions **for each of the eleven targets**:
 
 #### Model Loading
 
-Retrieves the **latest trained model** (highest iteration) for the given target from `~/spotforecast2_cache`.
-Ensures the model is valid and implements the `package_prediction` interface.
+Retrieves the **latest trained model** (highest iteration) for the given target from `~/spotforecast2_cache` via `get_last_model()`.
 
 #### Prediction Package Generation
 
-Prediction Package Generation (`get_model_prediction`) generates a standardized dictionary containing the components shown in @tbl-predict-entsoe-package.
+`get_future_prediction()` loads the trained model, fits the forecaster on the training window (up to `end_dev`), then calls `forecaster.predict(steps=predict_hours)` to generate a genuine future forecast. This bypasses the library's `package_prediction()` method which only predicts `steps=len(y_test)` — when `end_dev` equals the last timestamp, that yields 0–1 steps instead of 24. The returned dictionary contains the components shown in @tbl-predict-entsoe-package.
 
 | Key | Type | Description |
 | :--- | :--- | :--- |
@@ -472,7 +722,7 @@ Prediction Package Generation (`get_model_prediction`) generates a standardized 
 
 : Prediction Package Components {#tbl-predict-entsoe-package}
 
-**Note**: Since `demo02.csv` does not contain a `Forecasted Load` column, the keys `future_forecast` and `metrics_forecast` are not present in the prediction package.
+**Note**: Neither `data_in.csv` nor `demo02.csv` contains a `Forecasted Load` column, so the keys `future_forecast` and `metrics_forecast` are not present in the prediction package.
 
 
 ### Metric Computation Window
@@ -482,11 +732,11 @@ The prediction package computes metrics over two distinct windows:
 - **24h metrics** (`metrics_future_one_day`): Calculated on the first 24 hours only (`future_pred.iloc[:24]`)
 - **Full horizon metrics** (`metrics_future`): Calculated on the entire prediction window (`predict_size * refit_size` hours)
 
-With the current configuration (`predict_size=24`, `refit_size=7`, `end_train_default='1975-06-01'`), the full horizon is **168 hours (7 days)**. The dataset has ample data available after this training cutoff, so the 24h and full horizon metrics **will differ** because they evaluate different time ranges (24 hours vs 168 hours).
+With the current configuration (`predict_size=24`, `refit_size=1`), the full horizon is **24 hours**. `END_TRAIN_DEFAULT` equals the last timestamp in the loaded dataset, so the prediction is a **genuine future forecast** — no actual values exist for the prediction window. The `metrics_future` and `metrics_future_one_day` entries in the package will therefore be unavailable or empty. In-sample training metrics (`metrics_train`) remain available and characterise the model fit on the most recent year of data.
 
 
 
-#### Visualization (`make_plot`)
+#### Visualization (`plot_prediction`)
 
 Generates a Plotly figure with the following structure:
 
@@ -494,8 +744,8 @@ Generates a Plotly figure with the following structure:
 
 *   **Left Region**: Historical training period showing model fit quality (in-sample predictions).
 *   **Right Region**: Future prediction window showing out-of-sample forecasts.
-*   **X-Axis Range**: Automatically focused on `[end_training - 1 day, latest_data_point]` to highlight the critical transition from training to prediction.
-*   **Vertical Marker**: Black dashed line at `end_training` timestamp separating historical from future.
+*   **X-Axis Range**: Set to `[end_training − 1 day, last_prediction + 1 h]` by `plot_prediction()`. This ensures the full 24 h forecast window is always visible, even though no ground-truth data exists beyond the training cut-off.
+*   **Vertical Marker**: Black dashed line at `end_training` separating the historical fit region from the future forecast region.
 
 **Plot Lines & Legend:**
 
@@ -522,10 +772,9 @@ Generates a Plotly figure with the following structure:
 #| fig-cap: "Prediction for Target A"
 
 prepare_target("A")
-out_A = get_model_prediction_safe(model_name="lgbm_A")
+out_A = get_future_prediction(model_name="lgbm_A", predict_hours=PREDICT_SIZE, target="A")
 if out_A:
-    fig_A = make_plot(out_A)
-    fig_A.update_layout(title="Prediction for Target 'A'")
+    fig_A = plot_prediction(out_A, title="Prediction for Target 'A'")
     fig_A.show()
 ```
 
@@ -536,145 +785,10 @@ if out_A:
 #| fig-cap: "Prediction for Target B"
 
 prepare_target("B")
-out_B = get_model_prediction_safe(model_name="lgbm_B")
+out_B = get_future_prediction(model_name="lgbm_B", predict_hours=PREDICT_SIZE, target="B")
 if out_B:
-    fig_B = make_plot(out_B)
-    fig_B.update_layout(title="Prediction for Target 'B'")
+    fig_B = plot_prediction(out_B, title="Prediction for Target 'B'")
     fig_B.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-C
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target C"
-#| eval: false
-
-prepare_target("C")
-out_C = get_model_prediction_safe(model_name="lgbm_C")
-if out_C:
-    fig_C = make_plot(out_C)
-    fig_C.update_layout(title="Prediction for Target 'C'")
-    fig_C.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-D
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target D"
-#| eval: false
-prepare_target("D")
-out_D = get_model_prediction_safe(model_name="lgbm_D")
-if out_D:
-    fig_D = make_plot(out_D)
-    fig_D.update_layout(title="Prediction for Target 'D'")
-    fig_D.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-E
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target E"
-#| eval: false
-
-prepare_target("E")
-out_E = get_model_prediction_safe(model_name="lgbm_E")
-if out_E:
-    fig_E = make_plot(out_E)
-    fig_E.update_layout(title="Prediction for Target 'E'")
-    fig_E.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-F
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target F"
-#| eval: false
-
-prepare_target("F")
-out_F = get_model_prediction_safe(model_name="lgbm_F")
-if out_F:
-    fig_F = make_plot(out_F)
-    fig_F.update_layout(title="Prediction for Target 'F'")
-    fig_F.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-G
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target G"
-#| eval: false
-
-prepare_target("G")
-out_G = get_model_prediction_safe(model_name="lgbm_G")
-if out_G:
-    fig_G = make_plot(out_G)
-    fig_G.update_layout(title="Prediction for Target 'G'")
-    fig_G.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-H
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target H"
-#| eval: false
-
-prepare_target("H")
-out_H = get_model_prediction_safe(model_name="lgbm_H")
-if out_H:
-    fig_H = make_plot(out_H)
-    fig_H.update_layout(title="Prediction for Target 'H'")
-    fig_H.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-I
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target I"
-#| eval: false
-
-prepare_target("I")
-out_I = get_model_prediction_safe(model_name="lgbm_I")
-if out_I:
-    fig_I = make_plot(out_I)
-    fig_I.update_layout(title="Prediction for Target 'I'")
-    fig_I.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-J
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target J"
-#| eval: false
-
-prepare_target("J")
-out_J = get_model_prediction_safe(model_name="lgbm_J")
-if out_J:
-    fig_J = make_plot(out_J)
-    fig_J.update_layout(title="Prediction for Target 'J'")
-    fig_J.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-K
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target K"
-#| eval: false
-
-prepare_target("K")
-out_K = get_model_prediction_safe(model_name="lgbm_K")
-if out_K:
-    fig_K = make_plot(out_K)
-    fig_K.update_layout(title="Prediction for Target 'K'")
-    fig_K.show()
 ```
 
 ### Data Ranges & Intervals Overview
@@ -685,12 +799,12 @@ The following table summarizes all time ranges and intervals configured in the p
 | :--- | :--- | :--- | :--- | :--- |
 | **Loading** | `api_country_code` | `"DE"` | Target country for data context. | Used for holiday/calendar feature generation. |
 | **Loading** | `data_filename` | `interim/energy_load.csv` | Local cache file for processed data. | File must exist and contain required columns (`Time (UTC)`, `Actual Load`). Managed by `prepare_target()`. |
-| **Training** | `train_size` | `365*3` days (3 years) | Historical lookback window for training data. | Must be sufficient to capture seasonality (at least 1 year recommended). |
-| **Training** | `end_train_default` | `1975-06-01` | Cutoff timestamp separating training and testing data. | **CRITICAL**: Must leave enough future data for the full prediction horizon (`168h`). |
+| **Training** | `train_size` | `365*1` days (1 year) | Historical lookback window for training data. | Must be sufficient to capture seasonality (at least 1 year recommended). |
+| **Training** | `end_train_default` | last timestamp in dataset (dynamic) | Cutoff timestamp separating training and testing data. Derived from `demo_data["DateTime"].max()`. | **CRITICAL**: Set to the last available data point so training always covers the most recent `TRAIN_SIZE` window. |
 | **Training** | `lags_consider` | `[1, 2, 24]` | Autoregressive lags used as features. | Limits the very first predictions (first 24h of training data lost to lag generation). |
 | **Prediction** | `predict_size` | `24` hours | Base forecast horizon per model step. | Small values increase loop iterations; large values reduce granularity. |
-| **Prediction** | `refit_size` | `7` days (168h) | Frequency of model retraining / total prediction window. | **CRITICAL**: Determines the full forecast horizon (`predict_size * refit_size`). |
-| **Validation** | `delta_val` | `14` days | Window used for validation set (if applicable). | Should be representative of the test set distribution. |
+| **Prediction** | `refit_size` | `1` (24 h total horizon) | Multiplier for total prediction window (`predict_size × refit_size` hours). | **CRITICAL**: Set to 1 so the total forecast is exactly 24 hours (next-day prediction). |
+| **Validation** | `delta_val` | `7` days | Window used for validation set during hyperparameter search. | Should be representative of recent data distribution. |
 
 : Data Ranges and Intervals Configuration {#tbl-data-ranges}
 
@@ -735,10 +849,9 @@ Prediction for Approach 1 relies on the on-the-fly fit:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_untrained_{target}"
-    out_app1 = get_model_prediction_safe(model_name=model_name)
+    out_app1 = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
     if out_app1:
-        fig_app1 = make_plot(out_app1)
-        fig_app1.update_layout(title=f"Prediction for Target '{target}' (Approach 1: Lazy Fitting)")
+        fig_app1 = plot_prediction(out_app1, title=f"Prediction for Target '{target}' (Approach 1: Lazy Fitting)")
         fig_app1.show()
 ```
 
@@ -778,10 +891,9 @@ Prediction for Approach 2:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_trained_not_tuned_{target}"
-    out_app2 = get_model_prediction_safe(model_name=model_name)
+    out_app2 = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
     if out_app2:
-        fig_app2 = make_plot(out_app2)
-        fig_app2.update_layout(title=f"Prediction for Target '{target}' (Approach 2: Trained, No Tuning)")
+        fig_app2 = plot_prediction(out_app2, title=f"Prediction for Target '{target}' (Approach 2: Trained, No Tuning)")
         fig_app2.show()
 ```
 
@@ -797,7 +909,7 @@ Here is how to perform tuning and use the tuned model. We utilize the full wrapp
 #| label: approach-3-tuning
 #| echo: true
 #| cache: false
-#| eval: false
+#| eval: true
 
 from spotforecast2.manager.models import ForecasterRecursiveLGBMFull as _ForecasterRecursiveLGBMFullBase
 
@@ -837,15 +949,14 @@ Prediction for Approach 3:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction (Approach 3: Tuned and Trained)"
-#| eval: false
+#| eval: true
 
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_and_trained_{target}"
-    out_app3 = get_model_prediction_safe(model_name=model_name)
+    out_app3 = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
     if out_app3:
-        fig_app3 = make_plot(out_app3)
-        fig_app3.update_layout(title=f"Prediction for Target '{target}' (Approach 3: Tuned and Trained)")
+        fig_app3 = plot_prediction(out_app3, title=f"Prediction for Target '{target}' (Approach 3: Tuned and Trained)")
         fig_app3.show()
 ```
 
@@ -857,7 +968,7 @@ As an alternative to Optuna, we can utilize `spotoptim` for surrogate-model-base
 #| label: approach-4-spotoptim-tuning
 #| echo: true
 #| cache: false
-#| eval: false
+#| eval: true
 from spotforecast2.model_selection import spotoptim_search_forecaster
 from spotforecast2.manager.trainer_full import LAGS_CONSIDER
 from spotforecast2_safe.data.fetch_data import load_timeseries
@@ -944,14 +1055,13 @@ Prediction for Approach 4 (SpotOptim):
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction (Approach 4: SpotOptim Tuned)"
-#| eval: false
+#| eval: true
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_spotoptim_{target}"
-    out_app4 = get_model_prediction_safe(model_name=model_name)
+    out_app4 = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
     if out_app4:
-        fig_app4 = make_plot(out_app4)
-        fig_app4.update_layout(title=f"Prediction for Target '{target}' (Approach 4: SpotOptim Tuned)")
+        fig_app4 = plot_prediction(out_app4, title=f"Prediction for Target '{target}' (Approach 4: SpotOptim Tuned)")
         fig_app4.show()
 ```
 
