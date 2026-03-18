@@ -33,30 +33,48 @@ class PredictionFigure:
             - 'train_pred': pd.Series
             - 'future_pred': pd.Series
             - 'future_forecast': pd.Series (e.g., benchmark/ENTSOE)
+            - 'test_actual': pd.Series (optional external ground truth for the
+              forecast period, e.g. from data_test.csv; absent in genuine-future
+              mode when no ground truth is available yet)
             - 'metrics_train': Dict[str, float]
             - 'metrics_future': Dict[str, float]
             - 'metrics_future_one_day': Dict[str, float]
             - 'metrics_forecast': Dict[str, float]
             - 'metrics_forecast_one_day': Dict[str, float]
+        title: Figure title shown at the top of the plot.
     """
 
-    def __init__(self, prediction_package: Dict[str, Any]):
+    def __init__(
+        self,
+        prediction_package: Dict[str, Any],
+        title: str = "Energy Demand Prediction",
+    ):
         self.prediction_package = prediction_package
+        self.title = title
         self.fig = go.Figure()
 
     def make_plot(self) -> go.Figure:
         """
-        Generate the Plotly figure with traces and annotations. The following traces are added:
-        - Actual values
-        - Predicted values
-        - Future forecast values
-        - Actual values of the last week
+        Generate the Plotly figure with traces and annotations.
+
+        Traces added (always):
+        - Total system load — actual (training window, clipped to visible range)
+        - Total system load — model prediction (training + forecast, clipped)
+        - Actual (last week) — time-shifted actual for seasonality context
+
+        Traces added (when data is available):
+        - Benchmark Forecast (e.g., ENTSOE) — if ``future_forecast`` key present
+        - Actual (test / ground truth) — if ``test_actual`` key present
+
+        The X-axis is fixed to ``[end_training − 1 day, future_pred.max() + 1 h]``
+        so the full forecast window is always visible, including in genuine-future
+        mode where ``future_actual`` is an empty Series.  Only the data slice in
+        that window is serialised into the Plotly JSON, keeping HTML output small.
 
         Examples:
             >>> import pandas as pd
             >>> import numpy as np
             >>> from spotforecast2.manager.plotter import PredictionFigure
-            >>> # Create synthetic data
             >>> dates = pd.date_range("2023-01-01", periods=100, freq="h", tz="UTC")
             >>> train_end = dates[70]
             >>> y = pd.Series(np.random.rand(100) * 100, index=dates, name="load")
@@ -74,7 +92,18 @@ class PredictionFigure:
             >>> isinstance(fig.data, tuple)
             True
         """
-        # Combine data for plotting
+        end_training = self.prediction_package["train_actual"].index.max()
+        future_pred = self.prediction_package["future_pred"]
+
+        # X-axis: show last day of training + full forecast window.
+        # Using future_pred.index.max() (not y_actual.index.max()) ensures the
+        # forecast is visible even in genuine-future mode where future_actual is empty.
+        min_range = end_training - pd.Timedelta(days=1)
+        max_range = future_pred.index.max() + pd.Timedelta(hours=1)
+
+        # Combine actuals and predictions, then clip to the visible window.
+        # Clipping prevents serialising up to 8760 training points into the HTML
+        # when only the last ~24 h of the training trace is actually visible.
         y_actual = pd.concat(
             [
                 self.prediction_package["train_actual"],
@@ -84,29 +113,32 @@ class PredictionFigure:
         y_pred = pd.concat(
             [
                 self.prediction_package["train_pred"],
-                self.prediction_package["future_pred"],
+                future_pred,
             ]
         )
+        y_actual_visible = y_actual[y_actual.index >= min_range]
+        y_pred_visible = y_pred[y_pred.index >= min_range]
+
         y_forecast = self.prediction_package.get("future_forecast")
+        test_actual = self.prediction_package.get("test_actual")
 
-        # Calculate shifting for 'last week' comparison if possible
-        y_last_week = y_actual.shift(7 * 24)
+        # Last-week comparison (shift on full series, then clip to visible window)
+        y_last_week_visible = y_actual.shift(7 * 24)
+        y_last_week_visible = y_last_week_visible[
+            y_last_week_visible.index >= min_range
+        ]
 
-        # Calculate prediction horizon
-        future_pred_idx = self.prediction_package["future_pred"].index
+        # Prediction horizon (hours) for legend labels
         total_hours_prediction = (
-            future_pred_idx.max() - future_pred_idx.min() + pd.Timedelta(hours=1)
+            future_pred.index.max() - future_pred.index.min() + pd.Timedelta(hours=1)
         ).total_seconds() // 3600
 
-        end_training = self.prediction_package["train_actual"].index.max()
-
-        # Legend construction
-        actual_legend = "Total system load (actual)<br>"
+        # --- Legend strings ---
+        actual_legend = "Total system load (actual)"
 
         m_train = self.prediction_package.get("metrics_train", {})
         m_future_1d = self.prediction_package.get("metrics_future_one_day", {})
         m_future = self.prediction_package.get("metrics_future", {})
-
         pred_legend = (
             "Total system load (model prediction)<br>"
             f"Training: MAE={m_train.get('mae', 0):.0f}, MAPE={m_train.get('mape', 0):.2f}<br>"
@@ -114,14 +146,22 @@ class PredictionFigure:
             f"Prediction ({total_hours_prediction:.0f}h): MAE={m_future.get('mae', 0):.0f}, MAPE={m_future.get('mape', 0):.2f}"
         )
 
-        # Add traces
+        # --- Traces ---
         self.fig.add_trace(
             go.Scatter(
-                x=y_actual.index, y=y_actual, mode="lines+markers", name=actual_legend
+                x=y_actual_visible.index,
+                y=y_actual_visible,
+                mode="lines+markers",
+                name=actual_legend,
             )
         )
         self.fig.add_trace(
-            go.Scatter(x=y_pred.index, y=y_pred, mode="lines+markers", name=pred_legend)
+            go.Scatter(
+                x=y_pred_visible.index,
+                y=y_pred_visible,
+                mode="lines+markers",
+                name=pred_legend,
+            )
         )
 
         if y_forecast is not None:
@@ -141,20 +181,40 @@ class PredictionFigure:
                 )
             )
 
+        if test_actual is not None and len(test_actual) > 0:
+            self.fig.add_trace(
+                go.Scatter(
+                    x=test_actual.index,
+                    y=test_actual,
+                    mode="lines+markers",
+                    name="Actual (test / ground truth)",
+                    line=dict(color="green", width=2),
+                    marker=dict(size=5),
+                )
+            )
+
         self.fig.add_trace(
             go.Scatter(
-                x=y_last_week.index,
-                y=y_last_week,
+                x=y_last_week_visible.index,
+                y=y_last_week_visible,
                 mode="lines+markers",
                 line=dict(dash="dash"),
                 name="Actual (last week)",
             )
         )
 
-        # Layout adjustments
+        # --- Y-axis range from visible data only ---
+        all_visible = pd.concat([y_actual_visible, y_pred_visible])
+        if test_actual is not None and len(test_actual) > 0:
+            all_visible = pd.concat([all_visible, test_actual])
+        y_min = all_visible.min()
+        y_max = all_visible.max()
+        y_margin = (y_max - y_min) * 0.05
+
+        # --- Layout ---
         self.fig.update_layout(
             template="plotly_white",
-            title="Energy Demand Prediction",
+            title=self.title,
             autosize=True,
             width=None,
             height=700,
@@ -164,13 +224,10 @@ class PredictionFigure:
             xaxis=dict(title="Time (UTC)"),
             yaxis=dict(title="Load [MW]"),
         )
-
-        # Focus range
-        max_range = y_actual.index.max()
-        min_range = end_training - pd.Timedelta(days=1)
         self.fig.update_xaxes(range=[min_range, max_range])
+        self.fig.update_yaxes(range=[y_min - y_margin, y_max + y_margin])
 
-        # Vertical line for end of training
+        # Vertical marker at end of training
         self.fig.add_vline(
             x=end_training,
             line_width=2,
@@ -189,7 +246,9 @@ class PredictionFigure:
 
 
 def make_plot(
-    prediction_package: Dict[str, Any], output_path: Optional[Union[str, Path]] = None
+    prediction_package: Dict[str, Any],
+    output_path: Optional[Union[str, Path]] = None,
+    title: str = "Energy Demand Prediction",
 ) -> go.Figure:
     """
     Generate and optionally save an interactive prediction plot.
@@ -198,6 +257,7 @@ def make_plot(
         prediction_package: Dictionary of results (actuals, preds, metrics).
         output_path: Path to save the HTML file. If None, it defaults to
             'index.html' in the package's data home directory.
+        title: Figure title shown at the top of the plot.
 
     Returns:
         The generated Plotly Figure object.
@@ -206,7 +266,7 @@ def make_plot(
         >>> from spotforecast2.manager.plotter import make_plot
         >>> # fig = make_plot(results)
     """
-    predictor_fig = PredictionFigure(prediction_package)
+    predictor_fig = PredictionFigure(prediction_package, title=title)
     fig = predictor_fig.make_plot()
 
     if output_path is None:
