@@ -38,12 +38,11 @@ import pandas as pd
 
 ```{python}
 #| label: define-constants
-
 START_DOWNLOAD = "196408020000"
 END_DOWNLOAD = "197506190000"
-TRAIN_SIZE = pd.Timedelta(days=365*3)
+TRAIN_SIZE = pd.Timedelta(days=365*1)
 END_TRAIN_DEFAULT = "1975-06-01 00:00+00:00"
-DELTA_VAL = pd.Timedelta(days=14)
+DELTA_VAL = pd.Timedelta(days=7)
 PREDICT_SIZE = 24
 ```
 
@@ -549,6 +548,7 @@ if out_B:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction for Target C"
+#| eval: false
 
 prepare_target("C")
 out_C = get_model_prediction_safe(model_name="lgbm_C")
@@ -563,7 +563,7 @@ if out_C:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction for Target D"
-
+#| eval: false
 prepare_target("D")
 out_D = get_model_prediction_safe(model_name="lgbm_D")
 if out_D:
@@ -577,6 +577,7 @@ if out_D:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction for Target E"
+#| eval: false
 
 prepare_target("E")
 out_E = get_model_prediction_safe(model_name="lgbm_E")
@@ -591,6 +592,7 @@ if out_E:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction for Target F"
+#| eval: false
 
 prepare_target("F")
 out_F = get_model_prediction_safe(model_name="lgbm_F")
@@ -605,6 +607,7 @@ if out_F:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction for Target G"
+#| eval: false
 
 prepare_target("G")
 out_G = get_model_prediction_safe(model_name="lgbm_G")
@@ -619,6 +622,7 @@ if out_G:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction for Target H"
+#| eval: false
 
 prepare_target("H")
 out_H = get_model_prediction_safe(model_name="lgbm_H")
@@ -633,6 +637,7 @@ if out_H:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction for Target I"
+#| eval: false
 
 prepare_target("I")
 out_I = get_model_prediction_safe(model_name="lgbm_I")
@@ -647,6 +652,7 @@ if out_I:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction for Target J"
+#| eval: false
 
 prepare_target("J")
 out_J = get_model_prediction_safe(model_name="lgbm_J")
@@ -661,6 +667,7 @@ if out_J:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction for Target K"
+#| eval: false
 
 prepare_target("K")
 out_K = get_model_prediction_safe(model_name="lgbm_K")
@@ -790,6 +797,7 @@ Here is how to perform tuning and use the tuned model. We utilize the full wrapp
 #| label: approach-3-tuning
 #| echo: true
 #| cache: false
+#| eval: false
 
 from spotforecast2.manager.models import ForecasterRecursiveLGBMFull as _ForecasterRecursiveLGBMFullBase
 
@@ -829,6 +837,7 @@ Prediction for Approach 3:
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction (Approach 3: Tuned and Trained)"
+#| eval: false
 
 for target in TARGETS:
     prepare_target(target)
@@ -848,7 +857,7 @@ As an alternative to Optuna, we can utilize `spotoptim` for surrogate-model-base
 #| label: approach-4-spotoptim-tuning
 #| echo: true
 #| cache: false
-
+#| eval: false
 from spotforecast2.model_selection import spotoptim_search_forecaster
 from spotforecast2.manager.trainer_full import LAGS_CONSIDER
 from spotforecast2_safe.data.fetch_data import load_timeseries
@@ -935,7 +944,7 @@ Prediction for Approach 4 (SpotOptim):
 #| echo: true
 #| cache: false
 #| fig-cap: "Prediction (Approach 4: SpotOptim Tuned)"
-
+#| eval: false
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_spotoptim_{target}"
