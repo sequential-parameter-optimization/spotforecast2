@@ -814,7 +814,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="spotforecast2.manager.plotter.PredictionFigure" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.manager.plotter.PredictionFigure">PredictionFigure</h3>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manager.plotter.PredictionFigure(prediction_package)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manager.plotter.PredictionFigure(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    prediction_package,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'Energy Demand Prediction'</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Encapsulates the generation of an interactive Plotly figure for predictions.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
@@ -831,8 +834,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td>prediction_package</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>A dictionary containing prediction data and metrics. Expected keys include: - ‘train_actual’: pd.Series - ‘future_actual’: pd.Series - ‘train_pred’: pd.Series - ‘future_pred’: pd.Series - ‘future_forecast’: pd.Series (e.g., benchmark/ENTSOE) - ‘metrics_train’: Dict[str, float] - ‘metrics_future’: Dict[str, float] - ‘metrics_future_one_day’: Dict[str, float] - ‘metrics_forecast’: Dict[str, float] - ‘metrics_forecast_one_day’: Dict[str, float]</td>
+<td>A dictionary containing prediction data and metrics. Expected keys include: - ‘train_actual’: pd.Series - ‘future_actual’: pd.Series - ‘train_pred’: pd.Series - ‘future_pred’: pd.Series - ‘future_forecast’: pd.Series (e.g., benchmark/ENTSOE) - ‘test_actual’: pd.Series (optional external ground truth for the forecast period, e.g.&nbsp;from data_test.csv; absent in genuine-future mode when no ground truth is available yet) - ‘metrics_train’: Dict[str, float] - ‘metrics_future’: Dict[str, float] - ‘metrics_future_one_day’: Dict[str, float] - ‘metrics_forecast’: Dict[str, float] - ‘metrics_forecast_one_day’: Dict[str, float]</td>
 <td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>title</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
+<td>Figure title shown at the top of the plot.</td>
+<td><code>'Energy Demand Prediction'</code></td>
 </tr>
 </tbody>
 </table>
@@ -849,36 +858,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td><a href="#spotforecast2.manager.plotter.PredictionFigure.make_plot">make_plot</a></td>
-<td>Generate the Plotly figure with traces and annotations. The following traces are added:</td>
+<td>Generate the Plotly figure with traces and annotations.</td>
 </tr>
 </tbody>
 </table>
 <section id="spotforecast2.manager.plotter.PredictionFigure.make_plot" class="level5">
 <h5 class="anchored" data-anchor-id="spotforecast2.manager.plotter.PredictionFigure.make_plot">make_plot</h5>
 <div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>manager.plotter.PredictionFigure.make_plot()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Generate the Plotly figure with traces and annotations. The following traces are added: - Actual values - Predicted values - Future forecast values - Actual values of the last week</p>
+<p>Generate the Plotly figure with traces and annotations.</p>
+<p>Traces added (always): - Total system load — actual (training window, clipped to visible range) - Total system load — model prediction (training + forecast, clipped) - Actual (last week) — time-shifted actual for seasonality context</p>
+<p>Traces added (when data is available): - Benchmark Forecast (e.g., ENTSOE) — if <code>future_forecast</code> key present - Actual (test / ground truth) — if <code>test_actual</code> key present</p>
+<p>The X-axis is fixed to <code>[end_training − 1 day, future_pred.max() + 1 h]</code> so the full forecast window is always visible, including in genuine-future mode where <code>future_actual</code> is an empty Series. Only the data slice in that window is serialised into the Plotly JSON, keeping HTML output small.</p>
 <section id="examples" class="level6 doc-section doc-section-examples">
 <h6 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h6>
 <div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.manager.plotter <span class="im">import</span> PredictionFigure</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="co"># Create synthetic data</span></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> dates <span class="op">=</span> pd.date_range(<span class="st">"2023-01-01"</span>, periods<span class="op">=</span><span class="dv">100</span>, freq<span class="op">=</span><span class="st">"h"</span>, tz<span class="op">=</span><span class="st">"UTC"</span>)</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> train_end <span class="op">=</span> dates[<span class="dv">70</span>]</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> y <span class="op">=</span> pd.Series(np.random.rand(<span class="dv">100</span>) <span class="op">*</span> <span class="dv">100</span>, index<span class="op">=</span>dates, name<span class="op">=</span><span class="st">"load"</span>)</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> p <span class="op">=</span> y <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">100</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> pkg <span class="op">=</span> {</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"train_actual"</span>: y.loc[:train_end],</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"future_actual"</span>: y.loc[train_end:],</span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"train_pred"</span>: p.loc[:train_end],</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"future_pred"</span>: p.loc[train_end:],</span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"metrics_train"</span>: {<span class="st">"mae"</span>: <span class="fl">5.0</span>, <span class="st">"mape"</span>: <span class="fl">0.1</span>},</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"metrics_future"</span>: {<span class="st">"mae"</span>: <span class="fl">6.0</span>, <span class="st">"mape"</span>: <span class="fl">0.12</span>},</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"metrics_future_one_day"</span>: {<span class="st">"mae"</span>: <span class="fl">4.5</span>, <span class="st">"mape"</span>: <span class="fl">0.08</span>},</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>... }</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> fig <span class="op">=</span> PredictionFigure(pkg).make_plot()</span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">isinstance</span>(fig.data, <span class="bu">tuple</span>)</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> dates <span class="op">=</span> pd.date_range(<span class="st">"2023-01-01"</span>, periods<span class="op">=</span><span class="dv">100</span>, freq<span class="op">=</span><span class="st">"h"</span>, tz<span class="op">=</span><span class="st">"UTC"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> train_end <span class="op">=</span> dates[<span class="dv">70</span>]</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> y <span class="op">=</span> pd.Series(np.random.rand(<span class="dv">100</span>) <span class="op">*</span> <span class="dv">100</span>, index<span class="op">=</span>dates, name<span class="op">=</span><span class="st">"load"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> p <span class="op">=</span> y <span class="op">+</span> np.random.normal(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">100</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> pkg <span class="op">=</span> {</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"train_actual"</span>: y.loc[:train_end],</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"future_actual"</span>: y.loc[train_end:],</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"train_pred"</span>: p.loc[:train_end],</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"future_pred"</span>: p.loc[train_end:],</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"metrics_train"</span>: {<span class="st">"mae"</span>: <span class="fl">5.0</span>, <span class="st">"mape"</span>: <span class="fl">0.1</span>},</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"metrics_future"</span>: {<span class="st">"mae"</span>: <span class="fl">6.0</span>, <span class="st">"mape"</span>: <span class="fl">0.12</span>},</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>...     <span class="st">"metrics_future_one_day"</span>: {<span class="st">"mae"</span>: <span class="fl">4.5</span>, <span class="st">"mape"</span>: <span class="fl">0.08</span>},</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>... }</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> fig <span class="op">=</span> PredictionFigure(pkg).make_plot()</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">isinstance</span>(fig.data, <span class="bu">tuple</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="va">True</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 </section>
 </section>
@@ -906,7 +917,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="spotforecast2.manager.plotter.make_plot" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.manager.plotter.make_plot">make_plot</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>manager.plotter.make_plot(prediction_package, output_path<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>manager.plotter.make_plot(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    prediction_package,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    output_path<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    title<span class="op">=</span><span class="st">'Energy Demand Prediction'</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Generate and optionally save an interactive prediction plot.</p>
 <section id="parameters-1" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
@@ -931,6 +946,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]]</td>
 <td>Path to save the HTML file. If None, it defaults to ‘index.html’ in the package’s data home directory.</td>
 <td><code>None</code></td>
+</tr>
+<tr class="odd">
+<td>title</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
+<td>Figure title shown at the top of the plot.</td>
+<td><code>'Energy Demand Prediction'</code></td>
 </tr>
 </tbody>
 </table>
