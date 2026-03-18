@@ -137,15 +137,11 @@ class StubForecaster:
 
 
 def _recent_model(hours_ago: int = 24) -> StubForecaster:
-    return StubForecaster(
-        0, pd.Timestamp.now("UTC") - pd.Timedelta(hours=hours_ago)
-    )
+    return StubForecaster(0, pd.Timestamp.now("UTC") - pd.Timedelta(hours=hours_ago))
 
 
 def _stale_model(days_ago: int = 10) -> StubForecaster:
-    return StubForecaster(
-        2, pd.Timestamp.now("UTC") - pd.Timedelta(days=days_ago)
-    )
+    return StubForecaster(2, pd.Timestamp.now("UTC") - pd.Timedelta(days=days_ago))
 
 
 # ---------------------------------------------------------------------------
@@ -194,9 +190,7 @@ def test_handle_training_force_retrains_recent(mock_get, mock_train, tmp_path):
     """force=True with a recent model still triggers retraining."""
     mock_get.return_value = (0, _recent_model(hours_ago=6))
 
-    handle_training(
-        StubForecaster, model_name="stub", model_dir=tmp_path, force=True
-    )
+    handle_training(StubForecaster, model_name="stub", model_dir=tmp_path, force=True)
 
     mock_train.assert_called_once()
     assert mock_train.call_args[0][1] == 1  # iteration 0 + 1

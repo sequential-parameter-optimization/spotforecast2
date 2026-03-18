@@ -479,7 +479,7 @@ No ground-truth future values exist, so `future_actual` will be empty and future
 
 | Component | Type | Arguments | Description |
 | :--- | :--- | :--- | :--- |
-| `get_future_prediction` | Function | `model_name` (str), `predict_hours` (int) | Loads the trained model, fits on training data, and forecasts `predict_hours` steps into the genuine future. Returns a prediction-package dict. |
+| `get_model_prediction` | Function | `model_name` (str), `predict_size` (int) | Loads the trained model from the cache and calls `package_prediction(predict_size)`. Handles genuine-future mode automatically when `end_dev` equals the last data timestamp. Returns a prediction-package dict. |
 | `plot_prediction` | Function | `pkg` (dict), `title` (str) | Generates an interactive Plotly figure showing training fit and the 24 h future forecast. |
 
 : Predictive Analytics & Visualization {#tbl-predict-entsoe}
@@ -490,88 +490,7 @@ No ground-truth future values exist, so `future_actual` will be empty and future
 #| label: code-notebook-entsoe-usage-predict
 #| echo: true
 import plotly.graph_objects as go
-from spotforecast2_safe.manager.trainer import get_last_model
-from spotforecast2_safe.data.fetch_data import load_timeseries
-from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
-from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
-
-
-def get_future_prediction(
-    model_name: str,
-    predict_hours: int = PREDICT_SIZE,
-    target: str = None,
-) -> dict | None:
-    """Load a trained model and produce a genuine future forecast.
-
-    The library's ``package_prediction`` uses ``steps=len(y_test)`` where
-    ``y_test = y.loc[end_dev:]``.  When ``end_dev`` equals the last timestamp
-    in the dataset, ``y_test`` has at most 1 row and the forecast is empty.
-
-    This function bypasses that limitation:
-    1. Load the trained model from the cache.
-    2. Load and interpolate the timeseries (``interim/energy_load.csv``).
-    3. Fit the forecaster on the training window (up to ``end_dev``).
-    4. Predict ``predict_hours`` steps **beyond** ``end_dev`` — a genuine
-       out-of-sample forecast.
-
-    If ``target`` is provided and ``data_test.csv`` was loaded, the
-    corresponding column is returned as ``test_actual`` for comparison.
-
-    Returns:
-        A prediction-package dict compatible with ``plot_prediction()``,
-        or ``None`` if no trained model is found.
-    """
-    n_iter, model = get_last_model(model_name)
-    if n_iter < 0 or model is None:
-        logger.error(f"No trained model found for '{model_name}'.")
-        return None
-
-    # Load target series (written by prepare_target)
-    y = load_timeseries()
-    y = LinearlyInterpolateTS().fit_transform(y)
-
-    end_dev = model.end_dev
-    y_train = y.loc[:end_dev]
-
-    # Fit on training data
-    model.forecaster.fit(y=y_train)
-
-    # -- In-sample predictions (training fit) --
-    train_pred = model.forecaster.predict(steps=len(y_train))
-    train_pred.index = y_train.index[-len(train_pred):]
-    y_train_aligned = y_train.loc[train_pred.index]
-
-    metrics_train = {
-        "mae": mean_absolute_error(y_train_aligned, train_pred),
-        "mape": mean_absolute_percentage_error(y_train_aligned, train_pred),
-    }
-
-    # -- Out-of-sample predictions (genuine future) --
-    future_pred = model.forecaster.predict(steps=predict_hours)
-    # The index is auto-generated starting at end_dev + 1h
-
-    logger.info(
-        f"[{model_name}] Forecast {predict_hours}h beyond {end_dev}: "
-        f"{future_pred.index.min()} → {future_pred.index.max()}"
-    )
-
-    # -- Test data (ground truth for forecast period, if available) --
-    test_actual = pd.Series(dtype="float64")
-    if target is not None and df_test is not None and target in df_test.columns:
-        ts = df_test.set_index("DateTime")[target]
-        if ts.index.tzinfo is None:
-            ts.index = ts.index.tz_localize("UTC")
-        test_actual = ts.reindex(future_pred.index).dropna()
-        logger.info(f"[{model_name}] Test data: {len(test_actual)} matching points")
-
-    return {
-        "train_actual": y_train_aligned,
-        "train_pred": train_pred,
-        "future_actual": pd.Series(dtype="float64"),   # empty — no ground truth
-        "future_pred": future_pred,
-        "test_actual": test_actual,
-        "metrics_train": metrics_train,
-    }
+from spotforecast2_safe.manager.predictor import get_model_prediction
 
 
 def plot_prediction(pkg: dict, title: str = "Prediction") -> go.Figure:
@@ -677,9 +596,19 @@ def entsoe_predict(model="lgbm", show=True):
     for target in TARGETS:
         prepare_target(target)
         model_name = f"{model}_{target}"
-        out = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
+        out = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
 
         if out:
+            # Inject external ground truth (data_test.csv) as notebook-specific
+            # post-processing — not part of the library's prediction package.
+            if df_test is not None and target in df_test.columns:
+                ts = df_test.set_index("DateTime")[target]
+                if ts.index.tzinfo is None:
+                    ts.index = ts.index.tz_localize("UTC")
+                test_actual = ts.reindex(out["future_pred"].index).dropna()
+                out["test_actual"] = test_actual
+                logger.info(f"[{target}] Test data: {len(test_actual)} matching points")
+
             logger.info(f"[{target}] Prediction package OK.")
             if show:
                 fig = plot_prediction(out, title=f"Prediction for Target '{target}'")
@@ -702,7 +631,7 @@ pprint.pprint(model_lgbm.get_params())
 
 ### Execution & Effects
 
-The prediction pipeline (`entsoe_predict` calling `get_future_prediction` and `plot_prediction`) performs the following actions **for each of the eleven targets**:
+The prediction pipeline (`entsoe_predict` calling `get_model_prediction` and `plot_prediction`) performs the following actions **for each of the eleven targets**:
 
 #### Model Loading
 
@@ -710,7 +639,7 @@ Retrieves the **latest trained model** (highest iteration) for the given target 
 
 #### Prediction Package Generation
 
-`get_future_prediction()` loads the trained model, fits the forecaster on the training window (up to `end_dev`), then calls `forecaster.predict(steps=predict_hours)` to generate a genuine future forecast. This bypasses the library's `package_prediction()` method which only predicts `steps=len(y_test)` — when `end_dev` equals the last timestamp, that yields 0–1 steps instead of 24. The returned dictionary contains the components shown in @tbl-predict-entsoe-package.
+`get_model_prediction()` loads the latest trained model from the cache and calls `package_prediction(predict_size)`. When `end_dev` equals the last dataset timestamp (genuine-future mode), `package_prediction()` detects that no held-out test data is available and predicts exactly `predict_size` steps beyond `end_dev` — returning an empty `future_actual` Series and omitting future metrics. The returned dictionary contains the components shown in @tbl-predict-entsoe-package.
 
 | Key | Type | Description |
 | :--- | :--- | :--- |
@@ -775,7 +704,7 @@ Generates a Plotly figure with the following structure:
 #| fig-cap: "Prediction for Target A"
 
 prepare_target("A")
-out_A = get_future_prediction(model_name="lgbm_A", predict_hours=PREDICT_SIZE, target="A")
+out_A = get_model_prediction(model_name="lgbm_A", predict_size=PREDICT_SIZE)
 if out_A:
     fig_A = plot_prediction(out_A, title="Prediction for Target 'A'")
     fig_A.show()
@@ -788,7 +717,7 @@ if out_A:
 #| fig-cap: "Prediction for Target B"
 
 prepare_target("B")
-out_B = get_future_prediction(model_name="lgbm_B", predict_hours=PREDICT_SIZE, target="B")
+out_B = get_model_prediction(model_name="lgbm_B", predict_size=PREDICT_SIZE)
 if out_B:
     fig_B = plot_prediction(out_B, title="Prediction for Target 'B'")
     fig_B.show()
@@ -852,7 +781,7 @@ Prediction for Approach 1 relies on the on-the-fly fit:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_untrained_{target}"
-    out_app1 = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
+    out_app1 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
     if out_app1:
         fig_app1 = plot_prediction(out_app1, title=f"Prediction for Target '{target}' (Approach 1: Lazy Fitting)")
         fig_app1.show()
@@ -894,7 +823,7 @@ Prediction for Approach 2:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_trained_not_tuned_{target}"
-    out_app2 = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
+    out_app2 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
     if out_app2:
         fig_app2 = plot_prediction(out_app2, title=f"Prediction for Target '{target}' (Approach 2: Trained, No Tuning)")
         fig_app2.show()
@@ -957,7 +886,7 @@ Prediction for Approach 3:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_and_trained_{target}"
-    out_app3 = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
+    out_app3 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
     if out_app3:
         fig_app3 = plot_prediction(out_app3, title=f"Prediction for Target '{target}' (Approach 3: Tuned and Trained)")
         fig_app3.show()
@@ -1062,7 +991,7 @@ Prediction for Approach 4 (SpotOptim):
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_spotoptim_{target}"
-    out_app4 = get_future_prediction(model_name=model_name, predict_hours=PREDICT_SIZE, target=target)
+    out_app4 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
     if out_app4:
         fig_app4 = plot_prediction(out_app4, title=f"Prediction for Target '{target}' (Approach 4: SpotOptim Tuned)")
         fig_app4.show()
