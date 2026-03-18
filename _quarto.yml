@@ -70,8 +70,12 @@ website:
                 file: docs/reference/forecaster.recursive._warnings.qmd
           - section: "Manager"
             contents:
-              - text: "models"
-                file: docs/reference/manager.models.qmd
+              - text: "models.forecaster_recursive_model_full"
+                file: docs/reference/manager.models.forecaster_recursive_model_full.qmd
+              - text: "models.forecaster_recursive_lgbm_full"
+                file: docs/reference/manager.models.forecaster_recursive_lgbm_full.qmd
+              - text: "models.forecaster_recursive_xgb_full"
+                file: docs/reference/manager.models.forecaster_recursive_xgb_full.qmd
               - text: "plotter"
                 file: docs/reference/manager.plotter.qmd
               - text: "trainer_full"
@@ -241,7 +245,9 @@ quartodoc:
     - title: "Manager"
       desc: "Model management and configurators."
       contents:
-        - manager.models
+        - manager.models.forecaster_recursive_model_full
+        - manager.models.forecaster_recursive_lgbm_full
+        - manager.models.forecaster_recursive_xgb_full
         - manager.plotter
         - manager.trainer_full
 

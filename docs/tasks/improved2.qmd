@@ -742,7 +742,7 @@ Note that Approach 1 and Approach 2 yield identical predictive metrics for each 
 
 For optimal performance, the spotforecast2 package provides the full orchestration capabilities to tune the hyperparameters using Bayesian optimization, train the model with the best discovered parameters, and serialize the optimized artifact.
 
-Here is how to perform tuning and use the tuned model. We utilize the full wrapper class ForecasterRecursiveLGBMFull from spotforecast2.manager.models.
+Here is how to perform tuning and use the tuned model. We utilize `ForecasterRecursiveLGBMFull` from `spotforecast2.manager.models.forecaster_recursive_lgbm_full` (re-exported via `spotforecast2.manager.models`).
 
 ```{python}
 #| label: approach-3-tuning
@@ -750,7 +750,7 @@ Here is how to perform tuning and use the tuned model. We utilize the full wrapp
 #| cache: false
 #| eval: true
 
-from spotforecast2.manager.models import ForecasterRecursiveLGBMFull
+from spotforecast2.manager.models.forecaster_recursive_lgbm_full import ForecasterRecursiveLGBMFull
 
 # Train and tune for each target (n_trials=15 for demonstration)
 for target in TARGETS:
