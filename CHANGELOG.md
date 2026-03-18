@@ -1,3 +1,9 @@
+## [0.10.4-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.4-rc.1...v0.10.4-rc.2) (2026-03-18)
+
+### Bug Fixes
+
+* replaced get_future_prediction with get_model_prediction ([70b42f1](https://github.com/sequential-parameter-optimization/spotforecast2/commit/70b42f154c0ae3ac695b2fa0bf96c8104dfb1eea))
+
 ## [0.10.4-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.3...v0.10.4-rc.1) (2026-03-18)
 
 ### Bug Fixes
