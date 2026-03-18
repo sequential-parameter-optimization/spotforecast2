@@ -480,7 +480,7 @@ No ground-truth future values exist, so `future_actual` will be empty and future
 | Component | Type | Arguments | Description |
 | :--- | :--- | :--- | :--- |
 | `get_model_prediction` | Function | `model_name` (str), `predict_size` (int) | Loads the trained model from the cache and calls `package_prediction(predict_size)`. Handles genuine-future mode automatically when `end_dev` equals the last data timestamp. Returns a prediction-package dict. |
-| `plot_prediction` | Function | `pkg` (dict), `title` (str) | Generates an interactive Plotly figure showing training fit and the 24 h future forecast. |
+| `PredictionFigure` | Class | `prediction_package` (dict), `title` (str) | Library class from `spotforecast2.manager.plotter`. Generates an interactive Plotly figure with training fit, future forecast, last-week comparison, optional benchmark, and optional test ground truth. Call `.make_plot()` to obtain the `go.Figure`. |
 
 : Predictive Analytics & Visualization {#tbl-predict-entsoe}
 
@@ -489,105 +489,29 @@ No ground-truth future values exist, so `future_actual` will be empty and future
 ```{python}
 #| label: code-notebook-entsoe-usage-predict
 #| echo: true
-import plotly.graph_objects as go
 from spotforecast2_safe.manager.predictor import get_model_prediction
+from spotforecast2.manager.plotter import PredictionFigure
 
 
-def plot_prediction(pkg: dict, title: str = "Prediction") -> go.Figure:
-    """Build a Plotly figure showing training fit and future forecast.
+def get_prediction(model_name: str, target: str, predict_size: int = PREDICT_SIZE):
+    """Call get_model_prediction and inject test_actual from df_test if available.
 
-    Left of the dashed vertical line: training actuals vs in-sample predictions.
-    Right of the line: 24 h out-of-sample forecast (no actuals).
-    The x-axis is set to ``[end_training − 1 day, last_prediction + 1 h]``
-    so the full forecast window is always visible.  The y-axis range is
-    computed from the data visible in that window only, avoiding the wide
-    range caused by the full multi-year training series.
+    This wrapper ensures that all prediction call sites — including standalone
+    cells for individual targets and the approach loops — display the ground-truth
+    test data when data_test.csv is present, without duplicating injection logic.
+    Returns None when the underlying model call fails.
     """
-    end_training = pkg["train_actual"].index.max()
-    future_pred = pkg["future_pred"]
-    pred_end = future_pred.index.max()
-    test_actual = pkg.get("test_actual", pd.Series(dtype="float64"))
-
-    # X-axis bounds
-    min_range = end_training - pd.Timedelta(days=1)
-    max_range = pred_end + pd.Timedelta(hours=1)
-
-    m = pkg.get("metrics_train", {})
-    pred_legend = (
-        f"Model prediction<br>"
-        f"Training: MAE={m.get('mae', 0):.2f}, MAPE={m.get('mape', 0):.4f}"
-    )
-
-    # Clip training traces to the visible x-window only.
-    # The full training series (up to 8760 points/year) must NOT be serialized
-    # into the Plotly JSON — only the visible slice is needed and dramatically
-    # reduces the output HTML size.
-    visible_train_actual = pkg["train_actual"][pkg["train_actual"].index >= min_range]
-    visible_train_pred = pkg["train_pred"][pkg["train_pred"].index >= min_range]
-
-    fig = go.Figure()
-
-    # Training actuals (clipped to visible window)
-    fig.add_trace(go.Scatter(
-        x=visible_train_actual.index,
-        y=visible_train_actual,
-        mode="lines",
-        name="Actual (training)",
-    ))
-    # Training predictions (clipped to visible window)
-    fig.add_trace(go.Scatter(
-        x=visible_train_pred.index,
-        y=visible_train_pred,
-        mode="lines",
-        name=pred_legend,
-    ))
-    # Future forecast (24 h)
-    fig.add_trace(go.Scatter(
-        x=future_pred.index,
-        y=future_pred,
-        mode="lines+markers",
-        name=f"Forecast ({len(future_pred)}h)",
-        line=dict(color="red", width=2),
-        marker=dict(size=5),
-    ))
-    # Test data — ground truth for forecast period (if available)
-    if test_actual is not None and len(test_actual) > 0:
-        fig.add_trace(go.Scatter(
-            x=test_actual.index,
-            y=test_actual,
-            mode="lines+markers",
-            name="Actual (test / ground truth)",
-            line=dict(color="green", width=2),
-            marker=dict(size=5),
-        ))
-
-    # Vertical line at end of training
-    fig.add_vline(x=end_training, line_width=2, line_color="black", line_dash="dash")
-    fig.add_annotation(
-        x=end_training, text="End of Training",
-        showarrow=False, yref="paper", y=1.05,
-    )
-
-    fig.update_xaxes(range=[min_range, max_range])
-
-    # Y-axis: range from the visible data (already clipped above)
-    all_visible = pd.concat([visible_train_actual, visible_train_pred, future_pred])
-    if test_actual is not None and len(test_actual) > 0:
-        all_visible = pd.concat([all_visible, test_actual])
-    y_min = all_visible.min()
-    y_max = all_visible.max()
-    y_margin = (y_max - y_min) * 0.05
-    fig.update_yaxes(range=[y_min - y_margin, y_max + y_margin])
-
-    fig.update_layout(
-        template="plotly_white",
-        title=title,
-        height=450,
-        xaxis=dict(title="Time (UTC)"),
-        yaxis=dict(title="Load"),
-        legend=dict(orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5),
-    )
-    return fig
+    out = get_model_prediction(model_name=model_name, predict_size=predict_size)
+    if out is None:
+        return None
+    if df_test is not None and target in df_test.columns:
+        ts = df_test.set_index("DateTime")[target]
+        if ts.index.tzinfo is None:
+            ts.index = ts.index.tz_localize("UTC")
+        test_actual = ts.reindex(out["future_pred"].index).dropna()
+        out["test_actual"] = test_actual
+        logger.info(f"[{target}] Test data injected: {len(test_actual)} matching points")
+    return out
 
 
 def entsoe_predict(model="lgbm", show=True):
@@ -596,22 +520,11 @@ def entsoe_predict(model="lgbm", show=True):
     for target in TARGETS:
         prepare_target(target)
         model_name = f"{model}_{target}"
-        out = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
-
+        out = get_prediction(model_name=model_name, target=target, predict_size=PREDICT_SIZE)
         if out:
-            # Inject external ground truth (data_test.csv) as notebook-specific
-            # post-processing — not part of the library's prediction package.
-            if df_test is not None and target in df_test.columns:
-                ts = df_test.set_index("DateTime")[target]
-                if ts.index.tzinfo is None:
-                    ts.index = ts.index.tz_localize("UTC")
-                test_actual = ts.reindex(out["future_pred"].index).dropna()
-                out["test_actual"] = test_actual
-                logger.info(f"[{target}] Test data: {len(test_actual)} matching points")
-
             logger.info(f"[{target}] Prediction package OK.")
             if show:
-                fig = plot_prediction(out, title=f"Prediction for Target '{target}'")
+                fig = PredictionFigure(out, title=f"Prediction for Target '{target}'").make_plot()
                 fig.show()
         else:
             logger.error(f"[{target}] Prediction failed: No valid output package.")
@@ -631,7 +544,7 @@ pprint.pprint(model_lgbm.get_params())
 
 ### Execution & Effects
 
-The prediction pipeline (`entsoe_predict` calling `get_model_prediction` and `plot_prediction`) performs the following actions **for each of the eleven targets**:
+The prediction pipeline (`entsoe_predict` calling `get_model_prediction` and `PredictionFigure`) performs the following actions **for each of the eleven targets**:
 
 #### Model Loading
 
@@ -668,23 +581,24 @@ With the current configuration (`predict_size=24`, `refit_size=1`), the full hor
 
 
 
-#### Visualization (`plot_prediction`)
+#### Visualization (`PredictionFigure`)
 
-Generates a Plotly figure with the following structure:
+`PredictionFigure` from `spotforecast2.manager.plotter` generates a Plotly figure with the following structure:
 
 **Plot Structure & X-Axis Range:**
 
-*   **Left Region**: Historical training period showing model fit quality (in-sample predictions).
+*   **Left Region**: Historical training period showing model fit quality (in-sample predictions, clipped to last 1 day before `end_training` to keep HTML small).
 *   **Right Region**: Future prediction window showing out-of-sample forecasts.
-*   **X-Axis Range**: Set to `[end_training − 1 day, last_prediction + 1 h]` by `plot_prediction()`. This ensures the full 24 h forecast window is always visible, even though no ground-truth data exists beyond the training cut-off.
+*   **X-Axis Range**: `[end_training − 1 day, future_pred.max() + 1 h]`. Using `future_pred.max()` (not `y_actual.max()`) ensures the forecast is visible in genuine-future mode where `future_actual` is empty.
 *   **Vertical Marker**: Black dashed line at `end_training` separating the historical fit region from the future forecast region.
 
 **Plot Lines & Legend:**
 
 | Legend Entry | Line Style | Data Source | Purpose | Embedded Metrics |
 | :--- | :--- | :--- | :--- | :--- |
-| **Total system load (actual)** | Solid line + markers | Ground truth (`train_actual` + `future_actual`) | Shows actual values across entire time range | None |
-| **Total system load (model prediction)** | Solid line + markers | Model output (`train_pred` + `future_pred`) | Shows model's predictions for both training and future periods | Training MAE/MAPE, Prediction (24h) MAE/MAPE, Prediction (full horizon) MAE/MAPE |
+| **Total system load (actual)** | Solid line + markers | Ground truth (`train_actual` + `future_actual`, clipped) | Shows actual values in visible window | None |
+| **Total system load (model prediction)** | Solid line + markers | Model output (`train_pred` + `future_pred`, clipped) | Shows model's predictions for both training and future periods | Training MAE/MAPE, Prediction (24h) MAE/MAPE, Prediction (full horizon) MAE/MAPE |
+| **Actual (test / ground truth)** | Solid line + markers (green) | External `test_actual` from `data_test.csv` (if available) | Overlays real post-training values against the forecast | None |
 | **Actual (last week)** | Dashed line + markers | Time-shifted actual data (`y_actual.shift(7*24)`) | Reveals weekly seasonality patterns for context | None |
 
 **Layout Configuration:**
@@ -704,9 +618,9 @@ Generates a Plotly figure with the following structure:
 #| fig-cap: "Prediction for Target A"
 
 prepare_target("A")
-out_A = get_model_prediction(model_name="lgbm_A", predict_size=PREDICT_SIZE)
+out_A = get_prediction(model_name="lgbm_A", target="A")
 if out_A:
-    fig_A = plot_prediction(out_A, title="Prediction for Target 'A'")
+    fig_A = PredictionFigure(out_A, title="Prediction for Target 'A'").make_plot()
     fig_A.show()
 ```
 
@@ -717,9 +631,9 @@ if out_A:
 #| fig-cap: "Prediction for Target B"
 
 prepare_target("B")
-out_B = get_model_prediction(model_name="lgbm_B", predict_size=PREDICT_SIZE)
+out_B = get_prediction(model_name="lgbm_B", target="B")
 if out_B:
-    fig_B = plot_prediction(out_B, title="Prediction for Target 'B'")
+    fig_B = PredictionFigure(out_B, title="Prediction for Target 'B'").make_plot()
     fig_B.show()
 ```
 
@@ -781,9 +695,9 @@ Prediction for Approach 1 relies on the on-the-fly fit:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_untrained_{target}"
-    out_app1 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
+    out_app1 = get_prediction(model_name=model_name, target=target)
     if out_app1:
-        fig_app1 = plot_prediction(out_app1, title=f"Prediction for Target '{target}' (Approach 1: Lazy Fitting)")
+        fig_app1 = PredictionFigure(out_app1, title=f"Prediction for Target '{target}' (Approach 1: Lazy Fitting)").make_plot()
         fig_app1.show()
 ```
 
@@ -823,9 +737,9 @@ Prediction for Approach 2:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_trained_not_tuned_{target}"
-    out_app2 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
+    out_app2 = get_prediction(model_name=model_name, target=target)
     if out_app2:
-        fig_app2 = plot_prediction(out_app2, title=f"Prediction for Target '{target}' (Approach 2: Trained, No Tuning)")
+        fig_app2 = PredictionFigure(out_app2, title=f"Prediction for Target '{target}' (Approach 2: Trained, No Tuning)").make_plot()
         fig_app2.show()
 ```
 
@@ -886,9 +800,9 @@ Prediction for Approach 3:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_and_trained_{target}"
-    out_app3 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
+    out_app3 = get_prediction(model_name=model_name, target=target)
     if out_app3:
-        fig_app3 = plot_prediction(out_app3, title=f"Prediction for Target '{target}' (Approach 3: Tuned and Trained)")
+        fig_app3 = PredictionFigure(out_app3, title=f"Prediction for Target '{target}' (Approach 3: Tuned and Trained)").make_plot()
         fig_app3.show()
 ```
 
@@ -991,9 +905,9 @@ Prediction for Approach 4 (SpotOptim):
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_spotoptim_{target}"
-    out_app4 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
+    out_app4 = get_prediction(model_name=model_name, target=target)
     if out_app4:
-        fig_app4 = plot_prediction(out_app4, title=f"Prediction for Target '{target}' (Approach 4: SpotOptim Tuned)")
+        fig_app4 = PredictionFigure(out_app4, title=f"Prediction for Target '{target}' (Approach 4: SpotOptim Tuned)").make_plot()
         fig_app4.show()
 ```
 
