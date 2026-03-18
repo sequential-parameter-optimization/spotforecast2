@@ -493,6 +493,27 @@ import plotly.graph_objects as go
 from spotforecast2_safe.manager.predictor import get_model_prediction
 
 
+def get_prediction(model_name: str, target: str, predict_size: int = PREDICT_SIZE):
+    """Call get_model_prediction and inject test_actual from df_test if available.
+
+    This wrapper ensures that all prediction call sites — including standalone
+    cells for individual targets and the approach loops — display the ground-truth
+    test data when data_test.csv is present, without duplicating injection logic.
+    Returns None when the underlying model call fails.
+    """
+    out = get_model_prediction(model_name=model_name, predict_size=predict_size)
+    if out is None:
+        return None
+    if df_test is not None and target in df_test.columns:
+        ts = df_test.set_index("DateTime")[target]
+        if ts.index.tzinfo is None:
+            ts.index = ts.index.tz_localize("UTC")
+        test_actual = ts.reindex(out["future_pred"].index).dropna()
+        out["test_actual"] = test_actual
+        logger.info(f"[{target}] Test data injected: {len(test_actual)} matching points")
+    return out
+
+
 def plot_prediction(pkg: dict, title: str = "Prediction") -> go.Figure:
     """Build a Plotly figure showing training fit and future forecast.
 
@@ -596,19 +617,8 @@ def entsoe_predict(model="lgbm", show=True):
     for target in TARGETS:
         prepare_target(target)
         model_name = f"{model}_{target}"
-        out = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
-
+        out = get_prediction(model_name=model_name, target=target, predict_size=PREDICT_SIZE)
         if out:
-            # Inject external ground truth (data_test.csv) as notebook-specific
-            # post-processing — not part of the library's prediction package.
-            if df_test is not None and target in df_test.columns:
-                ts = df_test.set_index("DateTime")[target]
-                if ts.index.tzinfo is None:
-                    ts.index = ts.index.tz_localize("UTC")
-                test_actual = ts.reindex(out["future_pred"].index).dropna()
-                out["test_actual"] = test_actual
-                logger.info(f"[{target}] Test data: {len(test_actual)} matching points")
-
             logger.info(f"[{target}] Prediction package OK.")
             if show:
                 fig = plot_prediction(out, title=f"Prediction for Target '{target}'")
@@ -704,7 +714,7 @@ Generates a Plotly figure with the following structure:
 #| fig-cap: "Prediction for Target A"
 
 prepare_target("A")
-out_A = get_model_prediction(model_name="lgbm_A", predict_size=PREDICT_SIZE)
+out_A = get_prediction(model_name="lgbm_A", target="A")
 if out_A:
     fig_A = plot_prediction(out_A, title="Prediction for Target 'A'")
     fig_A.show()
@@ -717,7 +727,7 @@ if out_A:
 #| fig-cap: "Prediction for Target B"
 
 prepare_target("B")
-out_B = get_model_prediction(model_name="lgbm_B", predict_size=PREDICT_SIZE)
+out_B = get_prediction(model_name="lgbm_B", target="B")
 if out_B:
     fig_B = plot_prediction(out_B, title="Prediction for Target 'B'")
     fig_B.show()
@@ -781,7 +791,7 @@ Prediction for Approach 1 relies on the on-the-fly fit:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_untrained_{target}"
-    out_app1 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
+    out_app1 = get_prediction(model_name=model_name, target=target)
     if out_app1:
         fig_app1 = plot_prediction(out_app1, title=f"Prediction for Target '{target}' (Approach 1: Lazy Fitting)")
         fig_app1.show()
@@ -823,7 +833,7 @@ Prediction for Approach 2:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_trained_not_tuned_{target}"
-    out_app2 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
+    out_app2 = get_prediction(model_name=model_name, target=target)
     if out_app2:
         fig_app2 = plot_prediction(out_app2, title=f"Prediction for Target '{target}' (Approach 2: Trained, No Tuning)")
         fig_app2.show()
@@ -886,7 +896,7 @@ Prediction for Approach 3:
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_and_trained_{target}"
-    out_app3 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
+    out_app3 = get_prediction(model_name=model_name, target=target)
     if out_app3:
         fig_app3 = plot_prediction(out_app3, title=f"Prediction for Target '{target}' (Approach 3: Tuned and Trained)")
         fig_app3.show()
@@ -991,7 +1001,7 @@ Prediction for Approach 4 (SpotOptim):
 for target in TARGETS:
     prepare_target(target)
     model_name = f"lgbm_tuned_spotoptim_{target}"
-    out_app4 = get_model_prediction(model_name=model_name, predict_size=PREDICT_SIZE)
+    out_app4 = get_prediction(model_name=model_name, target=target)
     if out_app4:
         fig_app4 = plot_prediction(out_app4, title=f"Prediction for Target '{target}' (Approach 4: SpotOptim Tuned)")
         fig_app4.show()
