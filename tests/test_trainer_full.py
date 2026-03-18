@@ -3,7 +3,7 @@
 
 import pytest
 import pandas as pd
-from unittest.mock import patch, call
+from unittest.mock import patch
 
 from spotforecast2.manager.trainer_full import train_new_model, handle_training
 
