@@ -1,3 +1,13 @@
+## [0.11.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.5...v0.11.0) (2026-03-18)
+
+### Features
+
+* models folder ([e64ebec](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e64ebec0aa8108d9e06e230a7289352f89196874))
+
+### Documentation
+
+* improved2 ([96c7d03](https://github.com/sequential-parameter-optimization/spotforecast2/commit/96c7d032de74dc45bfd6b5ad16904229e81152da))
+
 ## [0.11.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.10.5...v0.11.0-rc.1) (2026-03-18)
 
 ### Features
