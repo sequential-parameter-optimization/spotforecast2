@@ -1166,6 +1166,84 @@ else:
     logger.info("No comparison data available.")
 ```
 
+
+
+## Prediction Aggregation {#sec-prediction-aggregation}
+
+After training individual models per target, the per-target future predictions are
+combined into a single aggregated forecast via a weighted sum — mirroring the
+aggregation step in `task_safe_n_to_1_with_covariates_and_dataframe.py`
+(`agg_predict`, Step 2).
+
+When `TARGETS` is reduced (e.g. `TARGETS = ALL_TARGETS[:2]`), only the
+corresponding leading weights are used so that weight indices always align with
+target order.
+
+```{python}
+#| label: prediction-aggregation
+#| echo: true
+#| fig-cap: "Aggregated Prediction: Weighted Combination Across Active Targets (Approach 1)"
+
+from spotforecast2_safe.processing.agg_predict import agg_predict
+
+# Default aggregation weights — one entry per target in ALL_TARGETS (A–K).
+# Positive values increase, negative values invert, the contribution of that target.
+DEFAULT_WEIGHTS = [
+    1.0,   # Index 0  – target A
+    1.0,   # Index 1  – target B
+    -1.0,  # Index 2  – target C
+    -1.0,  # Index 3  – target D
+    1.0,   # Index 4  – target E
+    -1.0,  # Index 5  – target F
+    1.0,   # Index 6  – target G
+    1.0,   # Index 7  – target H
+    1.0,   # Index 8  – target I
+    -1.0,  # Index 9  – target J
+    1.0,   # Index 10 – target K
+]
+
+# Slice weights to match the number of active TARGETS.
+# E.g. TARGETS = ALL_TARGETS[:2] → only the 1st and 2nd weights are used.
+active_weights = DEFAULT_WEIGHTS[: len(TARGETS)]
+
+# Use Approach 1 results as the reference predictions for aggregation.
+ref_results = results_app1
+
+# Build per-component DataFrames — one column per active target.
+future_preds_df = pd.DataFrame(
+    {t: ref_results[t]["future_pred"] for t in TARGETS}
+)
+train_preds_df = pd.DataFrame(
+    {t: ref_results[t]["train_pred"] for t in TARGETS}
+)
+train_actuals_df = pd.DataFrame(
+    {t: ref_results[t]["train_actual"] for t in TARGETS}
+)
+
+# Aggregate each component with the same sliced weights.
+agg_future_pred = agg_predict(future_preds_df, weights=active_weights)
+agg_train_pred = agg_predict(train_preds_df, weights=active_weights)
+agg_train_actual = agg_predict(train_actuals_df, weights=active_weights)
+
+# Assemble a prediction package compatible with PredictionFigure.
+agg_pred_pkg = {
+    "train_actual": agg_train_actual,
+    "train_pred": agg_train_pred,
+    "future_actual": pd.Series(dtype="float64"),
+    "future_pred": agg_future_pred,
+    "metrics_train": {},
+    "metrics_future": {},
+    "metrics_future_one_day": {},
+    "validation_passed": True,
+}
+
+fig = PredictionFigure(
+    agg_pred_pkg,
+    title=f"Aggregated Forecast: Weighted Combination of Targets {TARGETS} (Approach 1)",
+).make_plot()
+fig.show()
+```
+
 ```{python}
 #| label: fig-entsoe-predict-comparison
 ```
