@@ -1,3 +1,10 @@
+## [0.11.2-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.1...v0.11.2-rc.1) (2026-03-20)
+
+### Bug Fixes
+
+* prepare_target() removed ([b6672b8](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b6672b8c0bf1527887c3310277c122bbd9e46d72))
+* weights ([83d510c](https://github.com/sequential-parameter-optimization/spotforecast2/commit/83d510cf161c2543c96d5fd8b78d54d96bcd1a75))
+
 ## [0.11.1-rc.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.1-rc.2...v0.11.1-rc.3) (2026-03-20)
 
 ### Bug Fixes
