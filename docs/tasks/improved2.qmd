@@ -53,6 +53,8 @@ logger = logging.getLogger(__name__)
 
 ## Data Ranges and Acquisition
 
+The active dataset covers the period from `START_DOWNLOAD` to `END_DOWNLOAD` at hourly resolution.
+
 The download-range constants (`START_DOWNLOAD`, `END_DOWNLOAD`) and the training cut-off (`END_TRAIN_DEFAULT`) are derived dynamically from the loaded dataset, so they automatically update whenever `data_in.csv` is refreshed.
 `END_TRAIN_DEFAULT` is always set to the last timestamp in the loaded dataset, ensuring that the training window always covers the most recent year of data.
 
@@ -72,7 +74,6 @@ PREDICT_SIZE = 24
 
 Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo02.csv` included in the `spotforecast2-safe` package. Both datasets contain eleven independent target columns.
 
-A helper function `prepare_target()` writes one target column at a time to the standard interim location (`interim/data_current.csv`), renaming the `DateTime` index to `Time (UTC)` and the target column to `Actual Load` so that all downstream pipeline components (`load_timeseries()`, `config.data_filename`) work without modification, see @tbl-data-acquisition.
 
 ### API Reference for Data Acquisition
 
@@ -81,7 +82,7 @@ A helper function `prepare_target()` writes one target column at a time to the s
 | `fetch_data` | Function | `filename` (str or Path) | Loads a CSV file from the user data directory, parses the datetime index, and returns a UTC-aware DataFrame. |
 | `get_package_data_home` | Function | — | Returns the path to the internal package datasets directory (contains `demo02.csv`). |
 | `get_data_home` | Function | `data_home` (str, optional) | Returns the path to the user data directory (default: `~/spotforecast2_data`). Creates it if absent. |
-| `prepare_target` | Function | `target` (str) | Writes the chosen target column (label detected dynamically from CSV headers) as `Actual Load` to `interim/data_current.csv`, renaming `DateTime` to `Time (UTC)`. |
+| `prepare_target` | Function | `target` (str) | Writes the chosen target column (label detected dynamically from CSV headers) as `Actual Load` to `current/data_current.csv`, renaming `DateTime` to `Time (UTC)`. |
 : Data acquisition {#tbl-data-acquisition}
 
 ### Column Mapping for `data_in.csv`
@@ -110,7 +111,7 @@ from spotforecast2_safe.data.fetch_data import (
 )
 
 data_home = get_data_home()
-data_in_path = data_home / "data_in.csv"
+data_in_path = data_home / "data_in2.csv"
 
 if data_in_path.exists():
     logger.info(f"Loading primary dataset: {data_in_path}")
@@ -133,7 +134,7 @@ else:
 Check for data_test.csv (ground truth for forecast period comparison)
 
 ```{python}
-data_test_path = data_home / "data_test.csv"
+data_test_path = data_home / "data_test2.csv"
 if data_test_path.exists():
     logger.info(f"Loading test dataset: {data_test_path}")
     df_test_raw = fetch_data(filename=str(data_test_path))
@@ -183,9 +184,9 @@ import pandas as pd
 from spotforecast2_safe.data import Period
 from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
 
-interim_dir = get_data_home() / "interim"
-interim_dir.mkdir(parents=True, exist_ok=True)
-data_dst = interim_dir / "data_current.csv"
+current_dir = get_data_home() / "current"
+current_dir.mkdir(parents=True, exist_ok=True)
+data_dst = current_dir / "data_current.csv"
 
 
 # Initialize configuration
@@ -208,50 +209,13 @@ config = ConfigMulti(
 
 
 
-
-```{python}
-# from spotforecast2_safe.preprocessing.curate_data import remove_duplicate_timestamps
-
-# def prepare_target(target: str) -> None:
-#     """Write interim/data_current.csv with the chosen target column renamed to 'Actual Load'.
-
-#     Renames the 'DateTime' column to 'Time (UTC)' so that the existing pipeline
-#     (load_timeseries, fit_with_best, package_prediction) works unchanged — they
-#     always read the 'Actual Load' column from energy_load.csv with a 'Time (UTC)'
-#     index.
-
-#     Duplicate timestamps (if any) are resolved by averaging so that the resulting
-#     index is monotone-unique, which is required by load_timeseries() -> df.asfreq("h").
-#     """
-#     interim_dir = get_data_home() / "interim"
-#     interim_dir.mkdir(parents=True, exist_ok=True)
-#     data_dst = interim_dir / "data_current.csv"
-
-#     df = demo_data[["DateTime", target]].copy()
-#     df = df.rename(columns={"DateTime": "Time (UTC)", target: "Actual Load"})
-#     # Resolve duplicate timestamps by averaging
-#     df = remove_duplicate_timestamps(df=df, time_col="Time (UTC)", agg="mean")
-#     df.to_csv(data_dst, index=False)
-#     logger.info(f"Target '{target}' prepared at: {data_dst}")
-
-
-# # Prepare the first target from TARGET by default (for the head/tail display below)
-# prepare_target(TARGETS[0])
-# logger.info(
-#     f"Data source: {DATA_SOURCE} | shape={demo_data.shape} | "
-#     f"range={START_DOWNLOAD} to {END_DOWNLOAD} | END_TRAIN_DEFAULT={END_TRAIN_DEFAULT}"
-# )
-```
-
-The active dataset covers the period from `START_DOWNLOAD` to `END_DOWNLOAD` at hourly resolution. `END_TRAIN_DEFAULT` is set to the last entry in the loaded dataset and automatically tracks updates to `data_in.csv`.
-
 **Data Dimensions and Schema:**
 
 The raw dataset is a time-series dataframe with the following properties:
 
 *   Shape: `(N_rows, 12)`, where rows correspond to hourly timestamps.
 *   Columns:
-    *   `DateTime` (Index): `datetime64[ns]`. The primary time index (written as `Time (UTC)` to the interim CSV for pipeline compatibility).
+    *   `DateTime` (Index): `datetime64[ns]`. The primary time index (written as `Time (UTC)` to the current CSV for pipeline compatibility).
     *   `A`: `float64`. Target series A.
     *   `B`: `float64`. Target series B.
     *   `C`: `float64`. Target series C.
@@ -639,7 +603,7 @@ The `n_hyperparameters_trials` argument controls the model selection process. Th
 | `api_country_code` | `str` | ISO 3166-1 alpha-2 code (e.g., 'DE', 'FR'). | "DE"|
 | `random_state` | `int` | Seed for reproducibility. | `42` |
 | `n_hyperparameters_trials` | `int` | Number of trials for random search hyperparameter optimization. | `100` |
-| `data_filename` | `str` | Path to the interim merged data file. | `"data_current.csv"` |
+| `data_filename` | `str` | Path to the current merged data file. | `"data_current.csv"` |
 
 : Configuration for Data Acquisition. General parameters. {#tbl-config-entsoe-param}
 
@@ -650,7 +614,7 @@ Based on the settings shown the last code snippet and in @tbl-config-entsoe-para
 * `api_country_code`: "DE", which means that the data will be downloaded from the ENTSO-E Transparency Platform for Germany.
 * `random_state`: 42. Reproducibility: The `random_state` is locked for all stochastic processes.
 * `n_hyperparameters_trials`: 50. If training is triggered, perform hyperparameter tuning using `n_hyperparameters_trials`.
-* `data_filename`: 'interim/data_current.csv'
+* `data_filename`: 'current/data_current.csv'
 
 
 ### API Reference: Configuration (Time-Related Parameters)
