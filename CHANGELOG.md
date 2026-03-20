@@ -1,3 +1,9 @@
+## [0.11.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.0...v0.11.1) (2026-03-20)
+
+### Bug Fixes
+
+* improved2 workflow ([eb00005](https://github.com/sequential-parameter-optimization/spotforecast2/commit/eb0000526ca886bb74dc1fc20d2a614b1ca57a73))
+
 ## [0.11.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.0...v0.11.1-rc.1) (2026-03-20)
 
 ### Bug Fixes
