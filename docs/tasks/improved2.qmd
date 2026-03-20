@@ -120,42 +120,36 @@ if data_in_path.exists():
     df_raw = fetch_data(filename=str(data_in_path))
     # Build the column→label mapping dynamically from CSV headers (order-based).
     # Column names are NOT hard-coded; they are read from the file at runtime.
-    raw_cols = list(df_raw.columns)
-    DATA_IN_COL_MAP = {
-        col: string.ascii_uppercase[i]
-        for i, col in enumerate(raw_cols)
-        if i < 26
-    }
-    df_raw = df_raw.rename(columns=DATA_IN_COL_MAP)
     # Reset index so DateTime becomes a regular column (matches demo02 layout)
     df_raw.index.name = "DateTime"
     demo_data = df_raw.reset_index()
     DATA_SOURCE = "data_in.csv"
-    logger.info(
-        f"Mapped {len(DATA_IN_COL_MAP)} columns to labels: "
-        f"{list(DATA_IN_COL_MAP.values())}"
-    )
 else:
     DATA_IN_COL_MAP = {}
     logger.info("data_in.csv not found — falling back to bundled demo02.csv")
     csv_src = get_package_data_home() / "demo02.csv"
     demo_data = pd.read_csv(csv_src, parse_dates=["DateTime"])
     DATA_SOURCE = "demo02.csv"
+```
 
-# Check for data_test.csv (ground truth for forecast period comparison)
+Check for data_test.csv (ground truth for forecast period comparison)
+
+```{python}
 data_test_path = data_home / "data_test.csv"
 if data_test_path.exists():
     logger.info(f"Loading test dataset: {data_test_path}")
     df_test_raw = fetch_data(filename=str(data_test_path))
-    df_test_raw = df_test_raw.rename(columns=DATA_IN_COL_MAP)
     df_test_raw.index.name = "DateTime"
     df_test = df_test_raw.reset_index()
     logger.info(f"Test dataset loaded: shape={df_test.shape}")
 else:
     logger.info("data_test.csv not found — no test comparison available.")
     df_test = None
+```
 
-# --- Dynamically derive download range and training cut-off ---
+Dynamically derive download range and training cut-off
+
+```{python}
 first_ts = pd.Timestamp(demo_data["DateTime"].iloc[0])
 last_ts = pd.Timestamp(demo_data["DateTime"].iloc[-1])
 if first_ts.tzinfo is None:
@@ -173,7 +167,10 @@ END_TRAIN_DEFAULT = last_ts.isoformat()
 ALL_TARGETS = [c for c in demo_data.columns if c != "DateTime"]
 # Limit to first 2 targets for demonstration; set TARGETS = ALL_TARGETS for a full run.
 TARGETS = ALL_TARGETS[:2]
+```
 
+
+```{python}
 from spotforecast2_safe.preprocessing.curate_data import remove_duplicate_timestamps
 
 def prepare_target(target: str) -> None:
@@ -199,8 +196,8 @@ def prepare_target(target: str) -> None:
     logger.info(f"Target '{target}' prepared at: {data_dst}")
 
 
-# Prepare target A by default (for the head/tail display below)
-prepare_target("A")
+# Prepare the first target from TARGET by default (for the head/tail display below)
+prepare_target(TARGETS[0])
 logger.info(
     f"Data source: {DATA_SOURCE} | shape={demo_data.shape} | "
     f"range={START_DOWNLOAD} to {END_DOWNLOAD} | END_TRAIN_DEFAULT={END_TRAIN_DEFAULT}"
@@ -247,6 +244,348 @@ Display the tail of the raw data:
 demo_data.tail()
 ```
 
+
+## Data Processing Pipeline {#sec-data-processing-pipeline}
+
+The following sections implement a configurable data processing pipeline inspired by the `n2n_predict_with_covariates` module from `spotforecast2-safe`. Each step can be enabled or disabled via flags, allowing the user to choose between the original `improved2` approach and the extended pipeline with exogenous covariates.
+
+### Pipeline Configuration Flags
+
+```{python}
+#| label: pipeline-flags
+#| echo: true
+
+# --- Pipeline control flags ---
+# Outlier detection: True = IsolationForest-based outlier removal, False = no outlier removal
+USE_OUTLIER_DETECTION = True
+CONTAMINATION = 0.01  # proportion of outliers for IsolationForest
+
+# Imputation method: "weighted" = get_missing_weights (n2n style), "linear" = LinearlyInterpolateTS
+IMPUTATION_METHOD = "weighted"  # "weighted" | "linear"
+WINDOW_SIZE = 72  # rolling window for gap detection (weighted imputation)
+
+# Exogenous features: True = build weather/calendar/day-night/holiday features
+USE_EXOGENOUS_FEATURES = True
+LATITUDE = 51.5136   # Dortmund
+LONGITUDE = 7.4653
+TIMEZONE = "UTC"
+COUNTRY_CODE = "DE"
+STATE = "NW"
+
+# Feature selection toggles
+INCLUDE_WEATHER_WINDOWS = False
+INCLUDE_HOLIDAY_FEATURES = False
+INCLUDE_POLY_FEATURES = False
+```
+
+### Step 1 — Data Preparation {#sec-step1-data-prep}
+
+After loading the raw CSV, we aggregate/resample to hourly frequency (which also resolves any duplicate timestamps) and then validate the resulting index with `basic_ts_checks()`. The `get_start_end()` function derives the data and covariate date ranges required for exogenous feature engineering.
+
+```{python}
+#| label: step1-data-preparation
+#| echo: true
+
+from spotforecast2_safe.preprocessing.curate_data import (
+    basic_ts_checks,
+    agg_and_resample_data,
+    get_start_end,
+)
+
+# Build an indexed DataFrame from the raw demo_data for pipeline processing.
+# The pipeline operates on a DatetimeIndex-based DataFrame with target columns only.
+df_pipeline = demo_data.copy()
+df_pipeline["DateTime"] = pd.to_datetime(df_pipeline["DateTime"])
+df_pipeline = df_pipeline.set_index("DateTime")
+if df_pipeline.index.tzinfo is None:
+    df_pipeline.index = df_pipeline.index.tz_localize("UTC")
+
+target_columns = [c for c in df_pipeline.columns]
+
+# Resample first to establish a regular hourly grid (handles duplicates and sub-hourly data).
+# Then validate the resulting index with basic_ts_checks.
+df_pipeline = agg_and_resample_data(df_pipeline, verbose=True)
+basic_ts_checks(df_pipeline, verbose=True)
+
+# Derive date ranges for covariates (extends end by PREDICT_SIZE)
+data_start, data_end, cov_start, cov_end = get_start_end(
+    data=df_pipeline,
+    forecast_horizon=PREDICT_SIZE,
+    verbose=True,
+)
+
+logger.info(f"Pipeline data shape after preparation: {df_pipeline.shape}")
+```
+
+
+### Step 2 — Outlier Detection and Removal {#sec-step2-outlier-detection}
+
+Two options are available for outlier handling:
+
+- **Option A (default off)**: No outlier removal — the data is used as-is (original `improved2` behaviour).
+- **Option B (USE_OUTLIER_DETECTION=True)**: IsolationForest-based detection via `mark_outliers()` from `spotforecast2-safe`. Detected outliers are set to `NaN` and subsequently filled by the imputation step.
+
+```{python}
+#| label: step2-outlier-detection
+#| echo: true
+
+from spotforecast2_safe.preprocessing.outlier import mark_outliers
+
+outlier_labels = None
+if USE_OUTLIER_DETECTION:
+    logger.info("Applying IsolationForest outlier detection...")
+    df_pipeline, outlier_labels = mark_outliers(
+        df_pipeline,
+        contamination=CONTAMINATION,
+        random_state=42,
+        verbose=True,
+    )
+    n_outliers = df_pipeline.isnull().sum().sum()
+    logger.info(f"Total NaN cells after outlier removal: {n_outliers}")
+else:
+    logger.info("Outlier detection disabled — using raw data.")
+```
+
+
+### Step 3 — Missing Value Imputation with Weighting {#sec-step3-imputation}
+
+Two imputation strategies are provided:
+
+- **Option A — Linear interpolation** (`IMPUTATION_METHOD="linear"`): Uses `LinearlyInterpolateTS` for simple linear gap filling.  This is the approach used in the original `improved2` workflow.
+- **Option B — Weighted imputation** (`IMPUTATION_METHOD="weighted"`): Uses `get_missing_weights()` which fills gaps via forward/backward fill and produces a `WeightFunction` that down-weights observations near former gaps during model training. This is the approach from `n2n_predict_with_covariates`.
+
+```{python}
+#| label: step3-imputation
+#| echo: true
+
+from spotforecast2_safe.preprocessing import LinearlyInterpolateTS, WeightFunction
+from spotforecast2_safe.preprocessing.imputation import get_missing_weights
+
+weight_func = None  # default: no sample weighting
+
+if IMPUTATION_METHOD == "weighted":
+    logger.info("Applying weighted imputation (n2n style)...")
+    df_pipeline, weights_series = get_missing_weights(
+        df_pipeline, window_size=WINDOW_SIZE, verbose=True,
+    )
+    weight_func = WeightFunction(weights_series)
+    logger.info(f"Weight function created with {len(weights_series)} entries.")
+elif IMPUTATION_METHOD == "linear":
+    logger.info("Applying linear interpolation (improved2 style)...")
+    interpolator = LinearlyInterpolateTS()
+    # LinearlyInterpolateTS expects a Series; apply per column
+    for col in target_columns:
+        series = df_pipeline[col]
+        df_pipeline[col] = interpolator.fit_transform(series)
+else:
+    raise ValueError(f"Unknown IMPUTATION_METHOD: {IMPUTATION_METHOD!r}")
+
+remaining_nans = df_pipeline.isnull().sum().sum()
+logger.info(f"Remaining NaN cells after imputation: {remaining_nans}")
+```
+
+
+### Step 4 — Exogenous Features Engineering {#sec-step4-exog-features}
+
+When `USE_EXOGENOUS_FEATURES=True`, the pipeline creates four categories of exogenous features using helper functions from `n2n_predict_with_covariates`:
+
+1. **Weather features** — temperature, wind, etc. with rolling-window aggregations.
+2. **Calendar features** — month, week, day-of-week, hour.
+3. **Day/night features** — sunrise/sunset hours, daylight duration, is-daylight flag.
+4. **Holiday features** — binary holiday indicators for the configured country/state.
+
+```{python}
+#| label: step4-exogenous-features
+#| echo: true
+
+exogenous_features = None
+weather_aligned = None
+
+if USE_EXOGENOUS_FEATURES:
+    from spotforecast2_safe.processing.n2n_predict_with_covariates import (
+        _get_weather_features,
+        _get_calendar_features,
+        _get_day_night_features,
+        _get_holiday_features,
+    )
+    from astral import LocationInfo
+
+    logger.info("Building exogenous features...")
+
+    # 4a. Weather
+    weather_features, weather_aligned = _get_weather_features(
+        data=df_pipeline,
+        start=data_start,
+        cov_end=cov_end,
+        forecast_horizon=PREDICT_SIZE,
+        latitude=LATITUDE,
+        longitude=LONGITUDE,
+        timezone=TIMEZONE,
+        freq="h",
+        verbose=True,
+    )
+    logger.info(f"  Weather features: {weather_features.shape}")
+
+    # 4b. Calendar
+    calendar_features = _get_calendar_features(
+        start=data_start,
+        cov_end=cov_end,
+        freq="h",
+        timezone=TIMEZONE,
+    )
+    logger.info(f"  Calendar features: {calendar_features.shape}")
+
+    # 4c. Day/night
+    location = LocationInfo(
+        latitude=LATITUDE,
+        longitude=LONGITUDE,
+        timezone=TIMEZONE,
+    )
+    sun_light_features = _get_day_night_features(
+        start=data_start,
+        cov_end=cov_end,
+        location=location,
+        freq="h",
+        timezone=TIMEZONE,
+    )
+    logger.info(f"  Day/night features: {sun_light_features.shape}")
+
+    # 4d. Holidays
+    holiday_features = _get_holiday_features(
+        data=df_pipeline,
+        start=data_start,
+        cov_end=cov_end,
+        forecast_horizon=PREDICT_SIZE,
+        tz=TIMEZONE,
+        freq="h",
+        country_code=COUNTRY_CODE,
+        state=STATE,
+    )
+    logger.info(f"  Holiday features: {holiday_features.shape}")
+else:
+    logger.info("Exogenous features disabled — using target-only pipeline.")
+```
+
+
+### Step 5 — Combine Exogenous Features {#sec-step5-combine-exog}
+
+All four feature groups are concatenated into a single DataFrame. Cyclical encoding (sin/cos transforms) is applied to periodic features (hour, day-of-week, month, sunrise/sunset), and optional polynomial interaction features are created.
+
+```{python}
+#| label: step5-combine-exogenous
+#| echo: true
+
+if USE_EXOGENOUS_FEATURES:
+    from spotforecast2_safe.processing.n2n_predict_with_covariates import (
+        _apply_cyclical_encoding,
+        _create_interaction_features,
+    )
+
+    exogenous_features = pd.concat(
+        [calendar_features, sun_light_features, weather_features, holiday_features],
+        axis=1,
+    )
+
+    missing_exog = exogenous_features.isnull().sum().sum()
+    if missing_exog != 0:
+        logger.warning(f"Exogenous features contain {missing_exog} missing values — backfilling.")
+        exogenous_features = exogenous_features.bfill().ffill()
+
+    # Cyclical encoding
+    exogenous_features = _apply_cyclical_encoding(
+        data=exogenous_features,
+        drop_original=False,
+    )
+
+    # Interaction features
+    exogenous_features = _create_interaction_features(
+        exogenous_features=exogenous_features,
+        weather_aligned=weather_aligned,
+    )
+
+    logger.info(f"Combined exogenous features shape: {exogenous_features.shape}")
+```
+
+
+### Step 6 — Select Exogenous Features {#sec-step6-select-exog}
+
+A subset of the combined exogenous features is selected for model training. The selection is controlled by the `INCLUDE_WEATHER_WINDOWS`, `INCLUDE_HOLIDAY_FEATURES`, and `INCLUDE_POLY_FEATURES` flags.
+
+```{python}
+#| label: step6-select-exogenous
+#| echo: true
+
+exog_feature_names = []
+
+if USE_EXOGENOUS_FEATURES:
+    from spotforecast2_safe.processing.n2n_predict_with_covariates import (
+        _select_exogenous_features,
+    )
+
+    exog_feature_names = _select_exogenous_features(
+        exogenous_features=exogenous_features,
+        weather_aligned=weather_aligned,
+        include_weather_windows=INCLUDE_WEATHER_WINDOWS,
+        include_holiday_features=INCLUDE_HOLIDAY_FEATURES,
+        include_poly_features=INCLUDE_POLY_FEATURES,
+    )
+
+    logger.info(f"Selected {len(exog_feature_names)} exogenous features for training.")
+```
+
+
+### Step 7 — Merge Data and Covariates {#sec-step7-merge}
+
+The target data is merged with the selected exogenous features. A separate `exo_pred` DataFrame is built for the forecast horizon so that covariates are available during prediction.
+
+```{python}
+#| label: step7-merge-data-covariates
+#| echo: true
+
+data_with_exog = None
+exo_pred = None
+
+if USE_EXOGENOUS_FEATURES and len(exog_feature_names) > 0:
+    from spotforecast2_safe.processing.n2n_predict_with_covariates import (
+        _merge_data_and_covariates,
+    )
+
+    data_with_exog, exo_tmp, exo_pred = _merge_data_and_covariates(
+        data=df_pipeline,
+        exogenous_features=exogenous_features,
+        target_columns=target_columns,
+        exog_features=exog_feature_names,
+        start=data_start,
+        end=data_end,
+        cov_end=cov_end,
+        forecast_horizon=PREDICT_SIZE,
+        cast_dtype="float32",
+    )
+
+    logger.info(f"Merged data shape: {data_with_exog.shape}")
+    logger.info(f"Exogenous prediction covariates shape: {exo_pred.shape}")
+else:
+    logger.info("No exogenous features to merge — target-only pipeline.")
+```
+
+### Pipeline Summary
+
+```{python}
+#| label: pipeline-summary
+#| echo: true
+
+logger.info("=" * 60)
+logger.info("DATA PROCESSING PIPELINE SUMMARY")
+logger.info("=" * 60)
+logger.info(f"  Outlier detection:   {'ON (IsolationForest, contamination=' + str(CONTAMINATION) + ')' if USE_OUTLIER_DETECTION else 'OFF'}")
+logger.info(f"  Imputation method:   {IMPUTATION_METHOD}")
+logger.info(f"  Exogenous features:  {'ON (' + str(len(exog_feature_names)) + ' features selected)' if USE_EXOGENOUS_FEATURES else 'OFF'}")
+logger.info(f"  Weight function:     {'YES' if weight_func is not None else 'NO'}")
+if data_with_exog is not None:
+    logger.info(f"  Merged data shape:   {data_with_exog.shape}")
+    logger.info(f"  Prediction exog:     {exo_pred.shape}")
+logger.info("=" * 60)
+```
 
 
 ## Configuration & Model Selection
@@ -610,8 +949,8 @@ With the current configuration (`predict_size=24`, `refit_size=1`), the full hor
 #| cache: false
 #| fig-cap: "Prediction for Target A"
 
-prepare_target("A")
-out_A = get_prediction(model_name="lgbm_A", target="A")
+prepare_target(TARGETS[0])
+out_A = get_prediction(model_name="lgbm_A", target=TARGETS[0])
 if out_A:
     fig_A = PredictionFigure(out_A, title="Prediction for Target 'A'").make_plot()
     fig_A.show()
@@ -623,8 +962,8 @@ if out_A:
 #| cache: false
 #| fig-cap: "Prediction for Target B"
 
-prepare_target("B")
-out_B = get_prediction(model_name="lgbm_B", target="B")
+prepare_target(TARGETS[0])
+out_B = get_prediction(model_name="lgbm_B", target=TARGETS[0])
 if out_B:
     fig_B = PredictionFigure(out_B, title="Prediction for Target 'B'").make_plot()
     fig_B.show()
@@ -903,15 +1242,176 @@ for target in TARGETS:
         fig_app4.show()
 ```
 
+### Approach 5: N2N Pipeline with Exogenous Covariates
+
+This approach leverages the full data processing pipeline from `n2n_predict_with_covariates` (Steps 1–7 above). It uses the pipeline-processed data (`data_with_exog`), including outlier-cleaned and imputed targets with exogenous covariates (weather, calendar, day/night, holidays). A `ForecasterRecursive` is trained per target with optional sample weighting from the imputation step.
+
+This approach is only available when `USE_EXOGENOUS_FEATURES=True` in the pipeline configuration.
+
+#### Step 8 — Train/Validation/Test Split (Approach 5)
+
+The split uses `TRAIN_SIZE` and `DELTA_VAL` from the `improved2` configuration to define absolute cutoffs, consistent with the other approaches. The exogenous features are carried through the split.
+
+```{python}
+#| label: approach-5-split
+#| echo: true
+#| cache: false
+
+if USE_EXOGENOUS_FEATURES and data_with_exog is not None:
+    from spotforecast2_safe.preprocessing.split import split_abs_train_val_test
+
+    # Compute split timestamps from config (same logic as improved2)
+    end_train_ts = pd.to_datetime(config.end_train_default, utc=True)
+    start_train_ts = end_train_ts - config.train_size
+    end_val_ts = end_train_ts - pd.Timedelta(hours=config.predict_size * config.refit_size)
+
+    # Clip to available data range
+    avail_start = data_with_exog.index.min()
+    avail_end = data_with_exog.index.max()
+    start_train_ts = max(start_train_ts, avail_start)
+
+    data_train_5, data_val_5, data_test_5 = split_abs_train_val_test(
+        data_with_exog,
+        end_train=end_val_ts,
+        end_validation=end_train_ts,
+        verbose=True,
+    )
+
+    logger.info(f"[Approach 5] Train: {data_train_5.shape}, Val: {data_val_5.shape}, Test: {data_test_5.shape}")
+else:
+    logger.info("Approach 5 skipped — exogenous features not enabled.")
+```
+
+#### Step 9 — Model Training with Exogenous Covariates (Approach 5)
+
+Each target gets its own `ForecasterRecursive` trained with exogenous features and optional sample weighting. Models are persisted via `_save_forecasters`.
+
+```{python}
+#| label: approach-5-training
+#| echo: true
+#| cache: false
+
+if USE_EXOGENOUS_FEATURES and data_with_exog is not None:
+    from lightgbm import LGBMRegressor
+    from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+    from spotforecast2_safe.preprocessing import RollingFeatures as RollingFeaturesN2N
+    from spotforecast2_safe.manager.persistence import _save_forecasters
+
+    estimator_n2n = LGBMRegressor(random_state=config.random_state, verbose=-1)
+    window_features_n2n = RollingFeaturesN2N(stats=["mean"], window_sizes=WINDOW_SIZE)
+
+    # Combine train + val for fitting (val is used for internal early stopping)
+    end_validation_5 = pd.concat([data_train_5, data_val_5]).index[-1]
+
+    recursive_forecasters_5 = {}
+
+    for target in TARGETS:
+        logger.info(f"[Approach 5] Training forecaster for target '{target}'...")
+
+        forecaster = ForecasterRecursive(
+            estimator=estimator_n2n,
+            lags=config.lags_consider[-1],  # use largest lag (24)
+            window_features=window_features_n2n,
+            weight_func=weight_func,  # from Step 3 (None if linear imputation)
+        )
+
+        forecaster.fit(
+            y=data_with_exog[target].loc[:end_validation_5].squeeze(),
+            exog=data_with_exog[exog_feature_names].loc[:end_validation_5],
+        )
+
+        recursive_forecasters_5[target] = forecaster
+        logger.info(f"  Forecaster trained for target '{target}'.")
+
+    # Persist trained models
+    from spotforecast2_safe.data.fetch_data import get_cache_home
+    model_dir_5 = get_cache_home() / "forecasters_n2n"
+    _save_forecasters(
+        forecasters=recursive_forecasters_5,
+        model_dir=model_dir_5,
+        verbose=True,
+    )
+    logger.info(f"[Approach 5] All {len(recursive_forecasters_5)} forecasters trained and saved.")
+```
+
+#### Step 10 — Prediction with Exogenous Covariates (Approach 5)
+
+Predictions use `predict_multivariate` with the exogenous prediction covariates (`exo_pred`) built in Step 7.
+
+```{python}
+#| label: approach-5-prediction
+#| echo: true
+#| cache: false
+#| fig-cap: "Prediction (Approach 5: N2N with Exogenous Covariates)"
+
+if USE_EXOGENOUS_FEATURES and data_with_exog is not None:
+    from spotforecast2_safe.forecaster.utils import predict_multivariate
+
+    exo_pred_subset_5 = exo_pred[exog_feature_names].astype("float32")
+
+    predictions_5 = predict_multivariate(
+        recursive_forecasters_5,
+        steps_ahead=PREDICT_SIZE,
+        exog=exo_pred_subset_5,
+    )
+
+    logger.info(f"[Approach 5] Predictions shape: {predictions_5.shape}")
+    logger.info(f"[Approach 5] Prediction index: {predictions_5.index[0]} to {predictions_5.index[-1]}")
+
+    # Display predictions
+    print(predictions_5)
+
+    # Visualize using PredictionFigure for each target (build a lightweight prediction package)
+    for target in TARGETS:
+        # Build a minimal prediction package compatible with PredictionFigure
+        train_series = data_with_exog[target].loc[:end_validation_5]
+        train_pred = pd.Series(
+            recursive_forecasters_5[target].predict(
+                steps=len(train_series),
+                exog=data_with_exog[exog_feature_names].loc[:end_validation_5],
+            ),
+            index=train_series.index[-len(train_series):],
+        )
+
+        pred_pkg_5 = {
+            "train_actual": train_series,
+            "train_pred": train_pred,
+            "future_actual": pd.Series(dtype="float64"),
+            "future_pred": predictions_5[target],
+            "metrics_train": {},
+            "metrics_future": {},
+            "metrics_future_one_day": {},
+            "validation_passed": True,
+        }
+
+        # Inject test data if available
+        if df_test is not None and target in df_test.columns:
+            ts = df_test.set_index("DateTime")[target]
+            if ts.index.tzinfo is None:
+                ts.index = ts.index.tz_localize("UTC")
+            test_actual = ts.reindex(predictions_5[target].index).dropna()
+            pred_pkg_5["test_actual"] = test_actual
+
+        fig_app5 = PredictionFigure(
+            pred_pkg_5,
+            title=f"Prediction for Target '{target}' (Approach 5: N2N with Covariates)",
+        ).make_plot()
+        fig_app5.show()
+else:
+    logger.info("Approach 5 prediction skipped — exogenous features not enabled.")
+```
+
+
 ### Comparison of Results
 
-A comparison of the four approaches demonstrates the trade-offs between computational overhead and model accuracy, applied independently to all eleven targets (A through K).
+A comparison of the five approaches demonstrates the trade-offs between computational overhead and model accuracy, applied independently to all eleven targets (A through K).
 
 - Approach 1 (Lazy Fitting) and Approach 2 (Explicit Pre-Training) produce identical predictions for each target because they both optimize the underlying tree-based estimators using default parameters.
 - Approach 3 (Optuna Tuned and Trained) explores the hyperparameter space efficiently using Optuna's Tree-structured Parzen Estimator (TPE), typically improving the Mean Absolute Error (MAE) and corresponding Mean Absolute Percentage Error (MAPE) for all targets.
 - Approach 4 (SpotOptim Tuned and Trained) leverages the `spotoptim` surrogate model. It provides an alternative to Optuna that can be particularly effective with small trial budgets.
+- Approach 5 (N2N with Exogenous Covariates) uses the full data processing pipeline from `n2n_predict_with_covariates`, including IsolationForest outlier detection, weighted imputation with sample weighting, and exogenous covariates (weather, calendar, day/night, holidays). This approach provides the richest feature set but requires external data sources (weather API, holiday calendars).
 
-The visualizations for each tuning approach (Approaches 3 and 4) demonstrate that the tuned models provide a more nuanced fit to the patterns in each of the eleven target series compared to Approaches 1 and 2.
+The visualizations for each tuning approach (Approaches 3, 4, and 5) demonstrate that the tuned and enriched models provide a more nuanced fit to the patterns in each of the eleven target series compared to Approaches 1 and 2.
 
 
 ```{python}
