@@ -17,7 +17,7 @@ abstract: |
 
 # spotforecast2 multi-target demo {#sec-code-spotforecast2-multitarget}
 
-This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on an eleven-target dataset. The primary data source is `data_in.csv` (located in `~/spotforecast2_data/`), containing eleven independent measurement columns mapped to labels `A` through `K`. If `data_in.csv` is absent, the pipeline falls back to the bundled `demo02.csv`. A separate LGBM model is trained per target. `END_TRAIN_DEFAULT` is always the last timestamp in the loaded data; the model then forecasts the next 24 hours beyond that point.
+This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on an eleven-target dataset. The primary data source is `data_in.csv` (located in `~/spotforecast2_data/`), containing eleven independent measurement columns. If `data_in.csv` is absent, the pipeline falls back to the bundled `demo02.csv`. A separate LGBM model is trained per target. `END_TRAIN_DEFAULT` is always the last timestamp in the loaded data; the model then forecasts the next 24 hours beyond that point.
 
 The workflow executes in the following phases:
 
@@ -34,25 +34,6 @@ import pprint
 import pandas as pd
 ```
 
-## Data Ranges
-
-`START_DOWNLOAD`, `END_DOWNLOAD`, and `END_TRAIN_DEFAULT` are set
- dynamically in the Data Acquisition section after the dataset is loaded.
-`END_TRAIN_DEFAULT` is always set to the last timestamp in the loaded dataset, ensuring that the training window always covers the most recent year of data.
-`TRAIN_SIZE` is the time-span relative to `END_TRAIN_DEFAULT` that defines the training window.
-`DELTA_VAL` is the size of the validation set in days used for model selection,
-and `PREDICT_SIZE` is the forecasting horizon in hours. Both are defined as constants here for clarity and easy modification.
-`PREDICT_SIZE` is the genuine future forecast.
-
-```{python}
-#| label: define-constants
-NUMBER_FOLDS=10
-TRAIN_SIZE = pd.Timedelta(days=365*1)
-DELTA_VAL = pd.Timedelta(days=7*NUMBER_FOLDS)
-PREDICT_SIZE = 24
-```
-
-
 ## Logger
 
 ```{python}
@@ -68,13 +49,30 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 ```
 
-## Data Acquisition
 
-Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo02.csv` included in the `spotforecast2-safe` package. Both datasets contain **eleven independent target columns** named **A** through **K** (column names are mapped from the instrument codes in `data_in.csv`). There is no forecasted load column.
 
-The download-range constants (`START_DOWNLOAD`, `END_DOWNLOAD`) and the training cut-off (`END_TRAIN_DEFAULT`) are derived **dynamically** from the loaded dataset, so they automatically update whenever `data_in.csv` is refreshed.
+## Data Ranges and Acquisition
 
-A helper function `prepare_target()` writes one target column at a time to the standard interim location (`interim/energy_load.csv`), renaming the `DateTime` index to `Time (UTC)` and the target column to `Actual Load` so that all downstream pipeline components (`load_timeseries()`, `config.data_filename`) work without modification, see @tbl-data-acquisition.
+The download-range constants (`START_DOWNLOAD`, `END_DOWNLOAD`) and the training cut-off (`END_TRAIN_DEFAULT`) are derived dynamically from the loaded dataset, so they automatically update whenever `data_in.csv` is refreshed.
+`END_TRAIN_DEFAULT` is always set to the last timestamp in the loaded dataset, ensuring that the training window always covers the most recent year of data.
+
+`TRAIN_SIZE` is the time-span relative to `END_TRAIN_DEFAULT` that defines the training window.
+`DELTA_VAL` is the size of the validation set in days used for model selection,
+and `PREDICT_SIZE` is the forecasting horizon in hours. Both are defined as constants here for clarity and easy modification.
+
+
+```{python}
+#| label: define-constants
+NUMBER_FOLDS=10
+TRAIN_SIZE = pd.Timedelta(days=365*1)
+DELTA_VAL = pd.Timedelta(days=7*NUMBER_FOLDS)
+PREDICT_SIZE = 24
+```
+
+
+Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo02.csv` included in the `spotforecast2-safe` package. Both datasets contain eleven independent target columns.
+
+A helper function `prepare_target()` writes one target column at a time to the standard interim location (`interim/data_current.csv`), renaming the `DateTime` index to `Time (UTC)` and the target column to `Actual Load` so that all downstream pipeline components (`load_timeseries()`, `config.data_filename`) work without modification, see @tbl-data-acquisition.
 
 ### API Reference for Data Acquisition
 
@@ -83,7 +81,7 @@ A helper function `prepare_target()` writes one target column at a time to the s
 | `fetch_data` | Function | `filename` (str or Path) | Loads a CSV file from the user data directory, parses the datetime index, and returns a UTC-aware DataFrame. |
 | `get_package_data_home` | Function | — | Returns the path to the internal package datasets directory (contains `demo02.csv`). |
 | `get_data_home` | Function | `data_home` (str, optional) | Returns the path to the user data directory (default: `~/spotforecast2_data`). Creates it if absent. |
-| `prepare_target` | Function | `target` (str) | Writes the chosen target column (label detected dynamically from CSV headers) as `Actual Load` to `interim/energy_load.csv`, renaming `DateTime` to `Time (UTC)`. |
+| `prepare_target` | Function | `target` (str) | Writes the chosen target column (label detected dynamically from CSV headers) as `Actual Load` to `interim/data_current.csv`, renaming `DateTime` to `Time (UTC)`. |
 : Data acquisition {#tbl-data-acquisition}
 
 ### Column Mapping for `data_in.csv`
@@ -170,38 +168,79 @@ TARGETS = ALL_TARGETS[:2]
 ```
 
 
+
+## Configuration & Model Selection
+
+Deterministic configuration is enforced via the `ConfigMulti` class. This ensures that all components of the pipeline (training, prediction, feature engineering) share a single source of truth, see @tbl-config-entsoe-param and @tbl-config-entsoe-time.
+
+
+### Implementation of the Configuration
+
 ```{python}
-from spotforecast2_safe.preprocessing.curate_data import remove_duplicate_timestamps
+#| label: code-notebook-entsoe
+#| echo: true
+import pandas as pd
+from spotforecast2_safe.data import Period
+from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
 
-def prepare_target(target: str) -> None:
-    """Write interim/energy_load.csv with the chosen target column renamed to 'Actual Load'.
-
-    Renames the 'DateTime' column to 'Time (UTC)' so that the existing pipeline
-    (load_timeseries, fit_with_best, package_prediction) works unchanged — they
-    always read the 'Actual Load' column from energy_load.csv with a 'Time (UTC)'
-    index.
-
-    Duplicate timestamps (if any) are resolved by averaging so that the resulting
-    index is monotone-unique, which is required by load_timeseries() -> df.asfreq("h").
-    """
-    interim_dir = get_data_home() / "interim"
-    interim_dir.mkdir(parents=True, exist_ok=True)
-    data_dst = interim_dir / "energy_load.csv"
-
-    df = demo_data[["DateTime", target]].copy()
-    df = df.rename(columns={"DateTime": "Time (UTC)", target: "Actual Load"})
-    # Resolve duplicate timestamps by averaging
-    df = remove_duplicate_timestamps(df=df, time_col="Time (UTC)", agg="mean")
-    df.to_csv(data_dst, index=False)
-    logger.info(f"Target '{target}' prepared at: {data_dst}")
+interim_dir = get_data_home() / "interim"
+interim_dir.mkdir(parents=True, exist_ok=True)
+data_dst = interim_dir / "data_current.csv"
 
 
-# Prepare the first target from TARGET by default (for the head/tail display below)
-prepare_target(TARGETS[0])
-logger.info(
-    f"Data source: {DATA_SOURCE} | shape={demo_data.shape} | "
-    f"range={START_DOWNLOAD} to {END_DOWNLOAD} | END_TRAIN_DEFAULT={END_TRAIN_DEFAULT}"
+# Initialize configuration
+config = ConfigMulti(
+    api_country_code="DE",
+    periods=[
+        Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))
+    ],
+    lags_consider=[1, 2, 24],
+    train_size=TRAIN_SIZE,
+    end_train_default=END_TRAIN_DEFAULT,
+    delta_val=DELTA_VAL,
+    predict_size=PREDICT_SIZE,
+    refit_size=1,
+    random_state=42,
+    n_hyperparameters_trials=50,
+    data_filename=data_dst
 )
+```
+
+
+
+
+```{python}
+# from spotforecast2_safe.preprocessing.curate_data import remove_duplicate_timestamps
+
+# def prepare_target(target: str) -> None:
+#     """Write interim/data_current.csv with the chosen target column renamed to 'Actual Load'.
+
+#     Renames the 'DateTime' column to 'Time (UTC)' so that the existing pipeline
+#     (load_timeseries, fit_with_best, package_prediction) works unchanged — they
+#     always read the 'Actual Load' column from energy_load.csv with a 'Time (UTC)'
+#     index.
+
+#     Duplicate timestamps (if any) are resolved by averaging so that the resulting
+#     index is monotone-unique, which is required by load_timeseries() -> df.asfreq("h").
+#     """
+#     interim_dir = get_data_home() / "interim"
+#     interim_dir.mkdir(parents=True, exist_ok=True)
+#     data_dst = interim_dir / "data_current.csv"
+
+#     df = demo_data[["DateTime", target]].copy()
+#     df = df.rename(columns={"DateTime": "Time (UTC)", target: "Actual Load"})
+#     # Resolve duplicate timestamps by averaging
+#     df = remove_duplicate_timestamps(df=df, time_col="Time (UTC)", agg="mean")
+#     df.to_csv(data_dst, index=False)
+#     logger.info(f"Target '{target}' prepared at: {data_dst}")
+
+
+# # Prepare the first target from TARGET by default (for the head/tail display below)
+# prepare_target(TARGETS[0])
+# logger.info(
+#     f"Data source: {DATA_SOURCE} | shape={demo_data.shape} | "
+#     f"range={START_DOWNLOAD} to {END_DOWNLOAD} | END_TRAIN_DEFAULT={END_TRAIN_DEFAULT}"
+# )
 ```
 
 The active dataset covers the period from `START_DOWNLOAD` to `END_DOWNLOAD` at hourly resolution. `END_TRAIN_DEFAULT` is set to the last entry in the loaded dataset and automatically tracks updates to `data_in.csv`.
@@ -227,6 +266,7 @@ The raw dataset is a time-series dataframe with the following properties:
 *   Range: Determined dynamically from the loaded dataset (`START_DOWNLOAD` to `END_DOWNLOAD`). For `data_in.csv` this starts at `2024-12-31`; for the fallback `demo02.csv` it starts at `1964-08-02`.
 
 ### Example
+
 The head of the loaded data looks as follows:
 
 ```{python}
@@ -588,39 +628,6 @@ logger.info("=" * 60)
 ```
 
 
-## Configuration & Model Selection
-
-Deterministic configuration is enforced via the `ConfigMulti` class. This ensures that all components of the pipeline (training, prediction, feature engineering) share a single source of truth, see @tbl-config-entsoe-param and @tbl-config-entsoe-time.
-
-
-### Implementation of the Configuration
-
-```{python}
-#| label: code-notebook-entsoe
-#| echo: true
-import pandas as pd
-from spotforecast2_safe.data import Period
-from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
-
-
-# Initialize configuration
-config = ConfigMulti(
-    api_country_code="DE",
-    periods=[
-        Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))
-    ],
-    lags_consider=[1, 2, 24],
-    train_size=TRAIN_SIZE,
-    end_train_default=END_TRAIN_DEFAULT,
-    delta_val=DELTA_VAL,
-    predict_size=PREDICT_SIZE,
-    refit_size=1,
-    random_state=42,
-    n_hyperparameters_trials=50,
-    data_filename='interim/energy_load.csv'
-)
-```
-
 
 ### Hyperparameter Tuning (Model Selection)
 The `n_hyperparameters_trials` argument controls the model selection process. The system performs a randomized search over the hyperparameter space (defined in the library's internal search spaces for LGBM) to optimize validation metrics (CRPS/MAE) on the `delta_val` set.
@@ -632,7 +639,7 @@ The `n_hyperparameters_trials` argument controls the model selection process. Th
 | `api_country_code` | `str` | ISO 3166-1 alpha-2 code (e.g., 'DE', 'FR'). | "DE"|
 | `random_state` | `int` | Seed for reproducibility. | `42` |
 | `n_hyperparameters_trials` | `int` | Number of trials for random search hyperparameter optimization. | `100` |
-| `data_filename` | `str` | Path to the interim merged data file. | `"energy_load.csv"` |
+| `data_filename` | `str` | Path to the interim merged data file. | `"data_current.csv"` |
 
 : Configuration for Data Acquisition. General parameters. {#tbl-config-entsoe-param}
 
@@ -643,7 +650,7 @@ Based on the settings shown the last code snippet and in @tbl-config-entsoe-para
 * `api_country_code`: "DE", which means that the data will be downloaded from the ENTSO-E Transparency Platform for Germany.
 * `random_state`: 42. Reproducibility: The `random_state` is locked for all stochastic processes.
 * `n_hyperparameters_trials`: 50. If training is triggered, perform hyperparameter tuning using `n_hyperparameters_trials`.
-* `data_filename`: 'interim/energy_load.csv'
+* `data_filename`: 'interim/data_current.csv'
 
 
 ### API Reference: Configuration (Time-Related Parameters)
