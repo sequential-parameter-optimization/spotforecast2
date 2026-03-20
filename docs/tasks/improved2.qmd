@@ -674,477 +674,335 @@ The default `periods` are deliberately chosen to balance temporal resolution wit
 
 This `config` object is then injected into the instances of the `ForecasterRecursiveModel`, guaranteeing that the trained model perfectly matches the intended experimental design. For the eleven-target dataset, the same configuration is used for all targets A through K.
 
-## Model Orchestration & Training
+## Unified Model Training & Prediction Pipeline {#sec-unified-pipeline}
 
-To ensure safety-critical consistency, we define wrapper classes that inject the configuration directly into the model instances. The training process effectively manages the model lifecycle.
-The `handle_training` function saves the best-performing model to the artifact store.
+All four training approaches share the **same data processing pipeline** defined in @sec-data-processing-pipeline (outlier detection, imputation, exogenous features). The only difference between approaches is the **hyperparameter selection strategy**:
 
-### API Reference of the Model Orchestration & Training
+1. **Approach 1 — Lazy Fitting**: Default hyperparameters, fit occurs at prediction time.
+2. **Approach 2 — Explicit Pre-Training**: Default hyperparameters, explicit fit before prediction.
+3. **Approach 3 — Optuna Tuned**: Bayesian hyperparameter search via Optuna, then fit with best params.
+4. **Approach 4 — SpotOptim Tuned**: Surrogate-model-based search via SpotOptim, then fit with best params.
 
-The API Reference of the Model Orchestration & Training is shown in @tbl-model-entsoe.
+When `USE_EXOGENOUS_FEATURES=True`, all approaches receive the same exogenous covariates (weather, calendar, day/night, holidays) and optional sample weighting from the imputation step. When `USE_EXOGENOUS_FEATURES=False`, approaches train on target-only data.
 
-| Component | Type | Arguments | Description |
-| :--- | :--- | :--- | :--- |
-| `handle_training` | Function | `model_class` (Type)<br>`model_name` (str)<br>`force` (bool)<br>`data_filename` (str) | Orchestrates the training/retraining lifecycle. |
-| `ForecasterRecursive` | Class | `estimator`<br>`lags` | Base class for recursive multi-step forecasting. |
+### Shared Training and Prediction Helpers
 
-: Model Orchestration & Training {#tbl-model-entsoe}
-
-### Implementation of the Model Orchestration & Training
-
-Import model classes and verify config injection via `from_config`:
-```{python}
-#| label: code-notebook-entsoe-usage-wrapper
-#| echo: true
-from spotforecast2_safe.manager.models.forecaster_recursive_lgbm import ForecasterRecursiveLGBM
-```
-
-Every model class inherits `from_config(iteration, config, **overrides)` from `ForecasterRecursiveModel`. This classmethod introspects the full `__init__` chain (including parent classes), extracts matching config attributes, and translates the two known name mismatches (`API_COUNTRY_CODE` → `country_code`, `end_train_default` → `end_dev`). Caller-supplied overrides always take precedence.
-
-Benefits:
-
-1.  Configuration Integrity: The model cannot be initialized with ad-hoc parameters that conflict with the experimental design (e.g., matching `predict_size` and `refit_size`).
-2.  Simplified Orchestration: No boilerplate wrapper classes or parameter maps needed — `from_config` lives on the model itself.
-3.  Extensibility: New config parameters that match an `__init__` kwarg are picked up automatically.
-
-The LGBM model:
+The following helper functions are used by all four approaches. They operate directly on the pipeline-processed data (`df_pipeline`, `data_with_exog`, `exo_pred`) rather than loading data from CSV, ensuring that outlier removal, imputation, and exogenous feature engineering are applied consistently.
 
 ```{python}
-#| label: get_params_lgbm
-#| echo: true
-model_lgbm = ForecasterRecursiveLGBM.from_config(iteration=1, config=config)
-pprint.pprint(model_lgbm.get_params())
-```
-
-
-Define Training Orchestrator:
-
-```{python}
-#| label: code-notebook-entsoe-training-orchestrator
+#| label: unified-helpers
 #| echo: true
 
-from spotforecast2.manager.trainer_full import handle_training
-
-def entsoe_train(model="lgbm", force=False):
-    """Train a model for each target (A through K) in TARGETS."""
-    model_map = {"lgbm": ForecasterRecursiveLGBM}
-
-    if model not in model_map:
-        logger.error(f"Unknown model: {model}")
-        return
-
-    for target in TARGETS:
-        prepare_target(target)
-        model_name = f"{model}_{target}"
-        logger.info(f"Initiating training pipeline for {model_name} (target={target})...")
-        handle_training(
-            model_class=model_map[model],
-            model_name=model_name,
-            force=force,
-            data_filename=config.data_filename,
-            # Config values forwarded to model_class() via **kwargs
-            end_dev=config.end_train_default,
-            train_size=config.train_size,
-            periods=config.periods,
-            country_code=config.API_COUNTRY_CODE,
-            random_state=config.random_state,
-            predict_size=config.predict_size,
-            refit_size=config.refit_size,
-        )
-        logger.info(f"Training pipeline completed for {model_name}.")
-```
-
-### Note on explicit `end_dev` and `train_size` passage
-
-When `end_dev` is `None` (default), `handle_training` calculates the training cutoff as *latest data index minus 1 day*. We explicitly pass `end_dev=config.end_train_default` (= last timestamp in the dataset) so the model is always trained right up to the most recent available observation.
-
-We also pass `train_size=config.train_size` (`TRAIN_SIZE` = 1 year) so that `train_new_model` limits the lookback window to the latest 365 days ending at `end_dev`. This keeps training fast and ensures the model learns from recent patterns, regardless of how far back the raw CSV extends.
-
-Since `END_TRAIN_DEFAULT` equals the last data point, the **24 h prediction horizon begins immediately after the last known observation** — the model produces a genuine out-of-sample forecast for the next 24 hours. No future ground truth is available for comparison, so `future_actual` in the prediction package will be empty and metrics for the future window will not be computed.
-
-Execute Training (for all eleven targets A through K):
-```{python}
-#| label: code-notebook-entsoe-execution
-#| echo: true
-#| cache: false
-entsoe_train(force=True)
-```
-
-
-
-```{python}
-#| label: get_params_lgbm-trained
-#| echo: true
-model_lgbm = ForecasterRecursiveLGBM.from_config(iteration=1, config=config)
-pprint.pprint(model_lgbm.get_params())
-```
-
-
-### Execution & Effects of Model Orchestration & Training
-
-The `entsoe_train` command (via `handle_training`) triggers a robust, state-aware training pipeline for each of the eleven targets with the following effects:
-
-1. Smart Retraining Logic:
-   *   Check: It first checks the artifact store for an existing model of the specified type.
-   *   Validate: If a model exists, it calculates its age. Retraining is triggered only if the model is **> 7 days old** (168 hours) or if `force=True`.
-   *   Increment: If retraining occurs, the iteration counter is incremented (e.g., `iteration 0` -> `iteration 1`).
-2. Data & Ranges:
-   *   Source: For each target, `prepare_target()` writes the corresponding column as `Actual Load` to `energy_load.csv` (with `DateTime` renamed to `Time (UTC)`), then loads data from the file specified in `config.data_filename`.
-   *   Training Window: Uses the most recent `TRAIN_SIZE` (1 year) of data ending at `end_dev` = last timestamp in the dataset. The subsequent 24-hour window is the true future forecast — no actual values are available for comparison.
-3. Artifact Storage:
-   *   Location: Models are serialized and saved to `~/spotforecast2_cache` (or the path in `SPOTFORECAST2_CACHE`).
-   *   Format: Files are named using the convention `{model}_{target}_forecaster_{n_iteration}.joblib` (e.g., `lgbm_A_forecaster_0.joblib`, `lgbm_B_forecaster_0.joblib`, …, `lgbm_K_forecaster_0.joblib`).
-   *   Persistence: These artifacts are persistent and can be loaded by prediction services without retraining.
-4.  Side Effects:
-   *   Logging: Emits INFO/ERROR logs detailing the training progress and any issues.
-   *   File I/O: Writes compressed `.joblib` files to disk.
-
-
-
-
-## Predictive Analytics & Visualization
-
-Predictions are returned as a comprehensive `Prediction Package` containing values, metadata, metrics, and validation status, see @tbl-predict-entsoe. Because `END_TRAIN_DEFAULT` equals the last observed timestamp, the model predicts the next 24 hours beyond the available data.
-No ground-truth future values exist, so `future_actual` will be empty and future-window metrics will not be available. The plot shows the training fit plus the 24 h forecast appended at the right edge.
-
-### API Reference
-
-| Component | Type | Arguments | Description |
-| :--- | :--- | :--- | :--- |
-| `get_model_prediction` | Function | `model_name` (str), `predict_size` (int) | Loads the trained model from the cache and calls `package_prediction(predict_size)`. Handles genuine-future mode automatically when `end_dev` equals the last data timestamp. Returns a prediction-package dict. |
-| `PredictionFigure` | Class | `prediction_package` (dict), `title` (str) | Library class from `spotforecast2.manager.plotter`. Generates an interactive Plotly figure with training fit, future forecast, last-week comparison, optional benchmark, and optional test ground truth. Call `.make_plot()` to obtain the `go.Figure`. |
-
-: Predictive Analytics & Visualization {#tbl-predict-entsoe}
-
-### Implementation of the Predictive Analytics & Visualization
-
-```{python}
-#| label: code-notebook-entsoe-usage-predict
-#| echo: true
-from spotforecast2_safe.manager.predictor import get_model_prediction
+from lightgbm import LGBMRegressor
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2_safe.preprocessing import RollingFeatures as RollingFeaturesUnified
 from spotforecast2.manager.plotter import PredictionFigure
+from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
+from joblib import dump, load as joblib_load
+from spotforecast2_safe.data.fetch_data import get_cache_home
+
+# --- Training window boundaries (shared by all approaches) ---
+end_train_ts = pd.to_datetime(config.end_train_default, utc=True)
+start_train_ts = end_train_ts - config.train_size
+start_train_ts = max(start_train_ts, df_pipeline.index.min())
+
+logger.info(f"Unified training window: {start_train_ts} to {end_train_ts}")
+
+# --- Rolling window features (shared estimator configuration) ---
+WINDOW_FEATURES_UNIFIED = RollingFeaturesUnified(stats=["mean"], window_sizes=WINDOW_SIZE)
 
 
-def get_prediction(model_name: str, target: str, predict_size: int = PREDICT_SIZE):
-    """Call get_model_prediction and inject test_actual from df_test if available.
+def get_target_data(target: str):
+    """Return (y_train, exog_train, exog_future) from the shared pipeline.
 
-    This wrapper ensures that all prediction call sites — including standalone
-    cells for individual targets and the approach loops — display the ground-truth
-    test data when data_test.csv is present, without duplicating injection logic.
-    Returns None when the underlying model call fails.
+    y_train:      target series clipped to the training window.
+    exog_train:   exogenous features for the training window (None if disabled).
+    exog_future:  exogenous features for the prediction horizon (None if disabled).
     """
-    out = get_model_prediction(model_name=model_name, predict_size=predict_size)
-    if out is None:
-        return None
+    y_train = df_pipeline[target].loc[start_train_ts:end_train_ts].squeeze()
+
+    exog_train = None
+    exog_future = None
+    if USE_EXOGENOUS_FEATURES and data_with_exog is not None:
+        exog_train = (
+            data_with_exog[exog_feature_names]
+            .loc[start_train_ts:end_train_ts]
+            .astype("float32")
+        )
+        exog_future = exo_pred[exog_feature_names].astype("float32")
+
+    return y_train, exog_train, exog_future
+
+
+def create_forecaster():
+    """Create a fresh ForecasterRecursive with shared configuration."""
+    return ForecasterRecursive(
+        estimator=LGBMRegressor(random_state=config.random_state, verbose=-1),
+        lags=config.lags_consider[-1],  # largest lag (24)
+        window_features=WINDOW_FEATURES_UNIFIED,
+        weight_func=weight_func,  # from pipeline Step 3 (None if linear imputation)
+    )
+
+
+def build_prediction_package(
+    forecaster,
+    target: str,
+    y_train: pd.Series,
+    exog_train=None,
+    exog_future=None,
+):
+    """Build a prediction package compatible with PredictionFigure.
+
+    Computes true in-sample predictions via the fitted regressor and generates
+    a genuine future forecast of PREDICT_SIZE steps.
+    """
+    # --- In-sample predictions (true fit, not forward predictions) ---
+    X_train_matrix, y_train_internal = forecaster.create_train_X_y(
+        y=y_train, exog=exog_train,
+    )
+    train_pred_values = forecaster.regressor.predict(X_train_matrix)
+    train_pred = pd.Series(train_pred_values, index=y_train_internal.index)
+    y_train_aligned = y_train.loc[train_pred.index]
+
+    metrics_train = {
+        "mae": float(mean_absolute_error(y_train_aligned, train_pred)),
+        "mape": float(mean_absolute_percentage_error(y_train_aligned, train_pred)),
+    }
+
+    # --- Future predictions ---
+    future_pred = forecaster.predict(steps=PREDICT_SIZE, exog=exog_future)
+
+    pred_pkg = {
+        "train_actual": y_train_aligned,
+        "train_pred": train_pred,
+        "future_actual": pd.Series(dtype="float64"),
+        "future_pred": future_pred,
+        "metrics_train": metrics_train,
+        "metrics_future": {},
+        "metrics_future_one_day": {},
+        "validation_passed": True,
+    }
+
+    # Inject test ground truth if available
     if df_test is not None and target in df_test.columns:
         ts = df_test.set_index("DateTime")[target]
         if ts.index.tzinfo is None:
             ts.index = ts.index.tz_localize("UTC")
-        test_actual = ts.reindex(out["future_pred"].index).dropna()
-        out["test_actual"] = test_actual
-        logger.info(f"[{target}] Test data injected: {len(test_actual)} matching points")
-    return out
+        test_actual = ts.reindex(future_pred.index).dropna()
+        pred_pkg["test_actual"] = test_actual
+        if len(test_actual) > 0:
+            pred_pkg["metrics_future"] = {
+                "mae": float(mean_absolute_error(
+                    test_actual, future_pred.loc[test_actual.index]
+                )),
+                "mape": float(mean_absolute_percentage_error(
+                    test_actual, future_pred.loc[test_actual.index]
+                )),
+            }
+
+    return pred_pkg
 
 
-def entsoe_predict(model="lgbm", show=True):
-    """Generate predictions and interactive plots for each target in TARGETS."""
-    results = {}
-    for target in TARGETS:
-        prepare_target(target)
-        model_name = f"{model}_{target}"
-        out = get_prediction(model_name=model_name, target=target, predict_size=PREDICT_SIZE)
-        if out:
-            logger.info(f"[{target}] Prediction package OK.")
-            if show:
-                fig = PredictionFigure(out, title=f"Prediction for Target '{target}'").make_plot()
-                fig.show()
-        else:
-            logger.error(f"[{target}] Prediction failed: No valid output package.")
-        results[target] = out
-    return results
+def save_forecaster(forecaster, approach_name: str, target: str):
+    """Persist a fitted forecaster to the cache directory."""
+    cache_dir = get_cache_home() / "unified_pipeline"
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    path = cache_dir / f"{approach_name}_{target}.joblib"
+    dump(forecaster, path, compress=3)
+    logger.info(f"  Saved: {path}")
+
+
+def train_and_predict_target(
+    target: str,
+    approach_name: str,
+    forecaster,
+    y_train: pd.Series,
+    exog_train=None,
+    exog_future=None,
+    show: bool = True,
+):
+    """Fit, predict, visualize, and save — used by all approaches."""
+    forecaster.fit(y=y_train, exog=exog_train)
+    save_forecaster(forecaster, approach_name, target)
+
+    pred_pkg = build_prediction_package(
+        forecaster, target, y_train, exog_train, exog_future,
+    )
+
+    if show:
+        fig = PredictionFigure(
+            pred_pkg,
+            title=f"Prediction for Target '{target}' ({approach_name})",
+        ).make_plot()
+        fig.show()
+
+    return pred_pkg
 ```
 
 
+### API Reference: Unified Pipeline
 
-```{python}
-#| label: get_params_lgbm-predict
-#| echo: true
-model_lgbm = ForecasterRecursiveLGBM.from_config(iteration=1, config=config)
-pprint.pprint(model_lgbm.get_params())
-```
-
-
-### Execution & Effects
-
-The prediction pipeline (`entsoe_predict` calling `get_model_prediction` and `PredictionFigure`) performs the following actions **for each of the eleven targets**:
-
-#### Model Loading
-
-Retrieves the **latest trained model** (highest iteration) for the given target from `~/spotforecast2_cache` via `get_last_model()`.
-
-#### Prediction Package Generation
-
-`get_model_prediction()` loads the latest trained model from the cache and calls `package_prediction(predict_size)`. When `end_dev` equals the last dataset timestamp (genuine-future mode), `package_prediction()` detects that no held-out test data is available and predicts exactly `predict_size` steps beyond `end_dev` — returning an empty `future_actual` Series and omitting future metrics. The returned dictionary contains the components shown in @tbl-predict-entsoe-package.
-
-| Key | Type | Description |
+| Component | Type | Description |
 | :--- | :--- | :--- |
-| `train_actual` | `pd.Series` | Historical ground truth data used for training (aligned with `train_pred`). |
-| `train_pred` | `pd.Series` | In-sample model predictions on the training set (for goodness-of-fit). |
-| `future_actual` | `pd.Series` | Ground truth data for the immediate past/validation window (if available). |
-| `future_pred` | `pd.Series` | Out-of-sample model predictions for the validation window and future horizon. |
-| `metrics_train` | `Dict[str, float]` | Training performance metrics (MAE, MAPE). |
-| `metrics_future` | `Dict[str, float]` | Test performance metrics over the full prediction horizon. |
-| `metrics_future_one_day` | `Dict[str, float]` | Test performance metrics specifically for the first 24 hours. |
-| `validation_passed` | `bool` | Flag indicating if the model meets safety/quality criteria (e.g., no negative loads). |
+| `get_target_data(target)` | Function | Extracts training series and exogenous features from the shared pipeline for one target. |
+| `create_forecaster()` | Function | Creates a `ForecasterRecursive` with shared config (lags, rolling features, weight function). |
+| `build_prediction_package(...)` | Function | Computes in-sample and future predictions, packages metrics for `PredictionFigure`. |
+| `train_and_predict_target(...)` | Function | Fits, saves, predicts, and visualizes — the single entry point used by all approaches. |
 
-: Prediction Package Components {#tbl-predict-entsoe-package}
-
-**Note**: Neither `data_in.csv` nor `demo02.csv` contains a `Forecasted Load` column, so the keys `future_forecast` and `metrics_forecast` are not present in the prediction package.
+: Unified Pipeline Components {#tbl-unified-pipeline}
 
 
-### Metric Computation Window
+### Approach 1: Lazy Fitting (Default Parameters) {#sec-approach-1}
 
-The prediction package computes metrics over two distinct windows:
-
-- **24h metrics** (`metrics_future_one_day`): Calculated on the first 24 hours only (`future_pred.iloc[:24]`)
-- **Full horizon metrics** (`metrics_future`): Calculated on the entire prediction window (`predict_size * refit_size` hours)
-
-With the current configuration (`predict_size=24`, `refit_size=1`), the full horizon is **24 hours**. `END_TRAIN_DEFAULT` equals the last timestamp in the loaded dataset, so the prediction is a **genuine future forecast** — no actual values exist for the prediction window. The `metrics_future` and `metrics_future_one_day` entries in the package will therefore be unavailable or empty. In-sample training metrics (`metrics_train`) remain available and characterise the model fit on the most recent year of data.
-
-
-
-#### Visualization (`PredictionFigure`)
-
-`PredictionFigure` from `spotforecast2.manager.plotter` generates a Plotly figure with the following structure:
-
-**Plot Structure & X-Axis Range:**
-
-*   **Left Region**: Historical training period showing model fit quality (in-sample predictions, clipped to last 1 day before `end_training` to keep HTML small).
-*   **Right Region**: Future prediction window showing out-of-sample forecasts.
-*   **X-Axis Range**: `[end_training − 1 day, future_pred.max() + 1 h]`. Using `future_pred.max()` (not `y_actual.max()`) ensures the forecast is visible in genuine-future mode where `future_actual` is empty.
-*   **Vertical Marker**: Black dashed line at `end_training` separating the historical fit region from the future forecast region.
-
-**Plot Lines & Legend:**
-
-| Legend Entry | Line Style | Data Source | Purpose | Embedded Metrics |
-| :--- | :--- | :--- | :--- | :--- |
-| **Total system load (actual)** | Solid line + markers | Ground truth (`train_actual` + `future_actual`, clipped) | Shows actual values in visible window | None |
-| **Total system load (model prediction)** | Solid line + markers | Model output (`train_pred` + `future_pred`, clipped) | Shows model's predictions for both training and future periods | Training MAE/MAPE, Prediction (24h) MAE/MAPE, Prediction (full horizon) MAE/MAPE |
-| **Actual (test / ground truth)** | Solid line + markers (green) | External `test_actual` from `data_test.csv` (if available) | Overlays real post-training values against the forecast | None |
-| **Actual (last week)** | Dashed line + markers | Time-shifted actual data (`y_actual.shift(7*24)`) | Reveals weekly seasonality patterns for context | None |
-
-**Layout Configuration:**
-
-*   **Title**: "Prediction for Target 'X'" (where X is A through K)
-*   **Y-Axis**: "Load [MW]"
-*   **X-Axis**: "Time (UTC)"
-*   **Legend Position**: Horizontal orientation below plot (y=-0.3)
-*   **Height**: 700px
-*   **Template**: `plotly_white`
-
-
-```{python}
-#| label: fig-entsoe-predict-A
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target A"
-
-prepare_target(TARGETS[0])
-out_A = get_prediction(model_name="lgbm_A", target=TARGETS[0])
-if out_A:
-    fig_A = PredictionFigure(out_A, title="Prediction for Target 'A'").make_plot()
-    fig_A.show()
-```
-
-```{python}
-#| label: fig-entsoe-predict-B
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction for Target B"
-
-prepare_target(TARGETS[0])
-out_B = get_prediction(model_name="lgbm_B", target=TARGETS[0])
-if out_B:
-    fig_B = PredictionFigure(out_B, title="Prediction for Target 'B'").make_plot()
-    fig_B.show()
-```
-
-### Data Ranges & Intervals Overview
-
-The following table summarizes all time ranges and intervals configured in the pipeline, highlighting their purpose and potential conflicts (@tbl-data-ranges).
-
-| Stage | Parameter/Variable | Value/Range | Description | Potential Conflict / Requirement |
-| :--- | :--- | :--- | :--- | :--- |
-| **Loading** | `api_country_code` | `"DE"` | Target country for data context. | Used for holiday/calendar feature generation. |
-| **Loading** | `data_filename` | `interim/energy_load.csv` | Local cache file for processed data. | File must exist and contain required columns (`Time (UTC)`, `Actual Load`). Managed by `prepare_target()`. |
-| **Training** | `train_size` | `365*1` days (1 year) | Historical lookback window for training data. | Must be sufficient to capture seasonality (at least 1 year recommended). |
-| **Training** | `end_train_default` | last timestamp in dataset (dynamic) | Cutoff timestamp separating training and testing data. Derived from `demo_data["DateTime"].max()`. | **CRITICAL**: Set to the last available data point so training always covers the most recent `TRAIN_SIZE` window. |
-| **Training** | `lags_consider` | `[1, 2, 24]` | Autoregressive lags used as features. | Limits the very first predictions (first 24h of training data lost to lag generation). |
-| **Prediction** | `predict_size` | `24` hours | Base forecast horizon per model step. | Small values increase loop iterations; large values reduce granularity. |
-| **Prediction** | `refit_size` | `1` (24 h total horizon) | Multiplier for total prediction window (`predict_size × refit_size` hours). | **CRITICAL**: Set to 1 so the total forecast is exactly 24 hours (next-day prediction). |
-| **Validation** | `delta_val` | `7` days | Window used for validation set during hyperparameter search. | Should be representative of recent data distribution. |
-
-: Data Ranges and Intervals Configuration {#tbl-data-ranges}
-
-
-
-## Training, Tuning, and Prediction Strategies
-
-In production environments, there are different approaches to applying the models depending on computational constraints and performance requirements. Here we document and compare three distinct approaches using the same underlying dataset and configuration. Each approach is executed for **all eleven targets (A through K)**.
-
-### Approach 1: Without Training and Tuning (Lazy Fitting)
-
-By default, executing predictions via the `spotforecast2_safe` pipeline against an untrained configuration instantiates the base model recursively. During the very first `predict()` invocation, it detects the lack of a pre-fitted estimator and performs a "lazy" fit using the absolute default hyperparameters on the fly without persisting them via `joblib`.
-
-This represents the absolute fastest development cycle but lacks optimization.
+The forecaster is created with default LightGBM hyperparameters and fitted immediately on the pipeline-processed data. "Lazy" refers to the fact that no hyperparameter tuning is performed — the model uses factory defaults.
 
 ```{python}
 #| label: approach-1-lazy-fitting
 #| echo: true
 #| cache: false
-
-for target in TARGETS:
-    prepare_target(target)
-    model_name = f"lgbm_untrained_{target}"
-
-    # 1. Initialize the safe wrapper directly
-    model_app1 = ForecasterRecursiveLGBM.from_config(iteration=1, config=config)
-    model_app1.name = model_name
-
-    # 2. Save the initialized but explicitly UNTRAINED wrapper structure
-    logger.info(f"[{target}] Saving wrapper to artifact store without explicit pre-fitting...")
-    model_app1.save_to_file()
-```
-
-Prediction for Approach 1 relies on the on-the-fly fit:
-
-```{python}
-#| label: fig-entsoe-predict-app1
-#| echo: true
-#| cache: false
 #| fig-cap: "Prediction (Approach 1: Lazy Fitting)"
 
+results_app1 = {}
 for target in TARGETS:
-    prepare_target(target)
-    model_name = f"lgbm_untrained_{target}"
-    out_app1 = get_prediction(model_name=model_name, target=target)
-    if out_app1:
-        fig_app1 = PredictionFigure(out_app1, title=f"Prediction for Target '{target}' (Approach 1: Lazy Fitting)").make_plot()
-        fig_app1.show()
+    logger.info(f"[Approach 1] Target '{target}': fitting with default params...")
+    y_train, exog_train, exog_future = get_target_data(target)
+    forecaster = create_forecaster()
+    results_app1[target] = train_and_predict_target(
+        target=target,
+        approach_name="Approach 1: Lazy Fitting",
+        forecaster=forecaster,
+        y_train=y_train,
+        exog_train=exog_train,
+        exog_future=exog_future,
+    )
 ```
 
-### Approach 2: With Training But No Tuning
+### Approach 2: Explicit Pre-Training (Default Parameters) {#sec-approach-2}
 
-Another valid configuration involves establishing an explicit formal training phase without extensive Bayesian parameter tuning. To execute this, we simply use the base wrappers but invoke `fit_with_best()` which explicitly enforces estimator compilation against the training window using LightGBM default distributions, followed by serializing the *trained* structure.
+Identical to Approach 1 in terms of model output — both use default hyperparameters on the same pipeline-processed data. The distinction is architectural: Approach 2 represents an explicit training step in a batch pipeline, whereas Approach 1 conceptually defers fitting to prediction time. In this unified pipeline both are explicit, so results are identical.
 
 ```{python}
 #| label: approach-2-training
 #| echo: true
 #| cache: false
+#| fig-cap: "Prediction (Approach 2: Explicit Pre-Training)"
 
+results_app2 = {}
 for target in TARGETS:
-    prepare_target(target)
-    model_name = f"lgbm_trained_not_tuned_{target}"
-
-    # 1. Initialize the safe wrapper
-    model_app2 = ForecasterRecursiveLGBM.from_config(iteration=2, config=config)
-    model_app2.name = model_name
-
-    # 2. Explicitly fit the model using default parameters
-    logger.info(f"[{target}] Executing precise training without tuning...")
-    model_app2.fit_with_best()
-
-    # 3. Save the trained model to the artifact store
-    model_app2.save_to_file()
+    logger.info(f"[Approach 2] Target '{target}': explicit training with default params...")
+    y_train, exog_train, exog_future = get_target_data(target)
+    forecaster = create_forecaster()
+    results_app2[target] = train_and_predict_target(
+        target=target,
+        approach_name="Approach 2: Trained (No Tuning)",
+        forecaster=forecaster,
+        y_train=y_train,
+        exog_train=exog_train,
+        exog_future=exog_future,
+    )
 ```
 
-Prediction for Approach 2:
+### Approach 3: Optuna Tuned, Trained, and Predicted {#sec-approach-3}
 
-```{python}
-#| label: fig-entsoe-predict-app2
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction (Approach 2: Trained, No Tuning)"
-
-for target in TARGETS:
-    prepare_target(target)
-    model_name = f"lgbm_trained_not_tuned_{target}"
-    out_app2 = get_prediction(model_name=model_name, target=target)
-    if out_app2:
-        fig_app2 = PredictionFigure(out_app2, title=f"Prediction for Target '{target}' (Approach 2: Trained, No Tuning)").make_plot()
-        fig_app2.show()
-```
-
-Note that Approach 1 and Approach 2 yield identical predictive metrics for each target. This is by design: both rely on the exact same estimator defaults and the identical training data window. The difference lies strictly in system architecture (lazy fitting during inference versus explicit pre-fitting during the batch training pipeline).
-
-### Approach 3: Tune, Train, and Predict
-
-For optimal performance, the spotforecast2 package provides the full orchestration capabilities to tune the hyperparameters using Bayesian optimization, train the model with the best discovered parameters, and serialize the optimized artifact.
-
-Here is how to perform tuning and use the tuned model. We utilize `ForecasterRecursiveLGBMFull` from `spotforecast2.manager.models.forecaster_recursive_lgbm_full` (re-exported via `spotforecast2.manager.models`).
+Bayesian hyperparameter optimization via Optuna's TPE sampler. The tuning runs on the pipeline-processed data with exogenous features (when enabled), then the forecaster is re-fitted with the best discovered parameters.
 
 ```{python}
 #| label: approach-3-tuning
 #| echo: true
 #| cache: false
 #| eval: true
+#| fig-cap: "Prediction (Approach 3: Optuna Tuned)"
 
-from spotforecast2.manager.models.forecaster_recursive_lgbm_full import ForecasterRecursiveLGBMFull
+from spotforecast2.model_selection import bayesian_search_forecaster
+from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
 
-# Train and tune for each target (n_trials=15 for demonstration)
+# Optuna search space (callable, as required by bayesian_search_forecaster)
+def search_space_optuna_lgbm(trial):
+    return {
+        "num_leaves": trial.suggest_int("num_leaves", 8, 256),
+        "max_depth": trial.suggest_int("max_depth", 3, 16),
+        "learning_rate": trial.suggest_float("learning_rate", 0.001, 0.2, log=True),
+        "n_estimators": trial.suggest_int("n_estimators", 50, 1000, log=True),
+        "bagging_fraction": trial.suggest_float("bagging_fraction", 0.5, 1),
+        "feature_fraction": trial.suggest_float("feature_fraction", 0.5, 1),
+        "reg_alpha": trial.suggest_float("reg_alpha", 0.01, 100),
+        "reg_lambda": trial.suggest_float("reg_lambda", 0.01, 100),
+        "lags": trial.suggest_categorical(
+            "lags",
+            [24, 48, [1, 2, 24], [1, 2, 24, 48], [1, 2, 23, 24, 47, 48]],
+        ),
+    }
+
+N_TRIALS_OPTUNA = 15
+
+results_app3 = {}
 for target in TARGETS:
-    prepare_target(target)
-    model_name = f"lgbm_tuned_and_trained_{target}"
-    logger.info(f"[{target}] Starting Optuna tuning and training...")
-    handle_training(
-        model_class=ForecasterRecursiveLGBMFull,
-        model_name=model_name,
-        force=True,
-        data_filename=config.data_filename,
-        end_dev=config.end_train_default,
-        train_size=config.train_size,
-        periods=config.periods,
-        country_code=config.API_COUNTRY_CODE,
+    logger.info(f"[Approach 3] Target '{target}': Optuna tuning ({N_TRIALS_OPTUNA} trials)...")
+    y_train, exog_train, exog_future = get_target_data(target)
+    forecaster = create_forecaster()
+
+    # Validation split: hold out last PREDICT_SIZE hours for CV scoring
+    end_cv = end_train_ts - pd.Timedelta(hours=PREDICT_SIZE * config.refit_size)
+    n_train_cv = len(y_train.loc[:end_cv])
+
+    cv = TimeSeriesFold(
+        steps=PREDICT_SIZE,
+        refit=False,
+        initial_train_size=n_train_cv,
+        fixed_train_size=(config.train_size is not None),
+        gap=0,
+        allow_incomplete_fold=True,
+    )
+
+    tuning_results, _ = bayesian_search_forecaster(
+        forecaster=forecaster,
+        y=y_train,
+        cv=cv,
+        search_space=search_space_optuna_lgbm,
+        metric="mean_absolute_error",
+        exog=exog_train,
+        n_trials=N_TRIALS_OPTUNA,
         random_state=config.random_state,
-        predict_size=config.predict_size,
-        refit_size=config.refit_size,
-        n_trials=15,
+        return_best=False,
+        verbose=False,
+    )
+
+    best_params = tuning_results.iloc[0].params
+    best_lags = tuning_results.iloc[0].lags
+    logger.info(f"  Best params: {best_params}")
+    logger.info(f"  Best lags: {best_lags}")
+
+    # Re-create forecaster with tuned params
+    forecaster_tuned = create_forecaster()
+    forecaster_tuned.set_params(**best_params)
+    if hasattr(forecaster_tuned, "set_lags"):
+        forecaster_tuned.set_lags(best_lags)
+
+    results_app3[target] = train_and_predict_target(
+        target=target,
+        approach_name="Approach 3: Optuna Tuned",
+        forecaster=forecaster_tuned,
+        y_train=y_train,
+        exog_train=exog_train,
+        exog_future=exog_future,
     )
 ```
 
-Prediction for Approach 3:
 
-```{python}
-#| label: fig-entsoe-predict-app3
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction (Approach 3: Tuned and Trained)"
-#| eval: true
+### Approach 4: SpotOptim Tuned, Trained, and Predicted {#sec-approach-4}
 
-for target in TARGETS:
-    prepare_target(target)
-    model_name = f"lgbm_tuned_and_trained_{target}"
-    out_app3 = get_prediction(model_name=model_name, target=target)
-    if out_app3:
-        fig_app3 = PredictionFigure(out_app3, title=f"Prediction for Target '{target}' (Approach 3: Tuned and Trained)").make_plot()
-        fig_app3.show()
-```
-
-### Approach 4: Tune with SpotOptim, Train, and Predict
-
-As an alternative to Optuna, we can utilize `spotoptim` for surrogate-model-based Bayesian optimization. To integrate `spotoptim`, we define a custom wrapper that overrides the `tune` method to leverage `spotoptim_search_forecaster`.
+As an alternative to Optuna, `spotoptim` provides surrogate-model-based Bayesian optimization. It can be particularly effective with small trial budgets. The tuning uses the same pipeline-processed data and exogenous features as all other approaches.
 
 ```{python}
 #| label: approach-4-spotoptim-tuning
 #| echo: true
 #| cache: false
 #| eval: true
-from spotforecast2.model_selection import spotoptim_search_forecaster
-from spotforecast2.manager.trainer_full import LAGS_CONSIDER
-from spotforecast2_safe.data.fetch_data import load_timeseries
-from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
+#| fig-cap: "Prediction (Approach 4: SpotOptim Tuned)"
 
-# Define the SpotOptim search space (using dictionary format)
+from spotforecast2.model_selection import spotoptim_search_forecaster
+
+# SpotOptim search space (dictionary format)
 search_space_spotoptim_lgbm = {
     "num_leaves": (8, 256),
     "max_depth": (3, 16),
@@ -1154,265 +1012,114 @@ search_space_spotoptim_lgbm = {
     "feature_fraction": (0.5, 1.0),
     "reg_alpha": (0.01, 100.0),
     "reg_lambda": (0.01, 100.0),
-    # "lags": [str(lag) for lag in LAGS_CONSIDER],
-    "lags": ["[1, 2, 3, 11, 12, 22, 23, 24, 47, 48, 167, 168]", "48", "24", "[1, 2, 24, 48]", "[1, 2, 23, 24, 47, 48]", "[1, 2, 11, 12, 23, 24, 167, 168]"],
+    "lags": [
+        "[1, 2, 3, 11, 12, 22, 23, 24, 47, 48, 167, 168]",
+        "48",
+        "24",
+        "[1, 2, 24, 48]",
+        "[1, 2, 23, 24, 47, 48]",
+        "[1, 2, 11, 12, 23, 24, 167, 168]",
+    ],
 }
 
-class ForecasterRecursiveLGBMSpotoptim(ForecasterRecursiveLGBMFull):
-    def __init__(self, iteration: int, lags: int = 12, **kwargs):
-        super().__init__(iteration=iteration, lags=lags, **kwargs)
+N_TRIALS_SPOTOPTIM = 10
+N_INITIAL_SPOTOPTIM = 5
 
-    def tune(self) -> None:
-        logger.info("Tuning %s Forecaster %d with spotoptim", self.name.upper(), self.iteration)
-
-        y = load_timeseries()
-        y = LinearlyInterpolateTS().fit_transform(y)
-        X = self.preprocessor.build(start_date=y.index.min(), end_date=self.end_dev)
-
-        end_train = self.end_dev - pd.Timedelta(hours=self.predict_size * self.refit_size)
-        start_train = self._get_init_train(y.index.min(), end_train)
-        fixed_train_size = self.train_size is not None
-        length_training = len(y.loc[start_train:end_train])
-
-        results, optimizer = spotoptim_search_forecaster(
-            forecaster=self.forecaster,
-            y=y.loc[start_train : self.end_dev],
-            cv=self._build_cv(
-                train_size=length_training,
-                fixed_train_size=fixed_train_size,
-                refit=False,
-            ),
-            search_space=search_space_spotoptim_lgbm,
-            metric=self.metrics,
-            exog=X.loc[start_train : self.end_dev],
-            return_best=True,
-            random_state=self.random_state,
-            verbose=True,
-            # n_trials=self.n_trials,
-            n_trials=10,
-            n_initial=5,
-        )
-
-        results["name"] = self.name
-        self.results_tuning = results
-        self.best_params = results.iloc[0].params
-        self.best_lags = results.iloc[0].lags
-
-        self.fit_with_best()
-        self.is_tuned = True
-
-        if self.save_model_to_file:
-            self.save_to_file()
-
-# Train and tune via handle_training for each target
+results_app4 = {}
 for target in TARGETS:
-    prepare_target(target)
-    model_name = f"lgbm_tuned_spotoptim_{target}"
-    logger.info(f"[{target}] Starting SpotOptim tuning and training...")
-    handle_training(
-        model_class=ForecasterRecursiveLGBMSpotoptim,
-        model_name=model_name,
-        force=True,
-        data_filename=config.data_filename,
-        end_dev=config.end_train_default,
-        train_size=config.train_size,
-        periods=config.periods,
-        country_code=config.API_COUNTRY_CODE,
+    logger.info(f"[Approach 4] Target '{target}': SpotOptim tuning ({N_TRIALS_SPOTOPTIM} trials)...")
+    y_train, exog_train, exog_future = get_target_data(target)
+    forecaster = create_forecaster()
+
+    # Validation split (same as Approach 3)
+    end_cv = end_train_ts - pd.Timedelta(hours=PREDICT_SIZE * config.refit_size)
+    n_train_cv = len(y_train.loc[:end_cv])
+
+    cv = TimeSeriesFold(
+        steps=PREDICT_SIZE,
+        refit=False,
+        initial_train_size=n_train_cv,
+        fixed_train_size=(config.train_size is not None),
+        gap=0,
+        allow_incomplete_fold=True,
+    )
+
+    tuning_results, optimizer = spotoptim_search_forecaster(
+        forecaster=forecaster,
+        y=y_train,
+        cv=cv,
+        search_space=search_space_spotoptim_lgbm,
+        metric="mean_absolute_error",
+        exog=exog_train,
+        return_best=True,
         random_state=config.random_state,
-        predict_size=config.predict_size,
-        refit_size=config.refit_size,
-        n_trials=15,
-    )
-```
-
-Prediction for Approach 4 (SpotOptim):
-
-```{python}
-#| label: fig-entsoe-predict-app4
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction (Approach 4: SpotOptim Tuned)"
-#| eval: true
-for target in TARGETS:
-    prepare_target(target)
-    model_name = f"lgbm_tuned_spotoptim_{target}"
-    out_app4 = get_prediction(model_name=model_name, target=target)
-    if out_app4:
-        fig_app4 = PredictionFigure(out_app4, title=f"Prediction for Target '{target}' (Approach 4: SpotOptim Tuned)").make_plot()
-        fig_app4.show()
-```
-
-### Approach 5: N2N Pipeline with Exogenous Covariates
-
-This approach leverages the full data processing pipeline from `n2n_predict_with_covariates` (Steps 1–7 above). It uses the pipeline-processed data (`data_with_exog`), including outlier-cleaned and imputed targets with exogenous covariates (weather, calendar, day/night, holidays). A `ForecasterRecursive` is trained per target with optional sample weighting from the imputation step.
-
-This approach is only available when `USE_EXOGENOUS_FEATURES=True` in the pipeline configuration.
-
-#### Step 8 — Train/Validation/Test Split (Approach 5)
-
-The split uses `TRAIN_SIZE` and `DELTA_VAL` from the `improved2` configuration to define absolute cutoffs, consistent with the other approaches. The exogenous features are carried through the split.
-
-```{python}
-#| label: approach-5-split
-#| echo: true
-#| cache: false
-
-if USE_EXOGENOUS_FEATURES and data_with_exog is not None:
-    from spotforecast2_safe.preprocessing.split import split_abs_train_val_test
-
-    # Compute split timestamps from config (same logic as improved2)
-    end_train_ts = pd.to_datetime(config.end_train_default, utc=True)
-    start_train_ts = end_train_ts - config.train_size
-    end_val_ts = end_train_ts - pd.Timedelta(hours=config.predict_size * config.refit_size)
-
-    # Clip to available data range
-    avail_start = data_with_exog.index.min()
-    avail_end = data_with_exog.index.max()
-    start_train_ts = max(start_train_ts, avail_start)
-
-    data_train_5, data_val_5, data_test_5 = split_abs_train_val_test(
-        data_with_exog,
-        end_train=end_val_ts,
-        end_validation=end_train_ts,
         verbose=True,
+        n_trials=N_TRIALS_SPOTOPTIM,
+        n_initial=N_INITIAL_SPOTOPTIM,
     )
 
-    logger.info(f"[Approach 5] Train: {data_train_5.shape}, Val: {data_val_5.shape}, Test: {data_test_5.shape}")
-else:
-    logger.info("Approach 5 skipped — exogenous features not enabled.")
+    best_params = tuning_results.iloc[0].params
+    best_lags = tuning_results.iloc[0].lags
+    logger.info(f"  Best params: {best_params}")
+    logger.info(f"  Best lags: {best_lags}")
+
+    # Re-create forecaster with tuned params
+    forecaster_tuned = create_forecaster()
+    forecaster_tuned.set_params(**best_params)
+    if hasattr(forecaster_tuned, "set_lags"):
+        forecaster_tuned.set_lags(best_lags)
+
+    results_app4[target] = train_and_predict_target(
+        target=target,
+        approach_name="Approach 4: SpotOptim Tuned",
+        forecaster=forecaster_tuned,
+        y_train=y_train,
+        exog_train=exog_train,
+        exog_future=exog_future,
+    )
 ```
 
-#### Step 9 — Model Training with Exogenous Covariates (Approach 5)
 
-Each target gets its own `ForecasterRecursive` trained with exogenous features and optional sample weighting. Models are persisted via `_save_forecasters`.
+### Comparison of Results {#sec-comparison}
+
+All four approaches use the **same unified data processing pipeline** (outlier detection, imputation, exogenous features) and differ only in hyperparameter selection:
+
+- **Approach 1** (Lazy Fitting) and **Approach 2** (Explicit Pre-Training) produce identical predictions because both use default LightGBM hyperparameters on the same pipeline-processed data.
+- **Approach 3** (Optuna Tuned) explores the hyperparameter space using Optuna's TPE sampler, typically improving MAE/MAPE.
+- **Approach 4** (SpotOptim Tuned) uses surrogate-model-based optimization, effective with small trial budgets.
+
+When `USE_EXOGENOUS_FEATURES=True`, all approaches benefit from weather, calendar, day/night, and holiday covariates. When `USE_OUTLIER_DETECTION=True`, IsolationForest-based outlier removal is applied before training. When `IMPUTATION_METHOD="weighted"`, sample weighting via `WeightFunction` down-weights observations near former gaps.
 
 ```{python}
-#| label: approach-5-training
+#| label: comparison-summary
 #| echo: true
-#| cache: false
 
-if USE_EXOGENOUS_FEATURES and data_with_exog is not None:
-    from lightgbm import LGBMRegressor
-    from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-    from spotforecast2_safe.preprocessing import RollingFeatures as RollingFeaturesN2N
-    from spotforecast2_safe.manager.persistence import _save_forecasters
+comparison_data = []
+for approach_name, results_dict in [
+    ("Approach 1: Lazy Fitting", results_app1),
+    ("Approach 2: Trained (No Tuning)", results_app2),
+    ("Approach 3: Optuna Tuned", results_app3),
+    ("Approach 4: SpotOptim Tuned", results_app4),
+]:
+    for target, pkg in results_dict.items():
+        if pkg and "metrics_train" in pkg:
+            row = {
+                "Approach": approach_name,
+                "Target": target,
+                "Train MAE": pkg["metrics_train"].get("mae"),
+                "Train MAPE": pkg["metrics_train"].get("mape"),
+            }
+            if pkg.get("metrics_future"):
+                row["Test MAE"] = pkg["metrics_future"].get("mae")
+                row["Test MAPE"] = pkg["metrics_future"].get("mape")
+            comparison_data.append(row)
 
-    estimator_n2n = LGBMRegressor(random_state=config.random_state, verbose=-1)
-    window_features_n2n = RollingFeaturesN2N(stats=["mean"], window_sizes=WINDOW_SIZE)
-
-    # Combine train + val for fitting (val is used for internal early stopping)
-    end_validation_5 = pd.concat([data_train_5, data_val_5]).index[-1]
-
-    recursive_forecasters_5 = {}
-
-    for target in TARGETS:
-        logger.info(f"[Approach 5] Training forecaster for target '{target}'...")
-
-        forecaster = ForecasterRecursive(
-            estimator=estimator_n2n,
-            lags=config.lags_consider[-1],  # use largest lag (24)
-            window_features=window_features_n2n,
-            weight_func=weight_func,  # from Step 3 (None if linear imputation)
-        )
-
-        forecaster.fit(
-            y=data_with_exog[target].loc[:end_validation_5].squeeze(),
-            exog=data_with_exog[exog_feature_names].loc[:end_validation_5],
-        )
-
-        recursive_forecasters_5[target] = forecaster
-        logger.info(f"  Forecaster trained for target '{target}'.")
-
-    # Persist trained models
-    from spotforecast2_safe.data.fetch_data import get_cache_home
-    model_dir_5 = get_cache_home() / "forecasters_n2n"
-    _save_forecasters(
-        forecasters=recursive_forecasters_5,
-        model_dir=model_dir_5,
-        verbose=True,
-    )
-    logger.info(f"[Approach 5] All {len(recursive_forecasters_5)} forecasters trained and saved.")
-```
-
-#### Step 10 — Prediction with Exogenous Covariates (Approach 5)
-
-Predictions use `predict_multivariate` with the exogenous prediction covariates (`exo_pred`) built in Step 7.
-
-```{python}
-#| label: approach-5-prediction
-#| echo: true
-#| cache: false
-#| fig-cap: "Prediction (Approach 5: N2N with Exogenous Covariates)"
-
-if USE_EXOGENOUS_FEATURES and data_with_exog is not None:
-    from spotforecast2_safe.forecaster.utils import predict_multivariate
-
-    exo_pred_subset_5 = exo_pred[exog_feature_names].astype("float32")
-
-    predictions_5 = predict_multivariate(
-        recursive_forecasters_5,
-        steps_ahead=PREDICT_SIZE,
-        exog=exo_pred_subset_5,
-    )
-
-    logger.info(f"[Approach 5] Predictions shape: {predictions_5.shape}")
-    logger.info(f"[Approach 5] Prediction index: {predictions_5.index[0]} to {predictions_5.index[-1]}")
-
-    # Display predictions
-    print(predictions_5)
-
-    # Visualize using PredictionFigure for each target (build a lightweight prediction package)
-    for target in TARGETS:
-        # Build a minimal prediction package compatible with PredictionFigure
-        train_series = data_with_exog[target].loc[:end_validation_5]
-        train_pred = pd.Series(
-            recursive_forecasters_5[target].predict(
-                steps=len(train_series),
-                exog=data_with_exog[exog_feature_names].loc[:end_validation_5],
-            ),
-            index=train_series.index[-len(train_series):],
-        )
-
-        pred_pkg_5 = {
-            "train_actual": train_series,
-            "train_pred": train_pred,
-            "future_actual": pd.Series(dtype="float64"),
-            "future_pred": predictions_5[target],
-            "metrics_train": {},
-            "metrics_future": {},
-            "metrics_future_one_day": {},
-            "validation_passed": True,
-        }
-
-        # Inject test data if available
-        if df_test is not None and target in df_test.columns:
-            ts = df_test.set_index("DateTime")[target]
-            if ts.index.tzinfo is None:
-                ts.index = ts.index.tz_localize("UTC")
-            test_actual = ts.reindex(predictions_5[target].index).dropna()
-            pred_pkg_5["test_actual"] = test_actual
-
-        fig_app5 = PredictionFigure(
-            pred_pkg_5,
-            title=f"Prediction for Target '{target}' (Approach 5: N2N with Covariates)",
-        ).make_plot()
-        fig_app5.show()
+if comparison_data:
+    df_comparison = pd.DataFrame(comparison_data)
+    print(df_comparison.to_string(index=False))
 else:
-    logger.info("Approach 5 prediction skipped — exogenous features not enabled.")
+    logger.info("No comparison data available.")
 ```
-
-
-### Comparison of Results
-
-A comparison of the five approaches demonstrates the trade-offs between computational overhead and model accuracy, applied independently to all eleven targets (A through K).
-
-- Approach 1 (Lazy Fitting) and Approach 2 (Explicit Pre-Training) produce identical predictions for each target because they both optimize the underlying tree-based estimators using default parameters.
-- Approach 3 (Optuna Tuned and Trained) explores the hyperparameter space efficiently using Optuna's Tree-structured Parzen Estimator (TPE), typically improving the Mean Absolute Error (MAE) and corresponding Mean Absolute Percentage Error (MAPE) for all targets.
-- Approach 4 (SpotOptim Tuned and Trained) leverages the `spotoptim` surrogate model. It provides an alternative to Optuna that can be particularly effective with small trial budgets.
-- Approach 5 (N2N with Exogenous Covariates) uses the full data processing pipeline from `n2n_predict_with_covariates`, including IsolationForest outlier detection, weighted imputation with sample weighting, and exogenous covariates (weather, calendar, day/night, holidays). This approach provides the richest feature set but requires external data sources (weather API, holiday calendars).
-
-The visualizations for each tuning approach (Approaches 3, 4, and 5) demonstrate that the tuned and enriched models provide a more nuanced fit to the patterns in each of the eleven target series compared to Approaches 1 and 2.
-
 
 ```{python}
 #| label: fig-entsoe-predict-comparison
