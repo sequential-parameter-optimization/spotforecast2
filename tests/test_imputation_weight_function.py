@@ -143,9 +143,9 @@ class TestWeightFunctionZeroSumWindow:
         wf = WeightFunction(all_zero_weights)
         try:
             result = wf(all_zero_weights.index)
+            assert result is None
         except Exception as exc:
             pytest.fail(f"WeightFunction raised unexpectedly: {exc}")
-        assert result is None
 
     def test_none_allows_forecaster_to_skip_weighting(self, all_zero_weights):
         """Simulate what ForecasterRecursive.create_sample_weights does."""
