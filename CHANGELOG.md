@@ -1,3 +1,14 @@
+## [0.11.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.2...v0.11.3) (2026-03-20)
+
+### Bug Fixes
+
+* plotter last week ([9d432d3](https://github.com/sequential-parameter-optimization/spotforecast2/commit/9d432d3a35977c3d769c24f9d219a00c5f2475aa))
+
+### Documentation
+
+* aggregation ([1f977ba](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1f977ba767a3ed2a9a74932ffafc98474f5908a1))
+* demo10 ([8cf7147](https://github.com/sequential-parameter-optimization/spotforecast2/commit/8cf714772bb0c4adccdbb95682bf51be1a3bd3b7))
+
 ## [0.11.3-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.2...v0.11.3-rc.1) (2026-03-20)
 
 ### Bug Fixes
