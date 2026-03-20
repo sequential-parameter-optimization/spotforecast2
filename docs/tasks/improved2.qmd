@@ -17,11 +17,11 @@ abstract: |
 
 # spotforecast2 multi-target demo {#sec-code-spotforecast2-multitarget}
 
-This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on an eleven-target dataset. The primary data source is `data_in.csv` (located in `~/spotforecast2_data/`), containing eleven independent measurement columns. If `data_in.csv` is absent, the pipeline falls back to the bundled `demo02.csv`. A separate LGBM model is trained per target. `END_TRAIN_DEFAULT` is always the last timestamp in the loaded data; the model then forecasts the next 24 hours beyond that point.
+This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on an eleven-target dataset. The primary data source is `data_in.csv` (located in `~/spotforecast2_data/`), containing eleven independent measurement columns. If `data_in.csv` is absent, the pipeline falls back to the bundled `demo10.csv`. A separate LGBM model is trained per target. `END_TRAIN_DEFAULT` is always the last timestamp in the loaded data; the model then forecasts the next 24 hours beyond that point.
 
 The workflow executes in the following phases:
 
-1.  Data Acquisition: Loading `data_in.csv` (with automatic fallback to `demo02.csv`) and preparing each target for the pipeline.
+1.  Data Acquisition: Loading `data_in.csv` (with automatic fallback to `demo10.csv`) and preparing each target for the pipeline.
 2.  Configuration & Model Selection: Centralized configuration of hyperparameters, feature engineering, and automated tuning strategies.
 3.  Model Orchestration & Training: Fail-safe model training with automatic refitting policies, executed for each of the eleven targets.
 4.  Predictive Analytics & Visualization: Generation of validated prediction packages and interactive reports for each target.
@@ -72,7 +72,7 @@ PREDICT_SIZE = 24
 ```
 
 
-Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo02.csv` included in the `spotforecast2-safe` package. Both datasets contain eleven independent target columns.
+Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo10.csv` included in the `spotforecast2-safe` package. Both datasets contain eleven independent target columns.
 
 
 ### API Reference for Data Acquisition
@@ -80,18 +80,17 @@ Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_dat
 | Component | Type | Arguments | Description |
 | :--- | :--- | :--- | :--- |
 | `fetch_data` | Function | `filename` (str or Path) | Loads a CSV file from the user data directory, parses the datetime index, and returns a UTC-aware DataFrame. |
-| `get_package_data_home` | Function | — | Returns the path to the internal package datasets directory (contains `demo02.csv`). |
+| `get_package_data_home` | Function | — | Returns the path to the internal package datasets directory (contains `demo10.csv`). |
 | `get_data_home` | Function | `data_home` (str, optional) | Returns the path to the user data directory (default: `~/spotforecast2_data`). Creates it if absent. |
 | `prepare_target` | Function | `target` (str) | Writes the chosen target column (label detected dynamically from CSV headers) as `Actual Load` to `current/data_current.csv`, renaming `DateTime` to `Time (UTC)`. |
 : Data acquisition {#tbl-data-acquisition}
 
 ### Column Mapping for `data_in.csv`
 
-When `data_in.csv` is present, its column headers are read at runtime and mapped to
-sequential short labels **A, B, C, …** in the order they appear in the file.
+When `data_in.csv` is present, its column headers are read at runtime.
 No column names are hard-coded in this document — the mapping is built dynamically
 and printed to the log when the data block executes.
-The fallback dataset (`demo02.csv`) already uses short column labels and requires no mapping.
+The fallback dataset (`demo10.csv`) already uses short column labels and requires no mapping.
 
 ### Implementation of Data Acquisition
 
@@ -111,7 +110,7 @@ from spotforecast2_safe.data.fetch_data import (
 )
 
 data_home = get_data_home()
-data_in_path = data_home / "data_in2.csv"
+data_in_path = data_home / "data_in.csv"
 
 if data_in_path.exists():
     logger.info(f"Loading primary dataset: {data_in_path}")
@@ -119,22 +118,22 @@ if data_in_path.exists():
     df_raw = fetch_data(filename=str(data_in_path))
     # Build the column→label mapping dynamically from CSV headers (order-based).
     # Column names are NOT hard-coded; they are read from the file at runtime.
-    # Reset index so DateTime becomes a regular column (matches demo02 layout)
+    # Reset index so DateTime becomes a regular column (matches demo10 layout)
     df_raw.index.name = "DateTime"
     demo_data = df_raw.reset_index()
     DATA_SOURCE = "data_in.csv"
 else:
     DATA_IN_COL_MAP = {}
-    logger.info("data_in.csv not found — falling back to bundled demo02.csv")
-    csv_src = get_package_data_home() / "demo02.csv"
+    logger.info("data_in.csv not found — falling back to bundled demo10.csv")
+    csv_src = get_package_data_home() / "demo10.csv"
     demo_data = pd.read_csv(csv_src, parse_dates=["DateTime"])
-    DATA_SOURCE = "demo02.csv"
+    DATA_SOURCE = "demo10.csv"
 ```
 
 Check for data_test.csv (ground truth for forecast period comparison)
 
 ```{python}
-data_test_path = data_home / "data_test2.csv"
+data_test_path = data_home / "data_test.csv"
 if data_test_path.exists():
     logger.info(f"Loading test dataset: {data_test_path}")
     df_test_raw = fetch_data(filename=str(data_test_path))
@@ -142,8 +141,10 @@ if data_test_path.exists():
     df_test = df_test_raw.reset_index()
     logger.info(f"Test dataset loaded: shape={df_test.shape}")
 else:
-    logger.info("data_test.csv not found — no test comparison available.")
-    df_test = None
+    DATA_IN_COL_MAP = {}
+    logger.info("data_test.csv not found — falling back to bundled demo11.csv")
+    csv_src = get_package_data_home() / "demo11.csv"
+    df_test = pd.read_csv(csv_src, parse_dates=["DateTime"])
 ```
 
 Dynamically derive download range and training cut-off
@@ -164,6 +165,8 @@ END_TRAIN_DEFAULT = last_ts.isoformat()
 
 # Derive available targets from the loaded data columns (excludes DateTime).
 ALL_TARGETS = [c for c in demo_data.columns if c != "DateTime"]
+
+# TARGETS = ALL_TARGETS  # use all targets by default; can be limited for testing
 # Limit to first 2 targets for demonstration; set TARGETS = ALL_TARGETS for a full run.
 TARGETS = ALL_TARGETS[:2]
 ```
@@ -227,7 +230,7 @@ The raw dataset is a time-series dataframe with the following properties:
     *   `I`: `float64`. Target series I.
     *   `J`: `float64`. Target series J (may contain missing values; filled via forward/backward fill).
     *   `K`: `float64`. Target series K.
-*   Range: Determined dynamically from the loaded dataset (`START_DOWNLOAD` to `END_DOWNLOAD`). For `data_in.csv` this starts at `2024-12-31`; for the fallback `demo02.csv` it starts at `1964-08-02`.
+*   Range: Determined dynamically from the loaded dataset (`START_DOWNLOAD` to `END_DOWNLOAD`). For `data_in.csv` this starts at `2024-12-31`; for the fallback `demo10.csv` it starts at `1964-08-02`.
 
 ### Example
 
@@ -324,31 +327,85 @@ logger.info(f"Pipeline data shape after preparation: {df_pipeline.shape}")
 
 ### Step 2 — Outlier Detection and Removal {#sec-step2-outlier-detection}
 
+
+```{python}
+from spotforecast2_safe.preprocessing.outlier import (
+    get_outliers,
+    manual_outlier_removal,
+    mark_outliers,
+)
+
+df_pipeline_original = df_pipeline.copy()  # keep a copy of the original for comparison
+outliers = get_outliers(data=df_pipeline, contamination=0.03)
+for col, outlier_vals in outliers.items():
+    print(f"{col}: {len(outlier_vals)} outliers detected")
+```
+
+
 Two options are available for outlier handling:
 
 - **Option A (default off)**: No outlier removal — the data is used as-is (original `improved2` behaviour).
 - **Option B (USE_OUTLIER_DETECTION=True)**: IsolationForest-based detection via `mark_outliers()` from `spotforecast2-safe`. Detected outliers are set to `NaN` and subsequently filled by the imputation step.
 
+
 ```{python}
-#| label: step2-outlier-detection
-#| echo: true
+# DateTime is the index (not a column) — bounds[i] maps directly to df_pipeline.columns[i].
+if DATA_SOURCE == "data_in.csv":
+    bounds = [(-2500, 4500), (-10, 3000), (0, 230), (0, 550), (0, 1400), (0, 1400), (0, 10), (0, 4500), (0, 300), (0, 400), (0, 300)]
+else:
+    bounds = [(-15708, 28274), (-63, 18850), (0, 1445), (0, 3456), (0, 8796), (0, 8796), (0, 63), (0, 28274), (0, 1885), (0, 2513), (0, 1885)]
 
-from spotforecast2_safe.preprocessing.outlier import mark_outliers
-
-outlier_labels = None
-if USE_OUTLIER_DETECTION:
-    logger.info("Applying IsolationForest outlier detection...")
-    df_pipeline, outlier_labels = mark_outliers(
-        df_pipeline,
-        contamination=CONTAMINATION,
-        random_state=42,
+for i, (lower, upper) in enumerate(bounds):
+    col = df_pipeline.columns[i]
+    df_pipeline, _ = manual_outlier_removal(
+        data=df_pipeline,
+        column=col,
+        lower_threshold=lower,
+        upper_threshold=upper,
         verbose=True,
     )
-    n_outliers = df_pipeline.isnull().sum().sum()
-    logger.info(f"Total NaN cells after outlier removal: {n_outliers}")
-else:
-    logger.info("Outlier detection disabled — using raw data.")
 ```
+
+
+```{python}
+import plotly.graph_objects as go
+### Interactive time series plot with outliers
+
+for target in target_columns:
+    fig = go.Figure()
+    
+    # Plot Regular Data (lightgrey)
+    fig.add_trace(go.Scatter(
+        x=df_pipeline.index,
+        y=df_pipeline[target],
+        mode='lines',
+        name='Regular Data',
+        line=dict(color='lightgrey')
+    ))
+    
+    # Plot Outliers (Red)
+    outliers = df_pipeline_original.loc[df_pipeline[target].isna(), target]
+    if not outliers.empty:
+        fig.add_trace(go.Scatter(
+            x=outliers.index,
+            y=outliers,
+            mode='markers',
+            name='Outliers',
+            marker=dict(color='red', size=8, symbol='x')
+        ))
+    
+    pct_outliers = (len(outliers) / len(df_pipeline)) * 100
+
+    fig.update_layout(
+        title=f"{target} Time Series inc. Manually Labelled Outliers ({pct_outliers:.2f}%)",
+        xaxis_title="Time",
+        yaxis_title="Value",
+        template="plotly_white",
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
+    )
+    fig.show()
+```
+
 
 
 ### Step 3 — Missing Value Imputation with Weighting {#sec-step3-imputation}
@@ -817,15 +874,15 @@ def train_and_predict_target(
 | :--- | :--- | :--- |
 | `get_target_data(target)` | Function | Extracts training series and exogenous features from the shared pipeline for one target. |
 | `create_forecaster()` | Function | Creates a `ForecasterRecursive` with shared config (lags, rolling features, weight function). |
-| `build_prediction_package(...)` | Function | Computes in-sample and future predictions, packages metrics for `PredictionFigure`. |
-| `train_and_predict_target(...)` | Function | Fits, saves, predicts, and visualizes — the single entry point used by all approaches. |
+| `build_prediction_package(...)` | Function | Computes in-sample and future predictions from an **already-fitted** forecaster; packages metrics for `PredictionFigure`. Used directly by Approach 2. |
+| `train_and_predict_target(...)` | Function | Fits (internally), saves, predicts, and visualizes — the lazy entry point used by Approaches 1, 3, and 4. |
 
 : Unified Pipeline Components {#tbl-unified-pipeline}
 
 
 ### Approach 1: Lazy Fitting (Default Parameters) {#sec-approach-1}
 
-The forecaster is created with default LightGBM hyperparameters and fitted immediately on the pipeline-processed data. "Lazy" refers to the fact that no hyperparameter tuning is performed — the model uses factory defaults.
+The forecaster is created with default LightGBM hyperparameters and passed — **unfitted** — to `train_and_predict_target()`. Fitting is an implementation detail of that helper: the caller never invokes `.fit()` explicitly. This is the "lazy" pattern: fitting is deferred to, and triggered by, the prediction pipeline.
 
 ```{python}
 #| label: approach-1-lazy-fitting
@@ -850,7 +907,12 @@ for target in TARGETS:
 
 ### Approach 2: Explicit Pre-Training (Default Parameters) {#sec-approach-2}
 
-Identical to Approach 1 in terms of model output — both use default hyperparameters on the same pipeline-processed data. The distinction is architectural: Approach 2 represents an explicit training step in a batch pipeline, whereas Approach 1 conceptually defers fitting to prediction time. In this unified pipeline both are explicit, so results are identical.
+Produces identical predictions to Approach 1 — same default hyperparameters, same pipeline-processed data. The distinction is **architectural, not numerical**:
+
+- Approach 1 hides `.fit()` inside `train_and_predict_target()`; the caller never touches it.
+- Approach 2 calls `.fit()` **explicitly** as a separate, auditable pipeline stage, serializes the fitted model, and only then calls `build_prediction_package()` to produce predictions from the pre-fitted forecaster.
+
+This separation matters in batch pipelines: training can be scheduled, monitored, and checkpointed independently of inference.
 
 ```{python}
 #| label: approach-2-training
@@ -860,17 +922,29 @@ Identical to Approach 1 in terms of model output — both use default hyperparam
 
 results_app2 = {}
 for target in TARGETS:
-    logger.info(f"[Approach 2] Target '{target}': explicit training with default params...")
+    logger.info(f"[Approach 2] Target '{target}': explicit pre-training step...")
     y_train, exog_train, exog_future = get_target_data(target)
+
+    # --- Stage 1: Explicit fit (auditable batch training step) ---
     forecaster = create_forecaster()
-    results_app2[target] = train_and_predict_target(
-        target=target,
-        approach_name="Approach 2: Trained (No Tuning)",
+    forecaster.fit(y=y_train, exog=exog_train)
+    save_forecaster(forecaster, approach_name="Approach 2: Trained (No Tuning)", target=target)
+    logger.info(f"  [Approach 2] '{target}': forecaster fitted and serialized.")
+
+    # --- Stage 2: Predict from the pre-fitted forecaster (no re-fitting) ---
+    pred_pkg = build_prediction_package(
         forecaster=forecaster,
+        target=target,
         y_train=y_train,
         exog_train=exog_train,
         exog_future=exog_future,
     )
+    fig = PredictionFigure(
+        pred_pkg,
+        title=f"Prediction for Target '{target}' (Approach 2: Trained (No Tuning))",
+    ).make_plot()
+    fig.show()
+    results_app2[target] = pred_pkg
 ```
 
 ### Approach 3: Optuna Tuned, Trained, and Predicted {#sec-approach-3}
@@ -1055,7 +1129,7 @@ for target in TARGETS:
 
 All four approaches use the **same unified data processing pipeline** (outlier detection, imputation, exogenous features) and differ only in hyperparameter selection:
 
-- **Approach 1** (Lazy Fitting) and **Approach 2** (Explicit Pre-Training) produce identical predictions because both use default LightGBM hyperparameters on the same pipeline-processed data.
+- **Approach 1** (Lazy Fitting) and **Approach 2** (Explicit Pre-Training) produce identical predictions because both use default LightGBM hyperparameters on the same pipeline-processed data. They differ architecturally: Approach 1 defers `.fit()` inside `train_and_predict_target()`; Approach 2 calls `.fit()` explicitly before any prediction step.
 - **Approach 3** (Optuna Tuned) explores the hyperparameter space using Optuna's TPE sampler, typically improving MAE/MAPE.
 - **Approach 4** (SpotOptim Tuned) uses surrogate-model-based optimization, effective with small trial budgets.
 
