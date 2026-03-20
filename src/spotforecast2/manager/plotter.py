@@ -122,10 +122,14 @@ class PredictionFigure:
         y_forecast = self.prediction_package.get("future_forecast")
         test_actual = self.prediction_package.get("test_actual")
 
-        # Last-week comparison (shift on full series, then clip to visible window)
-        y_last_week_visible = y_actual.shift(7 * 24)
-        y_last_week_visible = y_last_week_visible[
-            y_last_week_visible.index >= min_range
+        # Last-week comparison: shift training-actual timestamps forward by 7 days
+        # so the trace extends through the prediction horizon, not just to end_training.
+        # Using index-based shifting (+ Timedelta) rather than positional shift() ensures
+        # the trace covers both the visible training tail AND the full forecast window.
+        y_last_week = self.prediction_package["train_actual"].copy()
+        y_last_week.index = y_last_week.index + pd.Timedelta(weeks=1)
+        y_last_week_visible = y_last_week[
+            (y_last_week.index >= min_range) & (y_last_week.index <= max_range)
         ]
 
         # Prediction horizon (hours) for legend labels
