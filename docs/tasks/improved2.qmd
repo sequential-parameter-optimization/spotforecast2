@@ -71,6 +71,33 @@ DELTA_VAL = pd.Timedelta(days=7*NUMBER_FOLDS)
 PREDICT_SIZE = 24
 ```
 
+### Role and Meaning of `NUMBER_FOLDS` {#sec-number-folds}
+
+
+`NUMBER_FOLDS` is used to determine the size of the validation set (`delta_val`) used for hyperparameter tuning during model selection. It is defined as a constant.
+`delta_val` is then consumed in `ForecasterRecursiveModel.__init__` (`models.py`, line 129) to split labelled data into two contiguous periods:
+
+```python
+self.end_train = pd.to_datetime(self.end_dev - c.delta_val, utc=True)
+self.start_dev = self.end_train + pd.Timedelta(hours=1)
+```
+
+| Parameter | Value | Meaning |
+|:----------|:------|:--------|
+| `predict_size` | 24 h | One forecast step = one day |
+| `refit_size` | 7 | Refit every 7 steps = weekly |
+| `number_folds` | 10 | 10 weekly refit cycles in the validation set |
+
+Together they define the size of the validation (dev) window: 10 non-overlapping weekly-refit folds of 24 h × 7 = 168 h each, these are 70 days total. This is the window against which hyperparameters are evaluated during `tune()` via `bayesian_search_forecaster`.
+`number_folds` itself is never passed to `TimeSeriesFold` or any cross-validation object; it purely determines the size of the held-out dev set. The actual CV folding inside `_build_cv()` is driven by `predict_size`, `refit`, and `initial_train_size` — not by `number_folds`.
+
+::: {.callout-note}
+The name is slightly misleading: `NUMBER_FOLDS` does not set the number of CV folds directly; it sets the temporal length of the validation region that the CV folds run within.
+:::
+
+An increasing `number_folds` value results in larger dev window and a more conservative train/dev split. So, the hyperparameter search is evaluated over a longer horizon (more robust, but less training data available). On the other hand, decreasing `number_folds` results in a smaller dev window, so more training data is available but the hyperparameter evaluation is less reliable (evaluated on a shorter horizon). The choice of `number_folds` thus represents a trade-off between the robustness of hyperparameter tuning and the amount of data available for training.
+
+
 
 Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo10.csv` included in the `spotforecast2-safe` package. Both datasets contain eleven independent target columns.
 
@@ -82,7 +109,7 @@ Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_dat
 | `fetch_data` | Function | `filename` (str or Path) | Loads a CSV file from the user data directory, parses the datetime index, and returns a UTC-aware DataFrame. |
 | `get_package_data_home` | Function | — | Returns the path to the internal package datasets directory (contains `demo10.csv`). |
 | `get_data_home` | Function | `data_home` (str, optional) | Returns the path to the user data directory (default: `~/spotforecast2_data`). Creates it if absent. |
-| `prepare_target` | Function | `target` (str) | Writes the chosen target column (label detected dynamically from CSV headers) as `Actual Load` to `current/data_current.csv`, renaming `DateTime` to `Time (UTC)`. |
+
 : Data acquisition {#tbl-data-acquisition}
 
 ### Column Mapping for `data_in.csv`
@@ -210,9 +237,6 @@ config = ConfigMulti(
 )
 ```
 
-
-
-**Data Dimensions and Schema:**
 
 The raw dataset is a time-series dataframe with the following properties:
 
@@ -666,14 +690,6 @@ The `n_hyperparameters_trials` argument controls the model selection process. Th
 
 
 
-Based on the settings shown the last code snippet and in @tbl-config-entsoe-param, the general parameters of the  `ConfigMulti` object are instantiated as follows:
-
-* `api_country_code`: "DE", which means that the data will be downloaded from the ENTSO-E Transparency Platform for Germany.
-* `random_state`: 42. Reproducibility: The `random_state` is locked for all stochastic processes.
-* `n_hyperparameters_trials`: 50. If training is triggered, perform hyperparameter tuning using `n_hyperparameters_trials`.
-* `data_filename`: 'current/data_current.csv'
-
-
 ### API Reference: Configuration (Time-Related Parameters)
 
 | Argument | Type | Description | Value |
@@ -697,14 +713,14 @@ The default `periods` are deliberately chosen to balance temporal resolution wit
 * `end_train_default`: `END_TRAIN_DEFAULT` — derived dynamically as the last timestamp in the loaded dataset. This is the cutoff separating training from the prediction horizon. Because it always equals the most recent data point, the model is always trained on the latest available year.
 * `delta_val`: `pd.Timedelta(days=7)`, the size of the validation window used during hyperparameter tuning.
 * `predict_size`: `PREDICT_SIZE` = 24. The model predicts 24 steps (hours) per call.
-* `refit_size`: 1. Total prediction horizon = `predict_size × refit_size` = 24 × 1 = **24 hours**. Setting this to 1 means each prediction call covers exactly the next 24 hours.
+* `refit_size`: 1. Total prediction horizon = `predict_size × refit_size` = 24 × 1 = 24 hours. Setting this to 1 means each prediction call covers exactly the next 24 hours.
 
 
 This `config` object is then injected into the instances of the `ForecasterRecursiveModel`, guaranteeing that the trained model perfectly matches the intended experimental design. For the eleven-target dataset, the same configuration is used for all targets A through K.
 
 ## Unified Model Training & Prediction Pipeline {#sec-unified-pipeline}
 
-All four training approaches share the **same data processing pipeline** defined in @sec-data-processing-pipeline (outlier detection, imputation, exogenous features). The only difference between approaches is the **hyperparameter selection strategy**:
+All four training approaches share the same data processing pipeline defined in @sec-data-processing-pipeline (outlier detection, imputation, exogenous features). The differences between the approaches is as follows:
 
 1. **Approach 1 — Lazy Fitting**: Default hyperparameters, fit occurs at prediction time.
 2. **Approach 2 — Explicit Pre-Training**: Default hyperparameters, explicit fit before prediction.
@@ -987,7 +1003,7 @@ for target in TARGETS:
     forecaster = create_forecaster()
 
     # Validation split: hold out last PREDICT_SIZE hours for CV scoring
-    end_cv = end_train_ts - pd.Timedelta(hours=PREDICT_SIZE * config.refit_size)
+    end_cv = end_train_ts - config.delta_val
     n_train_cv = len(y_train.loc[:end_cv])
 
     cv = TimeSeriesFold(
