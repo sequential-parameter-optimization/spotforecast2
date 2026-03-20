@@ -166,6 +166,136 @@ class TestPredictionFigureTrainingDataClipping(unittest.TestCase):
         self.assertGreaterEqual(first_x, min_range)
 
 
+def _make_pkg_long(future_hours: int = 24) -> dict:
+    """Build a package with 15 days of training so last-week data covers the forecast."""
+    train_hours = 15 * 24  # 360 h — more than one week
+    dates_train = pd.date_range("2026-01-01", periods=train_hours, freq="h", tz="UTC")
+    end_train = dates_train[-1]
+    dates_future = pd.date_range(
+        end_train + pd.Timedelta(hours=1), periods=future_hours, freq="h", tz="UTC"
+    )
+    return {
+        "train_actual": pd.Series(
+            range(train_hours), index=dates_train, dtype="float64"
+        ),
+        "future_actual": pd.Series(dtype="float64"),  # genuine-future mode
+        "train_pred": pd.Series(range(train_hours), index=dates_train, dtype="float64"),
+        "future_pred": pd.Series(
+            range(future_hours), index=dates_future, dtype="float64"
+        ),
+        "metrics_train": {"mae": 1.0, "mape": 0.1},
+        "metrics_future": {"mae": 2.0, "mape": 0.2},
+        "metrics_future_one_day": {"mae": 1.5, "mape": 0.15},
+    }
+
+
+class TestLastWeekTraceExtension(unittest.TestCase):
+    """The 'Actual (last week)' trace must extend into the prediction window."""
+
+    def _last_week_trace(self, fig):
+        traces = {t.name: t for t in fig.data}
+        self.assertIn("Actual (last week)", traces, "last-week trace missing")
+        return traces["Actual (last week)"]
+
+    def test_last_week_trace_exists(self):
+        pkg = _make_pkg_long()
+        fig = PredictionFigure(pkg).make_plot()
+        self._last_week_trace(fig)  # asserts presence
+
+    def test_last_week_extends_beyond_end_of_training(self):
+        """At least one last-week point must have a timestamp after end_training."""
+        pkg = _make_pkg_long()
+        fig = PredictionFigure(pkg).make_plot()
+        end_training = pkg["train_actual"].index.max()
+        lw = self._last_week_trace(fig)
+        lw_timestamps = pd.DatetimeIndex(lw.x)
+        self.assertTrue(
+            (lw_timestamps > end_training).any(),
+            "last-week trace does not extend past end_training into prediction window",
+        )
+
+    def test_last_week_does_not_exceed_max_range(self):
+        """No last-week point may exceed future_pred.index.max() + 1 h."""
+        pkg = _make_pkg_long()
+        fig = PredictionFigure(pkg).make_plot()
+        max_range = pkg["future_pred"].index.max() + pd.Timedelta(hours=1)
+        lw = self._last_week_trace(fig)
+        lw_timestamps = pd.DatetimeIndex(lw.x)
+        self.assertTrue(
+            (lw_timestamps <= max_range).all(),
+            "last-week trace exceeds max_range",
+        )
+
+    def test_last_week_values_equal_train_actual_shifted_by_7_days(self):
+        """Value at timestamp T in the last-week trace == train_actual[T - 7 days]."""
+        pkg = _make_pkg_long()
+        fig = PredictionFigure(pkg).make_plot()
+        lw = self._last_week_trace(fig)
+        train_actual = pkg["train_actual"]
+
+        lw_timestamps = pd.DatetimeIndex(lw.x)
+        lw_values = pd.Series(lw.y, index=lw_timestamps)
+
+        for ts, val in lw_values.items():
+            source_ts = ts - pd.Timedelta(weeks=1)
+            if source_ts in train_actual.index:
+                self.assertAlmostEqual(
+                    val,
+                    train_actual[source_ts],
+                    places=6,
+                    msg=f"last-week value at {ts} does not match train_actual at {source_ts}",
+                )
+
+    def test_last_week_covers_forecast_window_in_genuine_future_mode(self):
+        """In genuine-future mode (empty future_actual), last-week trace covers forecast."""
+        pkg = _make_pkg_long(future_hours=24)
+        pkg["future_actual"] = pd.Series(dtype="float64")
+        fig = PredictionFigure(pkg).make_plot()
+        end_training = pkg["train_actual"].index.max()
+        lw = self._last_week_trace(fig)
+        lw_timestamps = pd.DatetimeIndex(lw.x)
+        in_forecast = lw_timestamps[lw_timestamps > end_training]
+        self.assertGreater(
+            len(in_forecast),
+            0,
+            "last-week trace has no points in the forecast window (genuine-future mode)",
+        )
+
+    def test_last_week_still_visible_in_training_tail(self):
+        """The last-week trace must also have points before end_training (training tail)."""
+        pkg = _make_pkg_long()
+        fig = PredictionFigure(pkg).make_plot()
+        end_training = pkg["train_actual"].index.max()
+        min_range = end_training - pd.Timedelta(days=1)
+        lw = self._last_week_trace(fig)
+        lw_timestamps = pd.DatetimeIndex(lw.x)
+        in_training_tail = lw_timestamps[
+            (lw_timestamps >= min_range) & (lw_timestamps <= end_training)
+        ]
+        self.assertGreater(
+            len(in_training_tail),
+            0,
+            "last-week trace missing from visible training tail",
+        )
+
+    def test_last_week_index_shift_not_positional(self):
+        """Timestamps in last-week trace must be 7 days after their source timestamps,
+        confirming the fix uses Timedelta index-shift, not positional shift()."""
+        pkg = _make_pkg_long()
+        fig = PredictionFigure(pkg).make_plot()
+        lw = self._last_week_trace(fig)
+        lw_timestamps = pd.DatetimeIndex(lw.x)
+        one_week = pd.Timedelta(weeks=1)
+        # Every last-week timestamp must equal some train_actual timestamp + 7 days.
+        train_shifted = pkg["train_actual"].index + one_week
+        for ts in lw_timestamps:
+            self.assertIn(
+                ts,
+                train_shifted,
+                f"last-week timestamp {ts} is not a 7-day-shifted training timestamp",
+            )
+
+
 class TestMakePlot(unittest.TestCase):
     """make_plot() wrapper: saves HTML and forwards title."""
 

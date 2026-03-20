@@ -166,7 +166,7 @@ END_TRAIN_DEFAULT = last_ts.isoformat()
 # Derive available targets from the loaded data columns (excludes DateTime).
 ALL_TARGETS = [c for c in demo_data.columns if c != "DateTime"]
 
-# TARGETS = ALL_TARGETS  # use all targets by default; can be limited for testing
+TARGETS = ALL_TARGETS  # use all targets by default; can be limited for testing
 # Limit to first 2 targets for demonstration; set TARGETS = ALL_TARGETS for a full run.
 TARGETS = ALL_TARGETS[:2]
 ```
@@ -254,7 +254,7 @@ demo_data.tail()
 
 ## Data Processing Pipeline {#sec-data-processing-pipeline}
 
-The following sections implement a configurable data processing pipeline inspired by the `n2n_predict_with_covariates` module from `spotforecast2-safe`. Each step can be enabled or disabled via flags, allowing the user to choose between the original `improved2` approach and the extended pipeline with exogenous covariates.
+The following sections implement a configurable data processing pipeline inspired by the `n2n_predict_with_covariates` module from `spotforecast2-safe`. Each step can be enabled or disabled via flags, allowing the user to select extended pipelines with exogenous covariates.
 
 ### Pipeline Configuration Flags
 
@@ -1225,6 +1225,28 @@ agg_future_pred = agg_predict(future_preds_df, weights=active_weights)
 agg_train_pred = agg_predict(train_preds_df, weights=active_weights)
 agg_train_actual = agg_predict(train_actuals_df, weights=active_weights)
 
+# Aggregate test actuals (df_test ground truth) when available.
+# Only targets that have a "test_actual" key in their result are included;
+# targets without ground truth are filled with NaN so the index stays aligned.
+test_series = {
+    t: ref_results[t]["test_actual"]
+    for t in TARGETS
+    if "test_actual" in ref_results[t] and len(ref_results[t]["test_actual"]) > 0
+}
+agg_test_actual = None
+if test_series:
+    # Re-index all series to a common index (union), filling gaps with NaN.
+    test_actuals_df = pd.DataFrame(test_series).reindex(
+        sorted(set().union(*[s.index for s in test_series.values()]))
+    )
+    # Use only the weights that correspond to targets present in test_series.
+    test_weights = [
+        active_weights[i]
+        for i, t in enumerate(TARGETS)
+        if t in test_series
+    ]
+    agg_test_actual = agg_predict(test_actuals_df, weights=test_weights)
+
 # Assemble a prediction package compatible with PredictionFigure.
 agg_pred_pkg = {
     "train_actual": agg_train_actual,
@@ -1236,6 +1258,8 @@ agg_pred_pkg = {
     "metrics_future_one_day": {},
     "validation_passed": True,
 }
+if agg_test_actual is not None:
+    agg_pred_pkg["test_actual"] = agg_test_actual
 
 fig = PredictionFigure(
     agg_pred_pkg,
