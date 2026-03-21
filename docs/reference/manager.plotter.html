@@ -58,7 +58,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -106,6 +106,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -781,9 +784,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#spotforecast2.manager.plotter" id="toc-spotforecast2.manager.plotter" class="nav-link active" data-scroll-target="#spotforecast2.manager.plotter">manager.plotter</a>
-  <ul class="collapse">
-  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <li><a href="#classes" id="toc-classes" class="nav-link active" data-scroll-target="#classes">Classes</a>
   <ul class="collapse">
   <li><a href="#spotforecast2.manager.plotter.PredictionFigure" id="toc-spotforecast2.manager.plotter.PredictionFigure" class="nav-link" data-scroll-target="#spotforecast2.manager.plotter.PredictionFigure">PredictionFigure</a></li>
   </ul></li>
@@ -791,20 +792,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#spotforecast2.manager.plotter.make_plot" id="toc-spotforecast2.manager.plotter.make_plot" class="nav-link" data-scroll-target="#spotforecast2.manager.plotter.make_plot">make_plot</a></li>
   <li><a href="#spotforecast2.manager.plotter.plot_actual_vs_predicted" id="toc-spotforecast2.manager.plotter.plot_actual_vs_predicted" class="nav-link" data-scroll-target="#spotforecast2.manager.plotter.plot_actual_vs_predicted">plot_actual_vs_predicted</a></li>
-  </ul></li>
+  <li><a href="#spotforecast2.manager.plotter.plot_with_outliers" id="toc-spotforecast2.manager.plotter.plot_with_outliers" class="nav-link" data-scroll-target="#spotforecast2.manager.plotter.plot_with_outliers">plot_with_outliers</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/manager.plotter.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.plotter.html">plotter</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.plotter.html">plotter</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">manager.plotter</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
 
 
-<section id="spotforecast2.manager.plotter" class="level1">
-<h1>manager.plotter</h1>
+</header>
+
+
 <p><code>manager.plotter</code></p>
 <p>Module for generating interactive prediction plots.</p>
 <p>This module provides the <code>PredictionFigure</code> class and <code>make_plot</code> function to visualize time series forecasting results, including actual values, predictions, and performance metrics.</p>
@@ -924,6 +939,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td><a href="#spotforecast2.manager.plotter.plot_actual_vs_predicted">plot_actual_vs_predicted</a></td>
 <td>Plot actual vs predicted combined values for model comparison.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spotforecast2.manager.plotter.plot_with_outliers">plot_with_outliers</a></td>
+<td>Interactive time series plot with outliers and optional bounds.</td>
 </tr>
 </tbody>
 </table>
@@ -1209,9 +1228,162 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb7-99"><a href="#cb7-99" aria-hidden="true" tabindex="-1"></a>Model <span class="dv">2</span> MAE: ...</span>
 <span id="cb7-100"><a href="#cb7-100" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="ss">f"Model 3 MAE: </span><span class="sc">{</span>mae3<span class="sc">:.2f}</span><span class="ss">"</span>)</span>
 <span id="cb7-101"><a href="#cb7-101" aria-hidden="true" tabindex="-1"></a>Model <span class="dv">3</span> MAE: ...</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-
-
 </section>
+</section>
+<section id="spotforecast2.manager.plotter.plot_with_outliers" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.manager.plotter.plot_with_outliers">plot_with_outliers</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>manager.plotter.plot_with_outliers(df_pipeline, df_pipeline_original, config)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Interactive time series plot with outliers and optional bounds.</p>
+<p>This function generates an interactive Plotly figure that visualizes the time series data from the pipeline, highlighting any detected outliers. Regular data points are shown in light grey, while outliers are marked in red. When <code>config.bounds</code> is set, two horizontal reference lines in lightblue are added per plot — one for the lower bound and one for the upper bound — to indicate the acceptable value range for that target.</p>
+<p>The plot title includes the percentage of outliers detected for each target variable.</p>
+<section id="parameters-3" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>df_pipeline</td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
+<td>The processed DataFrame from the pipeline, which may contain NaN values where outliers have been detected and removed.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>df_pipeline_original</td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
+<td>The original DataFrame before outlier removal.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>config</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
+<td>Configuration object containing <code>targets</code> (list of column names) and optionally <code>bounds</code> (list of <code>(lower, upper)</code> tuples, one per target, in the same order as <code>targets</code>).</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-2" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-2">Returns</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 9%">
+<col style="width: 9%">
+<col style="width: 80%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td>None</td>
+<td>None. Displays one interactive Plotly figure per target variable.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-3" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-3">Examples</h4>
+<div id="2dc31e8f" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> types <span class="im">import</span> SimpleNamespace</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.plotter <span class="im">import</span> plot_with_outliers</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Create synthetic data</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>dates <span class="op">=</span> pd.date_range(<span class="st">"2023-01-01"</span>, periods<span class="op">=</span><span class="dv">100</span>, freq<span class="op">=</span><span class="st">"h"</span>, tz<span class="op">=</span><span class="st">"UTC"</span>)</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>data <span class="op">=</span> pd.DataFrame({</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"target1"</span>: np.random.rand(<span class="dv">100</span>) <span class="op">*</span> <span class="dv">100</span>,</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"target2"</span>: np.random.rand(<span class="dv">100</span>) <span class="op">*</span> <span class="dv">50</span>,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>}, index<span class="op">=</span>dates)</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Introduce outliers</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>data.loc[dates[<span class="dv">10</span>], <span class="st">"target1"</span>] <span class="op">=</span> <span class="dv">300</span>  <span class="co"># Outlier in target1</span></span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>data.loc[dates[<span class="dv">20</span>], <span class="st">"target2"</span>] <span class="op">=</span> <span class="dv">150</span>  <span class="co"># Outlier in target2</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>df_pipeline <span class="op">=</span> data.copy()</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>df_pipeline.loc[[dates[<span class="dv">10</span>], dates[<span class="dv">20</span>]], [<span class="st">"target1"</span>, <span class="st">"target2"</span>]] <span class="op">=</span> np.nan</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Config with bounds</span></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> SimpleNamespace(</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span>[<span class="st">"target1"</span>, <span class="st">"target2"</span>],</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    bounds<span class="op">=</span>[(<span class="op">-</span><span class="dv">10</span>, <span class="dv">200</span>), (<span class="dv">0</span>, <span class="dv">100</span>)],</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>plot_with_outliers(df_pipeline, data, config)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display">
+        <script>
+        window.PlotlyConfig = {MathJaxConfig: 'local'};
+        if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}
+        </script>
+        <script type="module">import "https://cdn.plot.ly/plotly-3.4.0.min"</script>
+        
+</div>
+<div class="cell-output cell-output-display">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.4.0.min.js" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" crossorigin="anonymous"></script>                <div id="392c5d40-79b4-494f-a6cc-3f11b08135d8" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("392c5d40-79b4-494f-a6cc-3f11b08135d8")) {                    Plotly.newPlot(                        "392c5d40-79b4-494f-a6cc-3f11b08135d8",                        [{"line":{"color":"lightgrey"},"mode":"lines","name":"Regular Data","x":["2023-01-01T00:00:00+00:00","2023-01-01T01:00:00+00:00","2023-01-01T02:00:00+00:00","2023-01-01T03:00:00+00:00","2023-01-01T04:00:00+00:00","2023-01-01T05:00:00+00:00","2023-01-01T06:00:00+00:00","2023-01-01T07:00:00+00:00","2023-01-01T08:00:00+00:00","2023-01-01T09:00:00+00:00","2023-01-01T10:00:00+00:00","2023-01-01T11:00:00+00:00","2023-01-01T12:00:00+00:00","2023-01-01T13:00:00+00:00","2023-01-01T14:00:00+00:00","2023-01-01T15:00:00+00:00","2023-01-01T16:00:00+00:00","2023-01-01T17:00:00+00:00","2023-01-01T18:00:00+00:00","2023-01-01T19:00:00+00:00","2023-01-01T20:00:00+00:00","2023-01-01T21:00:00+00:00","2023-01-01T22:00:00+00:00","2023-01-01T23:00:00+00:00","2023-01-02T00:00:00+00:00","2023-01-02T01:00:00+00:00","2023-01-02T02:00:00+00:00","2023-01-02T03:00:00+00:00","2023-01-02T04:00:00+00:00","2023-01-02T05:00:00+00:00","2023-01-02T06:00:00+00:00","2023-01-02T07:00:00+00:00","2023-01-02T08:00:00+00:00","2023-01-02T09:00:00+00:00","2023-01-02T10:00:00+00:00","2023-01-02T11:00:00+00:00","2023-01-02T12:00:00+00:00","2023-01-02T13:00:00+00:00","2023-01-02T14:00:00+00:00","2023-01-02T15:00:00+00:00","2023-01-02T16:00:00+00:00","2023-01-02T17:00:00+00:00","2023-01-02T18:00:00+00:00","2023-01-02T19:00:00+00:00","2023-01-02T20:00:00+00:00","2023-01-02T21:00:00+00:00","2023-01-02T22:00:00+00:00","2023-01-02T23:00:00+00:00","2023-01-03T00:00:00+00:00","2023-01-03T01:00:00+00:00","2023-01-03T02:00:00+00:00","2023-01-03T03:00:00+00:00","2023-01-03T04:00:00+00:00","2023-01-03T05:00:00+00:00","2023-01-03T06:00:00+00:00","2023-01-03T07:00:00+00:00","2023-01-03T08:00:00+00:00","2023-01-03T09:00:00+00:00","2023-01-03T10:00:00+00:00","2023-01-03T11:00:00+00:00","2023-01-03T12:00:00+00:00","2023-01-03T13:00:00+00:00","2023-01-03T14:00:00+00:00","2023-01-03T15:00:00+00:00","2023-01-03T16:00:00+00:00","2023-01-03T17:00:00+00:00","2023-01-03T18:00:00+00:00","2023-01-03T19:00:00+00:00","2023-01-03T20:00:00+00:00","2023-01-03T21:00:00+00:00","2023-01-03T22:00:00+00:00","2023-01-03T23:00:00+00:00","2023-01-04T00:00:00+00:00","2023-01-04T01:00:00+00:00","2023-01-04T02:00:00+00:00","2023-01-04T03:00:00+00:00","2023-01-04T04:00:00+00:00","2023-01-04T05:00:00+00:00","2023-01-04T06:00:00+00:00","2023-01-04T07:00:00+00:00","2023-01-04T08:00:00+00:00","2023-01-04T09:00:00+00:00","2023-01-04T10:00:00+00:00","2023-01-04T11:00:00+00:00","2023-01-04T12:00:00+00:00","2023-01-04T13:00:00+00:00","2023-01-04T14:00:00+00:00","2023-01-04T15:00:00+00:00","2023-01-04T16:00:00+00:00","2023-01-04T17:00:00+00:00","2023-01-04T18:00:00+00:00","2023-01-04T19:00:00+00:00","2023-01-04T20:00:00+00:00","2023-01-04T21:00:00+00:00","2023-01-04T22:00:00+00:00","2023-01-04T23:00:00+00:00","2023-01-05T00:00:00+00:00","2023-01-05T01:00:00+00:00","2023-01-05T02:00:00+00:00","2023-01-05T03:00:00+00:00"],"y":{"dtype":"f8","bdata":"nPPlzDY2REABf49GMbtFQDSh\u002fGK4jjFAX3pQOL+vL0CKAfzK\u002fQgcQHq1+YATbUdAyzdqjr1gJECmWrWjxpJQQIYJDvxNtVVA7KrwtIk4WEAAAAAAAAD4f+wKpPINElRAZG7qwLtSOEDHub9wLNpTQOBEwUDwCVRAQBh9UXalREB5JwPYmXFRQJCqZiz\u002fbzZA0SEmpD03RkCGz9hepm1IQAAAAAAAAPh\u002fEOCnWk6xVUDlzIFVehlDQCft3tTMplhAYLjLhACvU0BwWwQgNwhTQDhLfk2HNDRAukpTZ7RRL0CQAp1kJbVPQHftssexiU5AYthO1FoKVkCF+w4A4btJQADw4WxLpVBAEoGHLLsRV0BKOT8leZdSQCId\u002fW9cNlZA3j29lI\u002f\u002fJEDJlMDSmMFVQMKD0e70FldATuf7XV\u002fgV0AnBau2eldQQHNtQKmNUEdAMRxnNmSfTEBvCB\u002fCsjY3QNBR4CbXVlhANzv5jVP6RECXGR5oFO9XQF4J6Vwq+VZA5m7wswOURkCIUEi0UJtMQACaO58twDtAeRDMPaw1NEAhWbeENoxGQNTu1td88xpAlbB1MkMNWEDP8wLxDb5XQOAgNmfbZ0VAj3DD9bfmOkDwkOpwXUtOQDfpBb1rjzhArD32kE0rV0ClGkOL+0MyQJ3dbeuQwk1AuRGTokEtVEAGX7GKBgAtQD3XR33AOFhA1UccBLHbVEDGvBSf+6FEQOsu0iaD91BAJHX+45CC5j9Ce9YR6VBJQLwrLu\u002f02FJAM\u002fFI7RiaV0BDBTy8X+hBQBpufEcXUj9A3DYdj5WMHkAHmWzBJv45QMbm9w7ZklJA2DHmccK6L0A409IsK3RWQMgWC5p1UFdA\u002fTku3t6HT0Bj7A0naME2QKIwIVkijUFAkMflkI2zTkDa\u002fUnz9uczQGFzbYpuHyBADy65IqsRSUDA31TrYZBWQB0DduO4zlJAQdKL1D68TkCBVZJANy5PQF5fwiBPHlhA6x1qSMCcS0BYwJ0pX\u002f5VQIgy+u1YcDxABRw1meIvS0Dwas74O4lIQNllg8usklRA2CNjWn2oPkA="},"type":"scatter"},{"marker":{"color":"red","size":8,"symbol":"x"},"mode":"markers","name":"Outliers","x":["2023-01-01T10:00:00+00:00","2023-01-01T20:00:00+00:00"],"y":{"dtype":"f8","bdata":"AAAAAADAckAWgiGQ0vBCQA=="},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"shapes":[{"line":{"color":"lightblue","dash":"dash","width":2},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":-10,"y1":-10,"yref":"y"},{"line":{"color":"lightblue","dash":"dash","width":2},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":200,"y1":200,"yref":"y"}],"annotations":[{"font":{"color":"steelblue"},"showarrow":false,"text":"Lower bound: -10","x":1,"xanchor":"right","xref":"x domain","y":-10,"yanchor":"top","yref":"y"},{"font":{"color":"steelblue"},"showarrow":false,"text":"Upper bound: 200","x":1,"xanchor":"right","xref":"x domain","y":200,"yanchor":"bottom","yref":"y"}],"legend":{"orientation":"h","yanchor":"bottom","y":1.02,"xanchor":"right","x":1},"title":{"text":"target1 Time Series inc. Manually Labelled Outliers (2.00%)"},"xaxis":{"title":{"text":"Time"}},"yaxis":{"title":{"text":"Value"}}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('392c5d40-79b4-494f-a6cc-3f11b08135d8');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+<div class="cell-output cell-output-display">
+<div>            <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG"></script><script>if (window.MathJax && window.MathJax.Hub && window.MathJax.Hub.Config) {window.MathJax.Hub.Config({SVG: {font: "STIX-Web"}});}</script>                <script>window.PlotlyConfig = {MathJaxConfig: 'local'};</script>
+        <script charset="utf-8" src="https://cdn.plot.ly/plotly-3.4.0.min.js" integrity="sha256-KEmPoupLpFyGMyGAiOsiNDbKDKAvxXAn/W+oQa0ZAfk=" crossorigin="anonymous"></script>                <div id="d95a8355-00cd-4aea-80a0-0374a06b3709" class="plotly-graph-div" style="height:525px; width:100%;"></div>            <script>                window.PLOTLYENV=window.PLOTLYENV || {};                                if (document.getElementById("d95a8355-00cd-4aea-80a0-0374a06b3709")) {                    Plotly.newPlot(                        "d95a8355-00cd-4aea-80a0-0374a06b3709",                        [{"line":{"color":"lightgrey"},"mode":"lines","name":"Regular Data","x":["2023-01-01T00:00:00+00:00","2023-01-01T01:00:00+00:00","2023-01-01T02:00:00+00:00","2023-01-01T03:00:00+00:00","2023-01-01T04:00:00+00:00","2023-01-01T05:00:00+00:00","2023-01-01T06:00:00+00:00","2023-01-01T07:00:00+00:00","2023-01-01T08:00:00+00:00","2023-01-01T09:00:00+00:00","2023-01-01T10:00:00+00:00","2023-01-01T11:00:00+00:00","2023-01-01T12:00:00+00:00","2023-01-01T13:00:00+00:00","2023-01-01T14:00:00+00:00","2023-01-01T15:00:00+00:00","2023-01-01T16:00:00+00:00","2023-01-01T17:00:00+00:00","2023-01-01T18:00:00+00:00","2023-01-01T19:00:00+00:00","2023-01-01T20:00:00+00:00","2023-01-01T21:00:00+00:00","2023-01-01T22:00:00+00:00","2023-01-01T23:00:00+00:00","2023-01-02T00:00:00+00:00","2023-01-02T01:00:00+00:00","2023-01-02T02:00:00+00:00","2023-01-02T03:00:00+00:00","2023-01-02T04:00:00+00:00","2023-01-02T05:00:00+00:00","2023-01-02T06:00:00+00:00","2023-01-02T07:00:00+00:00","2023-01-02T08:00:00+00:00","2023-01-02T09:00:00+00:00","2023-01-02T10:00:00+00:00","2023-01-02T11:00:00+00:00","2023-01-02T12:00:00+00:00","2023-01-02T13:00:00+00:00","2023-01-02T14:00:00+00:00","2023-01-02T15:00:00+00:00","2023-01-02T16:00:00+00:00","2023-01-02T17:00:00+00:00","2023-01-02T18:00:00+00:00","2023-01-02T19:00:00+00:00","2023-01-02T20:00:00+00:00","2023-01-02T21:00:00+00:00","2023-01-02T22:00:00+00:00","2023-01-02T23:00:00+00:00","2023-01-03T00:00:00+00:00","2023-01-03T01:00:00+00:00","2023-01-03T02:00:00+00:00","2023-01-03T03:00:00+00:00","2023-01-03T04:00:00+00:00","2023-01-03T05:00:00+00:00","2023-01-03T06:00:00+00:00","2023-01-03T07:00:00+00:00","2023-01-03T08:00:00+00:00","2023-01-03T09:00:00+00:00","2023-01-03T10:00:00+00:00","2023-01-03T11:00:00+00:00","2023-01-03T12:00:00+00:00","2023-01-03T13:00:00+00:00","2023-01-03T14:00:00+00:00","2023-01-03T15:00:00+00:00","2023-01-03T16:00:00+00:00","2023-01-03T17:00:00+00:00","2023-01-03T18:00:00+00:00","2023-01-03T19:00:00+00:00","2023-01-03T20:00:00+00:00","2023-01-03T21:00:00+00:00","2023-01-03T22:00:00+00:00","2023-01-03T23:00:00+00:00","2023-01-04T00:00:00+00:00","2023-01-04T01:00:00+00:00","2023-01-04T02:00:00+00:00","2023-01-04T03:00:00+00:00","2023-01-04T04:00:00+00:00","2023-01-04T05:00:00+00:00","2023-01-04T06:00:00+00:00","2023-01-04T07:00:00+00:00","2023-01-04T08:00:00+00:00","2023-01-04T09:00:00+00:00","2023-01-04T10:00:00+00:00","2023-01-04T11:00:00+00:00","2023-01-04T12:00:00+00:00","2023-01-04T13:00:00+00:00","2023-01-04T14:00:00+00:00","2023-01-04T15:00:00+00:00","2023-01-04T16:00:00+00:00","2023-01-04T17:00:00+00:00","2023-01-04T18:00:00+00:00","2023-01-04T19:00:00+00:00","2023-01-04T20:00:00+00:00","2023-01-04T21:00:00+00:00","2023-01-04T22:00:00+00:00","2023-01-04T23:00:00+00:00","2023-01-05T00:00:00+00:00","2023-01-05T01:00:00+00:00","2023-01-05T02:00:00+00:00","2023-01-05T03:00:00+00:00"],"y":{"dtype":"f8","bdata":"hcN0SFNXLkD6+lGIjjY3QBB0ksXKFENAEKjN03hOOkAtq8pyKKUqQKOODRnIokBAEPJfZs0JR0BBJQyja4E5QHWvUOs9czdAHma09pHTJEAAAAAAAAD4f3RW2n42v0JAfYQJxjFMREAAnpN8ZXs4QKYbpOTrIEJAQbjGQncbPUBa94tKSn3vP6xBgiPpN0JAQ9OCaXVWFECcE3O2wWZGQAAAAAAAAPh\u002fVkbuGtH9REBLOnVHuLU1QLeBv7vAakhAryE8c0O0N0CxaL95Sp09QNtbID8nRfs\u002fBNx30nd6\u002fz+wizrtd15HQKl22lFatjtAitxV3FDuQkAGxfdDlrkYQKEfaXt5dCZAVbk2XaOzNUBN4luMTSpHQDvEvKoTwzJAjwztROyWOUAjGnj73b1CQLhRnI95MMs\u002fC5zjfcLBOkBZilh25xVHQIoN5ODorT9ABEw5wg+gRECr6+pFPSZFQHr\u002f7ONdz0NAy\u002f3gvLRJMUCGgniPMgtBQGPaNdybhjtAzv8eOaYCK0AqEx2yioA7QEXViA+1Kfk\u002ft3go3dC2SEDL+b4W2007QAPgOldej\u002fo\u002fJvICVGGY\u002fj\u002fXEvIuuGRIQE0bO5YOQSpA\u002fnGeiuZNREDzG47VJXtIQJ+JoNB4cj1AlQkjOZLJMkBKtUaEDz\u002fuP1IszKa97URAq12o6srUQUC5asjbA6tDQDkgIIDFdUFAERd1eUgOEEAhz5RYMnhDQLmI8yA3BkRApYAGQUolQEB825HqQpZIQNfoL7cN0jdAEzWo1a8ePkCIr0X\u002fG7EMQEUJzprUekRALmVaz4RKKUBqyX3Nd+9FQHA67DNeAkBAZiKqLMdqSECs8HgJQ2ouQL848lvGeRVAxo8cGEXZN0AcckjPy1pFQLUwb6IZXiFAjkoLlQe9O0BObNm4I\u002fJAQNrnrk\u002fo5TVAMxU3awaDRUDibnYeodA3QIs69OwkyEVAvCYZxQoSREAsLAFjlKc6QF+iRjZ3hSRAXUTTOJRK+T\u002fML63PBG4tQAOOn9oEZ\u002fA\u002f5eerMCMBMkBDlV9eKUA0QL5da5Md2DtA4klHWzc7OEA="},"type":"scatter"},{"marker":{"color":"red","size":8,"symbol":"x"},"mode":"markers","name":"Outliers","x":["2023-01-01T10:00:00+00:00","2023-01-01T20:00:00+00:00"],"y":{"dtype":"f8","bdata":"NCoVNN3MMUAAAAAAAMBiQA=="},"type":"scatter"}],                        {"template":{"data":{"barpolar":[{"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"barpolar"}],"bar":[{"error_x":{"color":"#2a3f5f"},"error_y":{"color":"#2a3f5f"},"marker":{"line":{"color":"white","width":0.5},"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"bar"}],"carpet":[{"aaxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"baxis":{"endlinecolor":"#2a3f5f","gridcolor":"#C8D4E3","linecolor":"#C8D4E3","minorgridcolor":"#C8D4E3","startlinecolor":"#2a3f5f"},"type":"carpet"}],"choropleth":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"choropleth"}],"contourcarpet":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"contourcarpet"}],"contour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"contour"}],"heatmap":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"heatmap"}],"histogram2dcontour":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2dcontour"}],"histogram2d":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"histogram2d"}],"histogram":[{"marker":{"pattern":{"fillmode":"overlay","size":10,"solidity":0.2}},"type":"histogram"}],"mesh3d":[{"colorbar":{"outlinewidth":0,"ticks":""},"type":"mesh3d"}],"parcoords":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"parcoords"}],"pie":[{"automargin":true,"type":"pie"}],"scatter3d":[{"line":{"colorbar":{"outlinewidth":0,"ticks":""}},"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatter3d"}],"scattercarpet":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattercarpet"}],"scattergeo":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergeo"}],"scattergl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattergl"}],"scattermapbox":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermapbox"}],"scattermap":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scattermap"}],"scatterpolargl":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolargl"}],"scatterpolar":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterpolar"}],"scatter":[{"fillpattern":{"fillmode":"overlay","size":10,"solidity":0.2},"type":"scatter"}],"scatterternary":[{"marker":{"colorbar":{"outlinewidth":0,"ticks":""}},"type":"scatterternary"}],"surface":[{"colorbar":{"outlinewidth":0,"ticks":""},"colorscale":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"type":"surface"}],"table":[{"cells":{"fill":{"color":"#EBF0F8"},"line":{"color":"white"}},"header":{"fill":{"color":"#C8D4E3"},"line":{"color":"white"}},"type":"table"}]},"layout":{"annotationdefaults":{"arrowcolor":"#2a3f5f","arrowhead":0,"arrowwidth":1},"autotypenumbers":"strict","coloraxis":{"colorbar":{"outlinewidth":0,"ticks":""}},"colorscale":{"diverging":[[0,"#8e0152"],[0.1,"#c51b7d"],[0.2,"#de77ae"],[0.3,"#f1b6da"],[0.4,"#fde0ef"],[0.5,"#f7f7f7"],[0.6,"#e6f5d0"],[0.7,"#b8e186"],[0.8,"#7fbc41"],[0.9,"#4d9221"],[1,"#276419"]],"sequential":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]],"sequentialminus":[[0.0,"#0d0887"],[0.1111111111111111,"#46039f"],[0.2222222222222222,"#7201a8"],[0.3333333333333333,"#9c179e"],[0.4444444444444444,"#bd3786"],[0.5555555555555556,"#d8576b"],[0.6666666666666666,"#ed7953"],[0.7777777777777778,"#fb9f3a"],[0.8888888888888888,"#fdca26"],[1.0,"#f0f921"]]},"colorway":["#636efa","#EF553B","#00cc96","#ab63fa","#FFA15A","#19d3f3","#FF6692","#B6E880","#FF97FF","#FECB52"],"font":{"color":"#2a3f5f"},"geo":{"bgcolor":"white","lakecolor":"white","landcolor":"white","showlakes":true,"showland":true,"subunitcolor":"#C8D4E3"},"hoverlabel":{"align":"left"},"hovermode":"closest","mapbox":{"style":"light"},"margin":{"b":0,"l":0,"r":0,"t":30},"paper_bgcolor":"white","plot_bgcolor":"white","polar":{"angularaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""},"bgcolor":"white","radialaxis":{"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":""}},"scene":{"xaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"yaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"},"zaxis":{"backgroundcolor":"white","gridcolor":"#DFE8F3","gridwidth":2,"linecolor":"#EBF0F8","showbackground":true,"ticks":"","zerolinecolor":"#EBF0F8"}},"shapedefaults":{"line":{"color":"#2a3f5f"}},"ternary":{"aaxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"baxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""},"bgcolor":"white","caxis":{"gridcolor":"#DFE8F3","linecolor":"#A2B1C6","ticks":""}},"title":{"x":0.05},"xaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2},"yaxis":{"automargin":true,"gridcolor":"#EBF0F8","linecolor":"#EBF0F8","ticks":"","title":{"standoff":15},"zerolinecolor":"#EBF0F8","zerolinewidth":2}}},"shapes":[{"line":{"color":"lightblue","dash":"dash","width":2},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":0,"y1":0,"yref":"y"},{"line":{"color":"lightblue","dash":"dash","width":2},"type":"line","x0":0,"x1":1,"xref":"x domain","y0":100,"y1":100,"yref":"y"}],"annotations":[{"font":{"color":"steelblue"},"showarrow":false,"text":"Lower bound: 0","x":1,"xanchor":"right","xref":"x domain","y":0,"yanchor":"top","yref":"y"},{"font":{"color":"steelblue"},"showarrow":false,"text":"Upper bound: 100","x":1,"xanchor":"right","xref":"x domain","y":100,"yanchor":"bottom","yref":"y"}],"legend":{"orientation":"h","yanchor":"bottom","y":1.02,"xanchor":"right","x":1},"title":{"text":"target2 Time Series inc. Manually Labelled Outliers (2.00%)"},"xaxis":{"title":{"text":"Time"}},"yaxis":{"title":{"text":"Value"}}},                        {"responsive": true}                    ).then(function(){
+                            
+var gd = document.getElementById('d95a8355-00cd-4aea-80a0-0374a06b3709');
+var x = new MutationObserver(function (mutations, observer) {{
+        var display = window.getComputedStyle(gd).display;
+        if (!display || display === 'none') {{
+            console.log([gd, 'removed!']);
+            Plotly.purge(gd);
+            observer.disconnect();
+        }}
+}});
+
+// Listen for the removal of the full notebook cells
+var notebookContainer = gd.closest('#notebook-container');
+if (notebookContainer) {{
+    x.observe(notebookContainer, {childList: true});
+}}
+
+// Listen for the clearing of the current output cell
+var outputEl = gd.closest('.output');
+if (outputEl) {{
+    x.observe(outputEl, {childList: true});
+}}
+
+                        })                };            </script>        </div>
+</div>
+</div>
+
+
 </section>
 </section>
 </section>
