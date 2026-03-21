@@ -71,6 +71,33 @@ DELTA_VAL = pd.Timedelta(days=7*NUMBER_FOLDS)
 PREDICT_SIZE = 24
 ```
 
+### Role and Meaning of `NUMBER_FOLDS` {#sec-number-folds}
+
+
+`NUMBER_FOLDS` is used to determine the size of the validation set (`delta_val`) used for hyperparameter tuning during model selection. It is defined as a constant.
+`delta_val` is then consumed in `ForecasterRecursiveModel.__init__` (`models.py`, line 129) to split labelled data into two contiguous periods:
+
+```python
+self.end_train = pd.to_datetime(self.end_dev - c.delta_val, utc=True)
+self.start_dev = self.end_train + pd.Timedelta(hours=1)
+```
+
+| Parameter | Value | Meaning |
+|:----------|:------|:--------|
+| `predict_size` | 24 h | One forecast step = one day |
+| `refit_size` | 7 | Refit every 7 steps = weekly |
+| `number_folds` | 10 | 10 weekly refit cycles in the validation set |
+
+Together they define the size of the validation (dev) window: 10 non-overlapping weekly-refit folds of 24 h × 7 = 168 h each, these are 70 days total. This is the window against which hyperparameters are evaluated during `tune()` via `bayesian_search_forecaster`.
+`number_folds` itself is never passed to `TimeSeriesFold` or any cross-validation object; it purely determines the size of the held-out dev set. The actual CV folding inside `_build_cv()` is driven by `predict_size`, `refit`, and `initial_train_size` — not by `number_folds`.
+
+::: {.callout-note}
+The name is slightly misleading: `NUMBER_FOLDS` does not set the number of CV folds directly; it sets the temporal length of the validation region that the CV folds run within.
+:::
+
+An increasing `number_folds` value results in larger dev window and a more conservative train/dev split. So, the hyperparameter search is evaluated over a longer horizon (more robust, but less training data available). On the other hand, decreasing `number_folds` results in a smaller dev window, so more training data is available but the hyperparameter evaluation is less reliable (evaluated on a shorter horizon). The choice of `number_folds` thus represents a trade-off between the robustness of hyperparameter tuning and the amount of data available for training.
+
+
 
 Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo10.csv` included in the `spotforecast2-safe` package. Both datasets contain eleven independent target columns.
 
@@ -82,7 +109,7 @@ Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_dat
 | `fetch_data` | Function | `filename` (str or Path) | Loads a CSV file from the user data directory, parses the datetime index, and returns a UTC-aware DataFrame. |
 | `get_package_data_home` | Function | — | Returns the path to the internal package datasets directory (contains `demo10.csv`). |
 | `get_data_home` | Function | `data_home` (str, optional) | Returns the path to the user data directory (default: `~/spotforecast2_data`). Creates it if absent. |
-| `prepare_target` | Function | `target` (str) | Writes the chosen target column (label detected dynamically from CSV headers) as `Actual Load` to `current/data_current.csv`, renaming `DateTime` to `Time (UTC)`. |
+
 : Data acquisition {#tbl-data-acquisition}
 
 ### Column Mapping for `data_in.csv`
@@ -206,13 +233,27 @@ config = ConfigMulti(
     refit_size=1,
     random_state=42,
     n_hyperparameters_trials=50,
-    data_filename=data_dst
+    data_filename=data_dst,
+    # Outlier detection
+    use_outlier_detection=True,
+    contamination=0.01,
+    # Imputation
+    imputation_method="weighted",
+    window_size=72,
+    # Exogenous features
+    use_exogenous_features=True,
+    latitude=51.5136,   # Dortmund
+    longitude=7.4653,
+    timezone="UTC",
+    country_code="DE",
+    state="NW",
+    # Feature selection toggles
+    include_weather_windows=False,
+    include_holiday_features=False,
+    include_poly_features=False,
 )
 ```
 
-
-
-**Data Dimensions and Schema:**
 
 The raw dataset is a time-series dataframe with the following properties:
 
@@ -258,32 +299,23 @@ The following sections implement a configurable data processing pipeline inspire
 
 ### Pipeline Configuration Flags
 
-```{python}
-#| label: pipeline-flags
-#| echo: true
+All pipeline behavior flags are centralized in the `ConfigMulti` instance created above. The relevant attributes are:
 
-# --- Pipeline control flags ---
-# Outlier detection: True = IsolationForest-based outlier removal, False = no outlier removal
-USE_OUTLIER_DETECTION = True
-CONTAMINATION = 0.01  # proportion of outliers for IsolationForest
+| Attribute | Default | Description |
+|:----------|:--------|:------------|
+| `use_outlier_detection` | `True` | IsolationForest-based outlier removal |
+| `contamination` | `0.01` | Proportion of outliers for IsolationForest |
+| `imputation_method` | `"weighted"` | `"weighted"` (n2n) or `"linear"` interpolation |
+| `window_size` | `72` | Rolling window (hours) for gap detection |
+| `use_exogenous_features` | `True` | Build weather/calendar/day-night/holiday features |
+| `latitude` / `longitude` | `51.5136` / `7.4653` | Location (Dortmund) |
+| `timezone` | `"UTC"` | IANA timezone for feature generation |
+| `country_code` / `state` | `"DE"` / `"NW"` | Country and subdivision for holiday features |
+| `include_weather_windows` | `False` | Rolling weather-window features |
+| `include_holiday_features` | `False` | Public-holiday indicator features |
+| `include_poly_features` | `False` | Polynomial interaction features |
 
-# Imputation method: "weighted" = get_missing_weights (n2n style), "linear" = LinearlyInterpolateTS
-IMPUTATION_METHOD = "weighted"  # "weighted" | "linear"
-WINDOW_SIZE = 72  # rolling window for gap detection (weighted imputation)
-
-# Exogenous features: True = build weather/calendar/day-night/holiday features
-USE_EXOGENOUS_FEATURES = True
-LATITUDE = 51.5136   # Dortmund
-LONGITUDE = 7.4653
-TIMEZONE = "UTC"
-COUNTRY_CODE = "DE"
-STATE = "NW"
-
-# Feature selection toggles
-INCLUDE_WEATHER_WINDOWS = False
-INCLUDE_HOLIDAY_FEATURES = False
-INCLUDE_POLY_FEATURES = False
-```
+: Pipeline configuration flags in `ConfigMulti` {#tbl-pipeline-flags}
 
 ### Step 1 — Data Preparation {#sec-step1-data-prep}
 
@@ -314,10 +346,10 @@ target_columns = [c for c in df_pipeline.columns]
 df_pipeline = agg_and_resample_data(df_pipeline, verbose=True)
 basic_ts_checks(df_pipeline, verbose=True)
 
-# Derive date ranges for covariates (extends end by PREDICT_SIZE)
+# Derive date ranges for covariates (extends end by config.predict_size)
 data_start, data_end, cov_start, cov_end = get_start_end(
     data=df_pipeline,
-    forecast_horizon=PREDICT_SIZE,
+    forecast_horizon=config.predict_size,
     verbose=True,
 )
 
@@ -424,14 +456,14 @@ from spotforecast2_safe.preprocessing.imputation import get_missing_weights
 
 weight_func = None  # default: no sample weighting
 
-if IMPUTATION_METHOD == "weighted":
+if config.imputation_method == "weighted":
     logger.info("Applying weighted imputation (n2n style)...")
     df_pipeline, weights_series = get_missing_weights(
-        df_pipeline, window_size=WINDOW_SIZE, verbose=True,
+        df_pipeline, window_size=config.window_size, verbose=True,
     )
     weight_func = WeightFunction(weights_series)
     logger.info(f"Weight function created with {len(weights_series)} entries.")
-elif IMPUTATION_METHOD == "linear":
+elif config.imputation_method == "linear":
     logger.info("Applying linear interpolation (improved2 style)...")
     interpolator = LinearlyInterpolateTS()
     # LinearlyInterpolateTS expects a Series; apply per column
@@ -439,7 +471,7 @@ elif IMPUTATION_METHOD == "linear":
         series = df_pipeline[col]
         df_pipeline[col] = interpolator.fit_transform(series)
 else:
-    raise ValueError(f"Unknown IMPUTATION_METHOD: {IMPUTATION_METHOD!r}")
+    raise ValueError(f"Unknown imputation_method: {config.imputation_method!r}")
 
 remaining_nans = df_pipeline.isnull().sum().sum()
 logger.info(f"Remaining NaN cells after imputation: {remaining_nans}")
@@ -462,7 +494,7 @@ When `USE_EXOGENOUS_FEATURES=True`, the pipeline creates four categories of exog
 exogenous_features = None
 weather_aligned = None
 
-if USE_EXOGENOUS_FEATURES:
+if config.use_exogenous_features:
     from spotforecast2_safe.processing.n2n_predict_with_covariates import (
         _get_weather_features,
         _get_calendar_features,
@@ -478,10 +510,10 @@ if USE_EXOGENOUS_FEATURES:
         data=df_pipeline,
         start=data_start,
         cov_end=cov_end,
-        forecast_horizon=PREDICT_SIZE,
-        latitude=LATITUDE,
-        longitude=LONGITUDE,
-        timezone=TIMEZONE,
+        forecast_horizon=config.predict_size,
+        latitude=config.latitude,
+        longitude=config.longitude,
+        timezone=config.timezone,
         freq="h",
         verbose=True,
     )
@@ -492,22 +524,22 @@ if USE_EXOGENOUS_FEATURES:
         start=data_start,
         cov_end=cov_end,
         freq="h",
-        timezone=TIMEZONE,
+        timezone=config.timezone,
     )
     logger.info(f"  Calendar features: {calendar_features.shape}")
 
     # 4c. Day/night
     location = LocationInfo(
-        latitude=LATITUDE,
-        longitude=LONGITUDE,
-        timezone=TIMEZONE,
+        latitude=config.latitude,
+        longitude=config.longitude,
+        timezone=config.timezone,
     )
     sun_light_features = _get_day_night_features(
         start=data_start,
         cov_end=cov_end,
         location=location,
         freq="h",
-        timezone=TIMEZONE,
+        timezone=config.timezone,
     )
     logger.info(f"  Day/night features: {sun_light_features.shape}")
 
@@ -516,11 +548,11 @@ if USE_EXOGENOUS_FEATURES:
         data=df_pipeline,
         start=data_start,
         cov_end=cov_end,
-        forecast_horizon=PREDICT_SIZE,
-        tz=TIMEZONE,
+        forecast_horizon=config.predict_size,
+        tz=config.timezone,
         freq="h",
-        country_code=COUNTRY_CODE,
-        state=STATE,
+        country_code=config.country_code,
+        state=config.state,
     )
     logger.info(f"  Holiday features: {holiday_features.shape}")
 else:
@@ -536,7 +568,7 @@ All four feature groups are concatenated into a single DataFrame. Cyclical encod
 #| label: step5-combine-exogenous
 #| echo: true
 
-if USE_EXOGENOUS_FEATURES:
+if config.use_exogenous_features:
     from spotforecast2_safe.processing.n2n_predict_with_covariates import (
         _apply_cyclical_encoding,
         _create_interaction_features,
@@ -578,7 +610,7 @@ A subset of the combined exogenous features is selected for model training. The 
 
 exog_feature_names = []
 
-if USE_EXOGENOUS_FEATURES:
+if config.use_exogenous_features:
     from spotforecast2_safe.processing.n2n_predict_with_covariates import (
         _select_exogenous_features,
     )
@@ -586,9 +618,9 @@ if USE_EXOGENOUS_FEATURES:
     exog_feature_names = _select_exogenous_features(
         exogenous_features=exogenous_features,
         weather_aligned=weather_aligned,
-        include_weather_windows=INCLUDE_WEATHER_WINDOWS,
-        include_holiday_features=INCLUDE_HOLIDAY_FEATURES,
-        include_poly_features=INCLUDE_POLY_FEATURES,
+        include_weather_windows=config.include_weather_windows,
+        include_holiday_features=config.include_holiday_features,
+        include_poly_features=config.include_poly_features,
     )
 
     logger.info(f"Selected {len(exog_feature_names)} exogenous features for training.")
@@ -606,7 +638,7 @@ The target data is merged with the selected exogenous features. A separate `exo_
 data_with_exog = None
 exo_pred = None
 
-if USE_EXOGENOUS_FEATURES and len(exog_feature_names) > 0:
+if config.use_exogenous_features and len(exog_feature_names) > 0:
     from spotforecast2_safe.processing.n2n_predict_with_covariates import (
         _merge_data_and_covariates,
     )
@@ -619,7 +651,7 @@ if USE_EXOGENOUS_FEATURES and len(exog_feature_names) > 0:
         start=data_start,
         end=data_end,
         cov_end=cov_end,
-        forecast_horizon=PREDICT_SIZE,
+        forecast_horizon=config.predict_size,
         cast_dtype="float32",
     )
 
@@ -638,9 +670,9 @@ else:
 logger.info("=" * 60)
 logger.info("DATA PROCESSING PIPELINE SUMMARY")
 logger.info("=" * 60)
-logger.info(f"  Outlier detection:   {'ON (IsolationForest, contamination=' + str(CONTAMINATION) + ')' if USE_OUTLIER_DETECTION else 'OFF'}")
-logger.info(f"  Imputation method:   {IMPUTATION_METHOD}")
-logger.info(f"  Exogenous features:  {'ON (' + str(len(exog_feature_names)) + ' features selected)' if USE_EXOGENOUS_FEATURES else 'OFF'}")
+logger.info(f"  Outlier detection:   {'ON (IsolationForest, contamination=' + str(config.contamination) + ')' if config.use_outlier_detection else 'OFF'}")
+logger.info(f"  Imputation method:   {config.imputation_method}")
+logger.info(f"  Exogenous features:  {'ON (' + str(len(exog_feature_names)) + ' features selected)' if config.use_exogenous_features else 'OFF'}")
 logger.info(f"  Weight function:     {'YES' if weight_func is not None else 'NO'}")
 if data_with_exog is not None:
     logger.info(f"  Merged data shape:   {data_with_exog.shape}")
@@ -666,14 +698,6 @@ The `n_hyperparameters_trials` argument controls the model selection process. Th
 
 
 
-Based on the settings shown the last code snippet and in @tbl-config-entsoe-param, the general parameters of the  `ConfigMulti` object are instantiated as follows:
-
-* `api_country_code`: "DE", which means that the data will be downloaded from the ENTSO-E Transparency Platform for Germany.
-* `random_state`: 42. Reproducibility: The `random_state` is locked for all stochastic processes.
-* `n_hyperparameters_trials`: 50. If training is triggered, perform hyperparameter tuning using `n_hyperparameters_trials`.
-* `data_filename`: 'current/data_current.csv'
-
-
 ### API Reference: Configuration (Time-Related Parameters)
 
 | Argument | Type | Description | Value |
@@ -697,14 +721,14 @@ The default `periods` are deliberately chosen to balance temporal resolution wit
 * `end_train_default`: `END_TRAIN_DEFAULT` — derived dynamically as the last timestamp in the loaded dataset. This is the cutoff separating training from the prediction horizon. Because it always equals the most recent data point, the model is always trained on the latest available year.
 * `delta_val`: `pd.Timedelta(days=7)`, the size of the validation window used during hyperparameter tuning.
 * `predict_size`: `PREDICT_SIZE` = 24. The model predicts 24 steps (hours) per call.
-* `refit_size`: 1. Total prediction horizon = `predict_size × refit_size` = 24 × 1 = **24 hours**. Setting this to 1 means each prediction call covers exactly the next 24 hours.
+* `refit_size`: 1. Total prediction horizon = `predict_size × refit_size` = 24 × 1 = 24 hours. Setting this to 1 means each prediction call covers exactly the next 24 hours.
 
 
 This `config` object is then injected into the instances of the `ForecasterRecursiveModel`, guaranteeing that the trained model perfectly matches the intended experimental design. For the eleven-target dataset, the same configuration is used for all targets A through K.
 
 ## Unified Model Training & Prediction Pipeline {#sec-unified-pipeline}
 
-All four training approaches share the **same data processing pipeline** defined in @sec-data-processing-pipeline (outlier detection, imputation, exogenous features). The only difference between approaches is the **hyperparameter selection strategy**:
+All four training approaches share the same data processing pipeline defined in @sec-data-processing-pipeline (outlier detection, imputation, exogenous features). The differences between the approaches is as follows:
 
 1. **Approach 1 — Lazy Fitting**: Default hyperparameters, fit occurs at prediction time.
 2. **Approach 2 — Explicit Pre-Training**: Default hyperparameters, explicit fit before prediction.
@@ -737,7 +761,7 @@ start_train_ts = max(start_train_ts, df_pipeline.index.min())
 logger.info(f"Unified training window: {start_train_ts} to {end_train_ts}")
 
 # --- Rolling window features (shared estimator configuration) ---
-WINDOW_FEATURES_UNIFIED = RollingFeaturesUnified(stats=["mean"], window_sizes=WINDOW_SIZE)
+WINDOW_FEATURES_UNIFIED = RollingFeaturesUnified(stats=["mean"], window_sizes=config.window_size)
 
 
 def get_target_data(target: str):
@@ -751,7 +775,7 @@ def get_target_data(target: str):
 
     exog_train = None
     exog_future = None
-    if USE_EXOGENOUS_FEATURES and data_with_exog is not None:
+    if config.use_exogenous_features and data_with_exog is not None:
         exog_train = (
             data_with_exog[exog_feature_names]
             .loc[start_train_ts:end_train_ts]
@@ -798,7 +822,7 @@ def build_prediction_package(
     }
 
     # --- Future predictions ---
-    future_pred = forecaster.predict(steps=PREDICT_SIZE, exog=exog_future)
+    future_pred = forecaster.predict(steps=config.predict_size, exog=exog_future)
 
     pred_pkg = {
         "train_actual": y_train_aligned,
@@ -986,12 +1010,12 @@ for target in TARGETS:
     y_train, exog_train, exog_future = get_target_data(target)
     forecaster = create_forecaster()
 
-    # Validation split: hold out last PREDICT_SIZE hours for CV scoring
-    end_cv = end_train_ts - pd.Timedelta(hours=PREDICT_SIZE * config.refit_size)
+    # Validation split: hold out delta_val window for CV scoring
+    end_cv = end_train_ts - config.delta_val
     n_train_cv = len(y_train.loc[:end_cv])
 
     cv = TimeSeriesFold(
-        steps=PREDICT_SIZE,
+        steps=config.predict_size,
         refit=False,
         initial_train_size=n_train_cv,
         fixed_train_size=(config.train_size is not None),
@@ -1077,11 +1101,11 @@ for target in TARGETS:
     forecaster = create_forecaster()
 
     # Validation split (same as Approach 3)
-    end_cv = end_train_ts - pd.Timedelta(hours=PREDICT_SIZE * config.refit_size)
+    end_cv = end_train_ts - config.delta_val
     n_train_cv = len(y_train.loc[:end_cv])
 
     cv = TimeSeriesFold(
-        steps=PREDICT_SIZE,
+        steps=config.predict_size,
         refit=False,
         initial_train_size=n_train_cv,
         fixed_train_size=(config.train_size is not None),

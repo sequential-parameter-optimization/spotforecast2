@@ -74,5 +74,5 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 
 # [tool.uv.sources]
-# For local development, uncomment to use local editable install:
+# Local editable install — uses ../spotforecast2-safe instead of PyPI:
 # spotforecast2-safe = { path = "../spotforecast2-safe", editable = true }
