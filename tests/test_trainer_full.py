@@ -51,6 +51,7 @@ def test_train_new_model_basic(mock_dump, mock_fetch_data, dummy_data, tmp_path)
 
     # Validate fetch_data arguments
     from pathlib import Path
+
     mock_fetch_data.assert_called_once_with(filename=Path(data_file))
 
     # Validate model initialization

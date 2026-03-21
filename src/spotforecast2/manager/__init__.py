@@ -11,6 +11,7 @@ and full-featured forecasting model classes with Bayesian tuning and SHAP.
 from spotforecast2.manager.plotter import (
     make_plot,
     plot_actual_vs_predicted,
+    plot_with_outliers,
     PredictionFigure,
 )
 from spotforecast2.manager.models import (
@@ -30,5 +31,6 @@ __all__ = [
     "ForecasterRecursiveXGBFull",
     "make_plot",
     "plot_actual_vs_predicted",
+    "plot_with_outliers",
     "PredictionFigure",
 ]

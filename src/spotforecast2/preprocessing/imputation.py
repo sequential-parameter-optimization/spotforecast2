@@ -2,7 +2,11 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later AND BSD-3-Clause
 
+import logging
+from typing import Any
+
 import pandas as pd
+from spotforecast2_safe.preprocessing import LinearlyInterpolateTS, WeightFunction
 
 
 def custom_weights(index, weights_series: pd.Series) -> float:
@@ -94,3 +98,121 @@ def get_missing_weights(
             f"Percentage of rows with missing weights after processing: {pct_missing_after:.2f}%"
         )
     return data, weights_series.isna()
+
+
+def apply_imputation(
+    df_pipeline: pd.DataFrame,
+    config: Any,
+    logger: logging.Logger,
+) -> tuple[pd.DataFrame, WeightFunction | None]:
+    """Apply imputation to a DataFrame based on the method specified in config.
+
+    Supports two strategies:
+
+    - ``"weighted"``: forward-fill then backward-fill gaps, then build a
+      :class:`~spotforecast2_safe.preprocessing.WeightFunction` that
+      down-weights training rows near any gap.  Rows inside a gap receive
+      weight 0; the rolling window ``config.window_size`` controls how far
+      the penalty extends.
+    - ``"linear"``: apply
+      :class:`~spotforecast2_safe.preprocessing.LinearlyInterpolateTS`
+      column-by-column.
+
+    A diagnostic summary (NaN count before **and** after imputation) is
+    always written to the logger.
+
+    Args:
+        df_pipeline (pd.DataFrame): DataFrame to impute.  Modified in-place
+            for the ``"linear"`` method; a new DataFrame is returned for
+            ``"weighted"`` (via :func:`get_missing_weights`).
+        config: Configuration object that must expose:
+            - ``imputation_method`` (``str``): ``"weighted"`` or ``"linear"``.
+            - ``targets`` (``list[str]``): column names to interpolate
+              (``"linear"`` method only).
+            - ``window_size`` (``int``): rolling-window size passed to
+              :func:`get_missing_weights` (``"weighted"`` method only).
+        logger (logging.Logger): Standard-library logger used to emit
+            ``INFO`` and ``WARNING`` messages.
+
+    Returns:
+        tuple[pd.DataFrame, WeightFunction | None]: A two-element tuple:
+
+        - **df_pipeline** – imputed DataFrame with no NaN values (when the
+            chosen method can fill all gaps).
+        - **weight_func** – a :class:`~spotforecast2_safe.preprocessing.WeightFunction`
+            instance ready to be passed to a forecaster's ``weight_func``
+            parameter, or ``None`` when ``"linear"`` imputation is used.
+
+    Raises:
+        ValueError: If ``config.imputation_method`` is neither ``"weighted"``
+            nor ``"linear"``.
+
+    Examples:
+        ```{python}
+        import logging
+        import pandas as pd
+        import numpy as np
+        from types import SimpleNamespace
+        from spotforecast2.preprocessing.imputation import apply_imputation
+
+        # Build a small DataFrame with deliberate gaps
+        idx = pd.date_range("2024-01-01", periods=10, freq="h")
+        df = pd.DataFrame(
+            {"A": [1.0, 2.0, None, 4.0, 5.0, 6.0, 7.0, 8.0, 9.0, 10.0]},
+            index=idx,
+        )
+
+        # Minimal config and stdlib logger
+        config = SimpleNamespace(
+            imputation_method="linear",
+            targets=["A"],
+            window_size=3,
+        )
+        logger = logging.getLogger("demo")
+
+        imputed, weight_func = apply_imputation(df, config, logger)
+        print(imputed["A"].tolist())
+        print(weight_func)  # None for linear method
+        ```
+    """
+    nan_before = int(df_pipeline.isnull().sum().sum())
+    logger.info(
+        "apply_imputation: NaN cells before imputation: %d " "(method=%r, shape=%s)",
+        nan_before,
+        config.imputation_method,
+        df_pipeline.shape,
+    )
+
+    weight_func = None  # default: no sample weighting
+
+    if config.imputation_method == "weighted":
+        logger.info("Applying weighted imputation (n2n style)...")
+        df_pipeline, weights_series = get_missing_weights(
+            df_pipeline,
+            window_size=config.window_size,
+            verbose=True,
+        )
+        weight_func = WeightFunction(weights_series)
+        logger.info("Weight function created with %d entries.", len(weights_series))
+    elif config.imputation_method == "linear":
+        logger.info("Applying linear interpolation...")
+        interpolator = LinearlyInterpolateTS()
+        # LinearlyInterpolateTS expects a Series; apply per column
+        for col in config.targets:
+            series = df_pipeline[col]
+            df_pipeline[col] = interpolator.fit_transform(series)
+    else:
+        raise ValueError(
+            f"Unknown imputation_method: {config.imputation_method!r}. "
+            "Expected one of: 'weighted', 'linear'."
+        )
+
+    nan_after = int(df_pipeline.isnull().sum().sum())
+    logger.info("apply_imputation: NaN cells after imputation: %d", nan_after)
+    if nan_after > 0:
+        logger.warning(
+            "apply_imputation: %d NaN cell(s) remain after imputation. "
+            "Consider reviewing the data or adjusting the imputation method.",
+            nan_after,
+        )
+    return df_pipeline, weight_func
