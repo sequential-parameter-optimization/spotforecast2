@@ -32,12 +32,76 @@ The workflow executes in the following phases:
 #| label: load-packages
 import pprint
 import pandas as pd
+import string
+from pathlib import Path
+from spotforecast2_safe.data.fetch_data import (
+    fetch_data,
+    get_package_data_home,
+    get_data_home,
+)
+from spotforecast2_safe.data import Period
+from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
+from spotforecast2_safe.preprocessing.curate_data import (
+    basic_ts_checks,
+    agg_and_resample_data,
+    get_start_end,
+    reset_index,
+)
+from spotforecast2_safe.preprocessing.outlier import (
+    get_outliers,
+    manual_outlier_removal,
+    mark_outliers,
+)
+from spotforecast2.manager.plotter import plot_with_outliers
+
+from spotforecast2_safe.preprocessing import LinearlyInterpolateTS, WeightFunction
+from spotforecast2_safe.preprocessing.imputation import get_missing_weights
+from spotforecast2.preprocessing.imputation import apply_imputation
+from astral import LocationInfo
+
+from spotforecast2_safe.processing.n2n_predict_with_covariates import (
+    _get_weather_features,
+    _get_calendar_features,
+    _get_day_night_features,
+    _get_holiday_features,
+)
 ```
+
+
+## Arguments
+
+```{python}
+INDEX_NAME = "DateTime"
+NUMBER_FOLDS=10
+PREDICT_SIZE = 24
+DATA_SOURCE = "demo10.csv"
+DATA_TEST = "demo11.csv"
+
+# spotforecast2-safe's fetch_data() looks for DATA_SOURCE and DATA_TEST (optional) in the user data directory (~/spotforecast2_data/):
+# DATA_HOME = get_data_home()
+# for package building, we need to avoid the dynamic loading of data_in.csv from the user data directory, so we set DATA_HOME to the package data directory here. In a real run, this would be set to the user data directory.
+DATA_HOME = get_package_data_home()
+
+# hard bounds (pysically plausible ranges) for manual outlier removal; one (lower, upper) tuple per target column. These are applied before further automated outlier-detection methods, e.g., IsolationForest-based detection.
+BOUNDS_ORIG = [(-2500, 4500), (-10, 3000), (0, 230), (0, 550), (0, 1400), (0, 1400), (0, 10), (0, 4500), (0, 300), (0, 400), (0, 300)]
+BOUNDS = [(-15708, 28274), (-63, 18850), (0, 1445), (0, 3456), (0, 8796), (0, 8796), (0, 63), (0, 28274), (0, 1885), (0, 2513), (0, 1885)]
+
+CONTAMINATION = 0.03  # 3% of data points are assumed outliers (for IsolationForest-based detection)
+
+IMPUTATION_METHOD = "weighted"  # "linear" or "weighted"
+
+USE_EXOGENOUS_FEATURES = True
+```
+
+`INDEX_NAME` is the name of the datetime column in the raw CSV files, which is reset to a column (not index) by `reset_index()` for pipeline compatibility. The pipeline operates on a DatetimeIndex-based DataFrame, so this column is set as the index after loading.
+`NUMBER_FOLDS` is used to determine the size of the validation set (`delta_val`) used for hyperparameter tuning during model selection. It is defined as a constant.
+`PREDICT_SIZE` is the forecasting horizon in hours.
+
 
 ## Logger
 
 ```{python}
-#| label: code-notebook-entsoe-usage-logger
+#| label: code-notebook-multi-usage-logger
 #| echo: true
 # Configure logging for notebook
 import logging
@@ -54,22 +118,11 @@ logger = logging.getLogger(__name__)
 ## Data Ranges and Acquisition
 
 The active dataset covers the period from `START_DOWNLOAD` to `END_DOWNLOAD` at hourly resolution.
-
 The download-range constants (`START_DOWNLOAD`, `END_DOWNLOAD`) and the training cut-off (`END_TRAIN_DEFAULT`) are derived dynamically from the loaded dataset, so they automatically update whenever `data_in.csv` is refreshed.
 `END_TRAIN_DEFAULT` is always set to the last timestamp in the loaded dataset, ensuring that the training window always covers the most recent year of data.
-
 `TRAIN_SIZE` is the time-span relative to `END_TRAIN_DEFAULT` that defines the training window.
-`DELTA_VAL` is the size of the validation set in days used for model selection,
-and `PREDICT_SIZE` is the forecasting horizon in hours. Both are defined as constants here for clarity and easy modification.
+`DELTA_VAL` is the size of the validation set in days used for model selection.
 
-
-```{python}
-#| label: define-constants
-NUMBER_FOLDS=10
-TRAIN_SIZE = pd.Timedelta(days=365*1)
-DELTA_VAL = pd.Timedelta(days=7*NUMBER_FOLDS)
-PREDICT_SIZE = 24
-```
 
 ### Role and Meaning of `NUMBER_FOLDS` {#sec-number-folds}
 
@@ -96,10 +149,7 @@ The name is slightly misleading: `NUMBER_FOLDS` does not set the number of CV fo
 :::
 
 An increasing `number_folds` value results in larger dev window and a more conservative train/dev split. So, the hyperparameter search is evaluated over a longer horizon (more robust, but less training data available). On the other hand, decreasing `number_folds` results in a smaller dev window, so more training data is available but the hyperparameter evaluation is less reliable (evaluated on a shorter horizon). The choice of `number_folds` thus represents a trade-off between the robustness of hyperparameter tuning and the amount of data available for training.
-
-
-
-Data is loaded preferentially from `data_in.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo10.csv` included in the `spotforecast2-safe` package. Both datasets contain eleven independent target columns.
+Data is loaded preferentially from `demo10.csv` located in `~/spotforecast2_data/` (the user data directory). If that file is not present, the pipeline falls back to the bundled `demo10.csv` included in the `spotforecast2-safe` package. Both datasets contain eleven independent target columns.
 
 
 ### API Reference for Data Acquisition
@@ -122,131 +172,22 @@ The fallback dataset (`demo10.csv`) already uses short column labels and require
 
 ### Simplified Data-Fetching
 
-```{python}
-import string
-import pandas as pd
-from pathlib import Path
-from spotforecast2_safe.data.fetch_data import (
-    fetch_data,
-    get_package_data_home,
-    get_data_home,
-)
-```
 
 ```{python}
-DATA_SOURCE = "demo10.csv"
-DATA_TEST = "demo11.csv"
-data_home = get_package_data_home()
-data_in_path = data_home / DATA_SOURCE
-data_test_path = data_home / DATA_TEST
+TRAIN_SIZE = pd.Timedelta(days=365*1)
+DELTA_VAL = pd.Timedelta(days=7*NUMBER_FOLDS)
 
+data_in_path = DATA_HOME / DATA_SOURCE
+data_test_path = DATA_HOME / DATA_TEST
 demo_data = fetch_data(filename=str(data_in_path))
 df_test = fetch_data(filename=str(data_test_path))
 ```
 
+## Data Preparation/Curation {#sec-data-processing-pipeline}
 
 ```{python}
-# DATA_SOURCE = "data_in.csv"
-# DATA_TEST = "data_test.csv"
-# data_home = get_data_home()
-# data_in_path = data_home / DATA_SOURCE
-# data_test_path = data_home / DATA_TEST
-# demo_data = fetch_data(filename=str(data_in_path))
-# df_test = fetch_data(filename=str(data_test_path))
-```
-
-```{python}
-from spotforecast2_safe.preprocessing.curate_data import reset_index
-INDEX_NAME = "DateTime"
 demo_data = reset_index(demo_data, index_name=INDEX_NAME)
 df_test = reset_index(df_test, index_name=INDEX_NAME)
-```
-
-Dynamically derive download range and training cut-off
-
-```{python}
-first_ts = pd.Timestamp(demo_data[INDEX_NAME].iloc[0])
-last_ts = pd.Timestamp(demo_data[INDEX_NAME].iloc[-1])
-if first_ts.tzinfo is None:
-    first_ts = first_ts.tz_localize("UTC")
-if last_ts.tzinfo is None:
-    last_ts = last_ts.tz_localize("UTC")
-
-START_DOWNLOAD = first_ts.strftime("%Y%m%d%H%M")
-END_DOWNLOAD = last_ts.strftime("%Y%m%d%H%M")
-# END_TRAIN_DEFAULT is always the last available timestamp in the dataset.
-# This ensures that TRAIN_SIZE always covers the most recent year of data.
-END_TRAIN_DEFAULT = last_ts.isoformat()
-
-# Derive available targets from the loaded data columns (excludes DateTime).
-# config.targets and config.start_download/end_download are set in the
-# Configuration block below.
-ALL_TARGETS = [c for c in demo_data.columns if c != INDEX_NAME]
-```
-
-
-
-## Configuration & Model Selection
-
-Deterministic configuration is enforced via the `ConfigMulti` class. This ensures that all components of the pipeline (training, prediction, feature engineering) share a single source of truth, see @tbl-config-entsoe-param and @tbl-config-entsoe-time.
-
-
-### Implementation of the Configuration
-
-```{python}
-#| label: code-notebook-entsoe
-#| echo: true
-import pandas as pd
-from spotforecast2_safe.data import Period
-from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
-
-current_dir = get_data_home() / "current"
-current_dir.mkdir(parents=True, exist_ok=True)
-data_dst = current_dir / "data_current.csv"
-
-# Initialize configuration
-# country_code is the single ISO country code used for both API queries
-# (config.API_COUNTRY_CODE) and holiday feature generation.
-config = ConfigMulti(
-    country_code="DE",
-    periods=[
-        Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))
-    ],
-    lags_consider=[1, 2, 24],
-    train_size=TRAIN_SIZE,
-    end_train_default=END_TRAIN_DEFAULT,
-    delta_val=DELTA_VAL,
-    predict_size=PREDICT_SIZE,
-    refit_size=1,
-    random_state=42,
-    n_hyperparameters_trials=50,
-    data_filename=data_dst,
-    # Targets: set from loaded data; limit to first 2 for demonstration.
-    # Set targets=ALL_TARGETS for a full run on all eleven targets.
-    targets=ALL_TARGETS[:2],
-    # Outlier detection
-    use_outlier_detection=True,
-    contamination=0.01,
-    # Imputation
-    imputation_method="weighted",
-    window_size=72,
-    # Exogenous features
-    use_exogenous_features=True,
-    latitude=51.5136,   # Dortmund
-    longitude=7.4653,
-    timezone="UTC",
-    state="NW",
-    # Feature selection toggles
-    include_weather_windows=False,
-    include_holiday_features=False,
-    include_poly_features=False,
-    # Data source and index — single source of truth for file names and column name
-    index_name=INDEX_NAME,
-    data_source=DATA_SOURCE,
-    data_test=DATA_TEST,
-    start_download=START_DOWNLOAD,
-    end_download=END_DOWNLOAD,
-)
 ```
 
 
@@ -266,16 +207,13 @@ The raw dataset is a time-series dataframe with the following properties:
     *   `I`: `float64`. Target series I.
     *   `J`: `float64`. Target series J (may contain missing values; filled via forward/backward fill).
     *   `K`: `float64`. Target series K.
-*   Range: Determined dynamically from the loaded dataset (`START_DOWNLOAD` to `END_DOWNLOAD`). For `data_in.csv` this starts at `2024-12-31`; for the fallback `demo10.csv` it starts at `1964-08-02`.
-
-### Example
+*   Range: Determined dynamically from the loaded dataset (`START_DOWNLOAD` to `END_DOWNLOAD`).
 
 The head of the loaded data looks as follows:
 
 ```{python}
 #| label: code-notebook-entsoe-usage-headusage-head
 #| echo: true
-# Display the first 5 rows of the raw multi-target data
 demo_data.head()
 ```
 
@@ -287,12 +225,84 @@ Display the tail of the raw data:
 demo_data.tail()
 ```
 
+```{python}
+demo_data.describe(include='all')
+```
 
-## Data Processing Pipeline {#sec-data-processing-pipeline}
+## Configuration Principles
 
-The following sections implement a configurable data processing pipeline inspired by the `n2n_predict_with_covariates` module from `spotforecast2-safe`. Each step can be enabled or disabled via flags, allowing the user to select extended pipelines with exogenous covariates.
+Deterministic configuration is enforced via the `ConfigMulti` class. This ensures that all components of the pipeline (training, prediction, feature engineering) share a single source of truth, see @tbl-config-entsoe-param and @tbl-config-entsoe-time.
 
-### Pipeline Configuration Flags
+Dynamically derive download range and training cut-off.
+`END_TRAIN_DEFAULT` is always the last available timestamp in the dataset.
+This ensures that `TRAIN_SIZE` always covers the most recent year of data.
+
+Available targets are derived from the loaded data columns (excludes DateTime).
+`config.targets` and `config.start_download`/`config.end_download` are set in the
+`ConfigMulti` instance below, which serves as the single source of truth for all pipeline configuration components.
+
+`country_code` is the single ISO country code used for both API queries
+(`config.country_code`) and holiday feature generation.
+`periods` defines the specifications for cyclical features. Here we use a daily period with 12 periods per cycle, which provides smoothed 2-hour resolution (instead of 24 periods for 1-hour resolution). This is a deliberate design choice to balance feature richness with model complexity and overfitting risk.
+
+```{python}
+first_ts = pd.Timestamp(demo_data[INDEX_NAME].iloc[0])
+last_ts = pd.Timestamp(demo_data[INDEX_NAME].iloc[-1])
+
+START_DOWNLOAD = first_ts.strftime("%Y%m%d%H%M")
+END_DOWNLOAD = last_ts.strftime("%Y%m%d%H%M")
+END_TRAIN_DEFAULT = last_ts.isoformat()
+
+ALL_TARGETS = [c for c in demo_data.columns if c != INDEX_NAME]
+
+current_dir = get_data_home() / "current"
+current_dir.mkdir(parents=True, exist_ok=True)
+data_dst = current_dir / "data_current.csv"
+
+# Initialize configuration
+
+config = ConfigMulti(
+    country_code="DE",
+    periods=[
+        Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))
+    ],
+    lags_consider=[1, 2, 24],
+    train_size=TRAIN_SIZE,
+    end_train_default=END_TRAIN_DEFAULT,
+    delta_val=DELTA_VAL,
+    predict_size=PREDICT_SIZE,
+    refit_size=1,
+    random_state=42,
+    n_hyperparameters_trials=50,
+    data_filename=data_dst,
+    # Targets: set from loaded data; limit to first 2 for demonstration.
+    # Set targets=ALL_TARGETS for a full run on all eleven targets.
+    targets= ALL_TARGETS[:2],
+    # Outlier detection
+    use_outlier_detection=True,
+    contamination=CONTAMINATION,  # 3% of data points are outliers (for IsolationForest-based detection)
+    # Imputation
+    imputation_method=IMPUTATION_METHOD,
+    window_size=72,
+    # Exogenous features
+    use_exogenous_features=True,
+    latitude=51.5136,   # Dortmund
+    longitude=7.4653,
+    timezone="UTC",
+    state="NW",
+    # Feature selection toggles
+    include_weather_windows=False,
+    include_holiday_features=False,
+    include_poly_features=False,
+    # Data source and index — single source of truth for file names and column name
+    index_name=INDEX_NAME,
+    data_source=DATA_SOURCE,
+    data_test=DATA_TEST,
+    start_download=START_DOWNLOAD,
+    end_download=END_DOWNLOAD,
+    bounds=BOUNDS,  # per-column outlier bounds
+)
+```
 
 All pipeline behavior flags are centralized in the `ConfigMulti` instance created above. The relevant attributes are:
 
@@ -314,21 +324,17 @@ All pipeline behavior flags are centralized in the `ConfigMulti` instance create
 
 ### Step 1 — Data Preparation {#sec-step1-data-prep}
 
-After loading the raw CSV, we aggregate/resample to hourly frequency (which also resolves any duplicate timestamps) and then validate the resulting index with `basic_ts_checks()`. The `get_start_end()` function derives the data and covariate date ranges required for exogenous feature engineering.
+After loading the raw CSV, we aggregate/resample to hourly frequency (which also resolves any duplicate timestamps) and then validate the resulting index with `basic_ts_checks()`. The `get_start_end()` function derives the data and covariate date 
+ranges required for exogenous feature engineering.
+
 
 ```{python}
 #| label: step1-data-preparation
 #| echo: true
 
-from spotforecast2_safe.preprocessing.curate_data import (
-    basic_ts_checks,
-    agg_and_resample_data,
-    get_start_end,
-)
-
-# Build an indexed DataFrame from the raw demo_data for pipeline processing.
+# We build an indexed DataFrame from the raw `demo_data` for pipeline processing.
 # The pipeline operates on a DatetimeIndex-based DataFrame with target columns only.
-# demo_data has DateTime as a column (from reset_index); set it as the index here.
+# `demo_data` has DateTime as a column (from reset_index); set it as the index here.
 df_pipeline = demo_data.set_index(INDEX_NAME)
 
 # Resample first to establish a regular hourly grid (handles duplicates and sub-hourly data).
@@ -346,7 +352,7 @@ else:
     config.targets = [c for c in config.targets if c in df_pipeline.columns]
 
 # Derive date ranges for covariates (extends end by config.predict_size)
-data_start, data_end, cov_start, cov_end = get_start_end(
+config.data_start, config.data_end, config.cov_start, config.cov_end = get_start_end(
     data=df_pipeline,
     forecast_horizon=config.predict_size,
     verbose=True,
@@ -355,38 +361,16 @@ data_start, data_end, cov_start, cov_end = get_start_end(
 logger.info(f"Pipeline data shape after preparation: {df_pipeline.shape}")
 ```
 
-
 ### Step 2 — Outlier Detection and Removal {#sec-step2-outlier-detection}
 
+First, the hard (physically plausible) bounds defined in `config.bounds` are applied via `manual_outlier_removal()`, which sets out-of-bounds values to `NaN`. This is a deterministic, transparent step that reduces the influence of extreme outliers on subsequent processing.
+Second, if `USE_OUTLIER_DETECTION=True`, the `mark_outliers()` function from `spotforecast2-safe` is applied, which uses an IsolationForest-based approach to identify outliers based on the distribution of the data. Detected outliers are also set to `NaN` and subsequently handled by the imputation step.
 
 ```{python}
-from spotforecast2_safe.preprocessing.outlier import (
-    get_outliers,
-    manual_outlier_removal,
-    mark_outliers,
-)
-
 df_pipeline_original = df_pipeline.copy()  # keep a copy of the original for comparison
-outliers = get_outliers(data=df_pipeline, contamination=0.03)
-for col, outlier_vals in outliers.items():
-    print(f"{col}: {len(outlier_vals)} outliers detected")
-```
 
-
-Two options are available for outlier handling:
-
-- **Option A (default off)**: No outlier removal — the data is used as-is (original `improved2` behaviour).
-- **Option B (USE_OUTLIER_DETECTION=True)**: IsolationForest-based detection via `mark_outliers()` from `spotforecast2-safe`. Detected outliers are set to `NaN` and subsequently filled by the imputation step.
-
-
-```{python}
 # DateTime is the index (not a column) — bounds[i] maps directly to df_pipeline.columns[i].
-if config.data_source == "data_in.csv":
-    bounds = [(-2500, 4500), (-10, 3000), (0, 230), (0, 550), (0, 1400), (0, 1400), (0, 10), (0, 4500), (0, 300), (0, 400), (0, 300)]
-else:
-    bounds = [(-15708, 28274), (-63, 18850), (0, 1445), (0, 3456), (0, 8796), (0, 8796), (0, 63), (0, 28274), (0, 1885), (0, 2513), (0, 1885)]
-
-for i, (lower, upper) in enumerate(bounds):
+for i, (lower, upper) in enumerate(config.bounds):
     col = df_pipeline.columns[i]
     df_pipeline, _ = manual_outlier_removal(
         data=df_pipeline,
@@ -395,85 +379,34 @@ for i, (lower, upper) in enumerate(bounds):
         upper_threshold=upper,
         verbose=True,
     )
+
+outliers = get_outliers(data=df_pipeline, contamination=config.contamination)
+for col, outlier_vals in outliers.items():
+    print(f"{col}: {len(outlier_vals)} outliers automatically detected")
 ```
 
 
 ```{python}
-import plotly.graph_objects as go
-### Interactive time series plot with outliers
-
-for target in config.targets:
-    fig = go.Figure()
-    
-    # Plot Regular Data (lightgrey)
-    fig.add_trace(go.Scatter(
-        x=df_pipeline.index,
-        y=df_pipeline[target],
-        mode='lines',
-        name='Regular Data',
-        line=dict(color='lightgrey')
-    ))
-    
-    # Plot Outliers (Red)
-    outliers = df_pipeline_original.loc[df_pipeline[target].isna(), target]
-    if not outliers.empty:
-        fig.add_trace(go.Scatter(
-            x=outliers.index,
-            y=outliers,
-            mode='markers',
-            name='Outliers',
-            marker=dict(color='red', size=8, symbol='x')
-        ))
-    
-    pct_outliers = (len(outliers) / len(df_pipeline)) * 100
-
-    fig.update_layout(
-        title=f"{target} Time Series inc. Manually Labelled Outliers ({pct_outliers:.2f}%)",
-        xaxis_title="Time",
-        yaxis_title="Value",
-        template="plotly_white",
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
-    )
-    fig.show()
+plot_with_outliers(
+    df_pipeline=df_pipeline,
+    df_pipeline_original=df_pipeline_original,
+    config=config,
+)
 ```
-
-
 
 ### Step 3 — Missing Value Imputation with Weighting {#sec-step3-imputation}
 
 Two imputation strategies are provided:
 
-- **Option A — Linear interpolation** (`IMPUTATION_METHOD="linear"`): Uses `LinearlyInterpolateTS` for simple linear gap filling.  This is the approach used in the original `improved2` workflow.
-- **Option B — Weighted imputation** (`IMPUTATION_METHOD="weighted"`): Uses `get_missing_weights()` which fills gaps via forward/backward fill and produces a `WeightFunction` that down-weights observations near former gaps during model training. This is the approach from `n2n_predict_with_covariates`.
+* Linear interpolation: Uses `LinearlyInterpolateTS` for simple linear gap filling. This can be set via `config.imputation_method = "linear"`.
+* Weighted imputation: Uses `get_missing_weights()` which fills gaps via forward/backward fill and produces a `WeightFunction` that down-weights observations near former gaps during model training. This can be set via `config.imputation_method = "weighted"`.
 
 ```{python}
 #| label: step3-imputation
 #| echo: true
-
-from spotforecast2_safe.preprocessing import LinearlyInterpolateTS, WeightFunction
-from spotforecast2_safe.preprocessing.imputation import get_missing_weights
-
-weight_func = None  # default: no sample weighting
-
-if config.imputation_method == "weighted":
-    logger.info("Applying weighted imputation (n2n style)...")
-    df_pipeline, weights_series = get_missing_weights(
-        df_pipeline, window_size=config.window_size, verbose=True,
-    )
-    weight_func = WeightFunction(weights_series)
-    logger.info(f"Weight function created with {len(weights_series)} entries.")
-elif config.imputation_method == "linear":
-    logger.info("Applying linear interpolation (improved2 style)...")
-    interpolator = LinearlyInterpolateTS()
-    # LinearlyInterpolateTS expects a Series; apply per column
-    for col in config.targets:
-        series = df_pipeline[col]
-        df_pipeline[col] = interpolator.fit_transform(series)
-else:
-    raise ValueError(f"Unknown imputation_method: {config.imputation_method!r}")
-
-remaining_nans = df_pipeline.isnull().sum().sum()
-logger.info(f"Remaining NaN cells after imputation: {remaining_nans}")
+df_pipeline, weight_func = apply_imputation(df_pipeline=df_pipeline, config=config, logger=logger)
+print(df_pipeline[config.targets[0]].tolist())
+print(weight_func) 
 ```
 
 
@@ -481,10 +414,10 @@ logger.info(f"Remaining NaN cells after imputation: {remaining_nans}")
 
 When `USE_EXOGENOUS_FEATURES=True`, the pipeline creates four categories of exogenous features using helper functions from `n2n_predict_with_covariates`:
 
-1. **Weather features** — temperature, wind, etc. with rolling-window aggregations.
-2. **Calendar features** — month, week, day-of-week, hour.
-3. **Day/night features** — sunrise/sunset hours, daylight duration, is-daylight flag.
-4. **Holiday features** — binary holiday indicators for the configured country/state.
+* Weather features: temperature, wind, etc. with rolling-window aggregations.
+* Calendar features: month, week, day-of-week, hour.
+* Day/night features: sunrise/sunset hours, daylight duration, is-daylight flag.
+* Holiday features: binary holiday indicators for the configured country/state.
 
 ```{python}
 #| label: step4-exogenous-features
@@ -494,21 +427,14 @@ exogenous_features = None
 weather_aligned = None
 
 if config.use_exogenous_features:
-    from spotforecast2_safe.processing.n2n_predict_with_covariates import (
-        _get_weather_features,
-        _get_calendar_features,
-        _get_day_night_features,
-        _get_holiday_features,
-    )
-    from astral import LocationInfo
 
     logger.info("Building exogenous features...")
 
     # 4a. Weather
     weather_features, weather_aligned = _get_weather_features(
         data=df_pipeline,
-        start=data_start,
-        cov_end=cov_end,
+        start=config.data_start,
+        cov_end=config.cov_end,
         forecast_horizon=config.predict_size,
         latitude=config.latitude,
         longitude=config.longitude,
@@ -520,8 +446,8 @@ if config.use_exogenous_features:
 
     # 4b. Calendar
     calendar_features = _get_calendar_features(
-        start=data_start,
-        cov_end=cov_end,
+        start=config.data_start,
+        cov_end=config.cov_end,
         freq="h",
         timezone=config.timezone,
     )
@@ -534,8 +460,8 @@ if config.use_exogenous_features:
         timezone=config.timezone,
     )
     sun_light_features = _get_day_night_features(
-        start=data_start,
-        cov_end=cov_end,
+        start=config.data_start,
+        cov_end=config.cov_end,
         location=location,
         freq="h",
         timezone=config.timezone,
@@ -545,8 +471,8 @@ if config.use_exogenous_features:
     # 4d. Holidays
     holiday_features = _get_holiday_features(
         data=df_pipeline,
-        start=data_start,
-        cov_end=cov_end,
+        start=config.data_start,
+        cov_end=config.cov_end,
         forecast_horizon=config.predict_size,
         tz=config.timezone,
         freq="h",
@@ -647,9 +573,9 @@ if config.use_exogenous_features and len(exog_feature_names) > 0:
         exogenous_features=exogenous_features,
         target_columns=config.targets,
         exog_features=exog_feature_names,
-        start=data_start,
-        end=data_end,
-        cov_end=cov_end,
+        start=config.data_start,
+        end=config.data_end,
+        cov_end=config.cov_end,
         forecast_horizon=config.predict_size,
         cast_dtype="float32",
     )
@@ -697,6 +623,11 @@ The `n_hyperparameters_trials` argument controls the model selection process. Th
 | `data_test` | `str` | Test data file name. | `"data_test.csv"` |
 | `start_download` | `Optional[str]` | Start of data range (derived from loaded dataset). | `START_DOWNLOAD` |
 | `end_download` | `Optional[str]` | End of data range (derived from loaded dataset). | `END_DOWNLOAD` |
+| `data_start` | `Optional[pd.Timestamp]` | First timestamp of pipeline data (set via `get_start_end()`). | `None` |
+| `data_end` | `Optional[pd.Timestamp]` | Last timestamp of pipeline data (set via `get_start_end()`). | `None` |
+| `cov_start` | `Optional[pd.Timestamp]` | Start of covariate range (set via `get_start_end()`). | `None` |
+| `cov_end` | `Optional[pd.Timestamp]` | End of covariate range, extended by `predict_size` hours. | `None` |
+| `bounds` | `Optional[List[tuple]]` | Per-column outlier bounds `(lower, upper)` for manual removal. | `None` |
 
 : Configuration for Data Acquisition. General parameters. {#tbl-config-entsoe-param}
 

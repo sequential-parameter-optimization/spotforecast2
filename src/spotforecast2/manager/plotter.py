@@ -493,3 +493,117 @@ def plot_actual_vs_predicted(
         print(f"Plot saved to {html_path}")
 
     fig.show()
+
+
+def plot_with_outliers(
+    df_pipeline: pd.DataFrame, df_pipeline_original: pd.DataFrame, config: Any
+) -> None:
+    """Interactive time series plot with outliers and optional bounds.
+
+    This function generates an interactive Plotly figure that visualizes the
+    time series data from the pipeline, highlighting any detected outliers.
+    Regular data points are shown in light grey, while outliers are marked in
+    red. When ``config.bounds`` is set, two horizontal reference lines in
+    lightblue are added per plot — one for the lower bound and one for the
+    upper bound — to indicate the acceptable value range for that target.
+
+    The plot title includes the percentage of outliers detected for each
+    target variable.
+
+    Args:
+        df_pipeline (pd.DataFrame): The processed DataFrame from the pipeline,
+            which may contain NaN values where outliers have been detected and
+            removed.
+        df_pipeline_original (pd.DataFrame): The original DataFrame before
+            outlier removal.
+        config: Configuration object containing ``targets`` (list of column
+            names) and optionally ``bounds`` (list of ``(lower, upper)``
+            tuples, one per target, in the same order as ``targets``).
+
+    Returns:
+        None. Displays one interactive Plotly figure per target variable.
+
+    Examples:
+        ```{python}
+        import pandas as pd
+        import numpy as np
+        from types import SimpleNamespace
+        from spotforecast2.manager.plotter import plot_with_outliers
+        # Create synthetic data
+        dates = pd.date_range("2023-01-01", periods=100, freq="h", tz="UTC")
+        data = pd.DataFrame({
+            "target1": np.random.rand(100) * 100,
+            "target2": np.random.rand(100) * 50,
+        }, index=dates)
+        # Introduce outliers
+        data.loc[dates[10], "target1"] = 300  # Outlier in target1
+        data.loc[dates[20], "target2"] = 150  # Outlier in target2
+        df_pipeline = data.copy()
+        df_pipeline.loc[[dates[10], dates[20]], ["target1", "target2"]] = np.nan
+        # Config with bounds
+        config = SimpleNamespace(
+            targets=["target1", "target2"],
+            bounds=[(-10, 200), (0, 100)],
+        )
+        plot_with_outliers(df_pipeline, data, config)
+        ```
+    """
+    bounds = getattr(config, "bounds", None)
+
+    for i, target in enumerate(config.targets):
+        fig = go.Figure()
+
+        # Plot Regular Data (lightgrey)
+        fig.add_trace(
+            go.Scatter(
+                x=df_pipeline.index,
+                y=df_pipeline[target],
+                mode="lines",
+                name="Regular Data",
+                line=dict(color="lightgrey"),
+            )
+        )
+
+        # Plot Outliers (Red)
+        outliers = df_pipeline_original.loc[df_pipeline[target].isna(), target]
+        if not outliers.empty:
+            fig.add_trace(
+                go.Scatter(
+                    x=outliers.index,
+                    y=outliers,
+                    mode="markers",
+                    name="Outliers",
+                    marker=dict(color="red", size=8, symbol="x"),
+                )
+            )
+
+        # Add lower and upper bound lines when available
+        if bounds is not None and i < len(bounds):
+            lower_bound, upper_bound = bounds[i]
+            fig.add_hline(
+                y=lower_bound,
+                line=dict(color="lightblue", width=2, dash="dash"),
+                annotation_text=f"Lower bound: {lower_bound}",
+                annotation_position="bottom right",
+                annotation=dict(font=dict(color="steelblue")),
+            )
+            fig.add_hline(
+                y=upper_bound,
+                line=dict(color="lightblue", width=2, dash="dash"),
+                annotation_text=f"Upper bound: {upper_bound}",
+                annotation_position="top right",
+                annotation=dict(font=dict(color="steelblue")),
+            )
+
+        pct_outliers = (len(outliers) / len(df_pipeline)) * 100
+
+        fig.update_layout(
+            title=f"{target} Time Series inc. Manually Labelled Outliers ({pct_outliers:.2f}%)",
+            xaxis_title="Time",
+            yaxis_title="Value",
+            template="plotly_white",
+            legend=dict(
+                orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1
+            ),
+        )
+        fig.show()

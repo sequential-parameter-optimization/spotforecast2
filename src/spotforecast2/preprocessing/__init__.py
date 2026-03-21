@@ -16,7 +16,7 @@ from .time_series_visualization import (
     visualize_ts_plotly,
     visualize_ts_comparison,
 )
-from .imputation import custom_weights, get_missing_weights
+from .imputation import apply_imputation, custom_weights, get_missing_weights
 from spotforecast2_safe.preprocessing.imputation import WeightFunction
 from .split import split_abs_train_val_test, split_rel_train_val_test
 from ._differentiator import TimeSeriesDifferentiator
@@ -34,6 +34,7 @@ __all__ = [
     "visualize_ts_plotly",
     "visualize_ts_comparison",
     "custom_weights",
+    "apply_imputation",
     "get_missing_weights",
     "WeightFunction",
     "split_abs_train_val_test",
