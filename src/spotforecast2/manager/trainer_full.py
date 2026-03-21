@@ -12,7 +12,7 @@ from typing import Any, Optional, Union
 import pandas as pd
 from joblib import dump
 
-from spotforecast2_safe.data.fetch_data import fetch_data, get_cache_home
+from spotforecast2_safe.data.fetch_data import fetch_data, get_cache_home, get_data_home
 from spotforecast2_safe.manager.trainer import get_last_model
 from spotforecast2_safe.preprocessing import RollingFeatures
 
@@ -151,8 +151,11 @@ def train_new_model(
             from unseen future data. If None, it is calculated automatically to be one day
             before the latest available index in the data.
         data_filename (Optional[str]):
-            Optional filename for the data to be used for training, e.g., 'interim/energy_load.csv'.
-            If None, the default data file is used. Defaults to None.
+            Absolute path to the CSV file used for training (e.g.,
+            ``str(get_data_home() / 'interim/energy_load.csv')``).
+            Relative paths are resolved against :func:`~spotforecast2_safe.data.fetch_data.get_data_home`.
+            If None, a ``ValueError`` is raised by :func:`~spotforecast2_safe.data.fetch_data.fetch_data`.
+            Defaults to None.
         **kwargs (Any):
             Additional keyword arguments to be passed to the model constructor.
 
@@ -202,8 +205,17 @@ def train_new_model(
     """
     logger.info("Training new model (iteration %d)...", n_iteration)
 
-    # Fetch data using the library's utility
-    current_data = fetch_data(filename=data_filename)
+    # Resolve data path: require absolute path for fetch_data
+    if data_filename is None:
+        raise ValueError(
+            "data_filename must be provided. "
+            "Pass an absolute path, e.g. str(get_data_home() / 'my_data.csv')."
+        )
+    data_path = Path(data_filename)
+    if not data_path.is_absolute():
+        data_path = get_data_home() / data_filename
+
+    current_data = fetch_data(filename=data_path)
     if current_data.empty:
         logger.error("No data fetched. Aborting training.")
         return None

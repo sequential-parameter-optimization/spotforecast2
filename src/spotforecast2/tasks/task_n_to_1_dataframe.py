@@ -4,7 +4,7 @@
 import warnings
 from spotforecast2_safe.processing.n2n_predict import n2n_predict
 from spotforecast2_safe.processing.agg_predict import agg_predict
-from spotforecast2_safe.data.fetch_data import fetch_data
+from spotforecast2_safe.data.fetch_data import fetch_data, get_data_home
 
 warnings.simplefilter("ignore")
 
@@ -17,7 +17,7 @@ def main():
     SHOW_PROGRESS = True
     WEIGHTS = [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0]
 
-    df = fetch_data(filename="data_in.csv")
+    df = fetch_data(filename=get_data_home() / "data_in.csv")
 
     print("--- Starting n_to_1_task using modular functions ---")
 
