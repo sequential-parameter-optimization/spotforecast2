@@ -103,7 +103,7 @@ from typing import Any, Dict, List, Optional, Tuple, Union
 import numpy as np
 import pandas as pd
 
-from spotforecast2_safe.data.fetch_data import fetch_data
+from spotforecast2_safe.data.fetch_data import fetch_data, get_data_home
 from spotforecast2_safe.processing.agg_predict import agg_predict
 from spotforecast2_safe.processing.n2n_predict_with_covariates import (
     n2n_predict_with_covariates,
@@ -424,7 +424,7 @@ def main() -> None:
         >>> from spotforecast2.scripts.n_to_1_with_covariates import main
         >>> main()
     """
-    data = fetch_data(filename="data_in.csv")
+    data = fetch_data(filename=get_data_home() / "data_in.csv")
 
     FORECAST_HORIZON = 24
     CONTAMINATION = 0.01

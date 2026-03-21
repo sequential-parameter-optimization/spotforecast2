@@ -35,6 +35,7 @@ def dummy_data():
 def test_train_new_model_basic(mock_dump, mock_fetch_data, dummy_data, tmp_path):
     """Test basic model training and saving behavior."""
     mock_fetch_data.return_value = dummy_data
+    data_file = str(tmp_path / "dummy.csv")
 
     model = train_new_model(
         model_class=DummyModel,
@@ -44,12 +45,13 @@ def test_train_new_model_basic(mock_dump, mock_fetch_data, dummy_data, tmp_path)
         save_to_file=True,
         model_dir=tmp_path,
         end_dev="2023-01-08",
-        data_filename="dummy.csv",
+        data_filename=data_file,
         extra_param="foo",
     )
 
     # Validate fetch_data arguments
-    mock_fetch_data.assert_called_once_with(filename="dummy.csv")
+    from pathlib import Path
+    mock_fetch_data.assert_called_once_with(filename=Path(data_file))
 
     # Validate model initialization
     assert isinstance(model, DummyModel)
@@ -75,6 +77,7 @@ def test_train_new_model_no_end_dev(mock_fetch_data, dummy_data, tmp_path):
         model_class=DummyModel,
         n_iteration=1,
         save_to_file=False,
+        data_filename=str(tmp_path / "dummy.csv"),
     )
 
     # When end_dev is None, it should be the last index minus 1 day
@@ -83,13 +86,14 @@ def test_train_new_model_no_end_dev(mock_fetch_data, dummy_data, tmp_path):
 
 
 @patch("spotforecast2.manager.trainer_full.fetch_data")
-def test_train_new_model_empty_data(mock_fetch_data):
+def test_train_new_model_empty_data(mock_fetch_data, tmp_path):
     """Test behavior when no data is returned."""
     mock_fetch_data.return_value = pd.DataFrame()
 
     model = train_new_model(
         model_class=DummyModel,
         n_iteration=1,
+        data_filename=str(tmp_path / "dummy.csv"),
     )
     assert model is None
 
@@ -108,6 +112,7 @@ def test_train_new_model_default_naming(
         n_iteration=2,
         save_to_file=True,
         model_dir=tmp_path,
+        data_filename=str(tmp_path / "dummy.csv"),
     )
 
     expected_path = tmp_path / "dummymodel_forecaster_2.joblib"

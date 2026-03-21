@@ -119,14 +119,10 @@ No column names are hard-coded in this document — the mapping is built dynamic
 and printed to the log when the data block executes.
 The fallback dataset (`demo10.csv`) already uses short column labels and requires no mapping.
 
-### Implementation of Data Acquisition
 
-The following block loads the data (with automatic fallback) and defines the target preparation helper. `END_TRAIN_DEFAULT` is set to the last timestamp present in the loaded dataset, so re-running after a data refresh automatically extends the training window.
+### Simplified Data-Fetching
 
 ```{python}
-#| label: code-notebook-entsoe-usage-load-csv
-#| echo: true
-
 import string
 import pandas as pd
 from pathlib import Path
@@ -135,50 +131,42 @@ from spotforecast2_safe.data.fetch_data import (
     get_package_data_home,
     get_data_home,
 )
-
-data_home = get_data_home()
-data_in_path = data_home / "data_in.csv"
-
-if data_in_path.exists():
-    logger.info(f"Loading primary dataset: {data_in_path}")
-    # fetch_data returns a UTC-aware DataFrame with DateTime as the index
-    df_raw = fetch_data(filename=str(data_in_path))
-    # Build the column→label mapping dynamically from CSV headers (order-based).
-    # Column names are NOT hard-coded; they are read from the file at runtime.
-    # Reset index so DateTime becomes a regular column (matches demo10 layout)
-    df_raw.index.name = "DateTime"
-    demo_data = df_raw.reset_index()
-    DATA_SOURCE = "data_in.csv"
-else:
-    DATA_IN_COL_MAP = {}
-    logger.info("data_in.csv not found — falling back to bundled demo10.csv")
-    csv_src = get_package_data_home() / "demo10.csv"
-    demo_data = pd.read_csv(csv_src, parse_dates=["DateTime"])
-    DATA_SOURCE = "demo10.csv"
 ```
 
-Check for data_test.csv (ground truth for forecast period comparison)
+```{python}
+DATA_SOURCE = "demo10.csv"
+DATA_TEST = "demo11.csv"
+data_home = get_package_data_home()
+data_in_path = data_home / DATA_SOURCE
+data_test_path = data_home / DATA_TEST
+
+demo_data = fetch_data(filename=str(data_in_path))
+df_test = fetch_data(filename=str(data_test_path))
+```
+
 
 ```{python}
-data_test_path = data_home / "data_test.csv"
-if data_test_path.exists():
-    logger.info(f"Loading test dataset: {data_test_path}")
-    df_test_raw = fetch_data(filename=str(data_test_path))
-    df_test_raw.index.name = "DateTime"
-    df_test = df_test_raw.reset_index()
-    logger.info(f"Test dataset loaded: shape={df_test.shape}")
-else:
-    DATA_IN_COL_MAP = {}
-    logger.info("data_test.csv not found — falling back to bundled demo11.csv")
-    csv_src = get_package_data_home() / "demo11.csv"
-    df_test = pd.read_csv(csv_src, parse_dates=["DateTime"])
+# DATA_SOURCE = "data_in.csv"
+# DATA_TEST = "data_test.csv"
+# data_home = get_data_home()
+# data_in_path = data_home / DATA_SOURCE
+# data_test_path = data_home / DATA_TEST
+# demo_data = fetch_data(filename=str(data_in_path))
+# df_test = fetch_data(filename=str(data_test_path))
+```
+
+```{python}
+from spotforecast2_safe.preprocessing.curate_data import reset_index
+INDEX_NAME = "DateTime"
+demo_data = reset_index(demo_data, index_name=INDEX_NAME)
+df_test = reset_index(df_test, index_name=INDEX_NAME)
 ```
 
 Dynamically derive download range and training cut-off
 
 ```{python}
-first_ts = pd.Timestamp(demo_data["DateTime"].iloc[0])
-last_ts = pd.Timestamp(demo_data["DateTime"].iloc[-1])
+first_ts = pd.Timestamp(demo_data[INDEX_NAME].iloc[0])
+last_ts = pd.Timestamp(demo_data[INDEX_NAME].iloc[-1])
 if first_ts.tzinfo is None:
     first_ts = first_ts.tz_localize("UTC")
 if last_ts.tzinfo is None:
@@ -191,11 +179,9 @@ END_DOWNLOAD = last_ts.strftime("%Y%m%d%H%M")
 END_TRAIN_DEFAULT = last_ts.isoformat()
 
 # Derive available targets from the loaded data columns (excludes DateTime).
-ALL_TARGETS = [c for c in demo_data.columns if c != "DateTime"]
-
-TARGETS = ALL_TARGETS  # use all targets by default; can be limited for testing
-# Limit to first 2 targets for demonstration; set TARGETS = ALL_TARGETS for a full run.
-TARGETS = ALL_TARGETS[:2]
+# config.targets and config.start_download/end_download are set in the
+# Configuration block below.
+ALL_TARGETS = [c for c in demo_data.columns if c != INDEX_NAME]
 ```
 
 
@@ -218,10 +204,11 @@ current_dir = get_data_home() / "current"
 current_dir.mkdir(parents=True, exist_ok=True)
 data_dst = current_dir / "data_current.csv"
 
-
 # Initialize configuration
+# country_code is the single ISO country code used for both API queries
+# (config.API_COUNTRY_CODE) and holiday feature generation.
 config = ConfigMulti(
-    api_country_code="DE",
+    country_code="DE",
     periods=[
         Period(name='daily', n_periods=12, column='hour', input_range=(1, 24))
     ],
@@ -234,6 +221,9 @@ config = ConfigMulti(
     random_state=42,
     n_hyperparameters_trials=50,
     data_filename=data_dst,
+    # Targets: set from loaded data; limit to first 2 for demonstration.
+    # Set targets=ALL_TARGETS for a full run on all eleven targets.
+    targets=ALL_TARGETS[:2],
     # Outlier detection
     use_outlier_detection=True,
     contamination=0.01,
@@ -245,12 +235,17 @@ config = ConfigMulti(
     latitude=51.5136,   # Dortmund
     longitude=7.4653,
     timezone="UTC",
-    country_code="DE",
     state="NW",
     # Feature selection toggles
     include_weather_windows=False,
     include_holiday_features=False,
     include_poly_features=False,
+    # Data source and index — single source of truth for file names and column name
+    index_name=INDEX_NAME,
+    data_source=DATA_SOURCE,
+    data_test=DATA_TEST,
+    start_download=START_DOWNLOAD,
+    end_download=END_DOWNLOAD,
 )
 ```
 
@@ -333,18 +328,22 @@ from spotforecast2_safe.preprocessing.curate_data import (
 
 # Build an indexed DataFrame from the raw demo_data for pipeline processing.
 # The pipeline operates on a DatetimeIndex-based DataFrame with target columns only.
-df_pipeline = demo_data.copy()
-df_pipeline["DateTime"] = pd.to_datetime(df_pipeline["DateTime"])
-df_pipeline = df_pipeline.set_index("DateTime")
-if df_pipeline.index.tzinfo is None:
-    df_pipeline.index = df_pipeline.index.tz_localize("UTC")
-
-target_columns = [c for c in df_pipeline.columns]
+# demo_data has DateTime as a column (from reset_index); set it as the index here.
+df_pipeline = demo_data.set_index(INDEX_NAME)
 
 # Resample first to establish a regular hourly grid (handles duplicates and sub-hourly data).
 # Then validate the resulting index with basic_ts_checks.
 df_pipeline = agg_and_resample_data(df_pipeline, verbose=True)
 basic_ts_checks(df_pipeline, verbose=True)
+
+# Sync config.targets with the resampled pipeline columns (preserves ordering).
+# After aggregation the DataFrame may drop or reorder columns; re-derive targets
+# from the pipeline index so config stays consistent.
+if config.targets is None:
+    config.targets = [c for c in df_pipeline.columns]
+else:
+    # Keep only targets that are still present after resampling.
+    config.targets = [c for c in config.targets if c in df_pipeline.columns]
 
 # Derive date ranges for covariates (extends end by config.predict_size)
 data_start, data_end, cov_start, cov_end = get_start_end(
@@ -382,7 +381,7 @@ Two options are available for outlier handling:
 
 ```{python}
 # DateTime is the index (not a column) — bounds[i] maps directly to df_pipeline.columns[i].
-if DATA_SOURCE == "data_in.csv":
+if config.data_source == "data_in.csv":
     bounds = [(-2500, 4500), (-10, 3000), (0, 230), (0, 550), (0, 1400), (0, 1400), (0, 10), (0, 4500), (0, 300), (0, 400), (0, 300)]
 else:
     bounds = [(-15708, 28274), (-63, 18850), (0, 1445), (0, 3456), (0, 8796), (0, 8796), (0, 63), (0, 28274), (0, 1885), (0, 2513), (0, 1885)]
@@ -403,7 +402,7 @@ for i, (lower, upper) in enumerate(bounds):
 import plotly.graph_objects as go
 ### Interactive time series plot with outliers
 
-for target in target_columns:
+for target in config.targets:
     fig = go.Figure()
     
     # Plot Regular Data (lightgrey)
@@ -467,7 +466,7 @@ elif config.imputation_method == "linear":
     logger.info("Applying linear interpolation (improved2 style)...")
     interpolator = LinearlyInterpolateTS()
     # LinearlyInterpolateTS expects a Series; apply per column
-    for col in target_columns:
+    for col in config.targets:
         series = df_pipeline[col]
         df_pipeline[col] = interpolator.fit_transform(series)
 else:
@@ -646,7 +645,7 @@ if config.use_exogenous_features and len(exog_feature_names) > 0:
     data_with_exog, exo_tmp, exo_pred = _merge_data_and_covariates(
         data=df_pipeline,
         exogenous_features=exogenous_features,
-        target_columns=target_columns,
+        target_columns=config.targets,
         exog_features=exog_feature_names,
         start=data_start,
         end=data_end,
@@ -689,10 +688,15 @@ The `n_hyperparameters_trials` argument controls the model selection process. Th
 
 | Argument | Type | Description | Value |
 | :--- | :--- | :--- | :--- |
-| `api_country_code` | `str` | ISO 3166-1 alpha-2 code (e.g., 'DE', 'FR'). | "DE"|
+| `country_code` | `str` | ISO 3166-1 alpha-2 code (e.g., 'DE', 'FR'). Used for API queries (`API_COUNTRY_CODE`) and holiday features. | `"DE"` |
 | `random_state` | `int` | Seed for reproducibility. | `42` |
 | `n_hyperparameters_trials` | `int` | Number of trials for random search hyperparameter optimization. | `100` |
 | `data_filename` | `str` | Path to the current merged data file. | `"data_current.csv"` |
+| `index_name` | `str` | Datetime column name when resetting the index. | `"DateTime"` |
+| `data_source` | `str` | Primary data file name. | `"data_in.csv"` |
+| `data_test` | `str` | Test data file name. | `"data_test.csv"` |
+| `start_download` | `Optional[str]` | Start of data range (derived from loaded dataset). | `START_DOWNLOAD` |
+| `end_download` | `Optional[str]` | End of data range (derived from loaded dataset). | `END_DOWNLOAD` |
 
 : Configuration for Data Acquisition. General parameters. {#tbl-config-entsoe-param}
 
@@ -915,7 +919,7 @@ The forecaster is created with default LightGBM hyperparameters and passed — *
 #| fig-cap: "Prediction (Approach 1: Lazy Fitting)"
 
 results_app1 = {}
-for target in TARGETS:
+for target in config.targets:
     logger.info(f"[Approach 1] Target '{target}': fitting with default params...")
     y_train, exog_train, exog_future = get_target_data(target)
     forecaster = create_forecaster()
@@ -945,7 +949,7 @@ This separation matters in batch pipelines: training can be scheduled, monitored
 #| fig-cap: "Prediction (Approach 2: Explicit Pre-Training)"
 
 results_app2 = {}
-for target in TARGETS:
+for target in config.targets:
     logger.info(f"[Approach 2] Target '{target}': explicit pre-training step...")
     y_train, exog_train, exog_future = get_target_data(target)
 
@@ -1005,7 +1009,7 @@ def search_space_optuna_lgbm(trial):
 N_TRIALS_OPTUNA = 15
 
 results_app3 = {}
-for target in TARGETS:
+for target in config.targets:
     logger.info(f"[Approach 3] Target '{target}': Optuna tuning ({N_TRIALS_OPTUNA} trials)...")
     y_train, exog_train, exog_future = get_target_data(target)
     forecaster = create_forecaster()
@@ -1095,7 +1099,7 @@ N_TRIALS_SPOTOPTIM = 10
 N_INITIAL_SPOTOPTIM = 5
 
 results_app4 = {}
-for target in TARGETS:
+for target in config.targets:
     logger.info(f"[Approach 4] Target '{target}': SpotOptim tuning ({N_TRIALS_SPOTOPTIM} trials)...")
     y_train, exog_train, exog_future = get_target_data(target)
     forecaster = create_forecaster()
@@ -1199,9 +1203,9 @@ combined into a single aggregated forecast via a weighted sum — mirroring the
 aggregation step in `task_safe_n_to_1_with_covariates_and_dataframe.py`
 (`agg_predict`, Step 2).
 
-When `TARGETS` is reduced (e.g. `TARGETS = ALL_TARGETS[:2]`), only the
-corresponding leading weights are used so that weight indices always align with
-target order.
+When `config.targets` is a subset of all columns (e.g. `targets=ALL_TARGETS[:2]`),
+only the corresponding leading weights are used so that weight indices always
+align with target order.
 
 ```{python}
 #| label: prediction-aggregation
@@ -1226,22 +1230,22 @@ DEFAULT_WEIGHTS = [
     1.0,   # Index 10 – target K
 ]
 
-# Slice weights to match the number of active TARGETS.
-# E.g. TARGETS = ALL_TARGETS[:2] → only the 1st and 2nd weights are used.
-active_weights = DEFAULT_WEIGHTS[: len(TARGETS)]
+# Slice weights to match the number of active config.targets.
+# E.g. targets=ALL_TARGETS[:2] → only the 1st and 2nd weights are used.
+active_weights = DEFAULT_WEIGHTS[: len(config.targets)]
 
 # Use Approach 1 results as the reference predictions for aggregation.
 ref_results = results_app1
 
 # Build per-component DataFrames — one column per active target.
 future_preds_df = pd.DataFrame(
-    {t: ref_results[t]["future_pred"] for t in TARGETS}
+    {t: ref_results[t]["future_pred"] for t in config.targets}
 )
 train_preds_df = pd.DataFrame(
-    {t: ref_results[t]["train_pred"] for t in TARGETS}
+    {t: ref_results[t]["train_pred"] for t in config.targets}
 )
 train_actuals_df = pd.DataFrame(
-    {t: ref_results[t]["train_actual"] for t in TARGETS}
+    {t: ref_results[t]["train_actual"] for t in config.targets}
 )
 
 # Aggregate each component with the same sliced weights.
@@ -1254,7 +1258,7 @@ agg_train_actual = agg_predict(train_actuals_df, weights=active_weights)
 # targets without ground truth are filled with NaN so the index stays aligned.
 test_series = {
     t: ref_results[t]["test_actual"]
-    for t in TARGETS
+    for t in config.targets
     if "test_actual" in ref_results[t] and len(ref_results[t]["test_actual"]) > 0
 }
 agg_test_actual = None
@@ -1266,7 +1270,7 @@ if test_series:
     # Use only the weights that correspond to targets present in test_series.
     test_weights = [
         active_weights[i]
-        for i, t in enumerate(TARGETS)
+        for i, t in enumerate(config.targets)
         if t in test_series
     ]
     agg_test_actual = agg_predict(test_actuals_df, weights=test_weights)
@@ -1287,7 +1291,7 @@ if agg_test_actual is not None:
 
 fig = PredictionFigure(
     agg_pred_pkg,
-    title=f"Aggregated Forecast: Weighted Combination of Targets {TARGETS} (Approach 1)",
+    title=f"Aggregated Forecast: Weighted Combination of Targets {config.targets} (Approach 1)",
 ).make_plot()
 fig.show()
 ```
