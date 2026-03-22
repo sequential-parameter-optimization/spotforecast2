@@ -11,7 +11,6 @@ from typing import Any, Dict, Optional
 
 from spotforecast2.manager.multitask.base import BaseTask
 from spotforecast2.model_selection import spotoptim_search_forecaster
-from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
 
 
 def _default_spotoptim_search_space() -> Dict[str, Any]:
@@ -67,16 +66,7 @@ def execute_spotoptim(
         y_train, exog_train, exog_future = task._get_target_data(target)
         forecaster = task.create_forecaster()
 
-        end_cv = task.config.end_train_ts - task.config.delta_val
-        n_train_cv = len(y_train.loc[:end_cv])
-        cv = TimeSeriesFold(
-            steps=task.config.predict_size,
-            refit=False,
-            initial_train_size=n_train_cv,
-            fixed_train_size=(task.config.train_size is not None),
-            gap=0,
-            allow_incomplete_fold=True,
-        )
+        cv = task.cv_ts(y_train)
 
         tuning_results, optimizer = spotoptim_search_forecaster(
             forecaster=forecaster,

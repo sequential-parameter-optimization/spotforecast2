@@ -226,7 +226,7 @@ class PredictionFigure:
                 orientation="h", yanchor="bottom", y=-0.3, xanchor="center", x=0.5
             ),
             xaxis=dict(title="Time (UTC)"),
-            yaxis=dict(title="Load [MW]"),
+            yaxis=dict(title="Load"),
         )
         self.fig.update_xaxes(range=[min_range, max_range])
         self.fig.update_yaxes(range=[y_min - y_margin, y_max + y_margin])

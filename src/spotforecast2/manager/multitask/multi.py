@@ -13,6 +13,8 @@ import logging
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional
 
+import pandas as pd
+
 from spotforecast2.manager.multitask.base import BaseTask
 from spotforecast2.manager.multitask.lazy import execute_lazy
 from spotforecast2.manager.multitask.optuna import (
@@ -42,14 +44,21 @@ class MultiTask(BaseTask):
     Args:
         task: Pipeline task mode — ``"lazy"``, ``"optuna"``,
             or ``"spotoptim"``. Defaults to ``"lazy"``.
+        dataframe: Optional pre-loaded input DataFrame.  When supplied,
+            method `prepare_data` uses this DataFrame directly instead of
+            reading from a CSV file.  The DataFrame must contain a
+            datetime column matching ``index_name`` plus at least one
+            numeric target column.  ``None`` falls back to the default
+            CSV-loading behaviour.
         data_frame_name: Active dataset identifier (e.g. ``"demo10"``).
-        data_source: Input CSV filename.
+        data_source: Input CSV filename (only used when ``dataframe`` is
+            ``None``).
         data_test: Test CSV filename.
         data_home: Path to the data directory.
         cache_data: Whether to cache intermediate data to disk.
         cache_home: Cache directory path.
         agg_weights: Per-target aggregation weights.
-        index_name: Datetime column name in the raw CSV.
+        index_name: Datetime column name in the raw CSV / DataFrame.
         number_folds: Number of validation folds.
         predict_size: Forecast horizon in hours.
         bounds: Per-column hard outlier bounds ``(lower, upper)``.
@@ -90,12 +99,26 @@ class MultiTask(BaseTask):
         print(f"Contamination: {mt.config.contamination}")
         print(f"Imputation: {mt.imputation_method}")
         ```
+
+        ```{python}
+        import pandas as pd
+        from spotforecast2.manager.multitask import MultiTask
+        from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+
+        data_home = get_package_data_home()
+        df = fetch_data(filename=str(data_home / "demo10.csv"))
+
+        mt = MultiTask(dataframe=df, predict_size=24)
+        print(f"DataFrame stored: {mt._dataframe is not None}")
+        print(f"Task: {mt.TASK}")
+        ```
     """
 
     def __init__(
         self,
         *,
         task: str = "lazy",
+        dataframe: Optional[pd.DataFrame] = None,
         data_frame_name: str = "demo10",
         data_source: str = "demo10.csv",
         data_test: str = "demo11.csv",
@@ -118,6 +141,7 @@ class MultiTask(BaseTask):
     ) -> None:
         # Set _task_name before super().__init__ so self.TASK is correct
         self._task_name = task
+        self._dataframe = dataframe
         super().__init__(
             data_frame_name=data_frame_name,
             data_source=data_source,
@@ -139,6 +163,51 @@ class MultiTask(BaseTask):
             log_level=log_level,
             **config_overrides,
         )
+
+    # ------------------------------------------------------------------
+    # Data preparation
+    # ------------------------------------------------------------------
+
+    def prepare_data(
+        self,
+        demo_data: Optional[pd.DataFrame] = None,
+        df_test: Optional[pd.DataFrame] = None,
+    ) -> "MultiTask":
+        """Load and prepare the pipeline data.
+
+        When a ``dataframe`` was passed to the constructor, it is used as the
+        input data source instead of reading a CSV file.  An explicit
+        ``demo_data`` argument always takes precedence over the constructor
+        ``dataframe``.
+
+        Args:
+            demo_data: Pre-loaded input DataFrame.  Overrides the constructor
+                ``dataframe`` when provided.  ``None`` falls back first to the
+                constructor ``dataframe``, then to CSV loading.
+            df_test: Pre-loaded test DataFrame.  ``None`` triggers automatic
+                loading from ``data_home / data_test``.
+
+        Returns:
+            ``self`` (for method chaining).
+
+        Examples:
+            ```{python}
+            import pandas as pd
+            from spotforecast2.manager.multitask import MultiTask
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv"))
+
+            mt = MultiTask(dataframe=df, predict_size=24)
+            mt.prepare_data()
+            print(f"Pipeline shape: {mt.df_pipeline.shape}")
+            print(f"Targets: {mt.config.targets}")
+            ```
+        """
+        if demo_data is None and self._dataframe is not None:
+            demo_data = self._dataframe
+        return super().prepare_data(demo_data=demo_data, df_test=df_test)
 
     # ------------------------------------------------------------------
     # Task-specific convenience methods

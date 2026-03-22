@@ -57,7 +57,10 @@ from spotforecast2_safe.preprocessing.outlier import (
 )
 from spotforecast2_safe.processing.agg_predict import agg_predict
 
+from sklearn.model_selection import TimeSeriesSplit as _SklearnTimeSeriesSplit
+
 from spotforecast2.manager.plotter import PredictionFigure, plot_with_outliers
+from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.preprocessing.imputation import apply_imputation
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 
@@ -222,7 +225,7 @@ class BaseTask:
         self.logger.setLevel(log_level)
 
         # Derived constants
-        self.TRAIN_SIZE = pd.Timedelta(days=365)
+        self.TRAIN_SIZE = pd.Timedelta(days=2 * 365)
         self.DELTA_VAL = pd.Timedelta(days=7 * number_folds)
 
         # Pipeline state (populated by methods)
@@ -575,6 +578,84 @@ class BaseTask:
     # ------------------------------------------------------------------
     # Shared helpers
     # ------------------------------------------------------------------
+
+    def cv_ts(self, y_train: pd.Series) -> TimeSeriesFold:
+        """Build a :class:`~spotforecast2.model_selection.split_ts_cv.TimeSeriesFold` for cross-validation.
+
+        Constructs the cross-validation splitter used by all tuning tasks
+        (class `~.optuna.OptunaTask`, class `~.spotoptim.SpotOptimTask`).
+
+        Internally uses :class:`sklearn.model_selection.TimeSeriesSplit` to
+        compute split boundaries that respect temporal ordering and avoid
+        data leakage between folds.  Classical cross-validation techniques
+        such as ``KFold`` assume i.i.d. samples and yield unreliable
+        estimates on time series data;
+        :class:`sklearn.model_selection.TimeSeriesSplit` instead ensures
+        every test fold consists only of observations that come *after* the
+        corresponding training observations.
+
+        The validation boundary is determined by ``config.end_train_ts`` minus
+        ``config.delta_val``.  When ``config.train_size`` is set, the sklearn
+        splitter uses a *sliding* fixed-size training window
+        (``max_train_size``); otherwise an expanding window is used so that
+        each subsequent fold sees more historical data.
+
+        Args:
+            y_train: Training time series for the current target.  Used both
+                to determine the validation boundary and as the sequence passed
+                to :meth:`sklearn.model_selection.TimeSeriesSplit.split` to
+                derive ``initial_train_size``.
+
+        Returns:
+            A configured ``TimeSeriesFold`` instance ready to be passed to
+            a model-selection function.
+
+        Examples:
+            ```{python}
+            import pandas as pd
+            from spotforecast2.manager.multitask import LazyTask
+
+            task = LazyTask(predict_size=24)
+            task.prepare_data()
+            task.detect_outliers()
+            task.impute()
+            target = task.config.targets[0]
+            y_train, _, _ = task._get_target_data(target)
+            cv = task.cv_ts(y_train)
+            print(f"steps: {cv.steps}")
+            print(f"initial_train_size: {cv.initial_train_size}")
+            ```
+        """
+        end_cv = self.config.end_train_ts - self.config.delta_val
+        n_train_cv = len(y_train.loc[:end_cv])
+
+        # Fixed sliding window when a training-size limit is configured;
+        # expanding window otherwise (sklearn default).
+        max_train_size: Optional[int] = (
+            n_train_cv if self.config.train_size is not None else None
+        )
+
+        skl_cv = _SklearnTimeSeriesSplit(
+            n_splits=self.number_folds,
+            max_train_size=max_train_size,
+            test_size=self.config.predict_size,
+            gap=0,
+        )
+
+        # The first fold's training-set size determines the initial training
+        # window passed to TimeSeriesFold, ensuring both splitters agree on
+        # where training ends and validation begins.
+        splits = list(skl_cv.split(y_train))
+        initial_train_size = len(splits[0][0]) if splits else n_train_cv
+
+        return TimeSeriesFold(
+            steps=self.config.predict_size,
+            refit=False,
+            initial_train_size=initial_train_size,
+            fixed_train_size=(self.config.train_size is not None),
+            gap=0,
+            allow_incomplete_fold=True,
+        )
 
     def create_forecaster(self) -> Any:
         """Create a fresh  class `ForecasterRecursive` with shared configuration.
