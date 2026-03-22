@@ -1,3 +1,14 @@
+## [0.12.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.5...v0.12.0-rc.1) (2026-03-22)
+
+### Features
+
+* Before Refactoring into Function ([db57cad](https://github.com/sequential-parameter-optimization/spotforecast2/commit/db57cad3ec0831be431ed33f2d0ac48dac488175))
+
+### Code Refactoring
+
+* remove _get_target_data wrapper, add multi.qmd and multitask helpers ([e4897be](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e4897be2ab0d6db22f915ac38cc187f6cac12269))
+* use agg_predictor(), show all targets in figure cells ([13b2b54](https://github.com/sequential-parameter-optimization/spotforecast2/commit/13b2b54f8f1600e200d45c02b437e10c05cd8da2))
+
 ## [0.11.5](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.4...v0.11.5) (2026-03-21)
 
 ### Bug Fixes
