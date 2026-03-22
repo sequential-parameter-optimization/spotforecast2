@@ -1,3 +1,9 @@
+## [0.13.2-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.2-rc.1...v0.13.2-rc.2) (2026-03-22)
+
+### Code Refactoring
+
+* **multitask:** remove redundant TrainTask — LazyTask is the single implementation ([bd6e4ea](https://github.com/sequential-parameter-optimization/spotforecast2/commit/bd6e4eab9ec1e6237a6d0c7f3aa650414b899e03))
+
 ## [0.13.2-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.1...v0.13.2-rc.1) (2026-03-22)
 
 ### Bug Fixes
