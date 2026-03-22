@@ -1,3 +1,13 @@
+## [0.13.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.12.1...v0.13.0) (2026-03-22)
+
+### Features
+
+* multi class ([3263382](https://github.com/sequential-parameter-optimization/spotforecast2/commit/3263382a56659b483cc934097963bbdaf94b640b))
+
+### Bug Fixes
+
+* pyproject ([e662774](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e662774c9412baf715f914a07605fe73cbdffc2e))
+
 ## [0.13.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.12.1-rc.1...v0.13.0-rc.1) (2026-03-22)
 
 ### Features
