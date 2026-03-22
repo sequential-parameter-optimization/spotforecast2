@@ -391,7 +391,7 @@ class TestTaskRunReturnsAggregatedValues:
     def test_execute_lazy_returns_aggregated_keys(self):
         from spotforecast2.manager.multitask.lazy import execute_lazy
 
-        task = _inject_pipeline(LazyTask(USE_EXOGENOUS_FEATURES=False, PREDICT_SIZE=24))
+        task = _inject_pipeline(LazyTask(use_exogenous_features=False, predict_size=24))
         result = execute_lazy(task, show=False)
         assert isinstance(result, dict)
         assert (
@@ -402,7 +402,7 @@ class TestTaskRunReturnsAggregatedValues:
     def test_execute_lazy_stores_per_target_in_results(self):
         from spotforecast2.manager.multitask.lazy import execute_lazy
 
-        task = _inject_pipeline(LazyTask(USE_EXOGENOUS_FEATURES=False, PREDICT_SIZE=24))
+        task = _inject_pipeline(LazyTask(use_exogenous_features=False, predict_size=24))
         execute_lazy(task, show=False)
         assert "lazy" in task.results
         assert "A" in task.results["lazy"]
@@ -411,7 +411,7 @@ class TestTaskRunReturnsAggregatedValues:
     def test_execute_lazy_populates_agg_results(self):
         from spotforecast2.manager.multitask.lazy import execute_lazy
 
-        task = _inject_pipeline(LazyTask(USE_EXOGENOUS_FEATURES=False, PREDICT_SIZE=24))
+        task = _inject_pipeline(LazyTask(use_exogenous_features=False, predict_size=24))
         execute_lazy(task, show=False)
         assert len(task.agg_results) > 0
 

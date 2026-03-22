@@ -195,15 +195,15 @@ class TestTaskName:
         assert _default().TASK == "lazy"
 
     def test_multitask_custom_task(self):
-        mt = MultiTask(TASK="training")
+        mt = MultiTask(task="training")
         assert mt.TASK == "training"
 
     def test_multitask_optuna_task(self):
-        mt = MultiTask(TASK="optuna")
+        mt = MultiTask(task="optuna")
         assert mt.TASK == "optuna"
 
     def test_multitask_spotoptim_task(self):
-        mt = MultiTask(TASK="spotoptim")
+        mt = MultiTask(task="spotoptim")
         assert mt.TASK == "spotoptim"
 
 
@@ -221,7 +221,7 @@ class TestDefaults:
         ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_data_frame_name_default(self, factory):
-        assert factory().DATA_FRAME_NAME == "demo10"
+        assert factory().data_frame_name == "demo10"
 
     @pytest.mark.parametrize(
         "factory",
@@ -229,7 +229,7 @@ class TestDefaults:
         ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_data_source_default(self, factory):
-        assert factory().DATA_SOURCE == "demo10.csv"
+        assert factory().data_source == "demo10.csv"
 
     @pytest.mark.parametrize(
         "factory",
@@ -237,7 +237,7 @@ class TestDefaults:
         ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_data_test_default(self, factory):
-        assert factory().DATA_TEST == "demo11.csv"
+        assert factory().data_test == "demo11.csv"
 
     @pytest.mark.parametrize(
         "factory",
@@ -245,7 +245,7 @@ class TestDefaults:
         ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_cache_data_default(self, factory):
-        assert factory().CACHE_DATA is True
+        assert factory().cache_data is True
 
     @pytest.mark.parametrize(
         "factory",
@@ -253,7 +253,7 @@ class TestDefaults:
         ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_predict_size_default(self, factory):
-        assert factory().PREDICT_SIZE == 24
+        assert factory().predict_size == 24
 
     @pytest.mark.parametrize(
         "factory",
@@ -261,7 +261,7 @@ class TestDefaults:
         ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_contamination_default(self, factory):
-        assert factory().CONTAMINATION == 0.03
+        assert factory().contamination == 0.03
 
     @pytest.mark.parametrize(
         "factory",
@@ -269,7 +269,7 @@ class TestDefaults:
         ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_imputation_method_default(self, factory):
-        assert factory().IMPUTATION_METHOD == "weighted"
+        assert factory().imputation_method == "weighted"
 
     @pytest.mark.parametrize(
         "factory",
@@ -277,7 +277,7 @@ class TestDefaults:
         ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_number_folds_default(self, factory):
-        assert factory().NUMBER_FOLDS == 10
+        assert factory().number_folds == 10
 
     @pytest.mark.parametrize(
         "factory",
@@ -296,28 +296,28 @@ class TestDefaults:
         assert factory().DELTA_VAL == pd.Timedelta(days=70)
 
     def test_cache_home_default(self):
-        assert _default().CACHE_HOME is None
+        assert _default().cache_home is None
 
     def test_agg_weights_default(self):
-        assert _default().AGG_WEIGHTS is None
+        assert _default().agg_weights is None
 
     def test_index_name_default(self):
-        assert _default().INDEX_NAME == "DateTime"
+        assert _default().index_name == "DateTime"
 
     def test_bounds_default(self):
-        assert _default().BOUNDS is None
+        assert _default().bounds is None
 
     def test_use_exogenous_features_default(self):
-        assert _default().USE_EXOGENOUS_FEATURES is True
+        assert _default().use_exogenous_features is True
 
     def test_n_trials_optuna_default(self):
-        assert _default().N_TRIALS_OPTUNA == 15
+        assert _default().n_trials_optuna == 15
 
     def test_n_trials_spotoptim_default(self):
-        assert _default().N_TRIALS_SPOTOPTIM == 10
+        assert _default().n_trials_spotoptim == 10
 
     def test_n_initial_spotoptim_default(self):
-        assert _default().N_INITIAL_SPOTOPTIM == 5
+        assert _default().n_initial_spotoptim == 5
 
 
 # ---------------------------------------------------------------------------
@@ -329,37 +329,37 @@ class TestCustomArgs:
     """Verify custom constructor arguments are stored correctly."""
 
     def test_custom_predict_size(self):
-        task = LazyTask(PREDICT_SIZE=48)
-        assert task.PREDICT_SIZE == 48
+        task = LazyTask(predict_size=48)
+        assert task.predict_size == 48
 
     def test_custom_contamination(self):
-        task = TrainTask(CONTAMINATION=0.05)
-        assert task.CONTAMINATION == 0.05
+        task = TrainTask(contamination=0.05)
+        assert task.contamination == 0.05
 
     def test_custom_agg_weights(self):
         weights = [1.0, -1.0, 0.5]
-        task = OptunaTask(AGG_WEIGHTS=weights)
-        assert task.AGG_WEIGHTS == weights
+        task = OptunaTask(agg_weights=weights)
+        assert task.agg_weights == weights
 
     def test_custom_n_trials_optuna(self):
-        task = OptunaTask(N_TRIALS_OPTUNA=5)
-        assert task.N_TRIALS_OPTUNA == 5
+        task = OptunaTask(n_trials_optuna=5)
+        assert task.n_trials_optuna == 5
 
     def test_custom_n_trials_spotoptim(self):
-        task = SpotOptimTask(N_TRIALS_SPOTOPTIM=20)
-        assert task.N_TRIALS_SPOTOPTIM == 20
+        task = SpotOptimTask(n_trials_spotoptim=20)
+        assert task.n_trials_spotoptim == 20
 
     def test_custom_number_folds(self):
-        task = LazyTask(NUMBER_FOLDS=5)
-        assert task.NUMBER_FOLDS == 5
+        task = LazyTask(number_folds=5)
+        assert task.number_folds == 5
         assert task.DELTA_VAL == pd.Timedelta(days=35)
 
     def test_custom_imputation_method(self):
-        task = TrainTask(IMPUTATION_METHOD="linear")
-        assert task.IMPUTATION_METHOD == "linear"
+        task = TrainTask(imputation_method="linear")
+        assert task.imputation_method == "linear"
 
     def test_multitask_custom_task(self):
-        mt = MultiTask(TASK="training")
+        mt = MultiTask(task="training")
         assert mt.TASK == "training"
 
 
@@ -369,7 +369,7 @@ class TestCustomArgs:
 
 
 class TestConfigDelegation:
-    """Verify capitalized args are correctly forwarded to ConfigMulti."""
+    """Verify constructor args are correctly forwarded to ConfigMulti."""
 
     def test_config_is_config_multi(self):
         from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
@@ -377,19 +377,19 @@ class TestConfigDelegation:
         assert isinstance(_lazy().config, ConfigMulti)
 
     def test_config_predict_size(self):
-        task = LazyTask(PREDICT_SIZE=48)
+        task = LazyTask(predict_size=48)
         assert task.config.predict_size == 48
 
     def test_config_contamination(self):
-        task = TrainTask(CONTAMINATION=0.05)
+        task = TrainTask(contamination=0.05)
         assert task.config.contamination == 0.05
 
     def test_config_imputation_method(self):
-        task = OptunaTask(IMPUTATION_METHOD="linear")
+        task = OptunaTask(imputation_method="linear")
         assert task.config.imputation_method == "linear"
 
     def test_config_use_exogenous_features(self):
-        task = SpotOptimTask(USE_EXOGENOUS_FEATURES=False)
+        task = SpotOptimTask(use_exogenous_features=False)
         assert task.config.use_exogenous_features is False
 
     def test_config_task_lazy(self):
@@ -405,37 +405,37 @@ class TestConfigDelegation:
         assert _spotoptim().config.task == "spotoptim"
 
     def test_config_task_multitask(self):
-        mt = MultiTask(TASK="optuna")
+        mt = MultiTask(task="optuna")
         assert mt.config.task == "optuna"
 
     def test_config_n_trials_optuna(self):
-        task = OptunaTask(N_TRIALS_OPTUNA=3)
+        task = OptunaTask(n_trials_optuna=3)
         assert task.config.n_trials_optuna == 3
 
     def test_config_n_trials_spotoptim(self):
-        task = SpotOptimTask(N_TRIALS_SPOTOPTIM=7)
+        task = SpotOptimTask(n_trials_spotoptim=7)
         assert task.config.n_trials_spotoptim == 7
 
     def test_config_n_initial_spotoptim(self):
-        task = SpotOptimTask(N_INITIAL_SPOTOPTIM=3)
+        task = SpotOptimTask(n_initial_spotoptim=3)
         assert task.config.n_initial_spotoptim == 3
 
     def test_config_agg_weights(self):
         weights = [1.0, -1.0]
-        task = LazyTask(AGG_WEIGHTS=weights)
+        task = LazyTask(agg_weights=weights)
         assert task.config.agg_weights == weights
 
     def test_config_bounds(self):
         bounds = [(0, 100), (-50, 200)]
-        task = TrainTask(BOUNDS=bounds)
+        task = TrainTask(bounds=bounds)
         assert task.config.bounds == bounds
 
     def test_config_index_name(self):
-        task = LazyTask(INDEX_NAME="ts")
+        task = LazyTask(index_name="ts")
         assert task.config.index_name == "ts"
 
     def test_config_data_source(self):
-        task = LazyTask(DATA_SOURCE="my_data.csv")
+        task = LazyTask(data_source="my_data.csv")
         assert task.config.data_source == "my_data.csv"
 
     def test_config_overrides(self):
@@ -445,7 +445,7 @@ class TestConfigDelegation:
         assert task.config.random_state == 42
 
     def test_multitask_config_predict_size(self):
-        mt = MultiTask(PREDICT_SIZE=48)
+        mt = MultiTask(predict_size=48)
         assert mt.config.predict_size == 48
 
 
@@ -642,7 +642,7 @@ class TestMultiTaskRunDispatcher:
     """Verify the MultiTask.run() method dispatches to the correct task."""
 
     def test_invalid_task_raises(self):
-        mt = MultiTask(TASK="invalid_task")
+        mt = MultiTask(task="invalid_task")
         mt.df_pipeline = pd.DataFrame()
         mt.config.end_train_ts = pd.Timestamp("2024-01-01", tz="UTC")
         with pytest.raises(ValueError, match="Unknown task"):
@@ -650,7 +650,7 @@ class TestMultiTaskRunDispatcher:
 
     def test_valid_task_names(self):
         for task in ["lazy", "training", "optuna", "spotoptim"]:
-            mt = MultiTask(TASK=task)
+            mt = MultiTask(task=task)
             assert mt.TASK == task
 
     def test_has_run_task_lazy(self):
@@ -733,13 +733,13 @@ class TestPrepareData:
         assert task.df_pipeline.shape[0] > 0
 
     def test_prepare_data_sets_targets(self):
-        task = LazyTask(DATA_FRAME_NAME="demo10")
+        task = LazyTask(data_frame_name="demo10")
         task.prepare_data()
         assert task.config.targets is not None
         assert len(task.config.targets) > 0
 
     def test_prepare_data_sets_date_ranges(self):
-        task = LazyTask(DATA_FRAME_NAME="demo10")
+        task = LazyTask(data_frame_name="demo10")
         task.prepare_data()
         assert task.config.data_start is not None
         assert task.config.data_end is not None
@@ -817,7 +817,7 @@ class TestExogenousFeatures:
     """Integration test: exogenous feature engineering."""
 
     def test_exog_disabled(self):
-        task = LazyTask(USE_EXOGENOUS_FEATURES=False)
+        task = LazyTask(use_exogenous_features=False)
         task.prepare_data()
         task.detect_outliers()
         task.impute()
@@ -826,7 +826,7 @@ class TestExogenousFeatures:
         assert task.exog_feature_names == []
 
     def test_exog_enabled(self):
-        task = LazyTask(USE_EXOGENOUS_FEATURES=True)
+        task = LazyTask(use_exogenous_features=True)
         task.prepare_data()
         task.detect_outliers()
         task.impute()
@@ -837,7 +837,7 @@ class TestExogenousFeatures:
         assert task.exo_pred is not None
 
     def test_build_exog_returns_self(self):
-        task = TrainTask(USE_EXOGENOUS_FEATURES=False)
+        task = TrainTask(use_exogenous_features=False)
         task.prepare_data()
         task.detect_outliers()
         task.impute()
@@ -854,7 +854,7 @@ class TestLogSummary:
     """Verify log_summary does not raise."""
 
     def test_log_summary_no_exog(self):
-        task = LazyTask(USE_EXOGENOUS_FEATURES=False)
+        task = LazyTask(use_exogenous_features=False)
         task.prepare_data()
         task.detect_outliers()
         task.impute()
@@ -862,7 +862,7 @@ class TestLogSummary:
         task.log_summary()
 
     def test_log_summary_with_exog(self):
-        task = TrainTask(USE_EXOGENOUS_FEATURES=True)
+        task = TrainTask(use_exogenous_features=True)
         task.prepare_data()
         task.detect_outliers()
         task.impute()
@@ -884,9 +884,9 @@ class TestMethodChaining:
         ids=["LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask", "MultiTask"],
     )
     def test_full_chain(self, cls):
-        kwargs = {"USE_EXOGENOUS_FEATURES": False}
+        kwargs = {"use_exogenous_features": False}
         if cls is MultiTask:
-            kwargs["TASK"] = "lazy"
+            kwargs["task"] = "lazy"
         task = cls(**kwargs)
         result = (
             task.prepare_data().detect_outliers().impute().build_exogenous_features()

@@ -130,7 +130,7 @@ class SpotOptimTask(BaseTask):
         ```{python}
         from spotforecast2.manager.multitask import SpotOptimTask
 
-        task = SpotOptimTask(N_TRIALS_SPOTOPTIM=10, PREDICT_SIZE=24)
+        task = SpotOptimTask(n_trials_spotoptim=10, predict_size=24)
         print(f"Task: {task.TASK}")
         print(f"SpotOptim trials: {task.config.n_trials_spotoptim}")
         ```
