@@ -2,10 +2,11 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 """
-Tests for apply_imputation() in spotforecast2.preprocessing.imputation.
+Tests for apply_imputation() — now living in spotforecast2_safe.
 
 Coverage:
-- Importability from both the submodule and the preprocessing package
+- apply_imputation is importable from spotforecast2_safe (canonical source)
+- apply_imputation is still importable from spotforecast2.preprocessing (re-export)
 - Linear method fills NaN values and returns weight_func=None
 - Weighted method fills NaN values and returns a WeightFunction instance
 - Logging: NaN count before and after is logged at INFO level
@@ -15,13 +16,14 @@ Coverage:
 """
 
 import logging
+import inspect
 from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
 import pytest
 
-from spotforecast2.preprocessing.imputation import apply_imputation
+from spotforecast2_safe.preprocessing.imputation import apply_imputation
 from spotforecast2_safe.preprocessing.imputation import WeightFunction
 
 # ---------------------------------------------------------------------------
@@ -79,17 +81,48 @@ def stdlib_logger():
 
 
 class TestApplyImputationImport:
-    """apply_imputation must be importable from both locations."""
+    """apply_imputation lives in sf2-safe; sf2.preprocessing re-exports it."""
 
-    def test_importable_from_submodule(self):
-        from spotforecast2.preprocessing.imputation import apply_imputation as fn
+    def test_importable_from_sf2safe_submodule(self):
+        from spotforecast2_safe.preprocessing.imputation import apply_imputation as fn
 
         assert callable(fn)
 
-    def test_importable_from_package(self):
+    def test_importable_from_sf2safe_package(self):
+        from spotforecast2_safe.preprocessing import apply_imputation as fn
+
+        assert callable(fn)
+
+    def test_importable_from_sf2_package(self):
         from spotforecast2.preprocessing import apply_imputation as fn
 
         assert callable(fn)
+
+    def test_sf2_package_reexports_same_object(self):
+        from spotforecast2_safe.preprocessing.imputation import (
+            apply_imputation as canonical,
+        )
+        from spotforecast2.preprocessing import apply_imputation as reexport
+
+        assert canonical is reexport
+
+    def test_source_file_is_in_safe_package(self):
+        src = inspect.getfile(apply_imputation)
+        assert "spotforecast2_safe" in src
+        assert "spotforecast2/" not in src.replace("spotforecast2_safe", "")
+
+    def test_no_apply_imputation_in_sf2_preprocessing_pkg(self):
+        """sf2 must not have its own imputation.py anymore."""
+        import sys
+
+        # The module spotforecast2.preprocessing.imputation must NOT exist
+        assert (
+            "spotforecast2.preprocessing.imputation" not in sys.modules
+            or inspect.getfile(
+                sys.modules["spotforecast2.preprocessing.imputation"]
+            ).find("spotforecast2_safe")
+            != -1
+        )
 
 
 # ---------------------------------------------------------------------------
