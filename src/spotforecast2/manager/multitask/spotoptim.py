@@ -97,6 +97,13 @@ def execute_spotoptim(
         task.logger.info("  Best params: %s", best_params)
         task.logger.info("  Best lags: %s", best_lags)
 
+        task.save_tuning_results(
+            target=target,
+            task_name="spotoptim",
+            best_params=best_params,
+            best_lags=best_lags,
+        )
+
         forecaster_tuned = task.create_forecaster()
         forecaster_tuned.set_params(**best_params)
         if hasattr(forecaster_tuned, "set_lags"):

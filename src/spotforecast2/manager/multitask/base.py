@@ -11,7 +11,9 @@ class `~.spotoptim.SpotOptimTask`)
 inherit from ``BaseTask`` and implement method `run`.
 """
 
+import json
 import logging
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
@@ -604,6 +606,153 @@ class BaseTask:
         model_dir = get_cache_home(self.config.cache_home) / "unified_pipeline"
         path = _save_forecaster(forecaster, model_dir, target, task_name=task_name)
         self.logger.info("  Saved: %s", path)
+
+    # ------------------------------------------------------------------
+    # Tuning-result persistence
+    # ------------------------------------------------------------------
+
+    def save_tuning_results(
+        self,
+        target: str,
+        task_name: str,
+        best_params: Dict[str, Any],
+        best_lags: Any,
+    ) -> Path:
+        """Save tuning results (best parameters and lags) to a JSON file.
+
+        The file is stored under ``<cache_home>/tuning_results/`` with a
+        datetime-stamped filename so that loaders can determine freshness.
+
+        Filename format::
+
+            <data_frame_name>_<target>_<task_name>_<YYYYMMDD_HHMMSS>.json
+
+        Args:
+            target: Name of the forecast target column.
+            task_name: Tuning algorithm identifier (e.g. ``"optuna"``,
+                ``"spotoptim"``).
+            best_params: Best hyperparameters discovered during tuning.
+            best_lags: Best lag configuration (int, list, or nested list).
+
+        Returns:
+            Path to the saved JSON file.
+
+        Examples:
+            ```{python}
+            from spotforecast2.manager.multitask import LazyTask
+
+            task = LazyTask(data_frame_name="demo10")
+            path = task.save_tuning_results(
+                target="target_0",
+                task_name="optuna",
+                best_params={"n_estimators": 100, "learning_rate": 0.05},
+                best_lags=[1, 2, 24],
+            )
+            print(path.name)
+            ```
+        """
+        tuning_dir = get_cache_home(self.config.cache_home) / "tuning_results"
+        tuning_dir.mkdir(parents=True, exist_ok=True)
+
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        filename = f"{self.data_frame_name}_{target}_{task_name}_{timestamp}.json"
+        filepath = tuning_dir / filename
+
+        # Convert lags to a JSON-safe type
+        lags_serializable: Any = best_lags
+        if hasattr(best_lags, "tolist"):
+            lags_serializable = best_lags.tolist()
+
+        payload = {
+            "data_frame_name": self.data_frame_name,
+            "target": target,
+            "task_name": task_name,
+            "timestamp": timestamp,
+            "best_params": best_params,
+            "best_lags": lags_serializable,
+        }
+
+        with open(filepath, "w") as fh:
+            json.dump(payload, fh, indent=2, default=str)
+
+        self.logger.info("  Saved tuning results: %s", filepath)
+        return filepath
+
+    def load_tuning_results(
+        self,
+        target: str,
+        task_name: Optional[str] = None,
+        max_age_days: Optional[float] = None,
+    ) -> Optional[Dict[str, Any]]:
+        """Load the most recent tuning results for a target from cache.
+
+        Scans ``<cache_home>/tuning_results/`` for files matching the
+        current ``data_frame_name`` and ``target``.  Optionally filters by
+        ``task_name`` and discards results older than ``max_age_days``.
+
+        Args:
+            target: Name of the forecast target column.
+            task_name: If given, only consider results from this tuning
+                algorithm (e.g. ``"optuna"`` or ``"spotoptim"``).
+                ``None`` accepts any algorithm.
+            max_age_days: Maximum age in days.  Results older than this
+                are ignored.  ``None`` accepts any age.
+
+        Returns:
+            A dictionary with keys ``best_params``, ``best_lags``,
+            ``task_name``, ``target``, ``data_frame_name``, and
+            ``timestamp``; or ``None`` if no matching file was found.
+
+        Examples:
+            ```{python}
+            from spotforecast2.manager.multitask import LazyTask
+
+            task = LazyTask(data_frame_name="demo10")
+            # Save first so there is something to load
+            task.save_tuning_results(
+                target="target_0",
+                task_name="optuna",
+                best_params={"n_estimators": 100},
+                best_lags=24,
+            )
+            result = task.load_tuning_results(target="target_0")
+            print(result["best_params"])
+            ```
+        """
+        tuning_dir = get_cache_home(self.config.cache_home) / "tuning_results"
+        if not tuning_dir.exists():
+            return None
+
+        prefix = f"{self.data_frame_name}_{target}_"
+        candidates: List[Path] = sorted(
+            (
+                p
+                for p in tuning_dir.glob(f"{prefix}*.json")
+                if task_name is None or f"_{task_name}_" in p.name
+            ),
+            reverse=True,
+        )
+
+        now = datetime.now(timezone.utc)
+        for candidate in candidates:
+            try:
+                with open(candidate) as fh:
+                    data = json.load(fh)
+            except (json.JSONDecodeError, OSError):
+                continue
+
+            if max_age_days is not None:
+                ts = datetime.strptime(data["timestamp"], "%Y%m%d_%H%M%S").replace(
+                    tzinfo=timezone.utc
+                )
+                age_days = (now - ts).total_seconds() / 86400
+                if age_days > max_age_days:
+                    continue
+
+            self.logger.info("  Loaded tuning results from: %s", candidate)
+            return data
+
+        return None
 
     def _train_and_predict_target(
         self,
