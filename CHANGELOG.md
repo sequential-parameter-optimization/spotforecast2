@@ -1,3 +1,9 @@
+## [0.14.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.2...v0.14.0-rc.1) (2026-03-22)
+
+### Features
+
+* tuning saved and loaded ([946760b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/946760bb308f69e67b2417532419960e6c3c3fce))
+
 ## [0.13.2-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.2-rc.1...v0.13.2-rc.2) (2026-03-22)
 ## [0.13.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.1...v0.13.2) (2026-03-22)
 
