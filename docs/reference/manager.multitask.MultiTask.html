@@ -848,24 +848,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    TASK<span class="op">=</span><span class="st">'lazy'</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    DATA_FRAME_NAME<span class="op">=</span><span class="st">'demo10'</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    DATA_SOURCE<span class="op">=</span><span class="st">'demo10.csv'</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    DATA_TEST<span class="op">=</span><span class="st">'demo11.csv'</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    DATA_HOME<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    CACHE_DATA<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    CACHE_HOME<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    AGG_WEIGHTS<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    INDEX_NAME<span class="op">=</span><span class="st">'DateTime'</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    NUMBER_FOLDS<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    PREDICT_SIZE<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    BOUNDS<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    CONTAMINATION<span class="op">=</span><span class="fl">0.03</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    IMPUTATION_METHOD<span class="op">=</span><span class="st">'weighted'</span>,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    USE_EXOGENOUS_FEATURES<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    N_TRIALS_OPTUNA<span class="op">=</span><span class="dv">15</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    N_TRIALS_SPOTOPTIM<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    N_INITIAL_SPOTOPTIM<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">'lazy'</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    data_frame_name<span class="op">=</span><span class="st">'demo10'</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    data_source<span class="op">=</span><span class="st">'demo10.csv'</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    data_test<span class="op">=</span><span class="st">'demo11.csv'</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    data_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    cache_data<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    agg_weights<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    index_name<span class="op">=</span><span class="st">'DateTime'</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    bounds<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    contamination<span class="op">=</span><span class="fl">0.03</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">'weighted'</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    n_trials_spotoptim<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    n_initial_spotoptim<span class="op">=</span><span class="dv">5</span>,</span>
 <span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span>logging.INFO,</span>
 <span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>config_overrides,</span>
 <span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -892,109 +892,109 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>TASK</td>
+<td>task</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Pipeline task mode — <code>"lazy"</code>, <code>"training"</code>, <code>"optuna"</code>, or <code>"spotoptim"</code>. Defaults to <code>"lazy"</code>.</td>
 <td><code>'lazy'</code></td>
 </tr>
 <tr class="even">
-<td>DATA_FRAME_NAME</td>
+<td>data_frame_name</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Active dataset identifier (e.g.&nbsp;<code>"demo10"</code>).</td>
 <td><code>'demo10'</code></td>
 </tr>
 <tr class="odd">
-<td>DATA_SOURCE</td>
+<td>data_source</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Input CSV filename.</td>
 <td><code>'demo10.csv'</code></td>
 </tr>
 <tr class="even">
-<td>DATA_TEST</td>
+<td>data_test</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Test CSV filename.</td>
 <td><code>'demo11.csv'</code></td>
 </tr>
 <tr class="odd">
-<td>DATA_HOME</td>
+<td>data_home</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</td>
 <td>Path to the data directory.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td>CACHE_DATA</td>
+<td>cache_data</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to cache intermediate data to disk.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="odd">
-<td>CACHE_HOME</td>
+<td>cache_home</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</td>
 <td>Cache directory path.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td>AGG_WEIGHTS</td>
+<td>agg_weights</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/functions.html#float">float</a>]]</td>
 <td>Per-target aggregation weights.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td>INDEX_NAME</td>
+<td>index_name</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Datetime column name in the raw CSV.</td>
 <td><code>'DateTime'</code></td>
 </tr>
 <tr class="even">
-<td>NUMBER_FOLDS</td>
+<td>number_folds</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of validation folds.</td>
 <td><code>10</code></td>
 </tr>
 <tr class="odd">
-<td>PREDICT_SIZE</td>
+<td>predict_size</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Forecast horizon in hours.</td>
 <td><code>24</code></td>
 </tr>
 <tr class="even">
-<td>BOUNDS</td>
+<td>bounds</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>]]</td>
 <td>Per-column hard outlier bounds <code>(lower, upper)</code>.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td>CONTAMINATION</td>
+<td>contamination</td>
 <td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
 <td>IsolationForest contamination fraction.</td>
 <td><code>0.03</code></td>
 </tr>
 <tr class="even">
-<td>IMPUTATION_METHOD</td>
+<td>imputation_method</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Gap-filling strategy.</td>
 <td><code>'weighted'</code></td>
 </tr>
 <tr class="odd">
-<td>USE_EXOGENOUS_FEATURES</td>
+<td>use_exogenous_features</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to build exogenous features.</td>
 <td><code>True</code></td>
 </tr>
 <tr class="even">
-<td>N_TRIALS_OPTUNA</td>
+<td>n_trials_optuna</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of Optuna Bayesian-search trials.</td>
 <td><code>15</code></td>
 </tr>
 <tr class="odd">
-<td>N_TRIALS_SPOTOPTIM</td>
+<td>n_trials_spotoptim</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of SpotOptim surrogate-search trials.</td>
 <td><code>10</code></td>
 </tr>
 <tr class="even">
-<td>N_INITIAL_SPOTOPTIM</td>
+<td>n_initial_spotoptim</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Initial random evaluations for SpotOptim.</td>
 <td><code>5</code></td>
@@ -1016,35 +1016,35 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="1e14c1b0" class="cell" data-execution_count="1">
+<div id="d23265ac" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask <span class="im">import</span> MultiTask</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    TASK<span class="op">=</span><span class="st">"lazy"</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    DATA_FRAME_NAME<span class="op">=</span><span class="st">"demo10"</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    PREDICT_SIZE<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    N_TRIALS_OPTUNA<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"lazy"</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    data_frame_name<span class="op">=</span><span class="st">"demo10"</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">5</span>,</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Task: </span><span class="sc">{</span>mt<span class="sc">.</span>TASK<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Predict size: </span><span class="sc">{</span>mt<span class="sc">.</span>config<span class="sc">.</span>predict_size<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Data source: </span><span class="sc">{</span>mt<span class="sc">.</span>DATA_SOURCE<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Data source: </span><span class="sc">{</span>mt<span class="sc">.</span>data_source<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Task: lazy
 Predict size: 24
 Data source: demo10.csv</code></pre>
 </div>
 </div>
-<div id="6fdadbe0" class="cell" data-execution_count="2">
+<div id="f72dd81d" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask <span class="im">import</span> MultiTask</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    TASK<span class="op">=</span><span class="st">"training"</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    AGG_WEIGHTS<span class="op">=</span>[<span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>, <span class="fl">0.5</span>],</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    CONTAMINATION<span class="op">=</span><span class="fl">0.05</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"training"</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    agg_weights<span class="op">=</span>[<span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>, <span class="fl">0.5</span>],</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    contamination<span class="op">=</span><span class="fl">0.05</span>,</span>
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Agg weights: </span><span class="sc">{</span>mt<span class="sc">.</span>config<span class="sc">.</span>agg_weights<span class="sc">}</span><span class="ss">"</span>)</span>
 <span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Contamination: </span><span class="sc">{</span>mt<span class="sc">.</span>config<span class="sc">.</span>contamination<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Imputation: </span><span class="sc">{</span>mt<span class="sc">.</span>IMPUTATION_METHOD<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Imputation: </span><span class="sc">{</span>mt<span class="sc">.</span>imputation_method<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Agg weights: [1.0, -1.0, 0.5]
 Contamination: 0.05
