@@ -3,7 +3,7 @@
 
 """Backward-compatible MultiTask dispatcher.
 
-class `MultiTask` preserves the original API where a single ``TASK``
+class `MultiTask` preserves the original API where a single ``task``
 parameter selects which pipeline mode to run.  It inherits from
 class `~.base.BaseTask` and delegates ``run()`` to the appropriate
 task-specific function.
@@ -15,7 +15,6 @@ from typing import Any, Callable, Dict, List, Optional
 
 from spotforecast2.manager.multitask.base import BaseTask
 from spotforecast2.manager.multitask.lazy import execute_lazy
-from spotforecast2.manager.multitask.train import execute_training
 from spotforecast2.manager.multitask.optuna import (
     OptunaTask,
     execute_optuna,
@@ -41,7 +40,7 @@ class MultiTask(BaseTask):
        predict, and aggregate.
 
     Args:
-        task: Pipeline task mode — ``"lazy"``, ``"training"``, ``"optuna"``,
+        task: Pipeline task mode — ``"lazy"``, ``"optuna"``,
             or ``"spotoptim"``. Defaults to ``"lazy"``.
         data_frame_name: Active dataset identifier (e.g. ``"demo10"``).
         data_source: Input CSV filename.
@@ -83,7 +82,7 @@ class MultiTask(BaseTask):
         from spotforecast2.manager.multitask import MultiTask
 
         mt = MultiTask(
-            task="training",
+            task="optuna",
             agg_weights=[1.0, -1.0, 0.5],
             contamination=0.05,
         )
@@ -157,18 +156,6 @@ class MultiTask(BaseTask):
         """
         return execute_lazy(self, show=show)
 
-    def run_task_training(self, show: bool = True) -> Dict[str, Any]:
-        """Task 2 — Explicit Pre-Training with default parameters.
-
-        Args:
-            show: If ``True``, display prediction figures.
-
-        Returns:
-            Aggregated prediction package. Per-target results in
-            ``self.results["training"]``.
-        """
-        return execute_training(self, show=show)
-
     def run_task_optuna(
         self,
         search_space: Optional[Callable] = None,
@@ -225,13 +212,12 @@ class MultiTask(BaseTask):
 
         Raises:
             ValueError: If ``task`` is not one of ``"lazy"``,
-                ``"training"``, ``"optuna"``, ``"spotoptim"``.
+                ``"optuna"``, ``"spotoptim"``.
             RuntimeError: If method `prepare_data` has not been called.
         """
         task = task or self.TASK
         dispatch = {
             "lazy": self.run_task_lazy,
-            "training": self.run_task_training,
             "optuna": self.run_task_optuna,
             "spotoptim": self.run_task_spotoptim,
         }

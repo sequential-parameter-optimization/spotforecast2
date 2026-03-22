@@ -22,7 +22,6 @@ from spotforecast2.manager.multitask import (
     MultiTask,
     OptunaTask,
     SpotOptimTask,
-    TrainTask,
     agg_predictor,
 )
 from spotforecast2.manager.multitask.base import agg_predictor as _agg_predictor_base
@@ -116,9 +115,6 @@ class TestPublicAPIContract:
 
     def test_lazy_task_inherits_method(self):
         assert hasattr(LazyTask, "agg_predictor")
-
-    def test_train_task_inherits_method(self):
-        assert hasattr(TrainTask, "agg_predictor")
 
     def test_optuna_task_inherits_method(self):
         assert hasattr(OptunaTask, "agg_predictor")
@@ -272,9 +268,6 @@ class TestAggResultsAttribute:
 
     def test_lazy_task_has_agg_results(self):
         assert hasattr(LazyTask(), "agg_results")
-
-    def test_train_task_has_agg_results(self):
-        assert hasattr(TrainTask(), "agg_results")
 
     def test_optuna_task_has_agg_results(self):
         assert hasattr(OptunaTask(), "agg_results")

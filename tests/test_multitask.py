@@ -6,7 +6,7 @@
 Covers:
 - Import paths (direct, via manager package, and via multitask package)
 - BaseTask shared logic (constructor, config, pipeline state, guards, logger)
-- LazyTask, TrainTask, OptunaTask, SpotOptimTask subclass behaviour
+- LazyTask, OptunaTask, SpotOptimTask subclass behaviour
 - MultiTask backward-compatible dispatcher
 - Inheritance hierarchy
 - Pipeline methods (prepare_data, detect_outliers, impute, build_exogenous_features)
@@ -26,7 +26,6 @@ from spotforecast2.manager.multitask import (
     MultiTask,
     OptunaTask,
     SpotOptimTask,
-    TrainTask,
 )
 
 # ---------------------------------------------------------------------------
@@ -42,11 +41,6 @@ def _default() -> MultiTask:
 def _lazy() -> LazyTask:
     """Return a LazyTask with default parameters."""
     return LazyTask()
-
-
-def _train() -> TrainTask:
-    """Return a TrainTask with default parameters."""
-    return TrainTask()
 
 
 def _optuna() -> OptunaTask:
@@ -87,11 +81,6 @@ class TestImportPaths:
 
         assert LT is LazyTask
 
-    def test_import_train_task(self):
-        from spotforecast2.manager.multitask import TrainTask as TT
-
-        assert TT is TrainTask
-
     def test_import_optuna_task(self):
         from spotforecast2.manager.multitask import OptunaTask as OT
 
@@ -106,14 +95,12 @@ class TestImportPaths:
         from spotforecast2.manager import (
             BaseTask as BT,
             LazyTask as LT,
-            TrainTask as TT,
             OptunaTask as OT,
             SpotOptimTask as ST,
         )
 
         assert BT is BaseTask
         assert LT is LazyTask
-        assert TT is TrainTask
         assert OT is OptunaTask
         assert ST is SpotOptimTask
 
@@ -121,7 +108,6 @@ class TestImportPaths:
         for cls in [
             BaseTask,
             LazyTask,
-            TrainTask,
             OptunaTask,
             SpotOptimTask,
             MultiTask,
@@ -140,9 +126,6 @@ class TestInheritance:
     def test_lazy_task_inherits_base(self):
         assert issubclass(LazyTask, BaseTask)
 
-    def test_train_task_inherits_base(self):
-        assert issubclass(TrainTask, BaseTask)
-
     def test_optuna_task_inherits_base(self):
         assert issubclass(OptunaTask, BaseTask)
 
@@ -154,9 +137,6 @@ class TestInheritance:
 
     def test_lazy_instance_is_base(self):
         assert isinstance(_lazy(), BaseTask)
-
-    def test_train_instance_is_base(self):
-        assert isinstance(_train(), BaseTask)
 
     def test_optuna_instance_is_base(self):
         assert isinstance(_optuna(), BaseTask)
@@ -182,9 +162,6 @@ class TestTaskName:
     def test_lazy_task_name(self):
         assert _lazy().TASK == "lazy"
 
-    def test_train_task_name(self):
-        assert _train().TASK == "training"
-
     def test_optuna_task_name(self):
         assert _optuna().TASK == "optuna"
 
@@ -195,8 +172,8 @@ class TestTaskName:
         assert _default().TASK == "lazy"
 
     def test_multitask_custom_task(self):
-        mt = MultiTask(task="training")
-        assert mt.TASK == "training"
+        mt = MultiTask(task="optuna")
+        assert mt.TASK == "optuna"
 
     def test_multitask_optuna_task(self):
         mt = MultiTask(task="optuna")
@@ -217,80 +194,80 @@ class TestDefaults:
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_data_frame_name_default(self, factory):
         assert factory().data_frame_name == "demo10"
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_data_source_default(self, factory):
         assert factory().data_source == "demo10.csv"
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_data_test_default(self, factory):
         assert factory().data_test == "demo11.csv"
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_cache_data_default(self, factory):
         assert factory().cache_data is True
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_predict_size_default(self, factory):
         assert factory().predict_size == 24
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_contamination_default(self, factory):
         assert factory().contamination == 0.03
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_imputation_method_default(self, factory):
         assert factory().imputation_method == "weighted"
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_number_folds_default(self, factory):
         assert factory().number_folds == 10
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_train_size_default(self, factory):
         assert factory().TRAIN_SIZE == pd.Timedelta(days=365)
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_delta_val_default(self, factory):
         assert factory().DELTA_VAL == pd.Timedelta(days=70)
@@ -333,7 +310,7 @@ class TestCustomArgs:
         assert task.predict_size == 48
 
     def test_custom_contamination(self):
-        task = TrainTask(contamination=0.05)
+        task = LazyTask(contamination=0.05)
         assert task.contamination == 0.05
 
     def test_custom_agg_weights(self):
@@ -355,7 +332,7 @@ class TestCustomArgs:
         assert task.DELTA_VAL == pd.Timedelta(days=35)
 
     def test_custom_imputation_method(self):
-        task = TrainTask(imputation_method="linear")
+        task = LazyTask(imputation_method="linear")
         assert task.imputation_method == "linear"
 
     def test_multitask_custom_task(self):
@@ -381,7 +358,7 @@ class TestConfigDelegation:
         assert task.config.predict_size == 48
 
     def test_config_contamination(self):
-        task = TrainTask(contamination=0.05)
+        task = LazyTask(contamination=0.05)
         assert task.config.contamination == 0.05
 
     def test_config_imputation_method(self):
@@ -394,9 +371,6 @@ class TestConfigDelegation:
 
     def test_config_task_lazy(self):
         assert _lazy().config.task == "lazy"
-
-    def test_config_task_training(self):
-        assert _train().config.task == "training"
 
     def test_config_task_optuna(self):
         assert _optuna().config.task == "optuna"
@@ -427,7 +401,7 @@ class TestConfigDelegation:
 
     def test_config_bounds(self):
         bounds = [(0, 100), (-50, 200)]
-        task = TrainTask(bounds=bounds)
+        task = LazyTask(bounds=bounds)
         assert task.config.bounds == bounds
 
     def test_config_index_name(self):
@@ -459,24 +433,24 @@ class TestPipelineState:
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_df_pipeline_initially_none(self, factory):
         assert factory().df_pipeline is None
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_df_test_initially_none(self, factory):
         assert factory().df_test is None
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_results_initially_empty(self, factory):
         assert factory().results == {}
@@ -507,8 +481,8 @@ class TestGuards:
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_detect_outliers_before_prepare(self, factory):
         with pytest.raises(RuntimeError, match="prepare_data"):
@@ -516,8 +490,8 @@ class TestGuards:
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_impute_before_prepare(self, factory):
         with pytest.raises(RuntimeError, match="prepare_data"):
@@ -525,8 +499,8 @@ class TestGuards:
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_build_exogenous_before_prepare(self, factory):
         with pytest.raises(RuntimeError, match="prepare_data"):
@@ -543,10 +517,6 @@ class TestGuards:
     def test_run_before_prepare_lazy(self):
         with pytest.raises(RuntimeError, match="Pipeline data not prepared"):
             _lazy().run(show=False)
-
-    def test_run_before_prepare_train(self):
-        with pytest.raises(RuntimeError, match="Pipeline data not prepared"):
-            _train().run(show=False)
 
 
 # ---------------------------------------------------------------------------
@@ -574,8 +544,8 @@ class TestLogger:
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train, _optuna, _spotoptim],
-        ids=["MultiTask", "LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask"],
+        [_default, _lazy, _optuna, _spotoptim],
+        ids=["MultiTask", "LazyTask", "OptunaTask", "SpotOptimTask"],
     )
     def test_logger_is_logger_instance(self, factory):
         assert isinstance(factory().logger, logging.Logger)
@@ -585,9 +555,6 @@ class TestLogger:
 
     def test_logger_name_includes_class_lazy(self):
         assert "LazyTask" in _lazy().logger.name
-
-    def test_logger_name_includes_class_train(self):
-        assert "TrainTask" in _train().logger.name
 
     def test_logger_name_includes_class_optuna(self):
         assert "OptunaTask" in _optuna().logger.name
@@ -623,7 +590,7 @@ class TestCreateForecaster:
         assert max(forecaster.lags) == 48
 
     def test_weight_func_none_initially(self):
-        forecaster = _train().create_forecaster()
+        forecaster = _lazy().create_forecaster()
         assert forecaster.weight_func is None
 
     def test_multitask_create_forecaster(self):
@@ -655,9 +622,6 @@ class TestMultiTaskRunDispatcher:
 
     def test_has_run_task_lazy(self):
         assert hasattr(_default(), "run_task_lazy")
-
-    def test_has_run_task_training(self):
-        assert hasattr(_default(), "run_task_training")
 
     def test_has_run_task_optuna(self):
         assert hasattr(_default(), "run_task_optuna")
@@ -721,8 +685,8 @@ class TestPrepareData:
 
     @pytest.mark.parametrize(
         "factory",
-        [_default, _lazy, _train],
-        ids=["MultiTask", "LazyTask", "TrainTask"],
+        [_default, _lazy],
+        ids=["MultiTask", "LazyTask"],
     )
     def test_prepare_data_loads_data(self, factory):
         task = factory()
@@ -772,7 +736,7 @@ class TestDetectOutliers:
         assert task.df_pipeline_original is not None
 
     def test_detect_outliers_returns_self(self):
-        task = TrainTask()
+        task = LazyTask()
         task.prepare_data()
         result = task.detect_outliers()
         assert result is task
@@ -801,7 +765,7 @@ class TestImpute:
         assert task.df_pipeline.notna().all().all()
 
     def test_impute_returns_self(self):
-        task = TrainTask()
+        task = LazyTask()
         task.prepare_data()
         task.detect_outliers()
         result = task.impute()
@@ -837,7 +801,7 @@ class TestExogenousFeatures:
         assert task.exo_pred is not None
 
     def test_build_exog_returns_self(self):
-        task = TrainTask(use_exogenous_features=False)
+        task = LazyTask(use_exogenous_features=False)
         task.prepare_data()
         task.detect_outliers()
         task.impute()
@@ -862,7 +826,7 @@ class TestLogSummary:
         task.log_summary()
 
     def test_log_summary_with_exog(self):
-        task = TrainTask(use_exogenous_features=True)
+        task = LazyTask(use_exogenous_features=True)
         task.prepare_data()
         task.detect_outliers()
         task.impute()
@@ -880,8 +844,8 @@ class TestMethodChaining:
 
     @pytest.mark.parametrize(
         "cls",
-        [LazyTask, TrainTask, OptunaTask, SpotOptimTask, MultiTask],
-        ids=["LazyTask", "TrainTask", "OptunaTask", "SpotOptimTask", "MultiTask"],
+        [LazyTask, OptunaTask, SpotOptimTask, MultiTask],
+        ids=["LazyTask", "OptunaTask", "SpotOptimTask", "MultiTask"],
     )
     def test_full_chain(self, cls):
         kwargs = {"use_exogenous_features": False}

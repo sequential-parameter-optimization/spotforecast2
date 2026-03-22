@@ -4,10 +4,9 @@
 """Tests verifying that multitask submodules are public (not private).
 
 Coverage:
-- All six public module paths are importable:
+- All five public module paths are importable:
     spotforecast2.manager.multitask.base
     spotforecast2.manager.multitask.lazy
-    spotforecast2.manager.multitask.train
     spotforecast2.manager.multitask.optuna
     spotforecast2.manager.multitask.spotoptim
     spotforecast2.manager.multitask.multi
@@ -33,7 +32,6 @@ from spotforecast2.manager.multitask import (
     MultiTask,
     OptunaTask,
     SpotOptimTask,
-    TrainTask,
 )
 
 # ===========================================================================
@@ -51,11 +49,6 @@ class TestPublicModulesImportable:
 
     def test_lazy_module_importable(self):
         mod = importlib.import_module("spotforecast2.manager.multitask.lazy")
-
-        assert mod is not None
-
-    def test_train_module_importable(self):
-        mod = importlib.import_module("spotforecast2.manager.multitask.train")
 
         assert mod is not None
 
@@ -93,11 +86,6 @@ class TestPublicModulesExportSameObjects:
 
         assert _LazyTask is LazyTask
 
-    def test_train_task_is_same_object(self):
-        from spotforecast2.manager.multitask.train import TrainTask as _TrainTask
-
-        assert _TrainTask is TrainTask
-
     def test_optuna_task_is_same_object(self):
         from spotforecast2.manager.multitask.optuna import OptunaTask as _OptunaTask
 
@@ -134,11 +122,6 @@ class TestSourceFilesArePublic:
         assert "lazy.py" in src
         assert "_lazy.py" not in src
 
-    def test_train_task_source_is_public(self):
-        src = inspect.getfile(TrainTask)
-        assert "train.py" in src
-        assert "_train.py" not in src
-
     def test_optuna_task_source_is_public(self):
         src = inspect.getfile(OptunaTask)
         assert "optuna.py" in src
@@ -168,7 +151,6 @@ class TestPrivateModulesGone:
         [
             "spotforecast2.manager.multitask._base",
             "spotforecast2.manager.multitask._lazy",
-            "spotforecast2.manager.multitask._train",
             "spotforecast2.manager.multitask._optuna",
             "spotforecast2.manager.multitask._spotoptim",
             "spotforecast2.manager.multitask._multi",
@@ -193,11 +175,6 @@ class TestExecuteFunctionsPublic:
         from spotforecast2.manager.multitask.lazy import execute_lazy
 
         assert callable(execute_lazy)
-
-    def test_execute_training_importable(self):
-        from spotforecast2.manager.multitask.train import execute_training
-
-        assert callable(execute_training)
 
     def test_execute_optuna_importable(self):
         from spotforecast2.manager.multitask.optuna import execute_optuna
