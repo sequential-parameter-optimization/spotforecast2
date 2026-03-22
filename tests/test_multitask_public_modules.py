@@ -45,32 +45,32 @@ class TestPublicModulesImportable:
     """Each submodule must be importable under its public name."""
 
     def test_base_module_importable(self):
-        import spotforecast2.manager.multitask.base as mod
+        mod = importlib.import_module("spotforecast2.manager.multitask.base")
 
         assert mod is not None
 
     def test_lazy_module_importable(self):
-        import spotforecast2.manager.multitask.lazy as mod
+        mod = importlib.import_module("spotforecast2.manager.multitask.lazy")
 
         assert mod is not None
 
     def test_train_module_importable(self):
-        import spotforecast2.manager.multitask.train as mod
+        mod = importlib.import_module("spotforecast2.manager.multitask.train")
 
         assert mod is not None
 
     def test_optuna_module_importable(self):
-        import spotforecast2.manager.multitask.optuna as mod
+        mod = importlib.import_module("spotforecast2.manager.multitask.optuna")
 
         assert mod is not None
 
     def test_spotoptim_module_importable(self):
-        import spotforecast2.manager.multitask.spotoptim as mod
+        mod = importlib.import_module("spotforecast2.manager.multitask.spotoptim")
 
         assert mod is not None
 
     def test_multi_module_importable(self):
-        import spotforecast2.manager.multitask.multi as mod
+        mod = importlib.import_module("spotforecast2.manager.multitask.multi")
 
         assert mod is not None
 
