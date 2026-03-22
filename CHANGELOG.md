@@ -1,3 +1,9 @@
+## [0.13.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.0...v0.13.1-rc.1) (2026-03-22)
+
+### Code Refactoring
+
+* **multitask:** decapitalize constructor kwargs and stored attributes ([2ac1661](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2ac166180cb1a31f851fe56599ce5f474ff074c4))
+
 ## [0.13.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.12.1...v0.13.0) (2026-03-22)
 
 ### Features
