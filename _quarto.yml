@@ -86,8 +86,6 @@ website:
                 file: docs/reference/manager.multitask.BaseTask.qmd
               - text: "LazyTask"
                 file: docs/reference/manager.multitask.LazyTask.qmd
-              - text: "TrainTask"
-                file: docs/reference/manager.multitask.TrainTask.qmd
               - text: "OptunaTask"
                 file: docs/reference/manager.multitask.OptunaTask.qmd
               - text: "SpotOptimTask"
@@ -262,7 +260,6 @@ quartodoc:
         - manager.multitask.agg_predictor
         - manager.multitask.BaseTask
         - manager.multitask.LazyTask
-        - manager.multitask.TrainTask
         - manager.multitask.OptunaTask
         - manager.multitask.SpotOptimTask
         - manager.multitask.MultiTask

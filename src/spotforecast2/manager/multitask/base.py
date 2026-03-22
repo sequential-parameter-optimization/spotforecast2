@@ -6,8 +6,8 @@
 Provides  class `BaseTask`, which contains all shared data-preparation,
 outlier-detection, imputation, exogenous-feature engineering, forecaster
 creation, prediction-packaging, and aggregation logic.  Task-specific
-subclasses (class `~.lazy.LazyTask`, class `~.train.TrainTask`,
-class `~.optuna.OptunaTask`, class `~.spotoptim.SpotOptimTask`)
+subclasses (class `~.lazy.LazyTask`, class `~.optuna.OptunaTask`,
+class `~.spotoptim.SpotOptimTask`)
 inherit from ``BaseTask`` and implement method `run`.
 """
 
@@ -791,5 +791,5 @@ class BaseTask:
         """
         raise NotImplementedError(
             f"{self.__class__.__name__} must implement run(). "
-            "Use LazyTask, TrainTask, OptunaTask, or SpotOptimTask."
+            "Use LazyTask, OptunaTask, or SpotOptimTask."
         )
