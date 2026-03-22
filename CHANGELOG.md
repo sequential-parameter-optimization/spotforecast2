@@ -1,3 +1,9 @@
+## [0.12.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.5...v0.12.0) (2026-03-22)
+
+### Features
+
+* Before Refactoring into Function ([db57cad](https://github.com/sequential-parameter-optimization/spotforecast2/commit/db57cad3ec0831be431ed33f2d0ac48dac488175))
+
 ## [0.12.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.11.5...v0.12.0-rc.1) (2026-03-22)
 
 ### Features
