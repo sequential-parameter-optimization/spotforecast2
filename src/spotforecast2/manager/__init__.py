@@ -8,6 +8,7 @@ This module provides utilities for generating interactive prediction plots
 and full-featured forecasting model classes with Bayesian tuning and SHAP.
 """
 
+from spotforecast2.manager.multitask import MultiTask
 from spotforecast2.manager.plotter import (
     make_plot,
     plot_actual_vs_predicted,
@@ -29,6 +30,7 @@ __all__ = [
     "ForecasterRecursiveLGBMFull",
     "ForecasterRecursiveModelFull",
     "ForecasterRecursiveXGBFull",
+    "MultiTask",
     "make_plot",
     "plot_actual_vs_predicted",
     "plot_with_outliers",

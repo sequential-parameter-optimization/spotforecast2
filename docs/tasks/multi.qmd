@@ -1,27 +1,10 @@
----
-title: "Safety-Critical Multi-Target Time Series Forecasting with spotforecast2 and spotforecast2-safe: A Hardened Approach to Production Machine Learning"
-authors:
-  - name: Thomas Bartz-Beielstein
-    roles: writing
-    corresponding: true
-    affiliation: "Department of Computational Intelligence, TH Köln"
-date: "February 7, 2026"
-eval: true
-format:
-  html:
-    toc: true
-    number-sections: true
-abstract: |
-  Time series forecasting has become indispensable in safety-critical applications such as energy grids, financial systems, and autonomous control. However, existing machine learning libraries often prioritize generality and extensibility over determinism and auditability. We introduce spotforecast2 and spotforecast2-safe, two complementary Python packages built upon the skforecast foundation for reliable time series prediction. The spotforecast2 library provides a feature-rich environment for research and development, intelligently orchestrating hyperparameter tuning and model selection. The spotforecast2-safe package represents a deliberately minimized, hardened core suitable for safety-critical production environments, featuring zero dead code, deterministic transformations, and explicit fail-safe semantics. In this report we demonstrate multi-target forecasting on a dataset with eleven independent target columns ("A" through "K"), training a separate LGBM model for each target. Both packages implement a systematic hardening strategy that reduces the attack surface while maintaining mathematical rigor and regulatory alignment with emerging standards such as the EU AI Act. This report outlines the architectural principles, design goals, and practical implications of these systems for building trustworthy machine learning pipelines in high-risk domains.
----
-
 # spotforecast2 multi-target demo {#sec-code-spotforecast2-multitarget}
 
-This reference implementation demonstrates a safety-critical forecasting workflow using `spotforecast2` and `spotforecast2-safe` on an eleven-target dataset. The primary data source is `data_in.csv` (located in `~/spotforecast2_data/`), containing eleven independent measurement columns. If `data_in.csv` is absent, the pipeline falls back to the bundled `demo10.csv`. A separate LGBM model is trained per target. `END_TRAIN_DEFAULT` is always the last timestamp in the loaded data; the model then forecasts the next 24 hours beyond that point.
+
 
 The workflow executes in the following phases:
 
-1.  Data Acquisition: Loading `data_in.csv` (with automatic fallback to `demo10.csv`) and preparing each target for the pipeline.
+1.  Data Acquisition: Loading data and preparing each target for the pipeline.
 2.  Configuration & Model Selection: Centralized configuration of hyperparameters, feature engineering, and automated tuning strategies.
 3.  Model Orchestration & Training: Fail-safe model training with automatic refitting policies, executed for each of the eleven targets.
 4.  Predictive Analytics & Visualization: Generation of validated prediction packages and interactive reports for each target.
@@ -40,7 +23,8 @@ from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.preprocessing import RollingFeatures as RollingFeaturesUnified
 from spotforecast2.manager.plotter import PredictionFigure
 from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
-from joblib import dump, load as joblib_load
+from joblib import load as joblib_load
+from spotforecast2_safe.manager.persistence import save_forecaster as _save_forecaster
 from spotforecast2_safe.data.fetch_data import get_cache_home
 from spotforecast2_safe.data.fetch_data import (
     fetch_data,
@@ -104,7 +88,7 @@ DATA_TEST = "demo11.csv"
 
 # spotforecast2-safe's fetch_data() looks for DATA_SOURCE and DATA_TEST (optional) in the user data directory (~/spotforecast2_data/):
 # DATA_HOME = get_data_home()
-# for package building, we need to avoid the dynamic loading of data_in.csv from the user data directory, so we set DATA_HOME to the package data directory here. In a real run, this would be set to the DATA_FRAME_NAME or to the user data directory.
+# for package building, we need to avoid the dynamic loading of data from the user data directory, so we set DATA_HOME to the package data directory here. In a real run, this would be set to the DATA_FRAME_NAME or to the user data directory.
 DATA_HOME = get_package_data_home()
 
 CACHE_DATA = True  # Whether to cache intermediate data to disk (e.g., cleaned datasets, engineered features). Caching can speed up subsequent runs and provides a record of the data transformations applied during the pipeline execution.
@@ -170,7 +154,7 @@ logger = logging.getLogger(__name__)
 ## Data Ranges and Acquisition
 
 The active dataset covers the period from `START_DOWNLOAD` to `END_DOWNLOAD` at hourly resolution.
-The download-range constants (`START_DOWNLOAD`, `END_DOWNLOAD`) and the training cut-off (`END_TRAIN_DEFAULT`) are derived dynamically from the loaded dataset, so they automatically update whenever `data_in.csv` is refreshed.
+The download-range constants (`START_DOWNLOAD`, `END_DOWNLOAD`) and the training cut-off (`END_TRAIN_DEFAULT`) are derived dynamically from the loaded dataset, so they automatically update.
 `END_TRAIN_DEFAULT` is always set to the last timestamp in the loaded dataset, ensuring that the training window always covers the most recent year of data.
 `TRAIN_SIZE` is the time-span relative to `END_TRAIN_DEFAULT` that defines the training window.
 `DELTA_VAL` is the size of the validation set in days used for model selection.
@@ -214,12 +198,9 @@ Data is loaded preferentially from `demo10.csv` located in `~/spotforecast2_data
 
 : Data acquisition {#tbl-data-acquisition}
 
-### Column Mapping for `data_in.csv`
-
-When `data_in.csv` is present, its column headers are read at runtime.
 No column names are hard-coded in this document — the mapping is built dynamically
 and printed to the log when the data block executes.
-The fallback dataset (`demo10.csv`) already uses short column labels and requires no mapping.
+
 
 
 ### Simplified Data-Fetching
@@ -240,45 +221,6 @@ df_test = fetch_data(filename=str(data_test_path))
 ```{python}
 demo_data = reset_index(demo_data, index_name=INDEX_NAME)
 df_test = reset_index(df_test, index_name=INDEX_NAME)
-```
-
-
-The raw dataset is a time-series dataframe with the following properties:
-
-*   Shape: `(N_rows, 12)`, where rows correspond to hourly timestamps.
-*   Columns:
-    *   `DateTime` (Index): `datetime64[ns]`. The primary time index (written as `Time (UTC)` to the current CSV for pipeline compatibility).
-    *   `A`: `float64`. Target series A.
-    *   `B`: `float64`. Target series B.
-    *   `C`: `float64`. Target series C.
-    *   `D`: `float64`. Target series D.
-    *   `E`: `float64`. Target series E.
-    *   `F`: `float64`. Target series F.
-    *   `G`: `float64`. Target series G.
-    *   `H`: `float64`. Target series H.
-    *   `I`: `float64`. Target series I.
-    *   `J`: `float64`. Target series J (may contain missing values; filled via forward/backward fill).
-    *   `K`: `float64`. Target series K.
-*   Range: Determined dynamically from the loaded dataset (`START_DOWNLOAD` to `END_DOWNLOAD`).
-
-The head of the loaded data looks as follows:
-
-```{python}
-#| label: code-notebook-entsoe-usage-headusage-head
-#| echo: true
-demo_data.head()
-```
-
-Display the tail of the raw data:
-
-```{python}
-#| label: code-notebook-entsoe-usage-tail
-#| echo: true
-demo_data.tail()
-```
-
-```{python}
-demo_data.describe(include='all')
 ```
 
 ## Configuration Principles
@@ -666,7 +608,7 @@ The `n_hyperparameters_trials` argument controls the model selection process. Th
 | `n_hyperparameters_trials` | `int` | Number of trials for random search hyperparameter optimization. | `100` |
 | `data_filename` | `str` | Path to the current merged data file. | `"data_current.csv"` |
 | `index_name` | `str` | Datetime column name when resetting the index. | `"DateTime"` |
-| `data_source` | `str` | Primary data file name. | `"data_in.csv"` |
+| `data_source` | `str` | Primary data file name. | None |
 | `data_test` | `str` | Test data file name. | `"data_test.csv"` |
 | `start_download` | `Optional[str]` | Start of data range (derived from loaded dataset). | `START_DOWNLOAD` |
 | `end_download` | `Optional[str]` | End of data range (derived from loaded dataset). | `END_DOWNLOAD` |
@@ -748,25 +690,6 @@ window_features_unified = RollingFeaturesUnified(stats=["mean"], window_sizes=co
 ```
 
 ```{python}
-def _get_target_data(target: str):
-    """Thin wrapper: delegates to :func:`spotforecast2_safe.manager.features.get_target_data`.
-
-    Binds the shared pipeline variables ``df_pipeline``, ``config``,
-    ``data_with_exog``, ``exog_feature_names``, and ``exo_pred`` so that
-    task cells can call ``_get_target_data(target)`` without passing
-    pipeline state explicitly.
-    """
-    return get_target_data(
-        target=target,
-        df_pipeline=df_pipeline,
-        config=config,
-        data_with_exog=data_with_exog,
-        exog_feature_names=exog_feature_names if exog_feature_names else None,
-        exo_pred=exo_pred,
-    )
-```
-
-```{python}
 def create_forecaster():
     """Create a fresh ForecasterRecursive with shared configuration."""
     return ForecasterRecursive(
@@ -778,37 +701,14 @@ def create_forecaster():
 ```
 
 ```{python}
-def _build_prediction_package(
-    forecaster,
-    target: str,
-    y_train: pd.Series,
-    exog_train=None,
-    exog_future=None,
-):
-    """Thin wrapper: delegates to build_prediction_package in predictor.py.
-
-    Binds the shared pipeline variables predict_size (from config) and
-    df_test so that task cells can call _build_prediction_package() without
-    passing pipeline state explicitly.
-    """
-    return build_prediction_package(
-        forecaster=forecaster,
-        target=target,
-        y_train=y_train,
-        predict_size=config.predict_size,
-        exog_train=exog_train,
-        exog_future=exog_future,
-        df_test=df_test,
-    )
-```
-
-```{python}
 def save_forecaster(forecaster, task_name: str, target: str):
-    """Persist a fitted forecaster to the cache directory."""
-    cache_dir = get_cache_home(config.cache_home) / "unified_pipeline"
-    cache_dir.mkdir(parents=True, exist_ok=True)
-    path = cache_dir / f"{task_name}_{target}.joblib"
-    dump(forecaster, path, compress=3)
+    """Thin wrapper: delegates to :func:`spotforecast2_safe.manager.persistence.save_forecaster`.
+
+    Binds ``model_dir`` (derived from ``config.cache_home``) and routes
+    progress messages through the shared ``logger``.
+    """
+    model_dir = get_cache_home(config.cache_home) / "unified_pipeline"
+    path = _save_forecaster(forecaster, model_dir, target, task_name=task_name)
     logger.info(f"  Saved: {path}")
 ```
 
@@ -826,8 +726,14 @@ def train_and_predict_target(
     forecaster.fit(y=y_train, exog=exog_train)
     save_forecaster(forecaster, task_name, target)
 
-    pred_pkg = _build_prediction_package(
-        forecaster, target, y_train, exog_train, exog_future,
+    pred_pkg = build_prediction_package(
+        forecaster=forecaster,
+        target=target,
+        y_train=y_train,
+        predict_size=config.predict_size,
+        exog_train=exog_train,
+        exog_future=exog_future,
+        df_test=df_test,
     )
     return pred_pkg
 ```
@@ -949,9 +855,9 @@ def show_aggregated_prediction_figure(pred_pkg, task_name: str, show: bool = Tru
 
 | Component | Type | Description |
 | :--- | :--- | :--- |
-| `_get_target_data(target)` | Function | Thin wrapper around :func:`get_target_data` that binds shared pipeline state; extracts training series and exogenous features for one target. |
+| `get_target_data(target, ...)` | Function | Extracts training series and exogenous features for one target from the shared pipeline state (`df_pipeline`, `config`, `data_with_exog`, `exog_feature_names`, `exo_pred`). |
 | `create_forecaster()` | Function | Creates a `ForecasterRecursive` with shared config (lags, rolling features, weight function). |
-| `_build_prediction_package(...)` | Function | Thin wrapper around :func:`build_prediction_package` that binds `predict_size` (from `config`) and `df_test` from pipeline scope; packages in-sample and future metrics for `PredictionFigure`. Used directly by task 2. |
+| `build_prediction_package(...)` | Function | Packages in-sample and future predictions with metrics for `PredictionFigure`. Requires `predict_size=config.predict_size` and `df_test=df_test`. Used directly by task 2. |
 | `train_and_predict_target(...)` | Function | Fits (internally), saves, predicts, and visualizes — the lazy entry point used by tasks 1, 3, and 4. |
 
 : Unified Pipeline Components {#tbl-unified-pipeline}
@@ -970,7 +876,14 @@ The forecaster is created with default LightGBM hyperparameters and passed — u
 results_task1 = {}
 for target in config.targets:
     logger.info(f"[task 1] Target '{target}': fitting with default params...")
-    y_train, exog_train, exog_future = _get_target_data(target)
+    y_train, exog_train, exog_future = get_target_data(
+        target=target,
+        df_pipeline=df_pipeline,
+        config=config,
+        data_with_exog=data_with_exog,
+        exog_feature_names=exog_feature_names if exog_feature_names else None,
+        exo_pred=exo_pred,
+    )
     forecaster = create_forecaster()
     results_task1[target] = train_and_predict_target(
         target=target,
@@ -1025,7 +938,7 @@ show_aggregated_prediction_figure(agg_pred_pkg, task_name="task 1: Lazy Fitting"
 Produces identical predictions to task 1 — same default hyperparameters, same pipeline-processed data. The distinction is architectural, not numerical:
 
 * task 1 hides `.fit()` inside `train_and_predict_target()`; the caller never touches it.
-* task 2 calls `.fit()` explicitly as a separate, auditable pipeline stage, serializes the fitted model, and only then calls `_build_prediction_package()` to produce predictions from the pre-fitted forecaster.
+* task 2 calls `.fit()` explicitly as a separate, auditable pipeline stage, serializes the fitted model, and only then calls `build_prediction_package()` to produce predictions from the pre-fitted forecaster.
 
 This separation matters in batch pipelines: training can be scheduled, monitored, and checkpointed independently of inference.
 
@@ -1038,7 +951,14 @@ This separation matters in batch pipelines: training can be scheduled, monitored
 results_task2 = {}
 for target in config.targets:
     logger.info(f"[task 2] Target '{target}': explicit pre-training step...")
-    y_train, exog_train, exog_future = _get_target_data(target)
+    y_train, exog_train, exog_future = get_target_data(
+        target=target,
+        df_pipeline=df_pipeline,
+        config=config,
+        data_with_exog=data_with_exog,
+        exog_feature_names=exog_feature_names if exog_feature_names else None,
+        exo_pred=exo_pred,
+    )
 
     # --- Stage 1: Explicit fit (auditable batch training step) ---
     forecaster = create_forecaster()
@@ -1047,12 +967,14 @@ for target in config.targets:
     logger.info(f"  [task 2] '{target}': forecaster fitted and serialized.")
 
     # --- Stage 2: Predict from the pre-fitted forecaster (no re-fitting) ---
-    pred_pkg = _build_prediction_package(
+    pred_pkg = build_prediction_package(
         forecaster=forecaster,
         target=target,
         y_train=y_train,
+        predict_size=config.predict_size,
         exog_train=exog_train,
         exog_future=exog_future,
+        df_test=df_test,
     )
     fig = PredictionFigure(
         pred_pkg,
@@ -1132,7 +1054,14 @@ def search_space_optuna_lgbm(trial):
 results_task3 = {}
 for target in config.targets:
     logger.info(f"[task 3] Target '{target}': Optuna tuning ({config.n_trials_optuna} trials)...")
-    y_train, exog_train, exog_future = _get_target_data(target)
+    y_train, exog_train, exog_future = get_target_data(
+        target=target,
+        df_pipeline=df_pipeline,
+        config=config,
+        data_with_exog=data_with_exog,
+        exog_feature_names=exog_feature_names if exog_feature_names else None,
+        exo_pred=exo_pred,
+    )
     forecaster = create_forecaster()
 
     # Validation split: hold out delta_val window for CV scoring
@@ -1253,7 +1182,14 @@ search_space_spotoptim_lgbm = {
 results_task4 = {}
 for target in config.targets:
     logger.info(f"[task 4] Target '{target}': SpotOptim tuning ({config.n_trials_spotoptim} trials)...")
-    y_train, exog_train, exog_future = _get_target_data(target)
+    y_train, exog_train, exog_future = get_target_data(
+        target=target,
+        df_pipeline=df_pipeline,
+        config=config,
+        data_with_exog=data_with_exog,
+        exog_feature_names=exog_feature_names if exog_feature_names else None,
+        exo_pred=exo_pred,
+    )
     forecaster = create_forecaster()
 
     # Validation split (same as task 3)
@@ -1340,51 +1276,3 @@ show_aggregated_prediction_figure(agg_pred_pkg, task_name="task 4: SpotOptim Tun
 ``` 
 
 
-
-
-## Comparison of Results {#sec-comparison}
-
-All four tasks use the same unified data processing pipeline (outlier detection, imputation, exogenous features) and differ only in hyperparameter selection:
-
-- **task 1** (Lazy Fitting) and **task 2** (Explicit Pre-Training) produce identical predictions because both use default LightGBM hyperparameters on the same pipeline-processed data. They differ architecturally: task 1 defers `.fit()` inside `train_and_predict_target()`; task 2 calls `.fit()` explicitly before any prediction step.
-- **task 3** (Optuna Tuned) explores the hyperparameter space using Optuna's TPE sampler, typically improving MAE/MAPE.
-- **task 4** (SpotOptim Tuned) uses surrogate-model-based optimization, effective with small trial budgets.
-
-When `USE_EXOGENOUS_FEATURES=True`, all tasks benefit from weather, calendar, day/night, and holiday covariates. When `USE_OUTLIER_DETECTION=True`, IsolationForest-based outlier removal is applied before training. When `IMPUTATION_METHOD="weighted"`, sample weighting via `WeightFunction` down-weights observations near former gaps.
-
-```{python}
-#| label: comparison-summary
-#| echo: true
-
-comparison_data = []
-for task_name, results_dict in [
-    ("task 1: Lazy Fitting", results_task1),
-    ("task 2: Trained (No Tuning)", results_task2),
-    ("task 3: Optuna Tuned", results_task3),
-    ("task 4: SpotOptim Tuned", results_task4),
-]:
-    for target, pkg in results_dict.items():
-        if pkg and "metrics_train" in pkg:
-            row = {
-                "task": task_name,
-                "Target": target,
-                "Train MAE": pkg["metrics_train"].get("mae"),
-                "Train MAPE": pkg["metrics_train"].get("mape"),
-            }
-            if pkg.get("metrics_future"):
-                row["Test MAE"] = pkg["metrics_future"].get("mae")
-                row["Test MAPE"] = pkg["metrics_future"].get("mape")
-            comparison_data.append(row)
-
-if comparison_data:
-    df_comparison = pd.DataFrame(comparison_data)
-    print(df_comparison.to_string(index=False))
-else:
-    logger.info("No comparison data available.")
-```
-
-
-
-```{python}
-#| label: fig-entsoe-predict-comparison
-```

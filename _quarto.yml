@@ -80,6 +80,8 @@ website:
                 file: docs/reference/manager.plotter.qmd
               - text: "trainer_full"
                 file: docs/reference/manager.trainer_full.qmd
+              - text: "MultiTask"
+                file: docs/reference/manager.multitask.MultiTask.qmd
           - section: "Model Selection"
             contents:
               - text: "bayesian_search"
@@ -250,6 +252,7 @@ quartodoc:
         - manager.models.forecaster_recursive_xgb_full
         - manager.plotter
         - manager.trainer_full
+        - manager.multitask.MultiTask
 
     - title: "Forecaster"
       desc: "Forecasting utilities and metrics."
