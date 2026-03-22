@@ -87,7 +87,7 @@ def execute_spotoptim(
             exog=exog_train,
             return_best=True,
             random_state=task.config.random_state,
-            verbose=True,
+            verbose=False,
             n_trials=task.config.n_trials_spotoptim,
             n_initial=task.config.n_initial_spotoptim,
         )
