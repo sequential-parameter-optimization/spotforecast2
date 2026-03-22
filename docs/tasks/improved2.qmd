@@ -77,9 +77,11 @@ from spotforecast2_safe.manager.exo.calendar import (
 from spotforecast2_safe.manager.features import (
     apply_cyclical_encoding,
     create_interaction_features,
-    select_exogenous_features,
+    get_target_data,
     merge_data_and_covariates,
+    select_exogenous_features,
 )
+from spotforecast2_safe.manager.predictor import build_prediction_package
 from spotforecast2.model_selection import bayesian_search_forecaster
 from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
 
@@ -89,16 +91,45 @@ from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
 ## Arguments
 
 ```{python}
-INDEX_NAME = "DateTime"
-NUMBER_FOLDS=10
-PREDICT_SIZE = 24
+TASK="training" # "lazy", "training", "optuna", or "spotoptim"
+DATA_FRAME_NAME = "demo10"
+# If a dataframe is passed to the pipeline, the following constants are ignored:
+#  - DATA_SOURCE
+#  - DATA_TEST
+#  - DATA_HOME
+#  These constants are only relevant for data loading via fetch_data() from CSV files, which looks for DATA_SOURCE and DATA_TEST CSV-files in the user data directory (~/spotforecast2_data/) if DATA_HOME is set to get_data_home(), or in the package data directory if DATA_HOME is set to get_package_data_home() for package building.
+
 DATA_SOURCE = "demo10.csv"
 DATA_TEST = "demo11.csv"
 
 # spotforecast2-safe's fetch_data() looks for DATA_SOURCE and DATA_TEST (optional) in the user data directory (~/spotforecast2_data/):
 # DATA_HOME = get_data_home()
-# for package building, we need to avoid the dynamic loading of data_in.csv from the user data directory, so we set DATA_HOME to the package data directory here. In a real run, this would be set to the user data directory.
+# for package building, we need to avoid the dynamic loading of data_in.csv from the user data directory, so we set DATA_HOME to the package data directory here. In a real run, this would be set to the DATA_FRAME_NAME or to the user data directory.
 DATA_HOME = get_package_data_home()
+
+CACHE_DATA = True  # Whether to cache intermediate data to disk (e.g., cleaned datasets, engineered features). Caching can speed up subsequent runs and provides a record of the data transformations applied during the pipeline execution.
+CACHE_HOME = None  # Set to None to use default cache directory (~/spotforecast2_cache/)
+
+# Default aggregation weights — one entry per target in ALL_TARGETS (A–K).
+# Positive values increase, negative values invert, the contribution of that target.
+AGG_WEIGHTS = [
+    1.0,   # Index 0  – target A
+    1.0,   # Index 1  – target B
+    -1.0,  # Index 2  – target C
+    -1.0,  # Index 3  – target D
+    1.0,   # Index 4  – target E
+    -1.0,  # Index 5  – target F
+    1.0,   # Index 6  – target G
+    1.0,   # Index 7  – target H
+    1.0,   # Index 8  – target I
+    -1.0,  # Index 9  – target J
+    1.0,   # Index 10 – target K
+]
+
+
+INDEX_NAME = "DateTime"
+NUMBER_FOLDS = 10
+PREDICT_SIZE = 24
 
 # hard bounds (pysically plausible ranges) for manual outlier removal; one (lower, upper) tuple per target column. These are applied before further automated outlier-detection methods, e.g., IsolationForest-based detection.
 BOUNDS_ORIG = [(-2500, 4500), (-10, 3000), (0, 230), (0, 550), (0, 1400), (0, 1400), (0, 10), (0, 4500), (0, 300), (0, 400), (0, 300)]
@@ -109,6 +140,10 @@ CONTAMINATION = 0.03  # 3% of data points are assumed outliers (for IsolationFor
 IMPUTATION_METHOD = "weighted"  # "linear" or "weighted"
 
 USE_EXOGENOUS_FEATURES = True
+
+N_TRIALS_OPTUNA = 15
+N_TRIALS_SPOTOPTIM = 10
+N_INITIAL_SPOTOPTIM = 5
 ```
 
 `INDEX_NAME` is the name of the datetime column in the raw CSV files, which is reset to a column (not index) by `reset_index()` for pipeline compatibility. The pipeline operates on a DatetimeIndex-based DataFrame, so this column is set as the index after loading.
@@ -318,8 +353,16 @@ config = ConfigMulti(
     start_download=START_DOWNLOAD,
     end_download=END_DOWNLOAD,
     bounds=BOUNDS,  # per-column outlier bounds
+    data_home=DATA_HOME,
+    cache_home=get_cache_home(CACHE_HOME),
+    n_trials_optuna=N_TRIALS_OPTUNA,
+    n_trials_spotoptim=N_TRIALS_SPOTOPTIM,
+    n_initial_spotoptim=N_INITIAL_SPOTOPTIM,
+    task=TASK,
+    agg_weights=AGG_WEIGHTS
 )
 ```
+
 
 All pipeline behavior flags are centralized in the `ConfigMulti` instance created above. The relevant attributes are:
 
@@ -381,7 +424,7 @@ logger.info(f"Pipeline data shape after preparation: {df_pipeline.shape}")
 ### Step 2 — Outlier Detection and Removal {#sec-step2-outlier-detection}
 
 First, the hard (physically plausible) bounds defined in `config.bounds` are applied via `manual_outlier_removal()`, which sets out-of-bounds values to `NaN`. This is a deterministic, transparent step that reduces the influence of extreme outliers on subsequent processing.
-Second, if `USE_OUTLIER_DETECTION=True`, the `mark_outliers()` function from `spotforecast2-safe` is applied, which uses an IsolationForest-based approach to identify outliers based on the distribution of the data. Detected outliers are also set to `NaN` and subsequently handled by the imputation step.
+Second, if `USE_OUTLIER_DETECTION=True`, the `mark_outliers()` function from `spotforecast2-safe` is applied, which uses an IsolationForest-based task to identify outliers based on the distribution of the data. Detected outliers are also set to `NaN` and subsequently handled by the imputation step.
 
 ```{python}
 df_pipeline_original = df_pipeline.copy()  # keep a copy of the original for comparison
@@ -429,7 +472,7 @@ print(weight_func)
 
 ### Step 4 — Exogenous Features Engineering {#sec-step4-exog-features}
 
-When `USE_EXOGENOUS_FEATURES=True`, the pipeline creates four categories of exogenous features using public helper functions from `spotforecast2_safe.manager`:
+When `config.use_exogenous_features=True`, the pipeline creates four categories of exogenous features using public helper functions from `spotforecast2_safe.manager`:
 
 * Weather features: temperature, wind, etc. with rolling-window aggregations.
 * Calendar features: month, week, day-of-week, hour.
@@ -632,6 +675,16 @@ The `n_hyperparameters_trials` argument controls the model selection process. Th
 | `cov_start` | `Optional[pd.Timestamp]` | Start of covariate range (set via `get_start_end()`). | `None` |
 | `cov_end` | `Optional[pd.Timestamp]` | End of covariate range, extended by `predict_size` hours. | `None` |
 | `bounds` | `Optional[List[tuple]]` | Per-column outlier bounds `(lower, upper)` for manual removal. | `None` |
+| `verbose` | `bool` | Enable verbose output for pipeline steps. | `False` |
+| `cache_data` | `bool` | Cache intermediate data to disk. | `False` |
+| `cache_home` | `Optional[Path]` | Path to the cache directory (`None` = default `~/spotforecast2_cache/`). | `None` |
+| `data_home` | `Optional[Path]` | Path to the data directory (`None` = default `~/spotforecast2_data/`). | `None` |
+| `end_train_ts` | `Optional[pd.Timestamp]` | End of the training window (derived from `end_train_default`). | `None` |
+| `start_train_ts` | `Optional[pd.Timestamp]` | Start of the training window (derived as `end_train_ts - train_size`). | `None` |
+| `n_trials_optuna` | `int` | Number of Optuna Bayesian-search trials (task 3). | `15` |
+| `n_trials_spotoptim` | `int` | Number of SpotOptim surrogate-search trials (task 4). | `10` |
+| `n_initial_spotoptim` | `int` | Number of initial random evaluations for SpotOptim (task 4). | `5` |
+| `task` | `str` | Active prediction task: `"lazy"`, `"training"`, `"optuna"`, or `"spotoptim"`. | `"lazy"` |
 
 : Configuration for Data Acquisition. General parameters. {#tbl-config-entsoe-param}
 
@@ -667,194 +720,261 @@ This `config` object is then injected into the instances of the `ForecasterRecur
 
 ## Unified Model Training & Prediction Pipeline {#sec-unified-pipeline}
 
-All four training approaches share the same data processing pipeline defined in @sec-data-processing-pipeline (outlier detection, imputation, exogenous features). The differences between the approaches is as follows:
+All four tasks share the same data processing pipeline defined in @sec-data-processing-pipeline (outlier detection, imputation, exogenous features). The differences between the tasks is as follows:
 
-1. **Approach 1 — Lazy Fitting**: Default hyperparameters, fit occurs at prediction time.
-2. **Approach 2 — Explicit Pre-Training**: Default hyperparameters, explicit fit before prediction.
-3. **Approach 3 — Optuna Tuned**: Bayesian hyperparameter search via Optuna, then fit with best params.
-4. **Approach 4 — SpotOptim Tuned**: Surrogate-model-based search via SpotOptim, then fit with best params.
+1. `lazy` (Task 1 — Lazy Fitting): Default hyperparameters, fit occurs at prediction time. Use `task="lazy"` when calling `predict()` to trigger this behavior.
+2. `training` (Task 2 — Explicit Pre-Training): Default hyperparameters, explicit fit before prediction. Use `task="training"` to fit the model immediately after instantiation, then call `predict()` for forecasting.
+3. `optuna` (Task 3 — Optuna Tuned): Bayesian hyperparameter search via Optuna, then fit with best params. Use `task="optuna"` to trigger this behavior.
+4. `spotoptim` (Task 4 — SpotOptim Tuned): Surrogate-model-based search via SpotOptim, then fit with best params. Use `task="spotoptim"` to trigger this behavior.
 
-When `USE_EXOGENOUS_FEATURES=True`, all approaches receive the same exogenous covariates (weather, calendar, day/night, holidays) and optional sample weighting from the imputation step. When `USE_EXOGENOUS_FEATURES=False`, approaches train on target-only data.
+When `config.use_exogenous_features=True`, all tasks receive the same exogenous covariates (weather, calendar, day/night, holidays) and optional sample weighting from the imputation step. When `config.use_exogenous_features=False`, tasks train on target-only data.
 
 ### Shared Training and Prediction Helpers
 
-The following helper functions are used by all four approaches. They operate directly on the pipeline-processed data (`df_pipeline`, `data_with_exog`, `exo_pred`) rather than loading data from CSV, ensuring that outlier removal, imputation, and exogenous feature engineering are applied consistently.
+The following helper functions are used by all four tasks. They operate directly on the pipeline-processed data (`df_pipeline`, `data_with_exog`, `exo_pred`) rather than loading data from CSV, ensuring that outlier removal, imputation, and exogenous feature engineering are applied consistently.
 
 ```{python}
 #| label: unified-helpers
 #| echo: true
+# --- Training window boundaries (shared by all tasks) ---
+config.end_train_ts = pd.to_datetime(config.end_train_default, utc=True)
+config.start_train_ts = config.end_train_ts - config.train_size
+config.start_train_ts = max(config.start_train_ts, df_pipeline.index.min())
 
-
-
-# --- Training window boundaries (shared by all approaches) ---
-end_train_ts = pd.to_datetime(config.end_train_default, utc=True)
-start_train_ts = end_train_ts - config.train_size
-start_train_ts = max(start_train_ts, df_pipeline.index.min())
-
-logger.info(f"Unified training window: {start_train_ts} to {end_train_ts}")
+logger.info(f"Unified training window: {config.start_train_ts} to {config.end_train_ts}")
 
 # --- Rolling window features (shared estimator configuration) ---
-WINDOW_FEATURES_UNIFIED = RollingFeaturesUnified(stats=["mean"], window_sizes=config.window_size)
+window_features_unified = RollingFeaturesUnified(stats=["mean"], window_sizes=config.window_size)
+```
 
+```{python}
+def _get_target_data(target: str):
+    """Thin wrapper: delegates to :func:`spotforecast2_safe.manager.features.get_target_data`.
 
-def get_target_data(target: str):
-    """Return (y_train, exog_train, exog_future) from the shared pipeline.
-
-    y_train:      target series clipped to the training window.
-    exog_train:   exogenous features for the training window (None if disabled).
-    exog_future:  exogenous features for the prediction horizon (None if disabled).
+    Binds the shared pipeline variables ``df_pipeline``, ``config``,
+    ``data_with_exog``, ``exog_feature_names``, and ``exo_pred`` so that
+    task cells can call ``_get_target_data(target)`` without passing
+    pipeline state explicitly.
     """
-    y_train = df_pipeline[target].loc[start_train_ts:end_train_ts].squeeze()
+    return get_target_data(
+        target=target,
+        df_pipeline=df_pipeline,
+        config=config,
+        data_with_exog=data_with_exog,
+        exog_feature_names=exog_feature_names if exog_feature_names else None,
+        exo_pred=exo_pred,
+    )
+```
 
-    exog_train = None
-    exog_future = None
-    if config.use_exogenous_features and data_with_exog is not None:
-        exog_train = (
-            data_with_exog[exog_feature_names]
-            .loc[start_train_ts:end_train_ts]
-            .astype("float32")
-        )
-        exog_future = exo_pred[exog_feature_names].astype("float32")
-
-    return y_train, exog_train, exog_future
-
-
+```{python}
 def create_forecaster():
     """Create a fresh ForecasterRecursive with shared configuration."""
     return ForecasterRecursive(
         estimator=LGBMRegressor(random_state=config.random_state, verbose=-1),
         lags=config.lags_consider[-1],  # largest lag (24)
-        window_features=WINDOW_FEATURES_UNIFIED,
+        window_features=window_features_unified,
         weight_func=weight_func,  # from pipeline Step 3 (None if linear imputation)
     )
+```
 
-
-def build_prediction_package(
+```{python}
+def _build_prediction_package(
     forecaster,
     target: str,
     y_train: pd.Series,
     exog_train=None,
     exog_future=None,
 ):
-    """Build a prediction package compatible with PredictionFigure.
+    """Thin wrapper: delegates to build_prediction_package in predictor.py.
 
-    Computes true in-sample predictions via the fitted regressor and generates
-    a genuine future forecast of PREDICT_SIZE steps.
+    Binds the shared pipeline variables predict_size (from config) and
+    df_test so that task cells can call _build_prediction_package() without
+    passing pipeline state explicitly.
     """
-    # --- In-sample predictions (true fit, not forward predictions) ---
-    X_train_matrix, y_train_internal = forecaster.create_train_X_y(
-        y=y_train, exog=exog_train,
+    return build_prediction_package(
+        forecaster=forecaster,
+        target=target,
+        y_train=y_train,
+        predict_size=config.predict_size,
+        exog_train=exog_train,
+        exog_future=exog_future,
+        df_test=df_test,
     )
-    train_pred_values = forecaster.regressor.predict(X_train_matrix)
-    train_pred = pd.Series(train_pred_values, index=y_train_internal.index)
-    y_train_aligned = y_train.loc[train_pred.index]
+```
 
-    metrics_train = {
-        "mae": float(mean_absolute_error(y_train_aligned, train_pred)),
-        "mape": float(mean_absolute_percentage_error(y_train_aligned, train_pred)),
-    }
-
-    # --- Future predictions ---
-    future_pred = forecaster.predict(steps=config.predict_size, exog=exog_future)
-
-    pred_pkg = {
-        "train_actual": y_train_aligned,
-        "train_pred": train_pred,
-        "future_actual": pd.Series(dtype="float64"),
-        "future_pred": future_pred,
-        "metrics_train": metrics_train,
-        "metrics_future": {},
-        "metrics_future_one_day": {},
-        "validation_passed": True,
-    }
-
-    # Inject test ground truth if available
-    if df_test is not None and target in df_test.columns:
-        ts = df_test.set_index("DateTime")[target]
-        if ts.index.tzinfo is None:
-            ts.index = ts.index.tz_localize("UTC")
-        test_actual = ts.reindex(future_pred.index).dropna()
-        pred_pkg["test_actual"] = test_actual
-        if len(test_actual) > 0:
-            pred_pkg["metrics_future"] = {
-                "mae": float(mean_absolute_error(
-                    test_actual, future_pred.loc[test_actual.index]
-                )),
-                "mape": float(mean_absolute_percentage_error(
-                    test_actual, future_pred.loc[test_actual.index]
-                )),
-            }
-
-    return pred_pkg
-
-
-def save_forecaster(forecaster, approach_name: str, target: str):
+```{python}
+def save_forecaster(forecaster, task_name: str, target: str):
     """Persist a fitted forecaster to the cache directory."""
-    cache_dir = get_cache_home() / "unified_pipeline"
+    cache_dir = get_cache_home(config.cache_home) / "unified_pipeline"
     cache_dir.mkdir(parents=True, exist_ok=True)
-    path = cache_dir / f"{approach_name}_{target}.joblib"
+    path = cache_dir / f"{task_name}_{target}.joblib"
     dump(forecaster, path, compress=3)
     logger.info(f"  Saved: {path}")
+```
 
-
+```{python}
 def train_and_predict_target(
     target: str,
-    approach_name: str,
+    task_name: str,
     forecaster,
     y_train: pd.Series,
     exog_train=None,
     exog_future=None,
     show: bool = True,
 ):
-    """Fit, predict, visualize, and save — used by all approaches."""
+    """Fit, predict, visualize, and save — used by all tasks."""
     forecaster.fit(y=y_train, exog=exog_train)
-    save_forecaster(forecaster, approach_name, target)
+    save_forecaster(forecaster, task_name, target)
 
-    pred_pkg = build_prediction_package(
+    pred_pkg = _build_prediction_package(
         forecaster, target, y_train, exog_train, exog_future,
     )
-
-    if show:
-        fig = PredictionFigure(
-            pred_pkg,
-            title=f"Prediction for Target '{target}' ({approach_name})",
-        ).make_plot()
-        fig.show()
-
     return pred_pkg
 ```
+
+```{python}
+def show_prediction_figure(pred_pkg, target: str, task_name: str, show: bool = True):
+    fig = PredictionFigure(
+            pred_pkg,
+            title=f"Prediction for Target '{target}' ({task_name})",
+        ).make_plot()
+    if show:
+        fig.show()
+```
+
+
+### Prediction Aggregation {#sec-prediction-aggregation}
+
+After training individual models per target, the per-target future predictions are
+combined into a single aggregated forecast via a weighted sum — mirroring the
+aggregation step in `task_safe_n_to_1_with_covariates_and_dataframe.py`
+(`agg_predict`, Step 2).
+
+When `config.targets` is a subset of all columns (e.g. `targets=ALL_TARGETS[:2]`),
+only the corresponding leading weights are used so that weight indices always
+align with target order.
+
+```{python}
+#| label: agg-predictor-def
+#| echo: true
+
+def agg_predictor(
+    results: dict,
+    targets: list,
+    weights: list,
+) -> dict:
+    """Aggregate per-target prediction packages into a single weighted forecast.
+
+    Combines future predictions, training predictions, and training actuals
+    from individual per-target result packages into a single aggregated
+    prediction package compatible with PredictionFigure.
+
+    Args:
+        results: Mapping of target name → prediction package dict, as returned
+            by train_and_predict_target().  Each package must contain the keys
+            ``future_pred``, ``train_pred``, and ``train_actual``.
+        targets: Ordered list of target names to aggregate.  Must be a subset
+            of ``results``.
+        weights: Aggregation weights aligned with ``targets``.  Passed directly
+            to ``agg_predict()``.
+
+    Returns:
+        Prediction package dict with keys ``train_actual``, ``train_pred``,
+        ``future_actual``, ``future_pred``, ``metrics_train``,
+        ``metrics_future``, ``metrics_future_one_day``, and
+        ``validation_passed``.  If any target has a non-empty ``test_actual``
+        key, an aggregated ``test_actual`` series is added as well.
+    """
+    future_preds_df = pd.DataFrame(
+        {t: results[t]["future_pred"] for t in targets}
+    )
+    train_preds_df = pd.DataFrame(
+        {t: results[t]["train_pred"] for t in targets}
+    )
+    train_actuals_df = pd.DataFrame(
+        {t: results[t]["train_actual"] for t in targets}
+    )
+
+    agg_future_pred = agg_predict(future_preds_df, weights=weights)
+    agg_train_pred = agg_predict(train_preds_df, weights=weights)
+    agg_train_actual = agg_predict(train_actuals_df, weights=weights)
+
+    # Aggregate test actuals (df_test ground truth) when available.
+    test_series = {
+        t: results[t]["test_actual"]
+        for t in targets
+        if "test_actual" in results[t] and len(results[t]["test_actual"]) > 0
+    }
+    agg_test_actual = None
+    if test_series:
+        test_actuals_df = pd.DataFrame(test_series).reindex(
+            sorted(set().union(*[s.index for s in test_series.values()]))
+        )
+        test_weights = [
+            weights[i]
+            for i, t in enumerate(targets)
+            if t in test_series
+        ]
+        agg_test_actual = agg_predict(test_actuals_df, weights=test_weights)
+
+    agg_pred_pkg = {
+        "train_actual": agg_train_actual,
+        "train_pred": agg_train_pred,
+        "future_actual": pd.Series(dtype="float64"),
+        "future_pred": agg_future_pred,
+        "metrics_train": {},
+        "metrics_future": {},
+        "metrics_future_one_day": {},
+        "validation_passed": True,
+    }
+    if agg_test_actual is not None:
+        agg_pred_pkg["test_actual"] = agg_test_actual
+
+    return agg_pred_pkg
+```
+
+```{python}
+def show_aggregated_prediction_figure(pred_pkg, task_name: str, show: bool = True):
+    fig = PredictionFigure(
+        pred_pkg,
+        title=f"Aggregated Forecast: Weighted Combination of Targets {config.targets} ({task_name})",
+    ).make_plot()
+    if show:
+        fig.show()
+```
+
 
 
 ### API Reference: Unified Pipeline
 
 | Component | Type | Description |
 | :--- | :--- | :--- |
-| `get_target_data(target)` | Function | Extracts training series and exogenous features from the shared pipeline for one target. |
+| `_get_target_data(target)` | Function | Thin wrapper around :func:`get_target_data` that binds shared pipeline state; extracts training series and exogenous features for one target. |
 | `create_forecaster()` | Function | Creates a `ForecasterRecursive` with shared config (lags, rolling features, weight function). |
-| `build_prediction_package(...)` | Function | Computes in-sample and future predictions from an **already-fitted** forecaster; packages metrics for `PredictionFigure`. Used directly by Approach 2. |
-| `train_and_predict_target(...)` | Function | Fits (internally), saves, predicts, and visualizes — the lazy entry point used by Approaches 1, 3, and 4. |
+| `_build_prediction_package(...)` | Function | Thin wrapper around :func:`build_prediction_package` that binds `predict_size` (from `config`) and `df_test` from pipeline scope; packages in-sample and future metrics for `PredictionFigure`. Used directly by task 2. |
+| `train_and_predict_target(...)` | Function | Fits (internally), saves, predicts, and visualizes — the lazy entry point used by tasks 1, 3, and 4. |
 
 : Unified Pipeline Components {#tbl-unified-pipeline}
 
 
-### Approach 1: Lazy Fitting (Default Parameters) {#sec-approach-1}
+### task 1: Lazy Fitting (Default Parameters) {#sec-task-1}
 
-The forecaster is created with default LightGBM hyperparameters and passed — **unfitted** — to `train_and_predict_target()`. Fitting is an implementation detail of that helper: the caller never invokes `.fit()` explicitly. This is the "lazy" pattern: fitting is deferred to, and triggered by, the prediction pipeline.
+The forecaster is created with default LightGBM hyperparameters and passed — unfitted — to `train_and_predict_target()`. Fitting is an implementation detail of that helper: the caller never invokes `.fit()` explicitly. This is the "lazy" pattern: fitting is deferred to, and triggered by, the prediction pipeline.
 
 ```{python}
-#| label: approach-1-lazy-fitting
+#| label: task-1-lazy-fitting
 #| echo: true
 #| cache: false
-#| fig-cap: "Prediction (Approach 1: Lazy Fitting)"
+#| fig-cap: "Prediction (task 1: Lazy Fitting)"
 
-results_app1 = {}
+results_task1 = {}
 for target in config.targets:
-    logger.info(f"[Approach 1] Target '{target}': fitting with default params...")
-    y_train, exog_train, exog_future = get_target_data(target)
+    logger.info(f"[task 1] Target '{target}': fitting with default params...")
+    y_train, exog_train, exog_future = _get_target_data(target)
     forecaster = create_forecaster()
-    results_app1[target] = train_and_predict_target(
+    results_task1[target] = train_and_predict_target(
         target=target,
-        approach_name="Approach 1: Lazy Fitting",
+        task_name="task 1: Lazy Fitting",
         forecaster=forecaster,
         y_train=y_train,
         exog_train=exog_train,
@@ -862,34 +982,72 @@ for target in config.targets:
     )
 ```
 
-### Approach 2: Explicit Pre-Training (Default Parameters) {#sec-approach-2}
+```{python}
+#| label: task-1-figures
+#| echo: true
+for target in config.targets:
+    show_prediction_figure(
+        pred_pkg=results_task1[target],
+        target=target,
+        task_name="task 1: Lazy Fitting",
+    )
+```
 
-Produces identical predictions to Approach 1 — same default hyperparameters, same pipeline-processed data. The distinction is **architectural, not numerical**:
 
-- Approach 1 hides `.fit()` inside `train_and_predict_target()`; the caller never touches it.
-- Approach 2 calls `.fit()` **explicitly** as a separate, auditable pipeline stage, serializes the fitted model, and only then calls `build_prediction_package()` to produce predictions from the pre-fitted forecaster.
+### agg for task 1
+```{python}
+#| label: prediction-aggregation
+#| echo: true
+#| fig-cap: "Aggregated Prediction: Weighted Combination Across Active Targets (task 1)"
+
+# Slice weights to align with active config.targets.
+# E.g. targets=ALL_TARGETS[:2] → only the 1st and 2nd weights are used.
+active_weights = config.agg_weights[: len(config.targets)]
+
+agg_pred_pkg = agg_predictor(
+    results=results_task1,
+    targets=config.targets,
+    weights=active_weights,
+)
+```
+
+
+
+```{python}
+show_aggregated_prediction_figure(agg_pred_pkg, task_name="task 1: Lazy Fitting")
+``` 
+
+
+
+
+### task 2: Explicit Pre-Training (Default Parameters) {#sec-task-2}
+
+Produces identical predictions to task 1 — same default hyperparameters, same pipeline-processed data. The distinction is architectural, not numerical:
+
+* task 1 hides `.fit()` inside `train_and_predict_target()`; the caller never touches it.
+* task 2 calls `.fit()` explicitly as a separate, auditable pipeline stage, serializes the fitted model, and only then calls `_build_prediction_package()` to produce predictions from the pre-fitted forecaster.
 
 This separation matters in batch pipelines: training can be scheduled, monitored, and checkpointed independently of inference.
 
 ```{python}
-#| label: approach-2-training
+#| label: task-2-training
 #| echo: true
 #| cache: false
-#| fig-cap: "Prediction (Approach 2: Explicit Pre-Training)"
+#| fig-cap: "Prediction (task 2: Explicit Pre-Training)"
 
-results_app2 = {}
+results_task2 = {}
 for target in config.targets:
-    logger.info(f"[Approach 2] Target '{target}': explicit pre-training step...")
-    y_train, exog_train, exog_future = get_target_data(target)
+    logger.info(f"[task 2] Target '{target}': explicit pre-training step...")
+    y_train, exog_train, exog_future = _get_target_data(target)
 
     # --- Stage 1: Explicit fit (auditable batch training step) ---
     forecaster = create_forecaster()
     forecaster.fit(y=y_train, exog=exog_train)
-    save_forecaster(forecaster, approach_name="Approach 2: Trained (No Tuning)", target=target)
-    logger.info(f"  [Approach 2] '{target}': forecaster fitted and serialized.")
+    save_forecaster(forecaster, task_name="task 2: Trained (No Tuning)", target=target)
+    logger.info(f"  [task 2] '{target}': forecaster fitted and serialized.")
 
     # --- Stage 2: Predict from the pre-fitted forecaster (no re-fitting) ---
-    pred_pkg = build_prediction_package(
+    pred_pkg = _build_prediction_package(
         forecaster=forecaster,
         target=target,
         y_train=y_train,
@@ -898,22 +1056,59 @@ for target in config.targets:
     )
     fig = PredictionFigure(
         pred_pkg,
-        title=f"Prediction for Target '{target}' (Approach 2: Trained (No Tuning))",
+        title=f"Prediction for Target '{target}' (task 2: Trained (No Tuning))",
     ).make_plot()
     fig.show()
-    results_app2[target] = pred_pkg
+    results_task2[target] = pred_pkg
 ```
 
-### Approach 3: Optuna Tuned, Trained, and Predicted {#sec-approach-3}
+
+```{python}
+#| label: task-2-figures
+#| echo: true
+for target in config.targets:
+    show_prediction_figure(
+        pred_pkg=results_task2[target],
+        target=target,
+        task_name="task 2: Explicit Pre-Training",
+    )
+```
+
+## agg for task 2
+```{python}
+#| label: prediction-aggregation
+#| echo: true
+#| fig-cap: "Aggregated Prediction: Weighted Combination Across Active Targets (task 2)"
+
+# Slice weights to align with active config.targets.
+# E.g. targets=ALL_TARGETS[:2] → only the 1st and 2nd weights are used.
+active_weights = config.agg_weights[: len(config.targets)]
+
+agg_pred_pkg = agg_predictor(
+    results=results_task2,
+    targets=config.targets,
+    weights=active_weights,
+)
+```
+
+
+
+```{python}
+show_aggregated_prediction_figure(agg_pred_pkg, task_name="task 2: Explicit Pre-Training")
+``` 
+
+
+
+### task 3: Optuna Tuned, Trained, and Predicted {#sec-task-3}
 
 Bayesian hyperparameter optimization via Optuna's TPE sampler. The tuning runs on the pipeline-processed data with exogenous features (when enabled), then the forecaster is re-fitted with the best discovered parameters.
 
 ```{python}
-#| label: approach-3-tuning
+#| label: task-3-tuning
 #| echo: true
 #| cache: false
 #| eval: true
-#| fig-cap: "Prediction (Approach 3: Optuna Tuned)"
+#| fig-cap: "Prediction (task 3: Optuna Tuned)"
 
 # Optuna search space (callable, as required by bayesian_search_forecaster)
 def search_space_optuna_lgbm(trial):
@@ -931,17 +1126,17 @@ def search_space_optuna_lgbm(trial):
             [24, 48, [1, 2, 24], [1, 2, 24, 48], [1, 2, 23, 24, 47, 48]],
         ),
     }
+```
 
-N_TRIALS_OPTUNA = 15
-
-results_app3 = {}
+```{python}
+results_task3 = {}
 for target in config.targets:
-    logger.info(f"[Approach 3] Target '{target}': Optuna tuning ({N_TRIALS_OPTUNA} trials)...")
-    y_train, exog_train, exog_future = get_target_data(target)
+    logger.info(f"[task 3] Target '{target}': Optuna tuning ({config.n_trials_optuna} trials)...")
+    y_train, exog_train, exog_future = _get_target_data(target)
     forecaster = create_forecaster()
 
     # Validation split: hold out delta_val window for CV scoring
-    end_cv = end_train_ts - config.delta_val
+    end_cv = config.end_train_ts - config.delta_val
     n_train_cv = len(y_train.loc[:end_cv])
 
     cv = TimeSeriesFold(
@@ -960,7 +1155,7 @@ for target in config.targets:
         search_space=search_space_optuna_lgbm,
         metric="mean_absolute_error",
         exog=exog_train,
-        n_trials=N_TRIALS_OPTUNA,
+        n_trials=config.n_trials_optuna,
         random_state=config.random_state,
         return_best=False,
         verbose=False,
@@ -977,9 +1172,9 @@ for target in config.targets:
     if hasattr(forecaster_tuned, "set_lags"):
         forecaster_tuned.set_lags(best_lags)
 
-    results_app3[target] = train_and_predict_target(
+    results_task3[target] = train_and_predict_target(
         target=target,
-        approach_name="Approach 3: Optuna Tuned",
+        task_name="task 3: Optuna Tuned",
         forecaster=forecaster_tuned,
         y_train=y_train,
         exog_train=exog_train,
@@ -987,19 +1182,53 @@ for target in config.targets:
     )
 ```
 
+```{python}
+#| label: task-3-figures
+#| echo: true
+for target in config.targets:
+    show_prediction_figure(
+        pred_pkg=results_task3[target],
+        target=target,
+        task_name="task 3: Optuna Tuned",
+    )
+```
 
-### Approach 4: SpotOptim Tuned, Trained, and Predicted {#sec-approach-4}
+## agg for task 3
+```{python}
+#| label: prediction-aggregation
+#| echo: true
+#| fig-cap: "Aggregated Prediction: Weighted Combination Across Active Targets (task 3)"
 
-As an alternative to Optuna, `spotoptim` provides surrogate-model-based Bayesian optimization. It can be particularly effective with small trial budgets. The tuning uses the same pipeline-processed data and exogenous features as all other approaches.
+# Slice weights to align with active config.targets.
+# E.g. targets=ALL_TARGETS[:2] → only the 1st and 2nd weights are used.
+active_weights = config.agg_weights[: len(config.targets)]
+
+agg_pred_pkg = agg_predictor(
+    results=results_task3,
+    targets=config.targets,
+    weights=active_weights,
+)
+```
+
+
 
 ```{python}
-#| label: approach-4-spotoptim-tuning
+show_aggregated_prediction_figure(agg_pred_pkg, task_name="task 3: Optuna Tuned")
+``` 
+
+
+
+
+### task 4: SpotOptim Tuned, Trained, and Predicted {#sec-task-4}
+
+As an alternative to Optuna, `spotoptim` provides surrogate-model-based Bayesian optimization. It can be particularly effective with small trial budgets. The tuning uses the same pipeline-processed data and exogenous features as all other tasks.
+
+```{python}
+#| label: task-4-spotoptim-tuning
 #| echo: true
 #| cache: false
 #| eval: true
-#| fig-cap: "Prediction (Approach 4: SpotOptim Tuned)"
-
-
+#| fig-cap: "Prediction (task 4: SpotOptim Tuned)"
 
 # SpotOptim search space (dictionary format)
 search_space_spotoptim_lgbm = {
@@ -1021,17 +1250,14 @@ search_space_spotoptim_lgbm = {
     ],
 }
 
-N_TRIALS_SPOTOPTIM = 10
-N_INITIAL_SPOTOPTIM = 5
-
-results_app4 = {}
+results_task4 = {}
 for target in config.targets:
-    logger.info(f"[Approach 4] Target '{target}': SpotOptim tuning ({N_TRIALS_SPOTOPTIM} trials)...")
-    y_train, exog_train, exog_future = get_target_data(target)
+    logger.info(f"[task 4] Target '{target}': SpotOptim tuning ({config.n_trials_spotoptim} trials)...")
+    y_train, exog_train, exog_future = _get_target_data(target)
     forecaster = create_forecaster()
 
-    # Validation split (same as Approach 3)
-    end_cv = end_train_ts - config.delta_val
+    # Validation split (same as task 3)
+    end_cv = config.end_train_ts - config.delta_val
     n_train_cv = len(y_train.loc[:end_cv])
 
     cv = TimeSeriesFold(
@@ -1053,8 +1279,8 @@ for target in config.targets:
         return_best=True,
         random_state=config.random_state,
         verbose=True,
-        n_trials=N_TRIALS_SPOTOPTIM,
-        n_initial=N_INITIAL_SPOTOPTIM,
+        n_trials=config.n_trials_spotoptim,
+        n_initial=config.n_initial_spotoptim,
     )
 
     best_params = tuning_results.iloc[0].params
@@ -1068,9 +1294,9 @@ for target in config.targets:
     if hasattr(forecaster_tuned, "set_lags"):
         forecaster_tuned.set_lags(best_lags)
 
-    results_app4[target] = train_and_predict_target(
+    results_task4[target] = train_and_predict_target(
         target=target,
-        approach_name="Approach 4: SpotOptim Tuned",
+        task_name="task 4: SpotOptim Tuned",
         forecaster=forecaster_tuned,
         y_train=y_train,
         exog_train=exog_train,
@@ -1078,32 +1304,69 @@ for target in config.targets:
     )
 ```
 
+```{python}
+#| label: task-4-figures
+#| echo: true
+for target in config.targets:
+    show_prediction_figure(
+        pred_pkg=results_task4[target],
+        target=target,
+        task_name="task 4: SpotOptim Tuned",
+    )
+```
 
-### Comparison of Results {#sec-comparison}
 
-All four approaches use the **same unified data processing pipeline** (outlier detection, imputation, exogenous features) and differ only in hyperparameter selection:
+## agg for task 4
+```{python}
+#| label: prediction-aggregation
+#| echo: true
+#| fig-cap: "Aggregated Prediction: Weighted Combination Across Active Targets (task 4)"
 
-- **Approach 1** (Lazy Fitting) and **Approach 2** (Explicit Pre-Training) produce identical predictions because both use default LightGBM hyperparameters on the same pipeline-processed data. They differ architecturally: Approach 1 defers `.fit()` inside `train_and_predict_target()`; Approach 2 calls `.fit()` explicitly before any prediction step.
-- **Approach 3** (Optuna Tuned) explores the hyperparameter space using Optuna's TPE sampler, typically improving MAE/MAPE.
-- **Approach 4** (SpotOptim Tuned) uses surrogate-model-based optimization, effective with small trial budgets.
+# Slice weights to align with active config.targets.
+# E.g. targets=ALL_TARGETS[:2] → only the 1st and 2nd weights are used.
+active_weights = config.agg_weights[: len(config.targets)]
 
-When `USE_EXOGENOUS_FEATURES=True`, all approaches benefit from weather, calendar, day/night, and holiday covariates. When `USE_OUTLIER_DETECTION=True`, IsolationForest-based outlier removal is applied before training. When `IMPUTATION_METHOD="weighted"`, sample weighting via `WeightFunction` down-weights observations near former gaps.
+agg_pred_pkg = agg_predictor(
+    results=results_task4,
+    targets=config.targets,
+    weights=active_weights,
+)
+```
+
+
+
+```{python}
+show_aggregated_prediction_figure(agg_pred_pkg, task_name="task 4: SpotOptim Tuned")
+``` 
+
+
+
+
+## Comparison of Results {#sec-comparison}
+
+All four tasks use the same unified data processing pipeline (outlier detection, imputation, exogenous features) and differ only in hyperparameter selection:
+
+- **task 1** (Lazy Fitting) and **task 2** (Explicit Pre-Training) produce identical predictions because both use default LightGBM hyperparameters on the same pipeline-processed data. They differ architecturally: task 1 defers `.fit()` inside `train_and_predict_target()`; task 2 calls `.fit()` explicitly before any prediction step.
+- **task 3** (Optuna Tuned) explores the hyperparameter space using Optuna's TPE sampler, typically improving MAE/MAPE.
+- **task 4** (SpotOptim Tuned) uses surrogate-model-based optimization, effective with small trial budgets.
+
+When `USE_EXOGENOUS_FEATURES=True`, all tasks benefit from weather, calendar, day/night, and holiday covariates. When `USE_OUTLIER_DETECTION=True`, IsolationForest-based outlier removal is applied before training. When `IMPUTATION_METHOD="weighted"`, sample weighting via `WeightFunction` down-weights observations near former gaps.
 
 ```{python}
 #| label: comparison-summary
 #| echo: true
 
 comparison_data = []
-for approach_name, results_dict in [
-    ("Approach 1: Lazy Fitting", results_app1),
-    ("Approach 2: Trained (No Tuning)", results_app2),
-    ("Approach 3: Optuna Tuned", results_app3),
-    ("Approach 4: SpotOptim Tuned", results_app4),
+for task_name, results_dict in [
+    ("task 1: Lazy Fitting", results_task1),
+    ("task 2: Trained (No Tuning)", results_task2),
+    ("task 3: Optuna Tuned", results_task3),
+    ("task 4: SpotOptim Tuned", results_task4),
 ]:
     for target, pkg in results_dict.items():
         if pkg and "metrics_train" in pkg:
             row = {
-                "Approach": approach_name,
+                "task": task_name,
                 "Target": target,
                 "Train MAE": pkg["metrics_train"].get("mae"),
                 "Train MAPE": pkg["metrics_train"].get("mape"),
@@ -1121,106 +1384,6 @@ else:
 ```
 
 
-
-## Prediction Aggregation {#sec-prediction-aggregation}
-
-After training individual models per target, the per-target future predictions are
-combined into a single aggregated forecast via a weighted sum — mirroring the
-aggregation step in `task_safe_n_to_1_with_covariates_and_dataframe.py`
-(`agg_predict`, Step 2).
-
-When `config.targets` is a subset of all columns (e.g. `targets=ALL_TARGETS[:2]`),
-only the corresponding leading weights are used so that weight indices always
-align with target order.
-
-```{python}
-#| label: prediction-aggregation
-#| echo: true
-#| fig-cap: "Aggregated Prediction: Weighted Combination Across Active Targets (Approach 1)"
-
-
-
-# Default aggregation weights — one entry per target in ALL_TARGETS (A–K).
-# Positive values increase, negative values invert, the contribution of that target.
-DEFAULT_WEIGHTS = [
-    1.0,   # Index 0  – target A
-    1.0,   # Index 1  – target B
-    -1.0,  # Index 2  – target C
-    -1.0,  # Index 3  – target D
-    1.0,   # Index 4  – target E
-    -1.0,  # Index 5  – target F
-    1.0,   # Index 6  – target G
-    1.0,   # Index 7  – target H
-    1.0,   # Index 8  – target I
-    -1.0,  # Index 9  – target J
-    1.0,   # Index 10 – target K
-]
-
-# Slice weights to match the number of active config.targets.
-# E.g. targets=ALL_TARGETS[:2] → only the 1st and 2nd weights are used.
-active_weights = DEFAULT_WEIGHTS[: len(config.targets)]
-
-# Use Approach 1 results as the reference predictions for aggregation.
-ref_results = results_app1
-
-# Build per-component DataFrames — one column per active target.
-future_preds_df = pd.DataFrame(
-    {t: ref_results[t]["future_pred"] for t in config.targets}
-)
-train_preds_df = pd.DataFrame(
-    {t: ref_results[t]["train_pred"] for t in config.targets}
-)
-train_actuals_df = pd.DataFrame(
-    {t: ref_results[t]["train_actual"] for t in config.targets}
-)
-
-# Aggregate each component with the same sliced weights.
-agg_future_pred = agg_predict(future_preds_df, weights=active_weights)
-agg_train_pred = agg_predict(train_preds_df, weights=active_weights)
-agg_train_actual = agg_predict(train_actuals_df, weights=active_weights)
-
-# Aggregate test actuals (df_test ground truth) when available.
-# Only targets that have a "test_actual" key in their result are included;
-# targets without ground truth are filled with NaN so the index stays aligned.
-test_series = {
-    t: ref_results[t]["test_actual"]
-    for t in config.targets
-    if "test_actual" in ref_results[t] and len(ref_results[t]["test_actual"]) > 0
-}
-agg_test_actual = None
-if test_series:
-    # Re-index all series to a common index (union), filling gaps with NaN.
-    test_actuals_df = pd.DataFrame(test_series).reindex(
-        sorted(set().union(*[s.index for s in test_series.values()]))
-    )
-    # Use only the weights that correspond to targets present in test_series.
-    test_weights = [
-        active_weights[i]
-        for i, t in enumerate(config.targets)
-        if t in test_series
-    ]
-    agg_test_actual = agg_predict(test_actuals_df, weights=test_weights)
-
-# Assemble a prediction package compatible with PredictionFigure.
-agg_pred_pkg = {
-    "train_actual": agg_train_actual,
-    "train_pred": agg_train_pred,
-    "future_actual": pd.Series(dtype="float64"),
-    "future_pred": agg_future_pred,
-    "metrics_train": {},
-    "metrics_future": {},
-    "metrics_future_one_day": {},
-    "validation_passed": True,
-}
-if agg_test_actual is not None:
-    agg_pred_pkg["test_actual"] = agg_test_actual
-
-fig = PredictionFigure(
-    agg_pred_pkg,
-    title=f"Aggregated Forecast: Weighted Combination of Targets {config.targets} (Approach 1)",
-).make_plot()
-fig.show()
-```
 
 ```{python}
 #| label: fig-entsoe-predict-comparison
