@@ -7,6 +7,12 @@
 ### Bug Fixes
 
 * pyproject ([e662774](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e662774c9412baf715f914a07605fe73cbdffc2e))
+## [0.12.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.12.0...v0.12.1) (2026-03-22)
+
+### Code Refactoring
+
+* remove _get_target_data wrapper, add multi.qmd and multitask helpers ([e4897be](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e4897be2ab0d6db22f915ac38cc187f6cac12269))
+* use agg_predictor(), show all targets in figure cells ([13b2b54](https://github.com/sequential-parameter-optimization/spotforecast2/commit/13b2b54f8f1600e200d45c02b437e10c05cd8da2))
 
 ## [0.12.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.12.0...v0.12.1-rc.1) (2026-03-22)
 
