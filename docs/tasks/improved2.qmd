@@ -30,10 +30,18 @@ The workflow executes in the following phases:
 
 ```{python}
 #| label: load-packages
+import logging
 import pprint
 import pandas as pd
 import string
 from pathlib import Path
+from lightgbm import LGBMRegressor
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2_safe.preprocessing import RollingFeatures as RollingFeaturesUnified
+from spotforecast2.manager.plotter import PredictionFigure
+from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
+from joblib import dump, load as joblib_load
+from spotforecast2_safe.data.fetch_data import get_cache_home
 from spotforecast2_safe.data.fetch_data import (
     fetch_data,
     get_package_data_home,
@@ -47,24 +55,34 @@ from spotforecast2_safe.preprocessing.curate_data import (
     get_start_end,
     reset_index,
 )
+from spotforecast2.model_selection import spotoptim_search_forecaster
 from spotforecast2_safe.preprocessing.outlier import (
     get_outliers,
     manual_outlier_removal,
     mark_outliers,
 )
 from spotforecast2.manager.plotter import plot_with_outliers
-
+from spotforecast2_safe.processing.agg_predict import agg_predict
 from spotforecast2_safe.preprocessing import LinearlyInterpolateTS, WeightFunction
 from spotforecast2_safe.preprocessing.imputation import get_missing_weights
 from spotforecast2.preprocessing.imputation import apply_imputation
 from astral import LocationInfo
 
-from spotforecast2_safe.processing.n2n_predict_with_covariates import (
-    _get_weather_features,
-    _get_calendar_features,
-    _get_day_night_features,
-    _get_holiday_features,
+from spotforecast2_safe.manager.exo.weather import get_weather_features
+from spotforecast2_safe.manager.exo.calendar import (
+    get_calendar_features,
+    get_day_night_features,
+    get_holiday_features,
 )
+from spotforecast2_safe.manager.features import (
+    apply_cyclical_encoding,
+    create_interaction_features,
+    select_exogenous_features,
+    merge_data_and_covariates,
+)
+from spotforecast2.model_selection import bayesian_search_forecaster
+from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
+
 ```
 
 
@@ -104,7 +122,6 @@ USE_EXOGENOUS_FEATURES = True
 #| label: code-notebook-multi-usage-logger
 #| echo: true
 # Configure logging for notebook
-import logging
 logging.basicConfig(
     level=logging.DEBUG,
     format="%(asctime)s %(levelname)s %(message)s",
@@ -412,7 +429,7 @@ print(weight_func)
 
 ### Step 4 — Exogenous Features Engineering {#sec-step4-exog-features}
 
-When `USE_EXOGENOUS_FEATURES=True`, the pipeline creates four categories of exogenous features using helper functions from `n2n_predict_with_covariates`:
+When `USE_EXOGENOUS_FEATURES=True`, the pipeline creates four categories of exogenous features using public helper functions from `spotforecast2_safe.manager`:
 
 * Weather features: temperature, wind, etc. with rolling-window aggregations.
 * Calendar features: month, week, day-of-week, hour.
@@ -431,7 +448,7 @@ if config.use_exogenous_features:
     logger.info("Building exogenous features...")
 
     # 4a. Weather
-    weather_features, weather_aligned = _get_weather_features(
+    weather_features, weather_aligned = get_weather_features(
         data=df_pipeline,
         start=config.data_start,
         cov_end=config.cov_end,
@@ -445,7 +462,7 @@ if config.use_exogenous_features:
     logger.info(f"  Weather features: {weather_features.shape}")
 
     # 4b. Calendar
-    calendar_features = _get_calendar_features(
+    calendar_features = get_calendar_features(
         start=config.data_start,
         cov_end=config.cov_end,
         freq="h",
@@ -459,7 +476,7 @@ if config.use_exogenous_features:
         longitude=config.longitude,
         timezone=config.timezone,
     )
-    sun_light_features = _get_day_night_features(
+    sun_light_features = get_day_night_features(
         start=config.data_start,
         cov_end=config.cov_end,
         location=location,
@@ -469,7 +486,7 @@ if config.use_exogenous_features:
     logger.info(f"  Day/night features: {sun_light_features.shape}")
 
     # 4d. Holidays
-    holiday_features = _get_holiday_features(
+    holiday_features = get_holiday_features(
         data=df_pipeline,
         start=config.data_start,
         cov_end=config.cov_end,
@@ -494,11 +511,6 @@ All four feature groups are concatenated into a single DataFrame. Cyclical encod
 #| echo: true
 
 if config.use_exogenous_features:
-    from spotforecast2_safe.processing.n2n_predict_with_covariates import (
-        _apply_cyclical_encoding,
-        _create_interaction_features,
-    )
-
     exogenous_features = pd.concat(
         [calendar_features, sun_light_features, weather_features, holiday_features],
         axis=1,
@@ -510,13 +522,13 @@ if config.use_exogenous_features:
         exogenous_features = exogenous_features.bfill().ffill()
 
     # Cyclical encoding
-    exogenous_features = _apply_cyclical_encoding(
+    exogenous_features = apply_cyclical_encoding(
         data=exogenous_features,
         drop_original=False,
     )
 
     # Interaction features
-    exogenous_features = _create_interaction_features(
+    exogenous_features = create_interaction_features(
         exogenous_features=exogenous_features,
         weather_aligned=weather_aligned,
     )
@@ -536,11 +548,7 @@ A subset of the combined exogenous features is selected for model training. The 
 exog_feature_names = []
 
 if config.use_exogenous_features:
-    from spotforecast2_safe.processing.n2n_predict_with_covariates import (
-        _select_exogenous_features,
-    )
-
-    exog_feature_names = _select_exogenous_features(
+    exog_feature_names = select_exogenous_features(
         exogenous_features=exogenous_features,
         weather_aligned=weather_aligned,
         include_weather_windows=config.include_weather_windows,
@@ -564,11 +572,7 @@ data_with_exog = None
 exo_pred = None
 
 if config.use_exogenous_features and len(exog_feature_names) > 0:
-    from spotforecast2_safe.processing.n2n_predict_with_covariates import (
-        _merge_data_and_covariates,
-    )
-
-    data_with_exog, exo_tmp, exo_pred = _merge_data_and_covariates(
+    data_with_exog, exo_tmp, exo_pred = merge_data_and_covariates(
         data=df_pipeline,
         exogenous_features=exogenous_features,
         target_columns=config.targets,
@@ -680,13 +684,7 @@ The following helper functions are used by all four approaches. They operate dir
 #| label: unified-helpers
 #| echo: true
 
-from lightgbm import LGBMRegressor
-from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2_safe.preprocessing import RollingFeatures as RollingFeaturesUnified
-from spotforecast2.manager.plotter import PredictionFigure
-from sklearn.metrics import mean_absolute_error, mean_absolute_percentage_error
-from joblib import dump, load as joblib_load
-from spotforecast2_safe.data.fetch_data import get_cache_home
+
 
 # --- Training window boundaries (shared by all approaches) ---
 end_train_ts = pd.to_datetime(config.end_train_default, utc=True)
@@ -917,9 +915,6 @@ Bayesian hyperparameter optimization via Optuna's TPE sampler. The tuning runs o
 #| eval: true
 #| fig-cap: "Prediction (Approach 3: Optuna Tuned)"
 
-from spotforecast2.model_selection import bayesian_search_forecaster
-from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
-
 # Optuna search space (callable, as required by bayesian_search_forecaster)
 def search_space_optuna_lgbm(trial):
     return {
@@ -1004,7 +999,7 @@ As an alternative to Optuna, `spotoptim` provides surrogate-model-based Bayesian
 #| eval: true
 #| fig-cap: "Prediction (Approach 4: SpotOptim Tuned)"
 
-from spotforecast2.model_selection import spotoptim_search_forecaster
+
 
 # SpotOptim search space (dictionary format)
 search_space_spotoptim_lgbm = {
@@ -1143,7 +1138,7 @@ align with target order.
 #| echo: true
 #| fig-cap: "Aggregated Prediction: Weighted Combination Across Active Targets (Approach 1)"
 
-from spotforecast2_safe.processing.agg_predict import agg_predict
+
 
 # Default aggregation weights — one entry per target in ALL_TARGETS (A–K).
 # Positive values increase, negative values invert, the contribution of that target.
