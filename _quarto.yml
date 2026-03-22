@@ -80,6 +80,18 @@ website:
                 file: docs/reference/manager.plotter.qmd
               - text: "trainer_full"
                 file: docs/reference/manager.trainer_full.qmd
+              - text: "agg_predictor"
+                file: docs/reference/manager.multitask.agg_predictor.qmd
+              - text: "BaseTask"
+                file: docs/reference/manager.multitask.BaseTask.qmd
+              - text: "LazyTask"
+                file: docs/reference/manager.multitask.LazyTask.qmd
+              - text: "TrainTask"
+                file: docs/reference/manager.multitask.TrainTask.qmd
+              - text: "OptunaTask"
+                file: docs/reference/manager.multitask.OptunaTask.qmd
+              - text: "SpotOptimTask"
+                file: docs/reference/manager.multitask.SpotOptimTask.qmd
               - text: "MultiTask"
                 file: docs/reference/manager.multitask.MultiTask.qmd
           - section: "Model Selection"
@@ -112,8 +124,6 @@ website:
                 file: docs/reference/preprocessing._rolling.qmd
               - text: "curate_data"
                 file: docs/reference/preprocessing.curate_data.qmd
-              - text: "imputation"
-                file: docs/reference/preprocessing.imputation.qmd
               - text: "outlier"
                 file: docs/reference/preprocessing.outlier.qmd
               - text: "outlier_plots"
@@ -182,8 +192,6 @@ website:
             file: docs/tasks/tasks.qmd
           - text: "ENTSO-E Guide"
             file: docs/tasks/entsoe.qmd
-          - text: "improved2 Guide"
-            file: docs/tasks/improved2.qmd
 
   page-footer:
     center: |
@@ -226,7 +234,6 @@ quartodoc:
         - preprocessing._differentiator
         - preprocessing._rolling
         - preprocessing.curate_data
-        - preprocessing.imputation
         - preprocessing.outlier
         - preprocessing.outlier_plots
         - preprocessing.split
@@ -252,6 +259,12 @@ quartodoc:
         - manager.models.forecaster_recursive_xgb_full
         - manager.plotter
         - manager.trainer_full
+        - manager.multitask.agg_predictor
+        - manager.multitask.BaseTask
+        - manager.multitask.LazyTask
+        - manager.multitask.TrainTask
+        - manager.multitask.OptunaTask
+        - manager.multitask.SpotOptimTask
         - manager.multitask.MultiTask
 
     - title: "Forecaster"
