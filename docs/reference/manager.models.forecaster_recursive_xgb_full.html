@@ -423,6 +423,48 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">trainer_full</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.agg_predictor.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">agg_predictor</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.BaseTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">BaseTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.LazyTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LazyTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.TrainTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TrainTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.OptunaTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OptunaTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.SpotOptimTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SpotOptimTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.MultiTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MultiTask</span></a>
+  </div>
+</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -521,12 +563,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/preprocessing.curate_data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">curate_data</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing.imputation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">imputation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -763,12 +799,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">ENTSO-E Guide</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/tasks/improved2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">improved2 Guide</span></a>
-  </div>
-</li>
       </ul>
   </li>
     </ul>
@@ -897,7 +927,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.iteration</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div id="7a62ccd2" class="cell" data-execution_count="1">
+<div id="6db272e0" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.models <span class="im">import</span> ForecasterRecursiveXGBFull</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> ForecasterRecursiveXGBFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Model name: </span><span class="sc">{</span>model<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>

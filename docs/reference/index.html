@@ -388,6 +388,48 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">trainer_full</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.agg_predictor.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">agg_predictor</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.BaseTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">BaseTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.LazyTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">LazyTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.TrainTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">TrainTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.OptunaTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">OptunaTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.SpotOptimTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">SpotOptimTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.MultiTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">MultiTask</span></a>
+  </div>
+</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -486,12 +528,6 @@ ul.task-list li input[type="checkbox"] {
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/preprocessing.curate_data.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">curate_data</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing.imputation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">imputation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -728,12 +764,6 @@ ul.task-list li input[type="checkbox"] {
  <span class="menu-text">ENTSO-E Guide</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/tasks/improved2.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">improved2 Guide</span></a>
-  </div>
-</li>
       </ul>
   </li>
     </ul>
@@ -796,22 +826,18 @@ ul.task-list li input[type="checkbox"] {
 <td></td>
 </tr>
 <tr class="even">
-<td><a href="../../docs/reference/preprocessing.imputation.html#spotforecast2.preprocessing.imputation">preprocessing.imputation</a></td>
-<td></td>
-</tr>
-<tr class="odd">
 <td><a href="../../docs/reference/preprocessing.outlier.html#spotforecast2.preprocessing.outlier">preprocessing.outlier</a></td>
 <td>Outlier detection utilities (legacy wrapper for spotforecast2_safe).</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="../../docs/reference/preprocessing.outlier_plots.html#spotforecast2.preprocessing.outlier_plots">preprocessing.outlier_plots</a></td>
 <td></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="../../docs/reference/preprocessing.split.html#spotforecast2.preprocessing.split">preprocessing.split</a></td>
 <td></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="../../docs/reference/preprocessing.time_series_visualization.html#spotforecast2.preprocessing.time_series_visualization">preprocessing.time_series_visualization</a></td>
 <td>Time series visualization.</td>
 </tr>
@@ -882,6 +908,34 @@ ul.task-list li input[type="checkbox"] {
 <tr class="odd">
 <td><a href="../../docs/reference/manager.trainer_full.html#spotforecast2.manager.trainer_full">manager.trainer_full</a></td>
 <td>Module for managing full model training.</td>
+</tr>
+<tr class="even">
+<td><a href="../../docs/reference/manager.multitask.agg_predictor.html#spotforecast2.manager.multitask.agg_predictor">manager.multitask.agg_predictor</a></td>
+<td>Aggregate per-target prediction packages into a weighted forecast.</td>
+</tr>
+<tr class="odd">
+<td><a href="../../docs/reference/manager.multitask.BaseTask.html#spotforecast2.manager.multitask.BaseTask">manager.multitask.BaseTask</a></td>
+<td>Shared base for all multi-target forecasting pipeline tasks.</td>
+</tr>
+<tr class="even">
+<td><a href="../../docs/reference/manager.multitask.LazyTask.html#spotforecast2.manager.multitask.LazyTask">manager.multitask.LazyTask</a></td>
+<td>Task 1 — Lazy Fitting with default LightGBM parameters.</td>
+</tr>
+<tr class="odd">
+<td><a href="../../docs/reference/manager.multitask.TrainTask.html#spotforecast2.manager.multitask.TrainTask">manager.multitask.TrainTask</a></td>
+<td>Task 2 — Explicit Pre-Training with default parameters.</td>
+</tr>
+<tr class="even">
+<td><a href="../../docs/reference/manager.multitask.OptunaTask.html#spotforecast2.manager.multitask.OptunaTask">manager.multitask.OptunaTask</a></td>
+<td>Task 3 — Optuna Bayesian hyperparameter tuning.</td>
+</tr>
+<tr class="odd">
+<td><a href="../../docs/reference/manager.multitask.SpotOptimTask.html#spotforecast2.manager.multitask.SpotOptimTask">manager.multitask.SpotOptimTask</a></td>
+<td>Task 4 — SpotOptim surrogate-model Bayesian tuning.</td>
+</tr>
+<tr class="even">
+<td><a href="../../docs/reference/manager.multitask.MultiTask.html#spotforecast2.manager.multitask.MultiTask">manager.multitask.MultiTask</a></td>
+<td>Orchestrates a multi-target time-series forecasting pipeline.</td>
 </tr>
 </tbody>
 </table>
