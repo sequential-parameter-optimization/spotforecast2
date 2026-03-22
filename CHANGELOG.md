@@ -1,4 +1,9 @@
 ## [0.13.2-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.2-rc.1...v0.13.2-rc.2) (2026-03-22)
+## [0.13.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.1...v0.13.2) (2026-03-22)
+
+### Bug Fixes
+
+* rm outdated tests ([2840cd3](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2840cd3a4502ea5f6242942eb77aba482418e0ac))
 
 ### Code Refactoring
 
