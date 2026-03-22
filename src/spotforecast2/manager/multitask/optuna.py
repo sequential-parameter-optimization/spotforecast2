@@ -125,7 +125,7 @@ class OptunaTask(BaseTask):
         ```{python}
         from spotforecast2.manager.multitask import OptunaTask
 
-        task = OptunaTask(N_TRIALS_OPTUNA=5, PREDICT_SIZE=24)
+        task = OptunaTask(n_trials_optuna=5, predict_size=24)
         print(f"Task: {task.TASK}")
         print(f"Optuna trials: {task.config.n_trials_optuna}")
         ```

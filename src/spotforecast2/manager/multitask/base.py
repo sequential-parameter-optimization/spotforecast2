@@ -133,24 +133,24 @@ class BaseTask:
     task-specific training / tuning logic.
 
     Args:
-        DATA_FRAME_NAME: Active dataset identifier (e.g. ``"demo10"``).
-        DATA_SOURCE: Input CSV filename.
-        DATA_TEST: Test CSV filename.
-        DATA_HOME: Path to the data directory.  ``None`` uses the package
+        data_frame_name: Active dataset identifier (e.g. ``"demo10"``).
+        data_source: Input CSV filename.
+        data_test: Test CSV filename.
+        data_home: Path to the data directory.  ``None`` uses the package
             bundled data via ``get_package_data_home()``.
-        CACHE_DATA: Whether to cache intermediate data to disk.
-        CACHE_HOME: Cache directory path.
-        AGG_WEIGHTS: Per-target aggregation weights.
-        INDEX_NAME: Datetime column name in the raw CSV.
-        NUMBER_FOLDS: Number of validation folds for hyperparameter tuning.
-        PREDICT_SIZE: Forecast horizon in hours.
-        BOUNDS: Per-column hard outlier bounds ``(lower, upper)``.
-        CONTAMINATION: IsolationForest contamination fraction.
-        IMPUTATION_METHOD: Gap-filling strategy — ``"weighted"`` or ``"linear"``.
-        USE_EXOGENOUS_FEATURES: Whether to build exogenous features.
-        N_TRIALS_OPTUNA: Number of Optuna Bayesian-search trials.
-        N_TRIALS_SPOTOPTIM: Number of SpotOptim surrogate-search trials.
-        N_INITIAL_SPOTOPTIM: Initial random evaluations for SpotOptim.
+        cache_data: Whether to cache intermediate data to disk.
+        cache_home: Cache directory path.
+        agg_weights: Per-target aggregation weights.
+        index_name: Datetime column name in the raw CSV.
+        number_folds: Number of validation folds for hyperparameter tuning.
+        predict_size: Forecast horizon in hours.
+        bounds: Per-column hard outlier bounds ``(lower, upper)``.
+        contamination: IsolationForest contamination fraction.
+        imputation_method: Gap-filling strategy — ``"weighted"`` or ``"linear"``.
+        use_exogenous_features: Whether to build exogenous features.
+        n_trials_optuna: Number of Optuna Bayesian-search trials.
+        n_trials_spotoptim: Number of SpotOptim surrogate-search trials.
+        n_initial_spotoptim: Initial random evaluations for SpotOptim.
         log_level: Logging level for the pipeline logger.
         config_overrides: Extra keyword arguments forwarded to
             class `~spotforecast2_safe.manager.configurator.config_multi.ConfigMulti`.
@@ -173,47 +173,47 @@ class BaseTask:
     def __init__(
         self,
         *,
-        DATA_FRAME_NAME: str = "demo10",
-        DATA_SOURCE: str = "demo10.csv",
-        DATA_TEST: str = "demo11.csv",
-        DATA_HOME: Optional[Path] = None,
-        CACHE_DATA: bool = True,
-        CACHE_HOME: Optional[Path] = None,
-        AGG_WEIGHTS: Optional[List[float]] = None,
-        INDEX_NAME: str = "DateTime",
-        NUMBER_FOLDS: int = 10,
-        PREDICT_SIZE: int = 24,
-        BOUNDS: Optional[List[tuple]] = None,
-        CONTAMINATION: float = 0.03,
-        IMPUTATION_METHOD: str = "weighted",
-        USE_EXOGENOUS_FEATURES: bool = True,
-        N_TRIALS_OPTUNA: int = 15,
-        N_TRIALS_SPOTOPTIM: int = 10,
-        N_INITIAL_SPOTOPTIM: int = 5,
+        data_frame_name: str = "demo10",
+        data_source: str = "demo10.csv",
+        data_test: str = "demo11.csv",
+        data_home: Optional[Path] = None,
+        cache_data: bool = True,
+        cache_home: Optional[Path] = None,
+        agg_weights: Optional[List[float]] = None,
+        index_name: str = "DateTime",
+        number_folds: int = 10,
+        predict_size: int = 24,
+        bounds: Optional[List[tuple]] = None,
+        contamination: float = 0.03,
+        imputation_method: str = "weighted",
+        use_exogenous_features: bool = True,
+        n_trials_optuna: int = 15,
+        n_trials_spotoptim: int = 10,
+        n_initial_spotoptim: int = 5,
         log_level: int = logging.INFO,
         **config_overrides: Any,
     ) -> None:
         # Task identifier (overridden by subclasses via _task_name)
         self.TASK = self._task_name
 
-        # Store capitalized arguments as instance attributes
-        self.DATA_FRAME_NAME = DATA_FRAME_NAME
-        self.DATA_SOURCE = DATA_SOURCE
-        self.DATA_TEST = DATA_TEST
-        self.DATA_HOME = DATA_HOME if DATA_HOME is not None else get_package_data_home()
-        self.CACHE_DATA = CACHE_DATA
-        self.CACHE_HOME = CACHE_HOME
-        self.AGG_WEIGHTS = AGG_WEIGHTS
-        self.INDEX_NAME = INDEX_NAME
-        self.NUMBER_FOLDS = NUMBER_FOLDS
-        self.PREDICT_SIZE = PREDICT_SIZE
-        self.BOUNDS = BOUNDS
-        self.CONTAMINATION = CONTAMINATION
-        self.IMPUTATION_METHOD = IMPUTATION_METHOD
-        self.USE_EXOGENOUS_FEATURES = USE_EXOGENOUS_FEATURES
-        self.N_TRIALS_OPTUNA = N_TRIALS_OPTUNA
-        self.N_TRIALS_SPOTOPTIM = N_TRIALS_SPOTOPTIM
-        self.N_INITIAL_SPOTOPTIM = N_INITIAL_SPOTOPTIM
+        # Store constructor arguments as instance attributes
+        self.data_frame_name = data_frame_name
+        self.data_source = data_source
+        self.data_test = data_test
+        self.data_home = data_home if data_home is not None else get_package_data_home()
+        self.cache_data = cache_data
+        self.cache_home = cache_home
+        self.agg_weights = agg_weights
+        self.index_name = index_name
+        self.number_folds = number_folds
+        self.predict_size = predict_size
+        self.bounds = bounds
+        self.contamination = contamination
+        self.imputation_method = imputation_method
+        self.use_exogenous_features = use_exogenous_features
+        self.n_trials_optuna = n_trials_optuna
+        self.n_trials_spotoptim = n_trials_spotoptim
+        self.n_initial_spotoptim = n_initial_spotoptim
 
         # Logger
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
@@ -221,7 +221,7 @@ class BaseTask:
 
         # Derived constants
         self.TRAIN_SIZE = pd.Timedelta(days=365)
-        self.DELTA_VAL = pd.Timedelta(days=7 * NUMBER_FOLDS)
+        self.DELTA_VAL = pd.Timedelta(days=7 * number_folds)
 
         # Pipeline state (populated by methods)
         self.df_pipeline: Optional[pd.DataFrame] = None
@@ -246,27 +246,27 @@ class BaseTask:
     def _build_config(self, **overrides: Any) -> ConfigMulti:
         """Create a  class `ConfigMulti` from the stored pipeline arguments."""
         kwargs: Dict[str, Any] = {
-            "predict_size": self.PREDICT_SIZE,
-            "contamination": self.CONTAMINATION,
-            "imputation_method": self.IMPUTATION_METHOD,
-            "use_exogenous_features": self.USE_EXOGENOUS_FEATURES,
-            "index_name": self.INDEX_NAME,
-            "data_source": self.DATA_SOURCE,
-            "data_test": self.DATA_TEST,
-            "data_home": self.DATA_HOME,
-            "cache_home": get_cache_home(self.CACHE_HOME),
-            "cache_data": self.CACHE_DATA,
-            "n_trials_optuna": self.N_TRIALS_OPTUNA,
-            "n_trials_spotoptim": self.N_TRIALS_SPOTOPTIM,
-            "n_initial_spotoptim": self.N_INITIAL_SPOTOPTIM,
+            "predict_size": self.predict_size,
+            "contamination": self.contamination,
+            "imputation_method": self.imputation_method,
+            "use_exogenous_features": self.use_exogenous_features,
+            "index_name": self.index_name,
+            "data_source": self.data_source,
+            "data_test": self.data_test,
+            "data_home": self.data_home,
+            "cache_home": get_cache_home(self.cache_home),
+            "cache_data": self.cache_data,
+            "n_trials_optuna": self.n_trials_optuna,
+            "n_trials_spotoptim": self.n_trials_spotoptim,
+            "n_initial_spotoptim": self.n_initial_spotoptim,
             "task": self.TASK,
             "train_size": self.TRAIN_SIZE,
             "delta_val": self.DELTA_VAL,
         }
-        if self.BOUNDS is not None:
-            kwargs["bounds"] = self.BOUNDS
-        if self.AGG_WEIGHTS is not None:
-            kwargs["agg_weights"] = self.AGG_WEIGHTS
+        if self.bounds is not None:
+            kwargs["bounds"] = self.bounds
+        if self.agg_weights is not None:
+            kwargs["agg_weights"] = self.agg_weights
         kwargs.update(overrides)
         return ConfigMulti(**kwargs)
 
@@ -283,35 +283,35 @@ class BaseTask:
 
         Args:
             demo_data: Pre-loaded input DataFrame.  ``None`` triggers
-                automatic loading from ``DATA_HOME / DATA_SOURCE``.
+                automatic loading from ``data_home / data_source``.
             df_test: Pre-loaded test DataFrame.  ``None`` triggers
-                automatic loading from ``DATA_HOME / DATA_TEST``.
+                automatic loading from ``data_home / data_test``.
 
         Returns:
             ``self`` (for method chaining).
         """
         if demo_data is None:
-            data_in_path = self.DATA_HOME / self.DATA_SOURCE
+            data_in_path = self.data_home / self.data_source
             demo_data = fetch_data(filename=str(data_in_path))
         if df_test is None:
-            data_test_path = self.DATA_HOME / self.DATA_TEST
+            data_test_path = self.data_home / self.data_test
             df_test = fetch_data(filename=str(data_test_path))
 
-        demo_data = reset_index(demo_data, index_name=self.INDEX_NAME)
-        df_test = reset_index(df_test, index_name=self.INDEX_NAME)
+        demo_data = reset_index(demo_data, index_name=self.index_name)
+        df_test = reset_index(df_test, index_name=self.index_name)
         self.df_test = df_test
 
-        first_ts = pd.Timestamp(demo_data[self.INDEX_NAME].iloc[0])
-        last_ts = pd.Timestamp(demo_data[self.INDEX_NAME].iloc[-1])
+        first_ts = pd.Timestamp(demo_data[self.index_name].iloc[0])
+        last_ts = pd.Timestamp(demo_data[self.index_name].iloc[-1])
         self.config.start_download = first_ts.strftime("%Y%m%d%H%M")
         self.config.end_download = last_ts.strftime("%Y%m%d%H%M")
         self.config.end_train_default = last_ts.isoformat()
 
-        all_targets = [c for c in demo_data.columns if c != self.INDEX_NAME]
+        all_targets = [c for c in demo_data.columns if c != self.index_name]
         if self.config.targets is None:
             self.config.targets = all_targets
 
-        df_pipeline = demo_data.set_index(self.INDEX_NAME)
+        df_pipeline = demo_data.set_index(self.index_name)
         df_pipeline = agg_and_resample_data(df_pipeline, verbose=True)
         basic_ts_checks(df_pipeline, verbose=True)
 
@@ -584,7 +584,7 @@ class BaseTask:
             ```{python}
             from spotforecast2.manager.multitask import LazyTask
 
-            task = LazyTask(PREDICT_SIZE=24)
+            task = LazyTask(predict_size=24)
             forecaster = task.create_forecaster()
             print(f"Type: {type(forecaster).__name__}")
             print(f"Lags: {forecaster.lags}")
@@ -774,7 +774,7 @@ class BaseTask:
     # Abstract run
     # ------------------------------------------------------------------
 
-    def run(self, show: bool = True, **kwargs: Any) -> Dict[str, Dict[str, Any]]:
+    def run(self, show: bool = True, **kwargs: Any) -> Dict[str, Any]:
         """Execute the task-specific training / tuning pipeline.
 
         Subclasses **must** override this method.
@@ -784,7 +784,7 @@ class BaseTask:
             **kwargs: Task-specific arguments (e.g. ``search_space``).
 
         Returns:
-            Per-target prediction packages.
+            Aggregated prediction package for the task.
 
         Raises:
             NotImplementedError: Always, unless overridden by a subclass.

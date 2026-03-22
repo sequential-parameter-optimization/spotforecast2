@@ -68,7 +68,7 @@ class TrainTask(BaseTask):
         ```{python}
         from spotforecast2.manager.multitask import TrainTask
 
-        task = TrainTask(DATA_FRAME_NAME="demo10", PREDICT_SIZE=24)
+        task = TrainTask(data_frame_name="demo10", predict_size=24)
         print(f"Task: {task.TASK}")
         print(f"Predict size: {task.config.predict_size}")
         ```

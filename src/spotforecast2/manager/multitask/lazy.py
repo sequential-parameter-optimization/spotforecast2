@@ -57,7 +57,7 @@ class LazyTask(BaseTask):
         ```{python}
         from spotforecast2.manager.multitask import LazyTask
 
-        task = LazyTask(DATA_FRAME_NAME="demo10", PREDICT_SIZE=24)
+        task = LazyTask(data_frame_name="demo10", predict_size=24)
         print(f"Task: {task.TASK}")
         print(f"Predict size: {task.config.predict_size}")
         ```
