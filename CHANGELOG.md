@@ -1,3 +1,9 @@
+## [0.16.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.15.0...v0.16.0-rc.1) (2026-03-23)
+
+### Features
+
+* predict ([ce537a4](https://github.com/sequential-parameter-optimization/spotforecast2/commit/ce537a461202d6208ea8106f8bb8ac6193ca80e5))
+
 ## [0.15.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.14.0...v0.15.0) (2026-03-23)
 
 ### Features
