@@ -27,7 +27,7 @@ def execute_lazy(
     If no cached results are found the forecaster uses default parameters.
 
     Args:
-        task: A class `BaseTask` (or subclass) instance with prepared data.
+        task: A BaseTask (or subclass) instance with prepared data.
         show: If ``True``, display prediction figures.
         use_tuned_params: If ``True``, attempt to load cached tuning
             results (best parameters and lags) for each target.
@@ -37,6 +37,8 @@ def execute_lazy(
     Returns:
         Aggregated prediction package (weighted combination of all targets).
         Per-target packages are stored on ``task.results["lazy"]``.
+        When ``task.auto_save_models`` is ``True`` (the default), fitted
+        models are saved to disk so PredictTask can load them directly.
     """
     task._ensure_pipeline_ready()
     results: Dict[str, Dict[str, Any]] = {}
@@ -72,6 +74,8 @@ def execute_lazy(
             )
 
     task.results["lazy"] = results
+    if getattr(task, "auto_save_models", True):
+        task.save_models(task_name="lazy")
     agg_pkg = task._aggregate_and_show(results, "task 1: Lazy Fitting", show=show)
     return agg_pkg
 
@@ -83,9 +87,9 @@ class LazyTask(BaseTask):
     hyperparameters.  No cross-validation or tuning is performed.
 
     When cached tuning results are available (saved by
-    class `~.optuna.OptunaTask` or class `~.spotoptim.SpotOptimTask`),
-    they are loaded and applied automatically so that the lazy task
-    benefits from prior tuning without re-running the search.
+    OptunaTask or SpotOptimTask), they are loaded and applied automatically
+    so that the lazy task benefits from prior tuning without re-running
+    the search.
 
     Examples:
         ```{python}

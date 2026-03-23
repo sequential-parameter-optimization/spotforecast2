@@ -6,12 +6,12 @@
 This package provides a class hierarchy for multi-target time-series
 forecasting pipelines:
 
-- :class:`BaseTask` — shared data-preparation and helper logic.
-- :class:`LazyTask` — Task 1: lazy fitting with default parameters.
-- :class:`OptunaTask` — Task 2: Optuna Bayesian hyperparameter tuning.
-- :class:`SpotOptimTask` — Task 3: SpotOptim surrogate-model tuning.
-- :class:`PredictTask` — Task 5: predict-only using saved models.
-- :class:`MultiTask` — dispatcher that selects one of the tasks
+- BaseTask — shared data-preparation and helper logic.
+- LazyTask — lazy fitting with default parameters.
+- OptunaTask — Optuna Bayesian hyperparameter tuning.
+- SpotOptimTask — SpotOptim surrogate-model tuning.
+- PredictTask — predict-only using saved models.
+- MultiTask — dispatcher that selects one of the tasks
   via a ``task`` parameter.
 
 Public API
