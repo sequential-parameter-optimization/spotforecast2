@@ -860,15 +860,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">15</span>,</span>
 <span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    n_trials_spotoptim<span class="op">=</span><span class="dv">10</span>,</span>
 <span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    n_initial_spotoptim<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span>logging.INFO,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>config_overrides,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span>logging.INFO,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>config_overrides,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Task 1 — Lazy Fitting with default LightGBM parameters.</p>
 <p>Creates an unfitted forecaster per target and fits with default hyperparameters. No cross-validation or tuning is performed.</p>
-<p>When cached tuning results are available (saved by class <code>~.optuna.OptunaTask</code> or class <code>~.spotoptim.SpotOptimTask</code>), they are loaded and applied automatically so that the lazy task benefits from prior tuning without re-running the search.</p>
+<p>When cached tuning results are available (saved by OptunaTask or SpotOptimTask), they are loaded and applied automatically so that the lazy task benefits from prior tuning without re-running the search.</p>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="b4526a60" class="cell" data-execution_count="1">
+<div id="7d822394" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask <span class="im">import</span> LazyTask</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> LazyTask(data_frame_name<span class="op">=</span><span class="st">"demo10"</span>, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
