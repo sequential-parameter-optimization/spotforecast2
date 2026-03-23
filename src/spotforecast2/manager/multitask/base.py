@@ -40,6 +40,8 @@ from spotforecast2_safe.manager.features import (
     merge_data_and_covariates,
     select_exogenous_features,
 )
+from joblib import dump as _joblib_dump
+from joblib import load as _joblib_load
 from spotforecast2_safe.manager.persistence import save_forecaster as _save_forecaster
 from spotforecast2_safe.manager.predictor import build_prediction_package
 from spotforecast2_safe.preprocessing import (
@@ -835,6 +837,223 @@ class BaseTask:
 
         return None
 
+    # ------------------------------------------------------------------
+    # Model persistence
+    # ------------------------------------------------------------------
+
+    # Maps each task key to the task_name string used in filenames.
+    _TASK_MODEL_NAMES: Dict[str, str] = {
+        "lazy": "task 1: Lazy Fitting",
+        "optuna": "task 3: Optuna Tuned",
+        "spotoptim": "task 4: SpotOptim Tuned",
+    }
+
+    def save_models(
+        self,
+        task_name: str,
+        forecasters: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Path]:
+        """Save fitted forecaster models to the cache directory.
+
+        Each model is serialised with ``joblib`` (compress=3) into
+        ``<cache_home>/models/<data_frame_name>/`` using a datetime-stamped
+        filename so that multiple snapshots can coexist.
+
+        Filename format::
+
+            <data_frame_name>_<target>_<task_name>_<YYYYMMDD_HHMMSS>.joblib
+
+        If ``forecasters`` is ``None`` the method collects fitted models
+        from ``self.results[task_name]``, where each prediction package is
+        expected to contain a ``"forecaster"`` key.
+
+        Args:
+            task_name: Task identifier (``"lazy"``, ``"optuna"``, or
+                ``"spotoptim"``).
+            forecasters: Optional mapping ``{target: fitted_forecaster}``.
+                When ``None``, models are taken from the prediction
+                packages stored in ``self.results``.
+
+        Returns:
+            Mapping ``{target: Path}`` of saved model file paths.
+
+        Raises:
+            ValueError: If ``task_name`` is not one of ``"lazy"``,
+                ``"optuna"``, ``"spotoptim"``.
+            RuntimeError: If no fitted models are available for the
+                requested task.
+
+        Examples:
+            ```{python}
+            from spotforecast2.manager.multitask import LazyTask
+
+            task = LazyTask(data_frame_name="demo10")
+            task.prepare_data()
+            task.detect_outliers()
+            task.impute()
+            task.build_exogenous_features()
+            agg = task.run(show=False)
+            paths = task.save_models(task_name="lazy")
+            for target, p in paths.items():
+                print(f"{target}: {p.name}")
+            ```
+        """
+        if task_name not in self._TASK_MODEL_NAMES:
+            raise ValueError(
+                f"Unknown task_name '{task_name}'. "
+                f"Choose from {list(self._TASK_MODEL_NAMES)}"
+            )
+
+        # Resolve forecaster objects
+        if forecasters is None:
+            task_results = self.results.get(task_name)
+            if not task_results:
+                raise RuntimeError(
+                    f"No results for task '{task_name}'. "
+                    "Run the task before calling save_models()."
+                )
+            forecasters = {}
+            for target, pkg in task_results.items():
+                if "forecaster" not in pkg:
+                    raise RuntimeError(
+                        f"Prediction package for target '{target}' does not "
+                        "contain a 'forecaster' key."
+                    )
+                forecasters[target] = pkg["forecaster"]
+
+        model_dir = (
+            get_cache_home(self.config.cache_home) / "models" / self.data_frame_name
+        )
+        model_dir.mkdir(parents=True, exist_ok=True)
+
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
+        saved: Dict[str, Path] = {}
+
+        for target, forecaster in forecasters.items():
+            filename = f"{self.data_frame_name}_{target}_{task_name}_{timestamp}.joblib"
+            filepath = model_dir / filename
+            _joblib_dump(forecaster, filepath, compress=3)
+            saved[target] = filepath
+            self.logger.info("  Saved model: %s", filepath)
+
+        return saved
+
+    def load_models(
+        self,
+        task_name: Optional[str] = None,
+        target: Optional[str] = None,
+        max_age_days: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """Load the most recent fitted models from the cache directory.
+
+        Scans ``<cache_home>/models/<data_frame_name>/`` for ``.joblib``
+        files matching the current ``data_frame_name``.  Optionally
+        filters by ``task_name``, ``target``, and ``max_age_days``.
+
+        Args:
+            task_name: If given, only load models from this task
+                (``"lazy"``, ``"optuna"``, or ``"spotoptim"``).
+                ``None`` accepts any task.
+            target: If given, only load the model for this target
+                column.  ``None`` loads the most recent model for
+                every target found.
+            max_age_days: Maximum age in days.  Models older than
+                this are ignored.  ``None`` accepts any age.
+
+        Returns:
+            Mapping ``{target: forecaster}`` of loaded model objects.
+            Empty dict if no matching models were found.
+
+        Examples:
+            ```{python}
+            from spotforecast2.manager.multitask import LazyTask
+
+            task = LazyTask(data_frame_name="demo10")
+            task.prepare_data()
+            task.detect_outliers()
+            task.impute()
+            task.build_exogenous_features()
+            agg = task.run(show=False)
+            paths = task.save_models(task_name="lazy")
+            loaded = task.load_models(task_name="lazy")
+            for target_name, mdl in loaded.items():
+                print(f"{target_name}: {type(mdl).__name__}")
+            ```
+        """
+        model_dir = (
+            get_cache_home(self.config.cache_home) / "models" / self.data_frame_name
+        )
+        if not model_dir.exists():
+            return {}
+
+        prefix = f"{self.data_frame_name}_"
+        candidates: List[Path] = sorted(
+            model_dir.glob(f"{prefix}*.joblib"),
+            reverse=True,
+        )
+
+        if task_name is not None:
+            candidates = [p for p in candidates if f"_{task_name}_" in p.name]
+
+        if target is not None:
+            candidates = [p for p in candidates if f"_{target}_" in p.name]
+
+        if max_age_days is not None:
+            now = datetime.now(timezone.utc)
+            filtered = []
+            for p in candidates:
+                # Extract timestamp from filename:
+                # <data_frame_name>_<target>_<task_name>_<YYYYMMDD_HHMMSS>.joblib
+                stem = p.stem  # without .joblib
+                ts_str = stem[-15:]  # YYYYMMDD_HHMMSS
+                try:
+                    ts = datetime.strptime(ts_str, "%Y%m%d_%H%M%S").replace(
+                        tzinfo=timezone.utc
+                    )
+                    age_days = (now - ts).total_seconds() / 86400
+                    if age_days <= max_age_days:
+                        filtered.append(p)
+                except ValueError:
+                    continue
+            candidates = filtered
+
+        # For each target, keep only the most recent file.
+        # Files are already sorted newest-first.
+        loaded: Dict[str, Any] = {}
+        for p in candidates:
+            # Parse target from filename:
+            # <data_frame_name>_<target>_<task_name>_<YYYYMMDD_HHMMSS>.joblib
+            stem = p.stem
+            # Remove the prefix (data_frame_name + "_")
+            rest = stem[len(prefix) :]
+            # Remove the timestamp suffix ("_YYYYMMDD_HHMMSS")
+            rest_no_ts = rest[:-16]  # strip "_YYYYMMDD_HHMMSS"
+            # rest_no_ts = "<target>_<task_name>"
+            # Split on known task names to extract target
+            parsed_target = None
+            for tname in self._TASK_MODEL_NAMES:
+                suffix = f"_{tname}"
+                if rest_no_ts.endswith(suffix):
+                    parsed_target = rest_no_ts[: -len(suffix)]
+                    break
+            if parsed_target is None:
+                # Unknown task — use everything before the last underscore
+                # group as the target.
+                parts = rest_no_ts.rsplit("_", 1)
+                parsed_target = parts[0] if len(parts) > 1 else rest_no_ts
+
+            if parsed_target in loaded:
+                continue  # already have a newer file for this target
+
+            try:
+                loaded[parsed_target] = _joblib_load(p)
+                self.logger.info("  Loaded model from: %s", p)
+            except Exception:
+                self.logger.warning("  Failed to load model: %s", p)
+                continue
+
+        return loaded
+
     def _train_and_predict_target(
         self,
         target: str,
@@ -847,7 +1066,7 @@ class BaseTask:
         """Fit, save, and build prediction package for one target."""
         forecaster.fit(y=y_train, exog=exog_train)
         self._save_forecaster(forecaster, task_name, target)
-        return build_prediction_package(
+        pkg = build_prediction_package(
             forecaster=forecaster,
             target=target,
             y_train=y_train,
@@ -856,6 +1075,8 @@ class BaseTask:
             exog_future=exog_future,
             df_test=self.df_test,
         )
+        pkg["forecaster"] = forecaster
+        return pkg
 
     def _get_target_data(self, target: str) -> tuple:
         """Extract ``(y_train, exog_train, exog_future)`` for one target."""

@@ -21,6 +21,7 @@ from spotforecast2.manager.multitask.optuna import (
     OptunaTask,
     execute_optuna,
 )
+from spotforecast2.manager.multitask.predict import execute_predict
 from spotforecast2.manager.multitask.spotoptim import (
     SpotOptimTask,
     execute_spotoptim,
@@ -259,6 +260,37 @@ class MultiTask(BaseTask):
         """
         return execute_spotoptim(self, show=show, search_space=search_space)
 
+    def run_task_predict(
+        self,
+        show: bool = True,
+        task_name: Optional[str] = None,
+        max_age_days: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """Task 5 — Predict-only using previously saved models.
+
+        Loads fitted models from the cache directory and produces
+        predictions without any training.  Raises ``RuntimeError``
+        if no saved models are found.
+
+        Args:
+            show: If ``True``, display prediction figures.
+            task_name: Restrict model loading to a specific source task
+                (``"lazy"``, ``"optuna"``, or ``"spotoptim"``).
+                ``None`` loads the most recent model regardless of source.
+            max_age_days: Maximum age in days for saved models.
+                ``None`` accepts any age.
+
+        Returns:
+            Aggregated prediction package. Per-target results in
+            ``self.results["predict"]``.
+
+        Raises:
+            RuntimeError: If no saved models are found.
+        """
+        return execute_predict(
+            self, show=show, task_name=task_name, max_age_days=max_age_days
+        )
+
     # ------------------------------------------------------------------
     # Run dispatcher
     # ------------------------------------------------------------------
@@ -281,7 +313,7 @@ class MultiTask(BaseTask):
 
         Raises:
             ValueError: If ``task`` is not one of ``"lazy"``,
-                ``"optuna"``, ``"spotoptim"``.
+                ``"optuna"``, ``"spotoptim"``, ``"predict"``.
             RuntimeError: If method `prepare_data` has not been called.
         """
         task = task or self.TASK
@@ -289,6 +321,7 @@ class MultiTask(BaseTask):
             "lazy": self.run_task_lazy,
             "optuna": self.run_task_optuna,
             "spotoptim": self.run_task_spotoptim,
+            "predict": self.run_task_predict,
         }
         if task not in dispatch:
             raise ValueError(

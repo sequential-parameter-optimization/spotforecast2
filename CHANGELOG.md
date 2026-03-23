@@ -1,3 +1,13 @@
+## [0.15.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.14.0...v0.15.0-rc.1) (2026-03-23)
+
+### Features
+
+* predict task ([a6b8d11](https://github.com/sequential-parameter-optimization/spotforecast2/commit/a6b8d11e57dcd63e5abc94c6a9148e29c457fe16))
+
+### Bug Fixes
+
+* pyproject ([2866fed](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2866fed68f2bf24cacd6737a31adddff5f63287c))
+
 ## [0.14.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.2...v0.14.0) (2026-03-22)
 
 ### Features
