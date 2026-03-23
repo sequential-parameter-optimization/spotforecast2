@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>tasks.task_n_to_1_with_covariates_and_dataframe – spotforecast2</title>
+<title>manager.multitask.cleantask – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -305,7 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/tasks.task_demo.html">Tasks</a></li><li class="breadcrumb-item"><a href="../../docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.html">task_n_to_1_with_covariates_and_dataframe</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.multitask.CleanTask.html">CleanTask</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -386,13 +386,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
  <span class="menu-text">Manager</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html" class="sidebar-item-text sidebar-link">
@@ -461,7 +461,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.CleanTask.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/manager.multitask.CleanTask.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">CleanTask</span></a>
   </div>
 </li>
@@ -616,13 +616,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
  <span class="menu-text">Tasks</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/tasks.task_demo.html" class="sidebar-item-text sidebar-link">
@@ -655,7 +655,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">task_n_to_1_with_covariates_and_dataframe</span></a>
   </div>
 </li>
@@ -817,105 +817,79 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe" id="toc-spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe" class="nav-link active" data-scroll-target="#spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe">tasks.task_n_to_1_with_covariates_and_dataframe</a>
+  <li><a href="#examples" id="toc-examples" class="nav-link active" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
   <ul class="collapse">
-  <li><a href="#the-pipeline" id="toc-the-pipeline" class="nav-link" data-scroll-target="#the-pipeline">The pipeline</a></li>
-  <li><a href="#key-features" id="toc-key-features" class="nav-link" data-scroll-target="#key-features">Key Features</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
-  <li><a href="#forecasting-parameters" id="toc-forecasting-parameters" class="nav-link" data-scroll-target="#forecasting-parameters">Forecasting Parameters</a></li>
-  <li><a href="#feature-engineering-parameters" id="toc-feature-engineering-parameters" class="nav-link" data-scroll-target="#feature-engineering-parameters">Feature Engineering Parameters</a></li>
-  <li><a href="#model-parameters" id="toc-model-parameters" class="nav-link" data-scroll-target="#model-parameters">Model Parameters</a></li>
-  <li><a href="#aggregation-parameters" id="toc-aggregation-parameters" class="nav-link" data-scroll-target="#aggregation-parameters">Aggregation Parameters</a></li>
-  <li><a href="#functions" id="toc-functions" class="nav-link" data-scroll-target="#functions">Functions</a>
-  <ul class="collapse">
-  <li><a href="#spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.main" id="toc-spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.main" class="nav-link" data-scroll-target="#spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.main">main</a></li>
-  <li><a href="#spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.n_to_1_with_covariates" id="toc-spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.n_to_1_with_covariates" class="nav-link" data-scroll-target="#spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.n_to_1_with_covariates">n_to_1_with_covariates</a></li>
-  </ul></li>
+  <li><a href="#spotforecast2.manager.multitask.CleanTask.run" id="toc-spotforecast2.manager.multitask.CleanTask.run" class="nav-link" data-scroll-target="#spotforecast2.manager.multitask.CleanTask.run">run</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/manager.multitask.CleanTask.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/tasks.task_demo.html">Tasks</a></li><li class="breadcrumb-item"><a href="../../docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.html">task_n_to_1_with_covariates_and_dataframe</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.multitask.CleanTask.html">CleanTask</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">manager.multitask.CleanTask</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
 
 
-<section id="spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe" class="level1">
-<h1>tasks.task_n_to_1_with_covariates_and_dataframe</h1>
-<p><code>tasks.task_n_to_1_with_covariates_and_dataframe</code></p>
-<p>N-to-1 Forecasting with Exogenous Covariates and Prediction Aggregation.</p>
-<p>This module implements a complete end-to-end pipeline for multi-step time series forecasting with exogenous variables (weather, holidays, calendar features), followed by prediction aggregation using configurable weights.</p>
-<section id="the-pipeline" class="level2 doc-section doc-section-the-pipeline">
-<h2 class="doc-section doc-section-the-pipeline anchored" data-anchor-id="the-pipeline">The pipeline</h2>
-<ol type="1">
-<li>Performs multi-output recursive forecasting with exogenous covariates</li>
-<li>Aggregates predictions using weighted combinations</li>
-<li>Supports flexible model selection (string or object-based)</li>
-<li>Allows customization via kwargs for all underlying functions</li>
-</ol>
-</section>
-<section id="key-features" class="level2 doc-section doc-section-key-features">
-<h2 class="doc-section doc-section-key-features anchored" data-anchor-id="key-features">Key Features</h2>
-<ul>
-<li>Automatic weather, holiday, and calendar feature generation</li>
-<li>Cyclical and polynomial feature engineering</li>
-<li>Configurable recursive forecaster with LGBMRegressor default</li>
-<li>Weighted prediction aggregation</li>
-<li>Comprehensive parameter flexibility via **kwargs</li>
-<li>Detailed logging and progress tracking</li>
-</ul>
-</section>
+</header>
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.CleanTask(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    data_frame_name<span class="op">=</span><span class="st">'demo10'</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    data_source<span class="op">=</span><span class="st">'demo10.csv'</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    data_test<span class="op">=</span><span class="st">'demo11.csv'</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    data_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    cache_data<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    agg_weights<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    index_name<span class="op">=</span><span class="st">'DateTime'</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    bounds<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    contamination<span class="op">=</span><span class="fl">0.03</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">'weighted'</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    n_trials_spotoptim<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    n_initial_spotoptim<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span>logging.INFO,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>config_overrides,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Cache-cleaning task — removes all cached data from the pipeline cache.</p>
+<p>CleanTask deletes the entire cache directory configured for the pipeline, including saved models, tuning results, and any other cached artefacts written by training or tuning tasks.</p>
+<p>Unlike training or prediction tasks, CleanTask does not require prepare_data() to be called before run(). It operates purely on the file system and can be used as a standalone reset mechanism between experiments or deployments.</p>
+<p>Passing <code>dry_run=True</code> to run() reports what would be deleted without actually removing anything, which is useful for inspecting cache contents before committing to removal.</p>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<p>Basic usage with default parameters:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.scripts.n_to_1_with_covariates <span class="im">import</span> main</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>With custom forecast horizon and weights:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> predictions <span class="op">=</span> main(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>...     forecast_horizon<span class="op">=</span><span class="dv">48</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>...     weights<span class="op">=</span>[<span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="op">-</span><span class="fl">1.0</span>, <span class="fl">1.0</span>]</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>... )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>With custom location (latitude, longitude):</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> predictions <span class="op">=</span> main(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>...     forecast_horizon<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>...     latitude<span class="op">=</span><span class="fl">48.1351</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>...     longitude<span class="op">=</span><span class="fl">11.5820</span>,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>...     verbose<span class="op">=</span><span class="va">True</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>... )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>With feature engineering options:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> predictions <span class="op">=</span> main(</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>...     forecast_horizon<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>...     include_weather_windows<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>...     include_holiday_features<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>...     include_poly_features<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>... )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Passing custom estimator object:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> lightgbm <span class="im">import</span> LGBMRegressor</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> estimator <span class="op">=</span> LGBMRegressor(n_estimators<span class="op">=</span><span class="dv">200</span>, learning_rate<span class="op">=</span><span class="fl">0.01</span>)</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> predictions <span class="op">=</span> main(forecast_horizon<span class="op">=</span><span class="dv">24</span>, estimator<span class="op">=</span>estimator)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Available Parameters:</p>
+<div id="c5b1fe8c" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask <span class="im">import</span> CleanTask</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> CleanTask(data_frame_name<span class="op">=</span><span class="st">"demo10"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Task: </span><span class="sc">{</span>task<span class="sc">.</span>TASK<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Task name: </span><span class="sc">{</span>task<span class="sc">.</span>_task_name<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Task: clean
+Task name: clean</code></pre>
+</div>
+</div>
 </section>
-<section id="forecasting-parameters" class="level2 doc-section doc-section-forecasting-parameters">
-<h2 class="doc-section doc-section-forecasting-parameters anchored" data-anchor-id="forecasting-parameters">Forecasting Parameters</h2>
-<p>forecast_horizon (int): Number of steps ahead to forecast. Default: 24. contamination (float): Outlier detection threshold [0, 1]. Default: 0.01. window_size (int): Rolling window size for feature engineering. Default: 72. lags (int): Number of lag features to create. Default: 24. train_ratio (float): Train-test split ratio [0, 1]. Default: 0.8. verbose (bool): Enable detailed progress logging. Default: True.</p>
-<p>Location &amp; Time Parameters: latitude (float): Location latitude for sun features. Default: 51.5136 (Dortmund). longitude (float): Location longitude for sun features. Default: 7.4653 (Dortmund). timezone (str): Timezone for data processing. Default: “UTC”. country_code (str): Country code for holidays (ISO 3166-1 alpha-2). Default: “DE”. state (str): State/region code for holidays (depends on country). Default: “NW”.</p>
-</section>
-<section id="feature-engineering-parameters" class="level2 doc-section doc-section-feature-engineering-parameters">
-<h2 class="doc-section doc-section-feature-engineering-parameters anchored" data-anchor-id="feature-engineering-parameters">Feature Engineering Parameters</h2>
-<p>include_weather_windows (bool): Include rolling weather statistics. Default: False. include_holiday_features (bool): Include holiday indicator features. Default: False. include_poly_features (bool): Include polynomial interaction features. Default: False.</p>
-</section>
-<section id="model-parameters" class="level2 doc-section doc-section-model-parameters">
-<h2 class="doc-section doc-section-model-parameters anchored" data-anchor-id="model-parameters">Model Parameters</h2>
-<p>estimator (Optional[Union[str, object]]): Forecaster estimator. Can be: - None: Uses default LGBMRegressor(n_estimators=100) - “ForecasterRecursive”: String reference (uses default) - LGBMRegressor(…): Custom estimator object Default: None.</p>
-</section>
-<section id="aggregation-parameters" class="level2 doc-section doc-section-aggregation-parameters">
-<h2 class="doc-section doc-section-aggregation-parameters anchored" data-anchor-id="aggregation-parameters">Aggregation Parameters</h2>
-<p>weights (Optional[Union[Dict[str, float], List[float], np.ndarray]]): Weights for prediction aggregation. Can be: - None: Defaults to uniform weights (1.0 for each column) - Dict: Column name -&gt; weight mapping - List/Array: Weights in column order Default: [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0].</p>
-</section>
-<section id="functions" class="level2">
-<h2 class="anchored" data-anchor-id="functions">Functions</h2>
+<section id="methods" class="level2">
+<h2 class="anchored" data-anchor-id="methods">Methods</h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -925,74 +899,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.main">main</a></td>
-<td>Execute the complete N-to-1 forecasting pipeline with default parameters.</td>
-</tr>
-<tr class="even">
-<td><a href="#spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.n_to_1_with_covariates">n_to_1_with_covariates</a></td>
-<td>Execute N-to-1 forecasting pipeline with exogenous covariates.</td>
+<td><a href="#spotforecast2.manager.multitask.CleanTask.run">run</a></td>
+<td>Remove all cached data from the pipeline cache directory.</td>
 </tr>
 </tbody>
 </table>
-<section id="spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.main" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.main">main</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tasks.task_n_to_1_with_covariates_and_dataframe.main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Execute the complete N-to-1 forecasting pipeline with default parameters.</p>
-<p>This is the entry point when running the script directly. It executes the full forecasting pipeline with default settings and prints comprehensive results.</p>
-<p>The default configuration: - Forecasts 24 steps ahead - Uses Dortmund, Germany coordinates - Applies default contamination and window parameters - Aggregates with predefined weights - Provides verbose output</p>
-<section id="returns" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td>None</td>
-<td>None. Results are printed to stdout.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="examples-1" class="level4 doc-section doc-section-examples">
-<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
-<p>Run the script directly:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> python n_to_1_with_covariates.py</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Or call main() programmatically:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.scripts.n_to_1_with_covariates <span class="im">import</span> main</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</section>
-</section>
-<section id="spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.n_to_1_with_covariates" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe.n_to_1_with_covariates">n_to_1_with_covariates</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>tasks.task_n_to_1_with_covariates_and_dataframe.n_to_1_with_covariates(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    data<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    forecast_horizon<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    contamination<span class="op">=</span><span class="fl">0.01</span>,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="dv">72</span>,</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    lags<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    train_ratio<span class="op">=</span><span class="fl">0.8</span>,</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>    latitude<span class="op">=</span><span class="fl">51.5136</span>,</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    longitude<span class="op">=</span><span class="fl">7.4653</span>,</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    timezone<span class="op">=</span><span class="st">'UTC'</span>,</span>
-<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    country_code<span class="op">=</span><span class="st">'DE'</span>,</span>
-<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    state<span class="op">=</span><span class="st">'NW'</span>,</span>
-<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    estimator<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    include_weather_windows<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    include_holiday_features<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    include_poly_features<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    weights<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
-<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Execute N-to-1 forecasting pipeline with exogenous covariates.</p>
-<p>This function performs a complete time series forecasting workflow: 1. Fetches and preprocesses data 2. Engineers features (calendar, weather, holidays, cyclical, polynomial) 3. Trains recursive forecaster on multiple targets 4. Aggregates predictions using weighted combination</p>
+<section id="spotforecast2.manager.multitask.CleanTask.run" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.CleanTask.run">run</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.CleanTask.run(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Remove all cached data from the pipeline cache directory.</p>
+<p>Does not require prepare_data() to be called first.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
 <table class="caption-top table">
@@ -1006,124 +927,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>data</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
-<td>Optional DataFrame with target time series data. If None, fetches data automatically. Default: None.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>forecast_horizon</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Number of forecast steps ahead. Determines how many time steps to predict into the future. Typical values: 24 (1 day), 48 (2 days), 168 (1 week). Default: 24.</td>
-<td><code>24</code></td>
-</tr>
-<tr class="odd">
-<td>contamination</td>
-<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
-<td>Outlier contamination level for anomaly detection. Expected proportion of outliers in the training data [0, 1]. Higher values detect fewer outliers. Default: 0.01 (1%).</td>
-<td><code>0.01</code></td>
-</tr>
-<tr class="even">
-<td>window_size</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Rolling window size for feature engineering (hours). Size of the rolling window for computing statistics. Must be &gt; lags. Typical range: 24-168. Default: 72.</td>
-<td><code>72</code></td>
-</tr>
-<tr class="odd">
-<td>lags</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Number of lagged features to create. Creates AR(p) features with p=lags. Typical values: 12, 24, 48. Default: 24.</td>
-<td><code>24</code></td>
-</tr>
-<tr class="even">
-<td>train_ratio</td>
-<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
-<td>Proportion of data for training [0, 1]. Remaining data (1 - train_ratio) used for validation/testing. Typical values: 0.7-0.9. Default: 0.8.</td>
-<td><code>0.8</code></td>
-</tr>
-<tr class="odd">
-<td>latitude</td>
-<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
-<td>Geographic latitude for solar features. Used to compute sunrise/sunset times for day/night features. Default: 51.5136 (Dortmund, Germany).</td>
-<td><code>51.5136</code></td>
-</tr>
-<tr class="even">
-<td>longitude</td>
-<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
-<td>Geographic longitude for solar features. Used to compute sunrise/sunset times for day/night features. Default: 7.4653 (Dortmund, Germany).</td>
-<td><code>7.4653</code></td>
-</tr>
-<tr class="odd">
-<td>timezone</td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>Timezone for time-based features. Any timezone recognized by pytz. Default: “UTC”.</td>
-<td><code>'UTC'</code></td>
-</tr>
-<tr class="even">
-<td>country_code</td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>ISO 3166-1 alpha-2 country code for holidays. Examples: “DE” (Germany), “US” (USA), “GB” (UK). Default: “DE”.</td>
-<td><code>'DE'</code></td>
-</tr>
-<tr class="odd">
-<td>state</td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>State/region code for holidays. Country-dependent. For Germany: “BW”, “BY”, “NW”, etc. Default: “NW” (Nordrhein-Westfalen).</td>
-<td><code>'NW'</code></td>
-</tr>
-<tr class="even">
-<td>estimator</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#object">object</a>]]</td>
-<td>Forecaster model. Can be: - None: Uses LGBMRegressor(n_estimators=100, verbose=-1). - “ForecasterRecursive”: References default estimator (same as None). - LGBMRegressor(…): Custom pre-configured estimator. - Any sklearn-compatible regressor. Default: None.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>include_weather_windows</td>
+<td>dry_run</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Add rolling weather statistics. Creates moving averages, min, max of weather features over multiple windows (1D, 7D). Increases feature count significantly. Default: False.</td>
+<td>If <code>True</code>, report what would be deleted without actually removing anything. Useful for inspecting the cache before committing to removal.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
-<td>include_holiday_features</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Add holiday binary indicators. Creates features indicating holidays and special dates. Useful for capturing demand patterns around holidays. Default: False.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="odd">
-<td>include_poly_features</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Add polynomial interactions. Creates 2nd-order interaction terms between selected features. Useful for capturing non-linear relationships. Default: False.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="even">
-<td>weights</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#float">float</a>], <a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/functions.html#float">float</a>], <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>]]</td>
-<td>Weights for combining multi-output predictions. Can be: - None: Default weights [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0] - Dict: {“col_name”: weight, …} for specific columns - List: [w1, w2, …] in column order - np.ndarray: Same as list Default: None (uses default weights).</td>
+<td>cache_home</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</td>
+<td>Override the directory to clean. <code>None</code> uses the directory configured on this instance via <code>get_cache_home()</code>.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
-<td>verbose</td>
+<td>show</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Enable progress logging. Prints intermediate results and timestamps. Default: True.</td>
+<td>Accepted for API consistency with other tasks. Not used by the clean task.</td>
 <td><code>True</code></td>
-</tr>
-<tr class="even">
-<td>show_progress</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Show a progress bar for major pipeline steps. Default: True.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="odd">
-<td>**kwargs</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
-<td>Additional parameters for underlying functions. These are passed to n2n_predict_with_covariates(). Examples: - freq: Frequency for data resampling. Default: “h” (hourly). - columns: Specific columns to forecast. Default: None (all). Any parameter accepted by n2n_predict_with_covariates().</td>
-<td><code>{}</code></td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="returns-1" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1135,8 +960,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>, <a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>]</td>
-<td>Tuple[pd.DataFrame, pd.Series, Dict, Dict]: A tuple containing: - predictions (pd.DataFrame): Multi-output forecasts from recursive model. Each column represents a target variable. Index is datetime matching the forecast period. - combined_prediction (pd.Series): Aggregated forecast from weighted combination. Single column combining all output predictions. Index is datetime matching the forecast period. - model_metrics (Dict): Performance metrics from recursive forecaster. Keys may include: ‘mae’, ‘rmse’, ‘mape’, etc. - feature_info (Dict): Information about engineered features. Contains feature counts, types, and engineering details.</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
+<td>Dict with keys: status: <code>"success"</code>, <code>"dry_run"</code>, or <code>"empty"</code>. cache_dir: The Path targeted for cleaning. deleted_items: Names of top-level items removed (or that would have been removed in <code>dry_run</code> mode).</td>
 </tr>
 </tbody>
 </table>
@@ -1154,83 +979,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
-<td>If forecast_horizon &lt;= 0 or invalid parameter combinations.</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError">FileNotFoundError</a></td>
-<td>If data source files cannot be accessed.</td>
-</tr>
-<tr class="odd">
-<td></td>
 <td><a href="https://docs.python.org/3/library/exceptions.html#RuntimeError">RuntimeError</a></td>
-<td>If model training fails or data processing errors occur.</td>
+<td>If the cache directory cannot be removed due to a permissions error or OS-level failure.</td>
 </tr>
 </tbody>
 </table>
 </section>
-<section id="examples-2" class="level4 doc-section doc-section-examples">
-<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
-<p>Basic usage (uses all defaults):</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> predictions, combined, metrics, features <span class="op">=</span> n_to_1_with_covariates()</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="ss">f"Predictions shape: </span><span class="sc">{</span>predictions<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="ss">f"Combined forecast head:</span><span class="ch">\n</span><span class="sc">{</span>combined<span class="sc">.</span>head()<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Custom location and forecast horizon:</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> predictions, combined, metrics, features <span class="op">=</span> n_to_1_with_covariates(</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>...     forecast_horizon<span class="op">=</span><span class="dv">48</span>,</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>...     latitude<span class="op">=</span><span class="fl">48.1351</span>,</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>...     longitude<span class="op">=</span><span class="fl">11.5820</span>,</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>...     country_code<span class="op">=</span><span class="st">"DE"</span>,</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>...     state<span class="op">=</span><span class="st">"BY"</span>,</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>...     verbose<span class="op">=</span><span class="va">True</span></span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>... )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>With feature engineering enabled:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> predictions, combined, metrics, features <span class="op">=</span> n_to_1_with_covariates(</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>...     forecast_horizon<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>...     include_weather_windows<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>...     include_holiday_features<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>...     include_poly_features<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>...     verbose<span class="op">=</span><span class="va">True</span></span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>... )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Custom estimator and weights:</p>
-<div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> lightgbm <span class="im">import</span> LGBMRegressor</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> custom_estimator <span class="op">=</span> LGBMRegressor(</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>...     n_estimators<span class="op">=</span><span class="dv">200</span>,</span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>...     learning_rate<span class="op">=</span><span class="fl">0.01</span>,</span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>...     max_depth<span class="op">=</span><span class="dv">7</span></span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>... )</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> custom_weights <span class="op">=</span> [<span class="fl">1.0</span>, <span class="fl">1.0</span>, <span class="op">-</span><span class="fl">0.5</span>, <span class="op">-</span><span class="fl">0.5</span>]</span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> predictions, combined, metrics, features <span class="op">=</span> n_to_1_with_covariates(</span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>...     forecast_horizon<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>...     estimator<span class="op">=</span>custom_estimator,</span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>...     weights<span class="op">=</span>custom_weights,</span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>...     verbose<span class="op">=</span><span class="va">True</span></span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>... )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>With all advanced options:</p>
-<div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> predictions, combined, metrics, features <span class="op">=</span> n_to_1_with_covariates(</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>...     forecast_horizon<span class="op">=</span><span class="dv">72</span>,</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>...     contamination<span class="op">=</span><span class="fl">0.02</span>,</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>...     window_size<span class="op">=</span><span class="dv">168</span>,</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>...     lags<span class="op">=</span><span class="dv">48</span>,</span>
-<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>...     train_ratio<span class="op">=</span><span class="fl">0.75</span>,</span>
-<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>...     latitude<span class="op">=</span><span class="fl">50.1109</span>,</span>
-<span id="cb14-8"><a href="#cb14-8" aria-hidden="true" tabindex="-1"></a>...     longitude<span class="op">=</span><span class="fl">8.6821</span>,</span>
-<span id="cb14-9"><a href="#cb14-9" aria-hidden="true" tabindex="-1"></a>...     timezone<span class="op">=</span><span class="st">"Europe/Berlin"</span>,</span>
-<span id="cb14-10"><a href="#cb14-10" aria-hidden="true" tabindex="-1"></a>...     country_code<span class="op">=</span><span class="st">"DE"</span>,</span>
-<span id="cb14-11"><a href="#cb14-11" aria-hidden="true" tabindex="-1"></a>...     state<span class="op">=</span><span class="st">"HE"</span>,</span>
-<span id="cb14-12"><a href="#cb14-12" aria-hidden="true" tabindex="-1"></a>...     include_weather_windows<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb14-13"><a href="#cb14-13" aria-hidden="true" tabindex="-1"></a>...     include_holiday_features<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb14-14"><a href="#cb14-14" aria-hidden="true" tabindex="-1"></a>...     include_poly_features<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb14-15"><a href="#cb14-15" aria-hidden="true" tabindex="-1"></a>...     weights<span class="op">=</span>{<span class="st">"power"</span>: <span class="fl">1.0</span>, <span class="st">"demand"</span>: <span class="fl">0.8</span>},</span>
-<span id="cb14-16"><a href="#cb14-16" aria-hidden="true" tabindex="-1"></a>...     verbose<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb14-17"><a href="#cb14-17" aria-hidden="true" tabindex="-1"></a>...     freq<span class="op">=</span><span class="st">"h"</span>,</span>
-<span id="cb14-18"><a href="#cb14-18" aria-hidden="true" tabindex="-1"></a>... )</span>
-<span id="cb14-19"><a href="#cb14-19" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="ss">f"Model Metrics: </span><span class="sc">{</span>metrics<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb14-20"><a href="#cb14-20" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="bu">print</span>(<span class="ss">f"Feature Info: </span><span class="sc">{</span>features<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div id="f558ba7c" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask <span class="im">import</span> CleanTask</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> tempfile.TemporaryDirectory() <span class="im">as</span> tmp:</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    task <span class="op">=</span> CleanTask(cache_home<span class="op">=</span>Path(tmp) <span class="op">/</span> <span class="st">"test_cache"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> task.run(dry_run<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(result[<span class="st">"status"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>dry_run</code></pre>
+</div>
+</div>
 
 
-</section>
 </section>
 </section>
 </section>
@@ -1663,7 +1434,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </div>   
     <div class="nav-footer-center">
 <p>Copyright © 2024-2026 bartzbeielstein | <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/manager.multitask.CleanTask.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
