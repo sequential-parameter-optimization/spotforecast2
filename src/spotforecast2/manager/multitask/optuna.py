@@ -39,7 +39,7 @@ def execute_optuna(
     """Execute Optuna Bayesian tuning for all targets on ``task``.
 
     Args:
-        task: A class `BaseTask` (or subclass) instance with prepared data.
+        task: A BaseTask (or subclass) instance with prepared data.
         show: If ``True``, display prediction figures.
         search_space: Callable ``(trial) -> dict`` defining the Optuna
             search space.  ``None`` uses the built-in default.
@@ -47,6 +47,8 @@ def execute_optuna(
     Returns:
         Aggregated prediction package (weighted combination of all targets).
         Per-target packages are stored on ``task.results["optuna"]``.
+        When ``task.auto_save_models`` is ``True`` (the default), fitted
+        models are saved to disk so PredictTask can load them directly.
     """
     task._ensure_pipeline_ready()
     if search_space is None:
@@ -108,6 +110,8 @@ def execute_optuna(
             )
 
     task.results["optuna"] = results
+    if getattr(task, "auto_save_models", True):
+        task.save_models(task_name="optuna")
     agg_pkg = task._aggregate_and_show(results, "task 3: Optuna Tuned", show=show)
     return agg_pkg
 

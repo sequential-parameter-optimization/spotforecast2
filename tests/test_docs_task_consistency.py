@@ -282,3 +282,147 @@ class TestTaskHierarchy:
             f"{cls_name}._task_name is '{cls._task_name}', "
             f"expected '{expected_task_name}'"
         )
+
+
+# ===========================================================================
+# 9. auto_save_models default behavior
+# ===========================================================================
+
+
+class TestAutoSaveModels:
+    """Training tasks must auto-save models by default."""
+
+    def test_base_task_auto_save_default_true(self):
+        from spotforecast2.manager.multitask.base import BaseTask
+
+        task = BaseTask(predict_size=24)
+        assert (
+            task.auto_save_models is True
+        ), "BaseTask.auto_save_models should default to True"
+
+    def test_base_task_auto_save_can_be_disabled(self):
+        from spotforecast2.manager.multitask.base import BaseTask
+
+        task = BaseTask(predict_size=24, auto_save_models=False)
+        assert task.auto_save_models is False
+
+    @pytest.mark.parametrize("cls_name", ["LazyTask", "OptunaTask", "SpotOptimTask"])
+    def test_training_task_inherits_auto_save_true(self, cls_name):
+        mod = importlib.import_module(MULTITASK_PKG)
+        cls = getattr(mod, cls_name)
+        task = cls(predict_size=24)
+        assert (
+            task.auto_save_models is True
+        ), f"{cls_name}.auto_save_models should default to True"
+
+    @pytest.mark.parametrize("cls_name", ["LazyTask", "OptunaTask", "SpotOptimTask"])
+    def test_training_task_auto_save_can_be_disabled(self, cls_name):
+        mod = importlib.import_module(MULTITASK_PKG)
+        cls = getattr(mod, cls_name)
+        task = cls(predict_size=24, auto_save_models=False)
+        assert task.auto_save_models is False
+
+    def test_predict_task_auto_save_attribute(self):
+        from spotforecast2.manager.multitask import PredictTask
+
+        task = PredictTask(predict_size=24)
+        assert hasattr(
+            task, "auto_save_models"
+        ), "PredictTask should have auto_save_models attribute via BaseTask"
+
+    def test_execute_lazy_calls_save_models_when_enabled(self):
+        from unittest.mock import MagicMock
+
+        from spotforecast2.manager.multitask.lazy import execute_lazy
+
+        task = MagicMock()
+        task.auto_save_models = True
+        task.config.targets = ["t1"]
+        task._get_target_data.return_value = (MagicMock(), MagicMock(), MagicMock())
+        task.create_forecaster.return_value = MagicMock()
+        task.load_tuning_results.return_value = None
+        task._train_and_predict_target.return_value = {"future_pred": MagicMock()}
+        task._aggregate_and_show.return_value = {}
+
+        execute_lazy(task, show=False)
+
+        task.save_models.assert_called_once_with(task_name="lazy")
+
+    def test_execute_lazy_skips_save_models_when_disabled(self):
+        from unittest.mock import MagicMock
+
+        from spotforecast2.manager.multitask.lazy import execute_lazy
+
+        task = MagicMock()
+        task.auto_save_models = False
+        task.config.targets = ["t1"]
+        task._get_target_data.return_value = (MagicMock(), MagicMock(), MagicMock())
+        task.create_forecaster.return_value = MagicMock()
+        task.load_tuning_results.return_value = None
+        task._train_and_predict_target.return_value = {"future_pred": MagicMock()}
+        task._aggregate_and_show.return_value = {}
+
+        execute_lazy(task, show=False)
+
+        task.save_models.assert_not_called()
+
+    def test_execute_optuna_calls_save_models_when_enabled(self):
+        from unittest.mock import MagicMock, patch
+
+        from spotforecast2.manager.multitask.optuna import execute_optuna
+
+        task = MagicMock()
+        task.auto_save_models = True
+        task.config.targets = ["t1"]
+        task.config.n_trials_optuna = 1
+        task.config.random_state = 42
+        task._get_target_data.return_value = (MagicMock(), MagicMock(), MagicMock())
+        task.create_forecaster.return_value = MagicMock()
+        task.cv_ts.return_value = MagicMock()
+        task._train_and_predict_target.return_value = {}
+        task._aggregate_and_show.return_value = {}
+
+        mock_results = MagicMock()
+        mock_row = MagicMock()
+        mock_row.params = {}
+        mock_row.lags = 24
+        mock_results.iloc.__getitem__.return_value = mock_row
+
+        with patch(
+            "spotforecast2.manager.multitask.optuna.bayesian_search_forecaster",
+            return_value=(mock_results, None),
+        ):
+            execute_optuna(task, show=False)
+
+        task.save_models.assert_called_once_with(task_name="optuna")
+
+    def test_execute_spotoptim_calls_save_models_when_enabled(self):
+        from unittest.mock import MagicMock, patch
+
+        from spotforecast2.manager.multitask.spotoptim import execute_spotoptim
+
+        task = MagicMock()
+        task.auto_save_models = True
+        task.config.targets = ["t1"]
+        task.config.n_trials_spotoptim = 1
+        task.config.n_initial_spotoptim = 1
+        task.config.random_state = 42
+        task._get_target_data.return_value = (MagicMock(), MagicMock(), MagicMock())
+        task.create_forecaster.return_value = MagicMock()
+        task.cv_ts.return_value = MagicMock()
+        task._train_and_predict_target.return_value = {}
+        task._aggregate_and_show.return_value = {}
+
+        mock_results = MagicMock()
+        mock_row = MagicMock()
+        mock_row.params = {}
+        mock_row.lags = 24
+        mock_results.iloc.__getitem__.return_value = mock_row
+
+        with patch(
+            "spotforecast2.manager.multitask.spotoptim.spotoptim_search_forecaster",
+            return_value=(mock_results, MagicMock()),
+        ):
+            execute_spotoptim(task, show=False)
+
+        task.save_models.assert_called_once_with(task_name="spotoptim")

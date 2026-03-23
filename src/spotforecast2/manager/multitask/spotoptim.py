@@ -50,8 +50,8 @@ def execute_spotoptim(
 
     Returns:
         Aggregated prediction package (weighted combination of all targets).
-        Per-target packages are stored on ``task.results["spotoptim"]``.
-    """
+        Per-target packages are stored on ``task.results["spotoptim"]``.        When ``task.auto_save_models`` is ``True`` (the default), fitted
+        models are saved to disk so PredictTask can load them directly."""
     task._ensure_pipeline_ready()
     if search_space is None:
         search_space = _default_spotoptim_search_space()
@@ -113,6 +113,8 @@ def execute_spotoptim(
             )
 
     task.results["spotoptim"] = results
+    if getattr(task, "auto_save_models", True):
+        task.save_models(task_name="spotoptim")
     agg_pkg = task._aggregate_and_show(results, "task 4: SpotOptim Tuned", show=show)
     return agg_pkg
 

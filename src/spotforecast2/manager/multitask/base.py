@@ -158,6 +158,10 @@ class BaseTask:
         n_trials_optuna: Number of Optuna Bayesian-search trials.
         n_trials_spotoptim: Number of SpotOptim surrogate-search trials.
         n_initial_spotoptim: Initial random evaluations for SpotOptim.
+        auto_save_models: Whether to automatically save fitted models to
+            disk after each training run.  Defaults to ``True`` so that
+            saved models are immediately available for PredictTask without
+            any manual call to save_models().
         log_level: Logging level for the pipeline logger.
         config_overrides: Extra keyword arguments forwarded to
             ConfigMulti.
@@ -197,6 +201,7 @@ class BaseTask:
         n_trials_optuna: int = 15,
         n_trials_spotoptim: int = 10,
         n_initial_spotoptim: int = 5,
+        auto_save_models: bool = True,
         log_level: int = logging.INFO,
         **config_overrides: Any,
     ) -> None:
@@ -221,6 +226,7 @@ class BaseTask:
         self.n_trials_optuna = n_trials_optuna
         self.n_trials_spotoptim = n_trials_spotoptim
         self.n_initial_spotoptim = n_initial_spotoptim
+        self.auto_save_models = auto_save_models
 
         # Logger
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
