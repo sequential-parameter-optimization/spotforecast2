@@ -21,6 +21,7 @@ from pathlib import Path
 from typing import Any, Dict
 
 import numpy as np
+import pandas as pd
 import pytest
 from sklearn.linear_model import LinearRegression
 
@@ -31,10 +32,19 @@ from spotforecast2.manager.multitask import (
     PredictTask,
 )
 from spotforecast2.manager.multitask.predict import execute_predict
+from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+
+_DEMO_CSV = str(get_package_data_home() / "demo10.csv")
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
+
+
+@pytest.fixture(scope="module")
+def demo_df() -> pd.DataFrame:
+    """Load the package demo10 CSV once for the whole module."""
+    return fetch_data(filename=_DEMO_CSV)
 
 
 @pytest.fixture()
@@ -135,20 +145,20 @@ class TestClassAttributes:
 class TestRunNoModels:
     """Verify PredictTask.run() raises when no models exist."""
 
-    def test_run_raises_no_models_empty_cache(self, predict_task):
+    def test_run_raises_no_models_empty_cache(self, predict_task, demo_df):
         """When the models directory does not exist at all."""
-        predict_task.prepare_data()
+        predict_task.prepare_data(demo_data=demo_df)
         predict_task.detect_outliers()
         predict_task.impute()
         with pytest.raises(RuntimeError, match="No saved models found"):
             predict_task.run(show=False)
 
-    def test_run_raises_no_models_empty_dir(self, tmp_path):
+    def test_run_raises_no_models_empty_dir(self, tmp_path, demo_df):
         """When the models directory exists but contains no matching files."""
         model_dir = tmp_path / "models" / "test_data"
         model_dir.mkdir(parents=True)
         task = PredictTask(data_frame_name="test_data", cache_home=tmp_path)
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
         with pytest.raises(RuntimeError, match="No saved models found"):
@@ -163,10 +173,10 @@ class TestRunNoModels:
 class TestRunMissingTarget:
     """Verify error when a saved model exists for some targets but not all."""
 
-    def test_run_raises_for_missing_target(self, tmp_path, single_forecaster):
+    def test_run_raises_for_missing_target(self, tmp_path, single_forecaster, demo_df):
         """Save model for target_0 but the task needs more targets."""
         task = PredictTask(data_frame_name="test_data", cache_home=tmp_path)
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
 
@@ -188,7 +198,7 @@ class TestRunMissingTarget:
 class TestRunSuccess:
     """Verify PredictTask.run() succeeds when models are available."""
 
-    def test_full_round_trip(self, tmp_path):
+    def test_full_round_trip(self, tmp_path, demo_df):
         """Train with LazyTask, save models, predict with PredictTask."""
         # 1. Train and save
         lazy = LazyTask(
@@ -196,7 +206,7 @@ class TestRunSuccess:
             cache_home=tmp_path,
             predict_size=24,
         )
-        lazy.prepare_data()
+        lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
         lazy.impute()
         lazy.build_exogenous_features()
@@ -209,7 +219,7 @@ class TestRunSuccess:
             cache_home=tmp_path,
             predict_size=24,
         )
-        pred.prepare_data()
+        pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
         pred.impute()
         pred.build_exogenous_features()
@@ -222,14 +232,14 @@ class TestRunSuccess:
             assert "future_pred" in pkg
             assert len(pkg["future_pred"]) == 24
 
-    def test_results_stored_under_predict_key(self, tmp_path):
+    def test_results_stored_under_predict_key(self, tmp_path, demo_df):
         """Verify per-target results are stored in results['predict']."""
         lazy = LazyTask(
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
         )
-        lazy.prepare_data()
+        lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
         lazy.impute()
         lazy.build_exogenous_features()
@@ -241,7 +251,7 @@ class TestRunSuccess:
             cache_home=tmp_path,
             predict_size=24,
         )
-        pred.prepare_data()
+        pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
         pred.impute()
         pred.build_exogenous_features()
@@ -251,14 +261,14 @@ class TestRunSuccess:
         assert isinstance(pred.results["predict"], dict)
         assert len(pred.results["predict"]) == len(pred.config.targets)
 
-    def test_agg_results_stored(self, tmp_path):
+    def test_agg_results_stored(self, tmp_path, demo_df):
         """Verify aggregated results are stored."""
         lazy = LazyTask(
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
         )
-        lazy.prepare_data()
+        lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
         lazy.impute()
         lazy.build_exogenous_features()
@@ -270,7 +280,7 @@ class TestRunSuccess:
             cache_home=tmp_path,
             predict_size=24,
         )
-        pred.prepare_data()
+        pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
         pred.impute()
         pred.build_exogenous_features()
@@ -287,14 +297,14 @@ class TestRunSuccess:
 class TestRunTaskNameFilter:
     """Verify PredictTask.run() can filter by source task_name."""
 
-    def test_filter_by_task_name(self, tmp_path):
+    def test_filter_by_task_name(self, tmp_path, demo_df):
         """Save under 'lazy', load with task_name='lazy'."""
         lazy = LazyTask(
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
         )
-        lazy.prepare_data()
+        lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
         lazy.impute()
         lazy.build_exogenous_features()
@@ -306,21 +316,21 @@ class TestRunTaskNameFilter:
             cache_home=tmp_path,
             predict_size=24,
         )
-        pred.prepare_data()
+        pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
         pred.impute()
         pred.build_exogenous_features()
         result = pred.run(show=False, task_name="lazy")
         assert result is not None
 
-    def test_filter_by_nonexistent_task_name(self, tmp_path):
+    def test_filter_by_nonexistent_task_name(self, tmp_path, demo_df):
         """Save under 'lazy' but filter for 'optuna' → no models."""
         lazy = LazyTask(
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
         )
-        lazy.prepare_data()
+        lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
         lazy.impute()
         lazy.build_exogenous_features()
@@ -332,7 +342,7 @@ class TestRunTaskNameFilter:
             cache_home=tmp_path,
             predict_size=24,
         )
-        pred.prepare_data()
+        pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
         pred.impute()
         pred.build_exogenous_features()
@@ -348,14 +358,14 @@ class TestRunTaskNameFilter:
 class TestRunMaxAgeFilter:
     """Verify PredictTask.run() respects max_age_days."""
 
-    def test_recent_models_accepted(self, tmp_path):
+    def test_recent_models_accepted(self, tmp_path, demo_df):
         """Models saved just now should be within any reasonable age."""
         lazy = LazyTask(
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
         )
-        lazy.prepare_data()
+        lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
         lazy.impute()
         lazy.build_exogenous_features()
@@ -367,14 +377,14 @@ class TestRunMaxAgeFilter:
             cache_home=tmp_path,
             predict_size=24,
         )
-        pred.prepare_data()
+        pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
         pred.impute()
         pred.build_exogenous_features()
         result = pred.run(show=False, max_age_days=1.0)
         assert result is not None
 
-    def test_expired_models_rejected(self, tmp_path):
+    def test_expired_models_rejected(self, tmp_path, demo_df):
         """Manually create an old model file to test expiry filtering."""
         from joblib import dump
 
@@ -387,7 +397,7 @@ class TestRunMaxAgeFilter:
             cache_home=tmp_path,
             predict_size=24,
         )
-        pred.prepare_data()
+        pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
         pred.impute()
         pred.build_exogenous_features()
@@ -421,6 +431,7 @@ class TestMultiTaskDispatcher:
         mt = MultiTask(
             task="predict",
             data_frame_name="test_data",
+            data_source=_DEMO_CSV,
             cache_home=tmp_path,
         )
         mt.prepare_data()
@@ -433,6 +444,7 @@ class TestMultiTaskDispatcher:
         """MultiTask.run(task='predict') dispatches to predict logic."""
         mt = MultiTask(
             data_frame_name="test_data",
+            data_source=_DEMO_CSV,
             cache_home=tmp_path,
         )
         mt.prepare_data()
@@ -445,6 +457,7 @@ class TestMultiTaskDispatcher:
         """MultiTask.run_task_predict() directly invokes predict logic."""
         mt = MultiTask(
             data_frame_name="test_data",
+            data_source=_DEMO_CSV,
             cache_home=tmp_path,
         )
         mt.prepare_data()
@@ -457,6 +470,7 @@ class TestMultiTaskDispatcher:
         """Train via 'lazy' then predict via 'predict' using MultiTask."""
         mt = MultiTask(
             data_frame_name="demo10",
+            data_source=_DEMO_CSV,
             cache_home=tmp_path,
             predict_size=24,
         )
@@ -486,8 +500,8 @@ class TestExecutePredict:
     def test_execute_predict_is_callable(self):
         assert callable(execute_predict)
 
-    def test_execute_predict_no_models(self, predict_task):
-        predict_task.prepare_data()
+    def test_execute_predict_no_models(self, predict_task, demo_df):
+        predict_task.prepare_data(demo_data=demo_df)
         predict_task.detect_outliers()
         predict_task.impute()
         with pytest.raises(RuntimeError, match="No saved models found"):
@@ -528,13 +542,13 @@ class TestPredictionPackage:
     """Verify the prediction package returned by PredictTask contains
     the expected keys with correct types."""
 
-    def test_package_keys(self, tmp_path):
+    def test_package_keys(self, tmp_path, demo_df):
         lazy = LazyTask(
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
         )
-        lazy.prepare_data()
+        lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
         lazy.impute()
         lazy.build_exogenous_features()
@@ -546,7 +560,7 @@ class TestPredictionPackage:
             cache_home=tmp_path,
             predict_size=24,
         )
-        pred.prepare_data()
+        pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
         pred.impute()
         pred.build_exogenous_features()
@@ -560,13 +574,13 @@ class TestPredictionPackage:
             assert "metrics_train" in pkg
             assert "validation_passed" in pkg
 
-    def test_future_pred_length(self, tmp_path):
+    def test_future_pred_length(self, tmp_path, demo_df):
         lazy = LazyTask(
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
         )
-        lazy.prepare_data()
+        lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
         lazy.impute()
         lazy.build_exogenous_features()
@@ -578,7 +592,7 @@ class TestPredictionPackage:
             cache_home=tmp_path,
             predict_size=24,
         )
-        pred.prepare_data()
+        pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
         pred.impute()
         pred.build_exogenous_features()

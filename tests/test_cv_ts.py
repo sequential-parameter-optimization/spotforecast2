@@ -40,7 +40,13 @@ _N = 2000  # two-thousand hourly observations
 
 
 def _make_task(tmp_path: Path, **kwargs) -> LazyTask:
-    """Return a LazyTask whose config.end_train_ts is set without loading data."""
+    """Return a LazyTask whose config.end_train_ts is set without loading data.
+
+    val_days is pinned to 7 so that DELTA_VAL = 7 * number_folds days, keeping
+    the test series length requirements manageable.  The val_days parameter
+    itself is exercised in test_train_val_days.py.
+    """
+    kwargs.setdefault("val_days", 7)
     t = LazyTask(data_frame_name="test_data", cache_home=tmp_path, **kwargs)
     t.config.end_train_ts = _END_TRAIN
     return t

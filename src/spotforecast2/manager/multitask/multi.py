@@ -31,32 +31,38 @@ from spotforecast2.manager.multitask.spotoptim import (
 class MultiTask(BaseTask):
     """Orchestrates a multi-target time-series forecasting pipeline.
 
+    Data must be provided either as a pandas DataFrame via ``dataframe``
+    or as a full CSV file path via ``data_source``.  If both are given,
+    the DataFrame takes precedence and the CSV path is ignored.  If
+    neither is provided, ``prepare_data`` raises ``ValueError``.
+
     The typical usage flow is:
 
     1. Instantiate with configuration arguments.
-    2. Call method `prepare_data` to load, resample, and validate data.
-    3. Call method `detect_outliers` to apply hard bounds and IsolationForest.
-    4. Call method `impute` to fill gaps.
-    5. Call method `build_exogenous_features` to construct weather / calendar /
+    2. Call method ``prepare_data`` to load, resample, and validate data.
+    3. Call method ``detect_outliers`` to apply hard bounds and IsolationForest.
+    4. Call method ``impute`` to fill gaps.
+    5. Call method ``build_exogenous_features`` to construct weather / calendar /
        day-night / holiday covariates.
-    6. Call method `run` (or individual ``run_task_*`` methods) to train,
+    6. Call method ``run`` (or individual ``run_task_*`` methods) to train,
        predict, and aggregate.
 
     Args:
         task: Pipeline task mode — ``"lazy"``, ``"optuna"``,
             ``"spotoptim"``, ``"predict"``, or ``"clean"``.
             Defaults to ``"lazy"``.
-        dataframe: Optional pre-loaded input DataFrame.  When supplied,
-            method `prepare_data` uses this DataFrame directly instead of
+        dataframe: Pre-loaded input DataFrame.  When supplied,
+            ``prepare_data`` uses this DataFrame directly instead of
             reading from a CSV file.  The DataFrame must contain a
             datetime column matching ``index_name`` plus at least one
-            numeric target column.  ``None`` falls back to the default
-            CSV-loading behaviour.
-        data_frame_name: Active dataset identifier (e.g. ``"demo10"``).
-        data_source: Input CSV filename (only used when ``dataframe`` is
-            ``None``).
-        data_test: Test CSV filename.
-        data_home: Path to the data directory.
+            numeric target column.
+        data_frame_name: Identifier for the active dataset, used for
+            cache-directory naming and model file naming.
+        data_source: Full path to the input CSV file.  Only used when
+            ``dataframe`` is ``None``.
+        data_test: Full path to the test CSV file.  ``None`` means
+            no test data.
+        data_home: Optional path to a data directory.
         cache_data: Whether to cache intermediate data to disk.
         cache_home: Cache directory path.
         agg_weights: Per-target aggregation weights.
@@ -70,38 +76,22 @@ class MultiTask(BaseTask):
         n_trials_optuna: Number of Optuna Bayesian-search trials.
         n_trials_spotoptim: Number of SpotOptim surrogate-search trials.
         n_initial_spotoptim: Initial random evaluations for SpotOptim.
+        auto_save_models: Whether to automatically save fitted models to
+            disk after each training run.  Defaults to ``True`` so that
+            saved models are immediately available for the predict task
+            without any manual call to ``save_models``.
+        train_days: Length of the training window in days.  Controls
+            ``TRAIN_SIZE`` and ``config.train_size``.  Defaults to
+            ``365 * 2`` (two years).
+        val_days: Length of each validation fold in days.  The total
+            validation span is ``val_days * number_folds``.  Controls
+            ``DELTA_VAL`` and ``config.delta_val``.  Defaults to
+            ``7 * 10`` (ten weeks).
         log_level: Logging level for the pipeline logger.
         config_overrides: Extra keyword arguments forwarded to
-            class `~spotforecast2_safe.manager.configurator.config_multi.ConfigMulti`.
+            ConfigMulti.
 
     Examples:
-        ```{python}
-        from spotforecast2.manager.multitask import MultiTask
-
-        mt = MultiTask(
-            task="lazy",
-            data_frame_name="demo10",
-            predict_size=24,
-            n_trials_optuna=5,
-        )
-        print(f"Task: {mt.TASK}")
-        print(f"Predict size: {mt.config.predict_size}")
-        print(f"Data source: {mt.data_source}")
-        ```
-
-        ```{python}
-        from spotforecast2.manager.multitask import MultiTask
-
-        mt = MultiTask(
-            task="optuna",
-            agg_weights=[1.0, -1.0, 0.5],
-            contamination=0.05,
-        )
-        print(f"Agg weights: {mt.config.agg_weights}")
-        print(f"Contamination: {mt.config.contamination}")
-        print(f"Imputation: {mt.imputation_method}")
-        ```
-
         ```{python}
         import pandas as pd
         from spotforecast2.manager.multitask import MultiTask
@@ -114,6 +104,16 @@ class MultiTask(BaseTask):
         print(f"DataFrame stored: {mt._dataframe is not None}")
         print(f"Task: {mt.TASK}")
         ```
+
+        ```{python}
+        from spotforecast2.manager.multitask import MultiTask
+        from spotforecast2_safe.data.fetch_data import get_package_data_home
+
+        csv_path = str(get_package_data_home() / "demo10.csv")
+        mt = MultiTask(data_source=csv_path, predict_size=24)
+        mt.prepare_data()
+        print(f"Pipeline shape: {mt.df_pipeline.shape}")
+        ```
     """
 
     def __init__(
@@ -122,8 +122,8 @@ class MultiTask(BaseTask):
         task: str = "lazy",
         dataframe: Optional[pd.DataFrame] = None,
         data_frame_name: str = "demo10",
-        data_source: str = "demo10.csv",
-        data_test: str = "demo11.csv",
+        data_source: Optional[str] = None,
+        data_test: Optional[str] = None,
         data_home: Optional[Path] = None,
         cache_data: bool = True,
         cache_home: Optional[Path] = None,
@@ -138,13 +138,16 @@ class MultiTask(BaseTask):
         n_trials_optuna: int = 15,
         n_trials_spotoptim: int = 10,
         n_initial_spotoptim: int = 5,
+        auto_save_models: bool = True,
+        train_days: int = 365 * 2,
+        val_days: int = 7 * 2,
         log_level: int = logging.INFO,
         **config_overrides: Any,
     ) -> None:
         # Set _task_name before super().__init__ so self.TASK is correct
         self._task_name = task
-        self._dataframe = dataframe
         super().__init__(
+            dataframe=dataframe,
             data_frame_name=data_frame_name,
             data_source=data_source,
             data_test=data_test,
@@ -162,61 +165,19 @@ class MultiTask(BaseTask):
             n_trials_optuna=n_trials_optuna,
             n_trials_spotoptim=n_trials_spotoptim,
             n_initial_spotoptim=n_initial_spotoptim,
+            auto_save_models=auto_save_models,
+            train_days=train_days,
+            val_days=val_days,
             log_level=log_level,
             **config_overrides,
         )
-
-    # ------------------------------------------------------------------
-    # Data preparation
-    # ------------------------------------------------------------------
-
-    def prepare_data(
-        self,
-        demo_data: Optional[pd.DataFrame] = None,
-        df_test: Optional[pd.DataFrame] = None,
-    ) -> "MultiTask":
-        """Load and prepare the pipeline data.
-
-        When a ``dataframe`` was passed to the constructor, it is used as the
-        input data source instead of reading a CSV file.  An explicit
-        ``demo_data`` argument always takes precedence over the constructor
-        ``dataframe``.
-
-        Args:
-            demo_data: Pre-loaded input DataFrame.  Overrides the constructor
-                ``dataframe`` when provided.  ``None`` falls back first to the
-                constructor ``dataframe``, then to CSV loading.
-            df_test: Pre-loaded test DataFrame.  ``None`` triggers automatic
-                loading from ``data_home / data_test``.
-
-        Returns:
-            ``self`` (for method chaining).
-
-        Examples:
-            ```{python}
-            import pandas as pd
-            from spotforecast2.manager.multitask import MultiTask
-            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
-
-            data_home = get_package_data_home()
-            df = fetch_data(filename=str(data_home / "demo10.csv"))
-
-            mt = MultiTask(dataframe=df, predict_size=24)
-            mt.prepare_data()
-            print(f"Pipeline shape: {mt.df_pipeline.shape}")
-            print(f"Targets: {mt.config.targets}")
-            ```
-        """
-        if demo_data is None and self._dataframe is not None:
-            demo_data = self._dataframe
-        return super().prepare_data(demo_data=demo_data, df_test=df_test)
 
     # ------------------------------------------------------------------
     # Task-specific convenience methods
     # ------------------------------------------------------------------
 
     def run_task_lazy(self, show: bool = True) -> Dict[str, Any]:
-        """Task 1 — Lazy Fitting with default LightGBM parameters.
+        """Lazy Fitting with default LightGBM parameters.
 
         Args:
             show: If ``True``, display prediction figures.
@@ -232,7 +193,7 @@ class MultiTask(BaseTask):
         search_space: Optional[Callable] = None,
         show: bool = True,
     ) -> Dict[str, Any]:
-        """Task 3 — Optuna Bayesian hyperparameter tuning.
+        """Optuna Bayesian hyperparameter tuning.
 
         Args:
             search_space: Callable ``(trial) -> dict``.
@@ -249,7 +210,7 @@ class MultiTask(BaseTask):
         search_space: Optional[Dict[str, Any]] = None,
         show: bool = True,
     ) -> Dict[str, Any]:
-        """Task 4 — SpotOptim surrogate-model Bayesian tuning.
+        """SpotOptim surrogate-model Bayesian tuning.
 
         Args:
             search_space: Dictionary defining the SpotOptim search space.
@@ -267,7 +228,7 @@ class MultiTask(BaseTask):
         task_name: Optional[str] = None,
         max_age_days: Optional[float] = None,
     ) -> Dict[str, Any]:
-        """Task 5 — Predict-only using previously saved models.
+        """Predict-only using previously saved models.
 
         Loads fitted models from the cache directory and produces
         predictions without any training.  Raises ``RuntimeError``

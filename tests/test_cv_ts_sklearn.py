@@ -34,7 +34,13 @@ _N = 3000  # three-thousand hourly observations — comfortably more than any fo
 
 
 def _make_task(tmp_path, **kwargs) -> LazyTask:
-    """Return a LazyTask with ``end_train_ts`` set to ``_END_TRAIN``."""
+    """Return a LazyTask with ``end_train_ts`` set to ``_END_TRAIN``.
+
+    val_days is pinned to 7 so that DELTA_VAL = 7 * number_folds days, keeping
+    the test series length requirements manageable.  The val_days parameter
+    itself is exercised in test_train_val_days.py.
+    """
+    kwargs.setdefault("val_days", 7)
     t = LazyTask(data_frame_name="test_data", cache_home=tmp_path, **kwargs)
     t.config.end_train_ts = _END_TRAIN
     return t
