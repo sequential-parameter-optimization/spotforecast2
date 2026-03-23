@@ -455,6 +455,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.PredictTask.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">PredictTask</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../docs/reference/manager.multitask.MultiTask.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">MultiTask</span></a>
   </div>
@@ -824,7 +830,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>manager.multitask.agg_predictor</h1>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.agg_predictor(results, targets, weights)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Aggregate per-target prediction packages into a weighted forecast.</p>
-<p>Combines future predictions, training predictions, and training actuals from per-target prediction packages into an aggregated package compatible with <code>PredictionFigure</code>. This is a module-level convenience function; the same logic is available as :meth:<code>BaseTask.agg_predictor</code>.</p>
+<p>Combines future predictions, training predictions, and training actuals from per-target prediction packages into an aggregated package compatible with <code>PredictionFigure</code>. This is a module-level convenience function; the same logic is available as BaseTask.agg_predictor.</p>
 <section id="parameters" class="level2 doc-section doc-section-parameters">
 <h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
 <table class="caption-top table">
@@ -840,7 +846,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td>results</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]]</td>
-<td>Mapping of target name to prediction package (as returned by :func:<code>~spotforecast2_safe.manager.predictor.build_prediction_package</code>).</td>
+<td>Mapping of target name to prediction package (as returned by build_prediction_package).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
