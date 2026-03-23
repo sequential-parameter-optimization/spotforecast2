@@ -1,9 +1,9 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Documentation consistency tests for the four pipeline tasks.
+"""Documentation consistency tests for the five pipeline tasks.
 
-Ensures that all task classes (lazy, optuna, spotoptim, predict) are
+Ensures that all task classes (lazy, optuna, spotoptim, predict, clean) are
 consistently referenced across docstrings, __init__.py exports,
 quartodoc configuration, and multi.py dispatcher.
 """
@@ -18,8 +18,8 @@ import pytest
 # Constants
 # ---------------------------------------------------------------------------
 
-TASK_CLASSES = ["LazyTask", "OptunaTask", "SpotOptimTask", "PredictTask"]
-TASK_KEYS = ["lazy", "optuna", "spotoptim", "predict"]
+TASK_CLASSES = ["LazyTask", "OptunaTask", "SpotOptimTask", "PredictTask", "CleanTask"]
+TASK_KEYS = ["lazy", "optuna", "spotoptim", "predict", "clean"]
 ALL_EXPORTED_CLASSES = TASK_CLASSES + ["BaseTask", "MultiTask", "agg_predictor"]
 
 MULTITASK_PKG = "spotforecast2.manager.multitask"
@@ -132,6 +132,7 @@ class TestMultiTaskDispatcher:
             "optuna": "run_task_optuna",
             "spotoptim": "run_task_spotoptim",
             "predict": "run_task_predict",
+            "clean": "run_task_clean",
         }
         assert hasattr(
             mt, dispatch[task_key]
@@ -206,6 +207,7 @@ class TestNoForbiddenFormatting:
             "optuna.py",
             "spotoptim.py",
             "predict.py",
+            "clean.py",
             "multi.py",
         ],
     )
@@ -273,6 +275,7 @@ class TestTaskHierarchy:
             ("OptunaTask", "optuna"),
             ("SpotOptimTask", "spotoptim"),
             ("PredictTask", "predict"),
+            ("CleanTask", "clean"),
         ],
     )
     def test_task_name_attribute(self, cls_name, expected_task_name):

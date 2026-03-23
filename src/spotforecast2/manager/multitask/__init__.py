@@ -11,6 +11,7 @@ forecasting pipelines:
 - OptunaTask — Optuna Bayesian hyperparameter tuning.
 - SpotOptimTask — SpotOptim surrogate-model tuning.
 - PredictTask — predict-only using saved models.
+- CleanTask — removes all cached data from the pipeline cache directory.
 - MultiTask — dispatcher that selects one of the tasks
   via a ``task`` parameter.
 
@@ -20,6 +21,7 @@ All classes are importable directly from ``spotforecast2.manager.multitask``.
 """
 
 from spotforecast2.manager.multitask.base import BaseTask, agg_predictor
+from spotforecast2.manager.multitask.clean import CleanTask
 from spotforecast2.manager.multitask.lazy import LazyTask
 from spotforecast2.manager.multitask.optuna import OptunaTask
 from spotforecast2.manager.multitask.predict import PredictTask
@@ -28,6 +30,7 @@ from spotforecast2.manager.multitask.multi import MultiTask
 
 __all__ = [
     "BaseTask",
+    "CleanTask",
     "LazyTask",
     "OptunaTask",
     "PredictTask",
