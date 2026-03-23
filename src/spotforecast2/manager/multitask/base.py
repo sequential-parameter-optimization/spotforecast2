@@ -3,12 +3,12 @@
 
 """Base class for multi-target forecasting pipeline tasks.
 
-Provides  class `BaseTask`, which contains all shared data-preparation,
+Provides BaseTask, which contains all shared data-preparation,
 outlier-detection, imputation, exogenous-feature engineering, forecaster
 creation, prediction-packaging, and aggregation logic.  Task-specific
-subclasses (class `~.lazy.LazyTask`, class `~.optuna.OptunaTask`,
-class `~.spotoptim.SpotOptimTask`)
-inherit from ``BaseTask`` and implement method `run`.
+subclasses (LazyTask, OptunaTask, SpotOptimTask) inherit from BaseTask
+and implement the run method.  PredictTask also inherits from BaseTask
+but skips training entirely, loading saved models instead.
 """
 
 import json
@@ -79,12 +79,12 @@ def agg_predictor(
     Combines future predictions, training predictions, and training actuals
     from per-target prediction packages into an aggregated package compatible
     with ``PredictionFigure``.  This is a module-level convenience function;
-    the same logic is available as :meth:`BaseTask.agg_predictor`.
+    the same logic is available as BaseTask.agg_predictor.
 
     Args:
         results: Mapping of target name to prediction package (as returned
             by
-            :func:`~spotforecast2_safe.manager.predictor.build_prediction_package`).
+            build_prediction_package).
         targets: Ordered list of target names to aggregate.
         weights: Per-target aggregation weights aligned with ``targets``.
 
@@ -136,8 +136,8 @@ class BaseTask:
 
     ``BaseTask`` encapsulates the data-preparation pipeline (steps 1–7)
     and all helper methods shared across the four task modes (lazy,
-    training, optuna, spotoptim).  Subclasses implement method `run` with
-    task-specific training / tuning logic.
+    optuna, spotoptim, predict).  Subclasses implement the run method with
+    task-specific training, tuning, or prediction logic.
 
     Args:
         data_frame_name: Active dataset identifier (e.g. ``"demo10"``).
@@ -160,7 +160,7 @@ class BaseTask:
         n_initial_spotoptim: Initial random evaluations for SpotOptim.
         log_level: Logging level for the pipeline logger.
         config_overrides: Extra keyword arguments forwarded to
-            class `~spotforecast2_safe.manager.configurator.config_multi.ConfigMulti`.
+            ConfigMulti.
 
     Attributes:
         config (ConfigMulti): Centralised pipeline configuration.
@@ -251,7 +251,7 @@ class BaseTask:
     # ------------------------------------------------------------------
 
     def _build_config(self, **overrides: Any) -> ConfigMulti:
-        """Create a  class `ConfigMulti` from the stored pipeline arguments."""
+        """Create a ConfigMulti from the stored pipeline arguments."""
         kwargs: Dict[str, Any] = {
             "predict_size": self.predict_size,
             "contamination": self.contamination,
@@ -582,17 +582,17 @@ class BaseTask:
     # ------------------------------------------------------------------
 
     def cv_ts(self, y_train: pd.Series) -> TimeSeriesFold:
-        """Build a :class:`~spotforecast2.model_selection.split_ts_cv.TimeSeriesFold` for cross-validation.
+        """Build a TimeSeriesFold for cross-validation.
 
         Constructs the cross-validation splitter used by all tuning tasks
-        (class `~.optuna.OptunaTask`, class `~.spotoptim.SpotOptimTask`).
+        (OptunaTask, SpotOptimTask).
 
-        Internally uses :class:`sklearn.model_selection.TimeSeriesSplit` to
+        Internally uses sklearn.model_selection.TimeSeriesSplit to
         compute split boundaries that respect temporal ordering and avoid
         data leakage between folds.  Classical cross-validation techniques
         such as ``KFold`` assume i.i.d. samples and yield unreliable
         estimates on time series data;
-        :class:`sklearn.model_selection.TimeSeriesSplit` instead ensures
+        sklearn.model_selection.TimeSeriesSplit instead ensures
         every test fold consists only of observations that come *after* the
         corresponding training observations.
 
@@ -605,7 +605,7 @@ class BaseTask:
         Args:
             y_train: Training time series for the current target.  Used both
                 to determine the validation boundary and as the sequence passed
-                to :meth:`sklearn.model_selection.TimeSeriesSplit.split` to
+                to sklearn.model_selection.TimeSeriesSplit.split to
                 derive ``initial_train_size``.
 
         Returns:
@@ -660,7 +660,7 @@ class BaseTask:
         )
 
     def create_forecaster(self) -> Any:
-        """Create a fresh  class `ForecasterRecursive` with shared configuration.
+        """Create a fresh ForecasterRecursive with shared configuration.
 
         Returns:
             A new, unfitted ``ForecasterRecursive`` instance.
@@ -1103,14 +1103,14 @@ class BaseTask:
     ) -> Dict[str, Any]:
         """Aggregate per-target prediction packages into a weighted forecast.
 
-        Delegates to the module-level :func:`agg_predictor` function.
+        Delegates to the module-level agg_predictor function.
         Available as an instance method so that subclasses can override the
         aggregation strategy when needed.
 
         Args:
             results: Mapping of target name to prediction package (as
                 returned by
-                :func:`~spotforecast2_safe.manager.predictor.build_prediction_package`).
+                build_prediction_package).
             targets: Ordered list of target names to include.
             weights: Per-target aggregation weights aligned with ``targets``.
 
@@ -1242,5 +1242,5 @@ class BaseTask:
         """
         raise NotImplementedError(
             f"{self.__class__.__name__} must implement run(). "
-            "Use LazyTask, OptunaTask, or SpotOptimTask."
+            "Use LazyTask, OptunaTask, SpotOptimTask, or PredictTask."
         )

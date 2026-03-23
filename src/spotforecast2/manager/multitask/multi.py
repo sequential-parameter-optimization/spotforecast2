@@ -3,10 +3,9 @@
 
 """Backward-compatible MultiTask dispatcher.
 
-class `MultiTask` preserves the original API where a single ``task``
+MultiTask preserves the original API where a single ``task``
 parameter selects which pipeline mode to run.  It inherits from
-class `~.base.BaseTask` and delegates ``run()`` to the appropriate
-task-specific function.
+BaseTask and delegates run() to the appropriate task-specific function.
 """
 
 import logging
@@ -44,7 +43,7 @@ class MultiTask(BaseTask):
 
     Args:
         task: Pipeline task mode — ``"lazy"``, ``"optuna"``,
-            or ``"spotoptim"``. Defaults to ``"lazy"``.
+            ``"spotoptim"``, or ``"predict"``. Defaults to ``"lazy"``.
         dataframe: Optional pre-loaded input DataFrame.  When supplied,
             method `prepare_data` uses this DataFrame directly instead of
             reading from a CSV file.  The DataFrame must contain a
