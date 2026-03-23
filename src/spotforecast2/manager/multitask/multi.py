@@ -15,6 +15,7 @@ from typing import Any, Callable, Dict, List, Optional
 import pandas as pd
 
 from spotforecast2.manager.multitask.base import BaseTask
+from spotforecast2.manager.multitask.clean import execute_clean
 from spotforecast2.manager.multitask.lazy import execute_lazy
 from spotforecast2.manager.multitask.optuna import (
     OptunaTask,
@@ -43,7 +44,8 @@ class MultiTask(BaseTask):
 
     Args:
         task: Pipeline task mode — ``"lazy"``, ``"optuna"``,
-            ``"spotoptim"``, or ``"predict"``. Defaults to ``"lazy"``.
+            ``"spotoptim"``, ``"predict"``, or ``"clean"``.
+            Defaults to ``"lazy"``.
         dataframe: Optional pre-loaded input DataFrame.  When supplied,
             method `prepare_data` uses this DataFrame directly instead of
             reading from a CSV file.  The DataFrame must contain a
@@ -290,6 +292,31 @@ class MultiTask(BaseTask):
             self, show=show, task_name=task_name, max_age_days=max_age_days
         )
 
+    def run_task_clean(
+        self,
+        show: bool = True,
+        dry_run: bool = False,
+        cache_home: Optional[Path] = None,
+    ) -> Dict[str, Any]:
+        """Remove all cached data from the pipeline cache directory.
+
+        Does not require prepare_data() to be called first.
+
+        Args:
+            show: Accepted for API consistency.  Not used by the clean task.
+            dry_run: If ``True``, report what would be deleted without
+                actually removing anything.
+            cache_home: Override the directory to clean.  ``None`` uses
+                the cache directory configured on this instance.
+
+        Returns:
+            Dict with keys status, cache_dir, and deleted_items.
+
+        Raises:
+            RuntimeError: If the cache directory cannot be removed.
+        """
+        return execute_clean(self, cache_home=cache_home, dry_run=dry_run)
+
     # ------------------------------------------------------------------
     # Run dispatcher
     # ------------------------------------------------------------------
@@ -312,8 +339,9 @@ class MultiTask(BaseTask):
 
         Raises:
             ValueError: If ``task`` is not one of ``"lazy"``,
-                ``"optuna"``, ``"spotoptim"``, ``"predict"``.
-            RuntimeError: If method `prepare_data` has not been called.
+                ``"optuna"``, ``"spotoptim"``, ``"predict"``, ``"clean"``.
+            RuntimeError: If method `prepare_data` has not been called
+                (for training and prediction tasks).
         """
         task = task or self.TASK
         dispatch = {
@@ -321,6 +349,7 @@ class MultiTask(BaseTask):
             "optuna": self.run_task_optuna,
             "spotoptim": self.run_task_spotoptim,
             "predict": self.run_task_predict,
+            "clean": self.run_task_clean,
         }
         if task not in dispatch:
             raise ValueError(

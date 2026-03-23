@@ -10,6 +10,7 @@ and full-featured forecasting model classes with Bayesian tuning and SHAP.
 
 from spotforecast2.manager.multitask import (
     BaseTask,
+    CleanTask,
     LazyTask,
     MultiTask,
     OptunaTask,
@@ -35,6 +36,7 @@ from spotforecast2_safe.manager.configurator import ConfigEntsoe
 
 __all__ = [
     "BaseTask",
+    "CleanTask",
     "ConfigEntsoe",
     "ForecasterRecursiveLGBMFull",
     "ForecasterRecursiveModelFull",

@@ -135,8 +135,8 @@ class BaseTask:
     """Shared base for all multi-target forecasting pipeline tasks.
 
     ``BaseTask`` encapsulates the data-preparation pipeline (steps 1–7)
-    and all helper methods shared across the four task modes (lazy,
-    optuna, spotoptim, predict).  Subclasses implement the run method with
+    and all helper methods shared across the five task modes (lazy,
+    optuna, spotoptim, predict, clean).  Subclasses implement the run method with
     task-specific training, tuning, or prediction logic.
 
     Args:
@@ -1248,5 +1248,5 @@ class BaseTask:
         """
         raise NotImplementedError(
             f"{self.__class__.__name__} must implement run(). "
-            "Use LazyTask, OptunaTask, SpotOptimTask, or PredictTask."
+            "Use LazyTask, OptunaTask, SpotOptimTask, PredictTask, or CleanTask."
         )

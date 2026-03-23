@@ -92,6 +92,8 @@ website:
                 file: docs/reference/manager.multitask.SpotOptimTask.qmd
               - text: "PredictTask"
                 file: docs/reference/manager.multitask.PredictTask.qmd
+              - text: "CleanTask"
+                file: docs/reference/manager.multitask.CleanTask.qmd
               - text: "MultiTask"
                 file: docs/reference/manager.multitask.MultiTask.qmd
           - section: "Model Selection"
@@ -265,6 +267,7 @@ quartodoc:
         - manager.multitask.OptunaTask
         - manager.multitask.SpotOptimTask
         - manager.multitask.PredictTask
+        - manager.multitask.CleanTask
         - manager.multitask.MultiTask
 
     - title: "Forecaster"
