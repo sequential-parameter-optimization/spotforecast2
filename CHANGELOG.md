@@ -1,3 +1,10 @@
+## [0.14.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.13.2...v0.14.0) (2026-03-22)
+
+### Features
+
+* df can be passed ([6f87428](https://github.com/sequential-parameter-optimization/spotforecast2/commit/6f87428747c68e9b98140a7ebac5ce8d130835ac))
+* tuning saved and loaded ([946760b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/946760bb308f69e67b2417532419960e6c3c3fce))
+
 ## [0.14.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.14.0-rc.1...v0.14.0-rc.2) (2026-03-22)
 
 ### Features
