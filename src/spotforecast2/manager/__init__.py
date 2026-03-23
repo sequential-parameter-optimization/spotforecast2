@@ -13,6 +13,7 @@ from spotforecast2.manager.multitask import (
     LazyTask,
     MultiTask,
     OptunaTask,
+    PredictTask,
     SpotOptimTask,
     agg_predictor,
 )
@@ -41,6 +42,7 @@ __all__ = [
     "LazyTask",
     "MultiTask",
     "OptunaTask",
+    "PredictTask",
     "SpotOptimTask",
     "agg_predictor",
     "make_plot",
