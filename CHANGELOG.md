@@ -1,3 +1,9 @@
+## [0.16.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.16.0-rc.1...v0.16.0-rc.2) (2026-03-23)
+
+### Features
+
+* auto_save TRUE ([df3ac11](https://github.com/sequential-parameter-optimization/spotforecast2/commit/df3ac1101ad072671b49083655205e0dda6bf0f1))
+
 ## [0.16.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.15.0...v0.16.0-rc.1) (2026-03-23)
 
 ### Features
