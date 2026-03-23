@@ -21,11 +21,7 @@ import pandas as pd
 from astral import LocationInfo
 from lightgbm import LGBMRegressor
 
-from spotforecast2_safe.data.fetch_data import (
-    fetch_data,
-    get_cache_home,
-    get_package_data_home,
-)
+from spotforecast2_safe.data.fetch_data import get_cache_home
 from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
 from spotforecast2_safe.manager.exo.calendar import (
     get_calendar_features,
@@ -65,6 +61,8 @@ from spotforecast2.manager.plotter import PredictionFigure, plot_with_outliers
 from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.preprocessing.imputation import apply_imputation
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2_safe.data.fetch_data import fetch_data
+
 
 logger = logging.getLogger(__name__)
 
@@ -140,30 +138,64 @@ class BaseTask:
     task-specific training, tuning, or prediction logic.
 
     Args:
-        data_frame_name: Active dataset identifier (e.g. ``"demo10"``).
-        data_source: Input CSV filename.
-        data_test: Test CSV filename.
-        data_home: Path to the data directory.  ``None`` uses the package
-            bundled data via ``get_package_data_home()``.
-        cache_data: Whether to cache intermediate data to disk.
-        cache_home: Cache directory path.
-        agg_weights: Per-target aggregation weights.
-        index_name: Datetime column name in the raw CSV.
-        number_folds: Number of validation folds for hyperparameter tuning.
-        predict_size: Forecast horizon in hours.
-        bounds: Per-column hard outlier bounds ``(lower, upper)``.
-        contamination: IsolationForest contamination fraction.
-        imputation_method: Gap-filling strategy — ``"weighted"`` or ``"linear"``.
-        use_exogenous_features: Whether to build exogenous features.
-        n_trials_optuna: Number of Optuna Bayesian-search trials.
-        n_trials_spotoptim: Number of SpotOptim surrogate-search trials.
-        n_initial_spotoptim: Initial random evaluations for SpotOptim.
-        auto_save_models: Whether to automatically save fitted models to
+        dataframe:
+            Pre-loaded input DataFrame.  When supplied,
+            ``prepare_data`` uses this DataFrame directly instead of
+            reading from a CSV file.
+        data_frame_name:
+            Identifier for the active dataset, used for
+            cache-directory naming and model file naming.
+        data_source:
+            Full path to the input CSV file.  Only used when
+            ``dataframe`` is ``None``.
+        data_test:
+            Full path to the test CSV file.  ``None`` means
+            no test data.
+        data_home:
+            Optional path to a data directory.  ``None`` means
+            not specified.
+        cache_data:
+            Whether to cache intermediate data to disk.
+        cache_home:
+            Cache directory path.
+        agg_weights:
+            Per-target aggregation weights.
+        index_name:
+            Datetime column name in the raw CSV.
+        number_folds:
+            Number of validation folds for hyperparameter tuning.
+        predict_size:
+            Forecast horizon in hours.
+        bounds:
+            Per-column hard outlier bounds ``(lower, upper)``.
+        contamination:
+            IsolationForest contamination fraction.
+        imputation_method:
+            Gap-filling strategy — ``"weighted"`` or ``"linear"``.
+        use_exogenous_features:
+            Whether to build exogenous features.
+        train_days:
+            Number of days in the training window.
+        val_days:
+            Number of days in each validation fold.
+            Note that the total validation window is ``val_days * number_folds``.
+            Each fold is a contiguous block of ``val_days`` days, and folds are
+            non-overlapping and sequential immediately after the training window.
+        n_trials_optuna:
+            Number of Optuna Bayesian-search trials.
+        n_trials_spotoptim:
+            Number of SpotOptim surrogate-search trials.
+        n_initial_spotoptim:
+            Initial random evaluations for SpotOptim.
+        auto_save_models:
+            Whether to automatically save fitted models to
             disk after each training run.  Defaults to ``True`` so that
             saved models are immediately available for PredictTask without
             any manual call to save_models().
-        log_level: Logging level for the pipeline logger.
-        config_overrides: Extra keyword arguments forwarded to
+        log_level:
+            Logging level for the pipeline logger.
+        config_overrides:
+            Extra keyword arguments forwarded to
             ConfigMulti.
 
     Attributes:
@@ -177,6 +209,8 @@ class BaseTask:
         exo_pred (pd.DataFrame): Exogenous covariates for the forecast horizon.
         results (Dict[str, Dict]): Per-task mapping of target name to
             prediction package.
+        agg_results (Dict): Mapping of task name to aggregated prediction
+            package.
     """
 
     _task_name: str = "lazy"
@@ -184,9 +218,10 @@ class BaseTask:
     def __init__(
         self,
         *,
+        dataframe: Optional[pd.DataFrame] = None,
         data_frame_name: str = "demo10",
-        data_source: str = "demo10.csv",
-        data_test: str = "demo11.csv",
+        data_source: Optional[str] = None,
+        data_test: Optional[str] = None,
         data_home: Optional[Path] = None,
         cache_data: bool = True,
         cache_home: Optional[Path] = None,
@@ -202,6 +237,8 @@ class BaseTask:
         n_trials_spotoptim: int = 10,
         n_initial_spotoptim: int = 5,
         auto_save_models: bool = True,
+        train_days: int = 365 * 2,
+        val_days: int = 7 * 2,
         log_level: int = logging.INFO,
         **config_overrides: Any,
     ) -> None:
@@ -209,10 +246,11 @@ class BaseTask:
         self.TASK = self._task_name
 
         # Store constructor arguments as instance attributes
+        self._dataframe = dataframe
         self.data_frame_name = data_frame_name
         self.data_source = data_source
         self.data_test = data_test
-        self.data_home = data_home if data_home is not None else get_package_data_home()
+        self.data_home = data_home
         self.cache_data = cache_data
         self.cache_home = cache_home
         self.agg_weights = agg_weights
@@ -227,14 +265,15 @@ class BaseTask:
         self.n_trials_spotoptim = n_trials_spotoptim
         self.n_initial_spotoptim = n_initial_spotoptim
         self.auto_save_models = auto_save_models
-
+        self.train_days = train_days
+        self.val_days = val_days
         # Logger
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self.logger.setLevel(log_level)
 
         # Derived constants
-        self.TRAIN_SIZE = pd.Timedelta(days=2 * 365)
-        self.DELTA_VAL = pd.Timedelta(days=7 * number_folds)
+        self.TRAIN_SIZE = pd.Timedelta(days=self.train_days)
+        self.DELTA_VAL = pd.Timedelta(days=self.val_days * self.number_folds)
 
         # Pipeline state (populated by methods)
         self.df_pipeline: Optional[pd.DataFrame] = None
@@ -287,6 +326,57 @@ class BaseTask:
     # Step 1 — Data Preparation
     # ------------------------------------------------------------------
 
+    def _resolve_data(
+        self,
+        demo_data: Optional[pd.DataFrame] = None,
+        df_test: Optional[pd.DataFrame] = None,
+    ) -> tuple:
+        """Resolve training and test data from multiple sources.
+
+        Resolution order for training data:
+
+        1. An explicit ``demo_data`` argument takes highest precedence.
+        2. The constructor ``dataframe``.
+        3. The constructor ``data_source`` CSV path (loaded via
+           ``fetch_data``).
+        4. If none of the above provides data, ``ValueError`` is raised.
+
+        Resolution order for test data:
+
+        1. An explicit ``df_test`` argument takes highest precedence.
+        2. The constructor ``data_test`` CSV path (loaded via
+           ``fetch_data``).
+
+        Args:
+            demo_data: Pre-loaded input DataFrame.  Overrides the
+                constructor ``dataframe`` when provided.
+            df_test: Pre-loaded test DataFrame.  ``None`` means no test
+                data unless ``data_test`` was set on the constructor.
+
+        Returns:
+            Tuple of ``(demo_data, df_test)``.
+
+        Raises:
+            ValueError: If no data source is available.
+        """
+        if demo_data is not None:
+            pass  # explicit argument wins
+        elif self._dataframe is not None:
+            demo_data = self._dataframe
+        elif self.data_source is not None:
+            demo_data = fetch_data(filename=self.data_source)
+        else:
+            raise ValueError(
+                "No data source provided. Pass a DataFrame via the "
+                "'dataframe' constructor argument, a CSV path via "
+                "'data_source', or pass 'demo_data' to prepare_data()."
+            )
+
+        if df_test is None and self.data_test is not None:
+            df_test = fetch_data(filename=self.data_test)
+
+        return demo_data, df_test
+
     def prepare_data(
         self,
         demo_data: Optional[pd.DataFrame] = None,
@@ -294,24 +384,51 @@ class BaseTask:
     ) -> "BaseTask":
         """Load, resample, validate, and configure the pipeline data.
 
+        Data resolution order:
+
+        1. An explicit ``demo_data`` argument takes highest precedence.
+        2. The constructor ``dataframe``.
+        3. The constructor ``data_source`` CSV path (loaded via
+           ``fetch_data``).
+        4. If none of the above provides data, ``ValueError`` is raised.
+
         Args:
-            demo_data: Pre-loaded input DataFrame.  ``None`` triggers
-                automatic loading from ``data_home / data_source``.
-            df_test: Pre-loaded test DataFrame.  ``None`` triggers
-                automatic loading from ``data_home / data_test``.
+            demo_data: Pre-loaded input DataFrame.  Overrides the
+                constructor ``dataframe`` when provided.
+            df_test: Pre-loaded test DataFrame.  ``None`` means no test
+                data unless ``data_test`` was set on the constructor,
+                in which case the CSV at that path is loaded.
 
         Returns:
             ``self`` (for method chaining).
+
+        Raises:
+            ValueError: If no data source is available (no ``demo_data``,
+                no constructor ``dataframe``, and no ``data_source``
+                path).
+
+        Examples:
+            ```{python}
+            import pandas as pd
+            from spotforecast2.manager.multitask import MultiTask
+            from spotforecast2_safe.data.fetch_data import (
+                fetch_data, get_package_data_home,
+            )
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv"))
+
+            mt = MultiTask(dataframe=df, predict_size=24)
+            mt.prepare_data()
+            print(f"Pipeline shape: {mt.df_pipeline.shape}")
+            print(f"Targets: {mt.config.targets}")
+            ```
         """
-        if demo_data is None:
-            data_in_path = self.data_home / self.data_source
-            demo_data = fetch_data(filename=str(data_in_path))
-        if df_test is None:
-            data_test_path = self.data_home / self.data_test
-            df_test = fetch_data(filename=str(data_test_path))
+        demo_data, df_test = self._resolve_data(demo_data, df_test)
 
         demo_data = reset_index(demo_data, index_name=self.index_name)
-        df_test = reset_index(df_test, index_name=self.index_name)
+        if df_test is not None:
+            df_test = reset_index(df_test, index_name=self.index_name)
         self.df_test = df_test
 
         first_ts = pd.Timestamp(demo_data[self.index_name].iloc[0])
@@ -622,8 +739,10 @@ class BaseTask:
             ```{python}
             import pandas as pd
             from spotforecast2.manager.multitask import LazyTask
+            from spotforecast2_safe.data.fetch_data import get_package_data_home
 
-            task = LazyTask(predict_size=24)
+            csv = str(get_package_data_home() / "demo10.csv")
+            task = LazyTask(data_source=csv, predict_size=24)
             task.prepare_data()
             task.detect_outliers()
             task.impute()
@@ -892,8 +1011,10 @@ class BaseTask:
         Examples:
             ```{python}
             from spotforecast2.manager.multitask import LazyTask
+            from spotforecast2_safe.data.fetch_data import get_package_data_home
 
-            task = LazyTask(data_frame_name="demo10")
+            csv = str(get_package_data_home() / "demo10.csv")
+            task = LazyTask(data_source=csv, data_frame_name="demo10")
             task.prepare_data()
             task.detect_outliers()
             task.impute()
@@ -973,8 +1094,10 @@ class BaseTask:
         Examples:
             ```{python}
             from spotforecast2.manager.multitask import LazyTask
+            from spotforecast2_safe.data.fetch_data import get_package_data_home
 
-            task = LazyTask(data_frame_name="demo10")
+            csv = str(get_package_data_home() / "demo10.csv")
+            task = LazyTask(data_source=csv, data_frame_name="demo10")
             task.prepare_data()
             task.detect_outliers()
             task.impute()

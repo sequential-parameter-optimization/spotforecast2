@@ -7,12 +7,13 @@ Covers:
 - Import paths (direct, via manager package, and via multitask package)
 - BaseTask shared logic (constructor, config, pipeline state, guards, logger)
 - LazyTask, OptunaTask, SpotOptimTask subclass behaviour
-- MultiTask backward-compatible dispatcher
+- MultiTask dispatcher
 - Inheritance hierarchy
 - Pipeline methods (prepare_data, detect_outliers, impute, build_exogenous_features)
 - create_forecaster() factory
 - Default search spaces
 - run() dispatcher and run_task_*() convenience methods
+- No autoloading: data must always be provided explicitly
 """
 
 import logging
@@ -27,6 +28,20 @@ from spotforecast2.manager.multitask import (
     OptunaTask,
     SpotOptimTask,
 )
+from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
+
+_DEMO_CSV = str(get_package_data_home() / "demo10.csv")
+
+
+@pytest.fixture(scope="module")
+def demo_df() -> pd.DataFrame:
+    """Load the package demo10 CSV once for the whole module."""
+    return fetch_data(filename=_DEMO_CSV)
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -34,22 +49,22 @@ from spotforecast2.manager.multitask import (
 
 
 def _default() -> MultiTask:
-    """Return a MultiTask with default parameters."""
+    """Return a MultiTask with default parameters (no data yet)."""
     return MultiTask()
 
 
 def _lazy() -> LazyTask:
-    """Return a LazyTask with default parameters."""
+    """Return a LazyTask with default parameters (no data yet)."""
     return LazyTask()
 
 
 def _optuna() -> OptunaTask:
-    """Return an OptunaTask with default parameters."""
+    """Return an OptunaTask with default parameters (no data yet)."""
     return OptunaTask()
 
 
 def _spotoptim() -> SpotOptimTask:
-    """Return a SpotOptimTask with default parameters."""
+    """Return a SpotOptimTask with default parameters (no data yet)."""
     return SpotOptimTask()
 
 
@@ -216,7 +231,7 @@ class TestCustomArgs:
     def test_custom_number_folds(self):
         task = LazyTask(number_folds=5)
         assert task.number_folds == 5
-        assert task.DELTA_VAL == pd.Timedelta(days=35)
+        assert task.DELTA_VAL == pd.Timedelta(days=task.val_days * 5)
 
     def test_custom_imputation_method(self):
         task = LazyTask(imputation_method="linear")
@@ -296,8 +311,8 @@ class TestConfigDelegation:
         assert task.config.index_name == "ts"
 
     def test_config_data_source(self):
-        task = LazyTask(data_source="my_data.csv")
-        assert task.config.data_source == "my_data.csv"
+        task = LazyTask(data_source="/tmp/my_data.csv")
+        assert task.config.data_source == "/tmp/my_data.csv"
 
     def test_config_overrides(self):
         """Extra kwargs go to ConfigMulti constructor."""
@@ -568,44 +583,60 @@ class TestSearchSpaces:
 
 
 class TestPrepareData:
-    """Integration test: load demo10 and run prepare_data."""
+    """Integration test: prepare_data with explicit data."""
 
-    @pytest.mark.parametrize(
-        "factory",
-        [_default, _lazy],
-        ids=["MultiTask", "LazyTask"],
-    )
-    def test_prepare_data_loads_data(self, factory):
-        task = factory()
-        task.prepare_data()
+    def test_multitask_with_csv_path(self):
+        mt = MultiTask(data_source=_DEMO_CSV)
+        mt.prepare_data()
+        assert mt.df_pipeline is not None
+        assert isinstance(mt.df_pipeline, pd.DataFrame)
+        assert mt.df_pipeline.shape[0] > 0
+
+    def test_multitask_with_dataframe(self, demo_df):
+        mt = MultiTask(dataframe=demo_df)
+        mt.prepare_data()
+        assert mt.df_pipeline is not None
+        assert mt.df_pipeline.shape[0] > 0
+
+    def test_lazy_task_with_explicit_data(self, demo_df):
+        task = LazyTask()
+        task.prepare_data(demo_data=demo_df)
         assert task.df_pipeline is not None
-        assert task.df_test is not None
-        assert isinstance(task.df_pipeline, pd.DataFrame)
         assert task.df_pipeline.shape[0] > 0
 
-    def test_prepare_data_sets_targets(self):
+    def test_prepare_data_sets_targets(self, demo_df):
         task = LazyTask(data_frame_name="demo10")
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         assert task.config.targets is not None
         assert len(task.config.targets) > 0
 
-    def test_prepare_data_sets_date_ranges(self):
+    def test_prepare_data_sets_date_ranges(self, demo_df):
         task = LazyTask(data_frame_name="demo10")
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         assert task.config.data_start is not None
         assert task.config.data_end is not None
         assert task.config.cov_start is not None
         assert task.config.cov_end is not None
 
-    def test_prepare_data_returns_self(self):
+    def test_prepare_data_returns_self(self, demo_df):
         task = LazyTask()
-        result = task.prepare_data()
+        result = task.prepare_data(demo_data=demo_df)
         assert result is task
 
-    def test_multitask_prepare_data_returns_self(self):
-        mt = MultiTask()
+    def test_multitask_prepare_data_returns_self(self, demo_df):
+        mt = MultiTask(dataframe=demo_df)
         result = mt.prepare_data()
         assert result is mt
+
+    def test_multitask_no_data_raises(self):
+        mt = MultiTask()
+        with pytest.raises(ValueError, match="No data source provided"):
+            mt.prepare_data()
+
+    def test_lazy_no_data_raises(self):
+        task = LazyTask()
+        with pytest.raises(ValueError, match="No data source provided"):
+            task.prepare_data()
 
 
 # ---------------------------------------------------------------------------
@@ -616,21 +647,21 @@ class TestPrepareData:
 class TestDetectOutliers:
     """Integration test: outlier detection after prepare_data."""
 
-    def test_detect_outliers_runs(self):
+    def test_detect_outliers_runs(self, demo_df):
         task = LazyTask()
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         assert task.df_pipeline_original is not None
 
-    def test_detect_outliers_returns_self(self):
+    def test_detect_outliers_returns_self(self, demo_df):
         task = LazyTask()
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         result = task.detect_outliers()
         assert result is task
 
-    def test_detect_outliers_preserves_original(self):
+    def test_detect_outliers_preserves_original(self, demo_df):
         task = LazyTask()
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         shape_before = task.df_pipeline.shape
         task.detect_outliers()
         assert task.df_pipeline_original.shape == shape_before
@@ -644,16 +675,16 @@ class TestDetectOutliers:
 class TestImpute:
     """Integration test: imputation after prepare_data."""
 
-    def test_impute_runs(self):
+    def test_impute_runs(self, demo_df):
         task = LazyTask()
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
         assert task.df_pipeline.notna().all().all()
 
-    def test_impute_returns_self(self):
+    def test_impute_returns_self(self, demo_df):
         task = LazyTask()
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         result = task.impute()
         assert result is task
@@ -667,18 +698,18 @@ class TestImpute:
 class TestExogenousFeatures:
     """Integration test: exogenous feature engineering."""
 
-    def test_exog_disabled(self):
+    def test_exog_disabled(self, demo_df):
         task = LazyTask(use_exogenous_features=False)
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
         task.build_exogenous_features()
         assert task.exogenous_features is None
         assert task.exog_feature_names == []
 
-    def test_exog_enabled(self):
+    def test_exog_enabled(self, demo_df):
         task = LazyTask(use_exogenous_features=True)
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
         task.build_exogenous_features()
@@ -687,9 +718,9 @@ class TestExogenousFeatures:
         assert task.data_with_exog is not None
         assert task.exo_pred is not None
 
-    def test_build_exog_returns_self(self):
+    def test_build_exog_returns_self(self, demo_df):
         task = LazyTask(use_exogenous_features=False)
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
         result = task.build_exogenous_features()
@@ -704,17 +735,17 @@ class TestExogenousFeatures:
 class TestLogSummary:
     """Verify log_summary does not raise."""
 
-    def test_log_summary_no_exog(self):
+    def test_log_summary_no_exog(self, demo_df):
         task = LazyTask(use_exogenous_features=False)
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
         task.build_exogenous_features()
         task.log_summary()
 
-    def test_log_summary_with_exog(self):
+    def test_log_summary_with_exog(self, demo_df):
         task = LazyTask(use_exogenous_features=True)
-        task.prepare_data()
+        task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
         task.build_exogenous_features()
@@ -731,14 +762,26 @@ class TestMethodChaining:
 
     @pytest.mark.parametrize(
         "cls",
-        [LazyTask, OptunaTask, SpotOptimTask, MultiTask],
-        ids=["LazyTask", "OptunaTask", "SpotOptimTask", "MultiTask"],
+        [LazyTask, OptunaTask, SpotOptimTask],
+        ids=["LazyTask", "OptunaTask", "SpotOptimTask"],
     )
-    def test_full_chain(self, cls):
+    def test_full_chain(self, cls, demo_df):
         kwargs = {"use_exogenous_features": False}
-        if cls is MultiTask:
-            kwargs["task"] = "lazy"
         task = cls(**kwargs)
+        result = (
+            task.prepare_data(demo_data=demo_df)
+            .detect_outliers()
+            .impute()
+            .build_exogenous_features()
+        )
+        assert result is task
+
+    def test_full_chain_multitask(self, demo_df):
+        task = MultiTask(
+            task="lazy",
+            dataframe=demo_df,
+            use_exogenous_features=False,
+        )
         result = (
             task.prepare_data().detect_outliers().impute().build_exogenous_features()
         )
