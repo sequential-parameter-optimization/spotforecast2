@@ -49,11 +49,14 @@ _ALL_TASKS = _PIPELINE_TASKS | {"clean"}
 def run(
     dataframe: pd.DataFrame,
     task: str = "lazy",
-    cache_data: bool = True,
+    cache_data: bool = False,
     cache_home: Optional[str] = None,
     bounds: Optional[List[Tuple[float, float]]] = None,
     agg_weights: Optional[List[float]] = None,
     project_name: str = "test_project",
+    n_trials_optuna: Optional[int] = 10,
+    train_days: Optional[int] = 3*365,
+    val_days: Optional[int] = 31,
     **kwargs: Any,
 ) -> pd.DataFrame:
     """Run the MultiTask forecasting pipeline and return predictions.
@@ -76,7 +79,7 @@ def run(
             ``"spotoptim"``, ``"predict"``, or ``"clean"``.
             Defaults to ``"lazy"``.
         cache_data: Whether to cache the preprocessed data.  Defaults to
-            ``True``.
+            ``False``.
         cache_home: Optional path to the cache directory.  Defaults to
             ``None``, which uses the package default cache location that
             is defined via spotforecast2_safe's `get_cache_home()`.
@@ -88,6 +91,9 @@ def run(
             package defaults.
         project_name: Identifier used for cache-directory and
             model-file naming.  Defaults to ``"test_project"``.
+        train_days: Optional number of days in the training window. Defaults to 3 years (1095 days). 
+        val_days: Optional number of days in the validation window.  If
+            ``None``, the default of 31 days is used.
         **kwargs: Additional keyword arguments forwarded verbatim to
             MultiTask (e.g. ``predict_size``, ``train_days``,
             ``val_days``, ``cache_home``).
@@ -139,8 +145,11 @@ def run(
         data_frame_name=project_name,
         agg_weights=effective_agg_weights,
         bounds=effective_bounds,
-        cache_data=True,
-        cache_home=None,
+        cache_data=cache_data,
+        cache_home=cache_home,
+        n_trials_optuna=n_trials_optuna,
+        train_days=train_days,
+        val_days=val_days,
         **kwargs,
     )
     mt.prepare_data()
