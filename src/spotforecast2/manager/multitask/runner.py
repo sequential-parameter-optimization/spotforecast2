@@ -57,8 +57,8 @@ def run(
     train_days: Optional[int] = 3 * 365,
     val_days: Optional[int] = 31,
     show_progress: bool = False,
-    plot_with_outliers=False,
-    show=False,
+    plot_with_outliers: bool = False,
+    show: bool = False,
     verbose: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame:

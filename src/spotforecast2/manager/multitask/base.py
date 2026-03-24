@@ -235,7 +235,7 @@ class BaseTask:
         train_days: int = 365 * 2,
         val_days: int = 7 * 2,
         log_level: int = logging.INFO,
-        verbose=False,
+        verbose: bool = False,
         **config_overrides: Any,
     ) -> None:
         # Task identifier (overridden by subclasses via _task_name)

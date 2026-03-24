@@ -126,8 +126,6 @@ website:
                 file: docs/reference/preprocessing._differentiator.qmd
               - text: "_rolling"
                 file: docs/reference/preprocessing._rolling.qmd
-              - text: "curate_data"
-                file: docs/reference/preprocessing.curate_data.qmd
               - text: "outlier"
                 file: docs/reference/preprocessing.outlier.qmd
               - text: "outlier_plots"
@@ -237,7 +235,6 @@ quartodoc:
         - preprocessing._common
         - preprocessing._differentiator
         - preprocessing._rolling
-        - preprocessing.curate_data
         - preprocessing.outlier
         - preprocessing.outlier_plots
         - preprocessing.split
