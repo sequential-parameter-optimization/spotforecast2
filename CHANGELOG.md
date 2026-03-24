@@ -1,3 +1,9 @@
+## [0.21.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.21.0-rc.1...v0.21.0-rc.2) (2026-03-24)
+
+### Bug Fixes
+
+* quartodoc ([8528bd0](https://github.com/sequential-parameter-optimization/spotforecast2/commit/8528bd01708c1f2c1f4c2b054c5775e7a087b8a2))
+
 ## [0.21.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.20.0...v0.21.0-rc.1) (2026-03-24)
 
 ### Features
