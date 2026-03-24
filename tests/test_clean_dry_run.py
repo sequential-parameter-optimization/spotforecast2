@@ -31,7 +31,6 @@ from spotforecast2.manager.multitask.runner import run
 # Shared fixtures / helpers
 # ---------------------------------------------------------------------------
 
-_DUMMY_DF = pd.DataFrame({"DateTime": ["2025-01-01"], "target": [0.0]})
 
 
 def _populated_cache(tmp_path: Path) -> Path:
