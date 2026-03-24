@@ -117,7 +117,7 @@ def run(
         df = fetch_data(filename=str(data_home / "demo10.csv"))
 
         forecast = run(df, task="lazy", project_name="demo10", predict_size=24)
-        print(forecast.head())
+        print(forecast)
         ```
     """
     if task not in _ALL_TASKS:
