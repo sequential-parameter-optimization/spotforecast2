@@ -31,10 +31,8 @@ from spotforecast2.manager.multitask.spotoptim import (
 class MultiTask(BaseTask):
     """Orchestrates a multi-target time-series forecasting pipeline.
 
-    Data must be provided either as a pandas DataFrame via ``dataframe``
-    or as a full CSV file path via ``data_source``.  If both are given,
-    the DataFrame takes precedence and the CSV path is ignored.  If
-    neither is provided, ``prepare_data`` raises ``ValueError``.
+    Data must be provided either as a pandas DataFrame via ``dataframe``.
+    A test dataset can optionally be provided via ``data_test``. 
 
     The typical usage flow is:
 
@@ -51,18 +49,12 @@ class MultiTask(BaseTask):
         task: Pipeline task mode — ``"lazy"``, ``"optuna"``,
             ``"spotoptim"``, ``"predict"``, or ``"clean"``.
             Defaults to ``"lazy"``.
-        dataframe: Pre-loaded input DataFrame.  When supplied,
-            ``prepare_data`` uses this DataFrame directly instead of
-            reading from a CSV file.  The DataFrame must contain a
+        dataframe: Pre-loaded input DataFrame with Train data. The DataFrame must contain a
             datetime column matching ``index_name`` plus at least one
             numeric target column.
-        data_frame_name: Identifier for the active dataset, used for
-            cache-directory naming and model file naming.
-        data_source: Full path to the input CSV file.  Only used when
-            ``dataframe`` is ``None``.
-        data_test: Full path to the test CSV file.  ``None`` means
-            no test data.
-        data_home: Optional path to a data directory.
+        data_test: Pre-loaded input DataFrame with Test data. The DataFrame must contain a
+            datetime column matching ``index_name`` plus at least one
+            numeric target column. Optional.
         cache_data: Whether to cache intermediate data to disk.
         cache_home: Cache directory path.
         agg_weights: Per-target aggregation weights.
@@ -105,15 +97,6 @@ class MultiTask(BaseTask):
         print(f"Task: {mt.TASK}")
         ```
 
-        ```{python}
-        from spotforecast2.manager.multitask import MultiTask
-        from spotforecast2_safe.data.fetch_data import get_package_data_home
-
-        csv_path = str(get_package_data_home() / "demo10.csv")
-        mt = MultiTask(data_source=csv_path, predict_size=24)
-        mt.prepare_data()
-        print(f"Pipeline shape: {mt.df_pipeline.shape}")
-        ```
     """
 
     def __init__(
@@ -121,10 +104,8 @@ class MultiTask(BaseTask):
         *,
         task: str = "lazy",
         dataframe: Optional[pd.DataFrame] = None,
-        data_frame_name: str = "demo10",
-        data_source: Optional[str] = None,
-        data_test: Optional[str] = None,
-        data_home: Optional[Path] = None,
+        data_test: Optional[pd.DataFrame] = None,        
+        data_frame_name: str = "default",
         cache_data: bool = True,
         cache_home: Optional[Path] = None,
         agg_weights: Optional[List[float]] = None,
@@ -148,10 +129,8 @@ class MultiTask(BaseTask):
         self._task_name = task
         super().__init__(
             dataframe=dataframe,
-            data_frame_name=data_frame_name,
-            data_source=data_source,
             data_test=data_test,
-            data_home=data_home,
+            data_frame_name=data_frame_name,
             cache_data=cache_data,
             cache_home=cache_home,
             agg_weights=agg_weights,

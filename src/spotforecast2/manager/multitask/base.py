@@ -138,25 +138,21 @@ class BaseTask:
 
     Args:
         dataframe:
-            Pre-loaded input DataFrame.  When supplied,
-            ``prepare_data`` uses this DataFrame directly instead of
-            reading from a CSV file.
+            Pre-loaded input DataFrame with training data.
+            The DataFrame must contain a datetime column matching
+            ``index_name`` plus at least one numeric target column.
+        data_test:
+            Pre-loaded input DataFrame with test data (ground truth
+            for the forecast horizon).  The DataFrame must contain a
+            datetime column matching ``index_name`` plus at least one
+            numeric target column.  Optional.
         data_frame_name:
             Identifier for the active dataset, used for
             cache-directory naming and model file naming.
-        data_source:
-            Full path to the input CSV file.  Only used when
-            ``dataframe`` is ``None``.
-        data_test:
-            Full path to the test CSV file.  ``None`` means
-            no test data.
-        data_home:
-            Optional path to a data directory.  ``None`` means
-            not specified.
         cache_data:
-            Whether to cache intermediate data to disk.
+            Whether to cache intermediate data to disk. Boolean flag.
         cache_home:
-            Cache directory path.
+            Cache directory path. String or Path. 
         agg_weights:
             Per-target aggregation weights.
         index_name:
@@ -218,10 +214,8 @@ class BaseTask:
         self,
         *,
         dataframe: Optional[pd.DataFrame] = None,
-        data_frame_name: str = "demo10",
-        data_source: Optional[str] = None,
-        data_test: Optional[str] = None,
-        data_home: Optional[Path] = None,
+        data_test: Optional[pd.DataFrame] = None,
+        data_frame_name: str = "default",
         cache_data: bool = True,
         cache_home: Optional[Path] = None,
         agg_weights: Optional[List[float]] = None,
@@ -247,9 +241,7 @@ class BaseTask:
         # Store constructor arguments as instance attributes
         self._dataframe = dataframe
         self.data_frame_name = data_frame_name
-        self.data_source = data_source
         self.data_test = data_test
-        self.data_home = data_home
         self.cache_data = cache_data
         self.cache_home = cache_home
         self.agg_weights = agg_weights
@@ -302,9 +294,6 @@ class BaseTask:
             "imputation_method": self.imputation_method,
             "use_exogenous_features": self.use_exogenous_features,
             "index_name": self.index_name,
-            "data_source": self.data_source,
-            "data_test": self.data_test,
-            "data_home": self.data_home,
             "cache_home": get_cache_home(self.cache_home),
             "cache_data": self.cache_data,
             "n_trials_optuna": self.n_trials_optuna,
@@ -325,57 +314,6 @@ class BaseTask:
     # Step 1 — Data Preparation
     # ------------------------------------------------------------------
 
-    def _resolve_data(
-        self,
-        demo_data: Optional[pd.DataFrame] = None,
-        df_test: Optional[pd.DataFrame] = None,
-    ) -> tuple:
-        """Resolve training and test data from multiple sources.
-
-        Resolution order for training data:
-
-        1. An explicit ``demo_data`` argument takes highest precedence.
-        2. The constructor ``dataframe``.
-        3. The constructor ``data_source`` CSV path (loaded via
-           ``fetch_data``).
-        4. If none of the above provides data, ``ValueError`` is raised.
-
-        Resolution order for test data:
-
-        1. An explicit ``df_test`` argument takes highest precedence.
-        2. The constructor ``data_test`` CSV path (loaded via
-           ``fetch_data``).
-
-        Args:
-            demo_data: Pre-loaded input DataFrame.  Overrides the
-                constructor ``dataframe`` when provided.
-            df_test: Pre-loaded test DataFrame.  ``None`` means no test
-                data unless ``data_test`` was set on the constructor.
-
-        Returns:
-            Tuple of ``(demo_data, df_test)``.
-
-        Raises:
-            ValueError: If no data source is available.
-        """
-        if demo_data is not None:
-            pass  # explicit argument wins
-        elif self._dataframe is not None:
-            demo_data = self._dataframe
-        elif self.data_source is not None:
-            demo_data = fetch_data(filename=self.data_source)
-        else:
-            raise ValueError(
-                "No data source provided. Pass a DataFrame via the "
-                "'dataframe' constructor argument, a CSV path via "
-                "'data_source', or pass 'demo_data' to prepare_data()."
-            )
-
-        if df_test is None and self.data_test is not None:
-            df_test = fetch_data(filename=self.data_test)
-
-        return demo_data, df_test
-
     def prepare_data(
         self,
         demo_data: Optional[pd.DataFrame] = None,
@@ -383,28 +321,28 @@ class BaseTask:
     ) -> "BaseTask":
         """Load, resample, validate, and configure the pipeline data.
 
-        Data resolution order:
+        Uses the following precedence for the training data:
 
-        1. An explicit ``demo_data`` argument takes highest precedence.
-        2. The constructor ``dataframe``.
-        3. The constructor ``data_source`` CSV path (loaded via
-           ``fetch_data``).
-        4. If none of the above provides data, ``ValueError`` is raised.
+        1. ``demo_data`` argument (if provided).
+        2. ``self._dataframe`` set via the constructor.
+
+        Similarly for test data:
+
+        1. ``df_test`` argument (if provided).
+        2. ``self.data_test`` set via the constructor.
 
         Args:
-            demo_data: Pre-loaded input DataFrame.  Overrides the
-                constructor ``dataframe`` when provided.
-            df_test: Pre-loaded test DataFrame.  ``None`` means no test
-                data unless ``data_test`` was set on the constructor,
-                in which case the CSV at that path is loaded.
+            demo_data: Pre-loaded input DataFrame.  When ``None``, the
+                constructor ``dataframe`` is used.
+            df_test: Pre-loaded test DataFrame.  When ``None``, the
+                constructor ``data_test`` is used.
 
         Returns:
             ``self`` (for method chaining).
 
         Raises:
             ValueError: If no data source is available (no ``demo_data``,
-                no constructor ``dataframe``, and no ``data_source``
-                path).
+                no constructor ``dataframe``).
 
         Examples:
             ```{python}
@@ -423,7 +361,17 @@ class BaseTask:
             print(f"Targets: {mt.config.targets}")
             ```
         """
-        demo_data, df_test = self._resolve_data(demo_data, df_test)
+        if demo_data is None:
+            demo_data = self._dataframe
+        if demo_data is None:
+            raise ValueError(
+                "No data source provided. Pass a DataFrame via the "
+                "'dataframe' constructor argument or the 'demo_data' "
+                "parameter of prepare_data()."
+            )
+
+        if df_test is None:
+            df_test = self.data_test
 
         demo_data = reset_index(demo_data, index_name=self.index_name)
         if df_test is not None:
@@ -734,23 +682,6 @@ class BaseTask:
             A configured ``TimeSeriesFold`` instance ready to be passed to
             a model-selection function.
 
-        Examples:
-            ```{python}
-            import pandas as pd
-            from spotforecast2.manager.multitask import LazyTask
-            from spotforecast2_safe.data.fetch_data import get_package_data_home
-
-            csv = str(get_package_data_home() / "demo10.csv")
-            task = LazyTask(data_source=csv, predict_size=24)
-            task.prepare_data()
-            task.detect_outliers()
-            task.impute()
-            target = task.config.targets[0]
-            y_train, _, _ = task._get_target_data(target)
-            cv = task.cv_ts(y_train)
-            print(f"steps: {cv.steps}")
-            print(f"initial_train_size: {cv.initial_train_size}")
-            ```
         """
         end_cv = self.config.end_train_ts - self.config.delta_val
         n_train_cv = len(y_train.loc[:end_cv])
@@ -1007,22 +938,6 @@ class BaseTask:
             RuntimeError: If no fitted models are available for the
                 requested task.
 
-        Examples:
-            ```{python}
-            from spotforecast2.manager.multitask import LazyTask
-            from spotforecast2_safe.data.fetch_data import get_package_data_home
-
-            csv = str(get_package_data_home() / "demo10.csv")
-            task = LazyTask(data_source=csv, data_frame_name="demo10")
-            task.prepare_data()
-            task.detect_outliers()
-            task.impute()
-            task.build_exogenous_features()
-            agg = task.run(show=False)
-            paths = task.save_models(task_name="lazy")
-            for target, p in paths.items():
-                print(f"{target}: {p.name}")
-            ```
         """
         if task_name not in self._TASK_MODEL_NAMES:
             raise ValueError(
@@ -1090,23 +1005,6 @@ class BaseTask:
             Mapping ``{target: forecaster}`` of loaded model objects.
             Empty dict if no matching models were found.
 
-        Examples:
-            ```{python}
-            from spotforecast2.manager.multitask import LazyTask
-            from spotforecast2_safe.data.fetch_data import get_package_data_home
-
-            csv = str(get_package_data_home() / "demo10.csv")
-            task = LazyTask(data_source=csv, data_frame_name="demo10")
-            task.prepare_data()
-            task.detect_outliers()
-            task.impute()
-            task.build_exogenous_features()
-            agg = task.run(show=False)
-            paths = task.save_models(task_name="lazy")
-            loaded = task.load_models(task_name="lazy")
-            for target_name, mdl in loaded.items():
-                print(f"{target_name}: {type(mdl).__name__}")
-            ```
         """
         model_dir = (
             get_cache_home(self.config.cache_home) / "models" / self.data_frame_name

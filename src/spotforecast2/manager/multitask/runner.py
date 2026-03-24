@@ -49,8 +49,11 @@ _ALL_TASKS = _PIPELINE_TASKS | {"clean"}
 def run(
     dataframe: pd.DataFrame,
     task: str = "lazy",
+    cache_data: bool = True,
+    cache_home: Optional[str] = None,
     bounds: Optional[List[Tuple[float, float]]] = None,
-    data_frame_name: str = "demo10",
+    agg_weights: Optional[List[float]] = None,
+    project_name: str = "test_project",
     **kwargs: Any,
 ) -> pd.DataFrame:
     """Run the MultiTask forecasting pipeline and return predictions.
@@ -72,11 +75,19 @@ def run(
         task: Pipeline mode — one of ``"lazy"``, ``"optuna"``,
             ``"spotoptim"``, ``"predict"``, or ``"clean"``.
             Defaults to ``"lazy"``.
+        cache_data: Whether to cache the preprocessed data.  Defaults to
+            ``True``.
+        cache_home: Optional path to the cache directory.  Defaults to
+            ``None``, which uses the package default cache location that
+            is defined via spotforecast2_safe's `get_cache_home()`.
         bounds: Per-column hard outlier bounds as a list of
             ``(lower, upper)`` tuples, one per target column.  ``None``
             uses the package defaults.
-        data_frame_name: Dataset identifier used for cache-directory and
-            model-file naming.  Defaults to ``"demo10"``.
+        agg_weights: Per-column weights for the final aggregation step as
+            a list of floats, one per target column.  ``None`` uses the
+            package defaults.
+        project_name: Identifier used for cache-directory and
+            model-file naming.  Defaults to ``"test_project"``.
         **kwargs: Additional keyword arguments forwarded verbatim to
             MultiTask (e.g. ``predict_size``, ``train_days``,
             ``val_days``, ``cache_home``).
@@ -99,7 +110,7 @@ def run(
         data_home = get_package_data_home()
         df = fetch_data(filename=str(data_home / "demo10.csv"))
 
-        forecast = run(df, task="lazy", data_frame_name="demo10", predict_size=24)
+        forecast = run(df, task="lazy", project_name="demo10", predict_size=24)
         print(forecast.head())
         ```
     """
@@ -109,21 +120,27 @@ def run(
     if task == "clean":
         mt = MultiTask(
             task="clean",
-            dataframe=dataframe,
-            data_frame_name=data_frame_name,
+            data_frame_name=project_name,
+            cache_data=cache_data,
+            cache_home=cache_home,
             **kwargs,
         )
         mt.run()
         return pd.DataFrame()
 
     effective_bounds = bounds if bounds is not None else _DEFAULT_BOUNDS
+    effective_agg_weights = (
+        agg_weights if agg_weights is not None else _DEFAULT_AGG_WEIGHTS
+    )
 
     mt = MultiTask(
-        task=task,
         dataframe=dataframe,
-        data_frame_name=data_frame_name,
-        agg_weights=_DEFAULT_AGG_WEIGHTS,
+        task=task,
+        data_frame_name=project_name,
+        agg_weights=effective_agg_weights,
         bounds=effective_bounds,
+        cache_data=True,
+        cache_home=None,
         **kwargs,
     )
     mt.prepare_data()

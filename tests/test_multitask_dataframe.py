@@ -1,19 +1,18 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Pytest tests for data input support across all task classes.
+"""Pytest tests for DataFrame-only data input support across all task classes.
 
 Covers:
-- Constructor accepts dataframe and data_source parameters (BaseTask, MultiTask)
+- Constructor accepts dataframe and data_test parameters (BaseTask, MultiTask)
 - _dataframe is stored correctly
 - prepare_data() uses _dataframe when no demo_data argument is given
-- prepare_data() loads CSV from data_source when no dataframe
 - Explicit demo_data in prepare_data() overrides constructor dataframe
 - dataframe appears in constructor signature with correct default
 - Task with dataframe produces valid pipeline state
 - ValueError raised when no data source is provided
-- DataFrame takes precedence over data_source
-- LazyTask (BaseTask subclass) also supports dataframe / data_source
+- data_test (as DataFrame) is supported via constructor and prepare_data()
+- LazyTask (BaseTask subclass) also supports dataframe
 """
 
 import inspect
@@ -44,12 +43,6 @@ def mt_with_df(demo_df: pd.DataFrame, tmp_path: Path) -> MultiTask:
     return MultiTask(dataframe=demo_df, cache_home=tmp_path, predict_size=24)
 
 
-@pytest.fixture()
-def mt_with_csv(tmp_path: Path) -> MultiTask:
-    """MultiTask constructed with a data_source CSV path."""
-    return MultiTask(data_source=_DEMO_CSV, cache_home=tmp_path, predict_size=24)
-
-
 # ---------------------------------------------------------------------------
 # Constructor signature
 # ---------------------------------------------------------------------------
@@ -69,13 +62,21 @@ class TestConstructorSignature:
         p = sig.parameters["dataframe"]
         assert p.kind == inspect.Parameter.KEYWORD_ONLY
 
-    def test_data_source_in_signature(self):
+    def test_data_test_in_signature(self):
         sig = inspect.signature(MultiTask.__init__)
-        assert "data_source" in sig.parameters
+        assert "data_test" in sig.parameters
 
-    def test_data_source_default_is_none(self):
+    def test_data_test_default_is_none(self):
         sig = inspect.signature(MultiTask.__init__)
-        assert sig.parameters["data_source"].default is None
+        assert sig.parameters["data_test"].default is None
+
+    def test_no_data_source_in_signature(self):
+        sig = inspect.signature(MultiTask.__init__)
+        assert "data_source" not in sig.parameters
+
+    def test_no_data_home_in_signature(self):
+        sig = inspect.signature(MultiTask.__init__)
+        assert "data_home" not in sig.parameters
 
 
 # ---------------------------------------------------------------------------
@@ -124,26 +125,7 @@ class TestPrepareDataWithDataframe:
 
 
 # ---------------------------------------------------------------------------
-# prepare_data() with CSV path
-# ---------------------------------------------------------------------------
-
-
-class TestPrepareDataWithCsvPath:
-    def test_pipeline_not_none(self, mt_with_csv):
-        mt_with_csv.prepare_data()
-        assert mt_with_csv.df_pipeline is not None
-
-    def test_targets_populated(self, mt_with_csv):
-        mt_with_csv.prepare_data()
-        assert len(mt_with_csv.config.targets) > 0
-
-    def test_returns_self(self, mt_with_csv):
-        result = mt_with_csv.prepare_data()
-        assert result is mt_with_csv
-
-
-# ---------------------------------------------------------------------------
-# Precedence: explicit demo_data > constructor dataframe > CSV path
+# Precedence: explicit demo_data > constructor dataframe
 # ---------------------------------------------------------------------------
 
 
@@ -169,24 +151,9 @@ class TestPrepareDataPrecedence:
         mt.prepare_data()
         assert mt.df_pipeline is not None
 
-    def test_dataframe_takes_precedence_over_csv(
-        self, demo_df: pd.DataFrame, tmp_path: Path
-    ):
-        """When both dataframe and data_source are given, dataframe wins."""
-        demo_df2 = demo_df.copy()
-        demo_df2["_sentinel2"] = 1.0
-
-        mt = MultiTask(
-            dataframe=demo_df2,
-            data_source=_DEMO_CSV,
-            cache_home=tmp_path,
-        )
-        mt.prepare_data()
-        assert "_sentinel2" in mt.df_pipeline.columns
-
 
 # ---------------------------------------------------------------------------
-# No data → ValueError
+# No data -> ValueError
 # ---------------------------------------------------------------------------
 
 
@@ -195,6 +162,47 @@ class TestNoDataRaises:
         mt = MultiTask(cache_home=tmp_path)
         with pytest.raises(ValueError, match="No data source provided"):
             mt.prepare_data()
+
+
+# ---------------------------------------------------------------------------
+# data_test as DataFrame
+# ---------------------------------------------------------------------------
+
+
+class TestDataTestDataFrame:
+    def test_data_test_stored_on_instance(self, demo_df, tmp_path):
+        df_test = demo_df.head(24).copy()
+        mt = MultiTask(
+            dataframe=demo_df,
+            data_test=df_test,
+            cache_home=tmp_path,
+            predict_size=24,
+        )
+        assert mt.data_test is df_test
+
+    def test_data_test_used_during_prepare_data(self, demo_df, tmp_path):
+        df_test = demo_df.head(24).copy()
+        mt = MultiTask(
+            dataframe=demo_df,
+            data_test=df_test,
+            cache_home=tmp_path,
+            predict_size=24,
+        )
+        mt.prepare_data()
+        assert mt.df_test is not None
+
+    def test_df_test_arg_overrides_constructor_data_test(self, demo_df, tmp_path):
+        df_test_ctor = demo_df.head(24).copy()
+        df_test_arg = demo_df.head(48).copy()
+        mt = MultiTask(
+            dataframe=demo_df,
+            data_test=df_test_ctor,
+            cache_home=tmp_path,
+            predict_size=24,
+        )
+        mt.prepare_data(df_test=df_test_arg)
+        # The df_test argument should take precedence
+        assert mt.df_test is not None
 
 
 # ---------------------------------------------------------------------------
@@ -217,7 +225,7 @@ class TestPrepareDataSignature:
 
 
 # ---------------------------------------------------------------------------
-# BaseTask / LazyTask also support dataframe and data_source
+# BaseTask / LazyTask also support dataframe
 # ---------------------------------------------------------------------------
 
 
@@ -229,6 +237,11 @@ class TestBaseTaskDataframe:
         assert "dataframe" in sig.parameters
         assert sig.parameters["dataframe"].default is None
 
+    def test_data_test_in_base_task_signature(self):
+        sig = inspect.signature(BaseTask.__init__)
+        assert "data_test" in sig.parameters
+        assert sig.parameters["data_test"].default is None
+
     def test_lazy_task_accepts_dataframe(self, demo_df, tmp_path):
         task = LazyTask(dataframe=demo_df, cache_home=tmp_path)
         assert task._dataframe is demo_df
@@ -238,11 +251,6 @@ class TestBaseTaskDataframe:
         task.prepare_data()
         assert task.df_pipeline is not None
         assert task.df_pipeline.shape[0] > 0
-
-    def test_lazy_task_accepts_data_source(self, tmp_path):
-        task = LazyTask(data_source=_DEMO_CSV, cache_home=tmp_path)
-        task.prepare_data()
-        assert task.df_pipeline is not None
 
     def test_lazy_task_no_data_raises(self, tmp_path):
         task = LazyTask(cache_home=tmp_path)

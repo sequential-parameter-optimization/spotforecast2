@@ -426,12 +426,12 @@ class TestMultiTaskDispatcher:
         assert hasattr(MultiTask, "run_task_predict")
         assert callable(getattr(MultiTask, "run_task_predict"))
 
-    def test_multitask_dispatch_predict_no_models(self, tmp_path):
+    def test_multitask_dispatch_predict_no_models(self, tmp_path, demo_df):
         """MultiTask.run(task='predict') should raise when no models exist."""
         mt = MultiTask(
             task="predict",
             data_frame_name="test_data",
-            data_source=_DEMO_CSV,
+            dataframe=demo_df,
             cache_home=tmp_path,
         )
         mt.prepare_data()
@@ -440,11 +440,11 @@ class TestMultiTaskDispatcher:
         with pytest.raises(RuntimeError, match="No saved models found"):
             mt.run(show=False)
 
-    def test_multitask_dispatches_predict_explicitly(self, tmp_path):
+    def test_multitask_dispatches_predict_explicitly(self, tmp_path, demo_df):
         """MultiTask.run(task='predict') dispatches to predict logic."""
         mt = MultiTask(
             data_frame_name="test_data",
-            data_source=_DEMO_CSV,
+            dataframe=demo_df,
             cache_home=tmp_path,
         )
         mt.prepare_data()
@@ -453,11 +453,11 @@ class TestMultiTaskDispatcher:
         with pytest.raises(RuntimeError, match="No saved models found"):
             mt.run(task="predict", show=False)
 
-    def test_multitask_run_task_predict_method(self, tmp_path):
+    def test_multitask_run_task_predict_method(self, tmp_path, demo_df):
         """MultiTask.run_task_predict() directly invokes predict logic."""
         mt = MultiTask(
             data_frame_name="test_data",
-            data_source=_DEMO_CSV,
+            dataframe=demo_df,
             cache_home=tmp_path,
         )
         mt.prepare_data()
@@ -466,11 +466,11 @@ class TestMultiTaskDispatcher:
         with pytest.raises(RuntimeError, match="No saved models found"):
             mt.run_task_predict(show=False)
 
-    def test_multitask_full_round_trip(self, tmp_path):
+    def test_multitask_full_round_trip(self, tmp_path, demo_df):
         """Train via 'lazy' then predict via 'predict' using MultiTask."""
         mt = MultiTask(
             data_frame_name="demo10",
-            data_source=_DEMO_CSV,
+            dataframe=demo_df,
             cache_home=tmp_path,
             predict_size=24,
         )
@@ -518,7 +518,7 @@ class TestConstructorArgs:
 
     def test_default_data_frame_name(self):
         task = PredictTask()
-        assert task.data_frame_name == "demo10"
+        assert task.data_frame_name == "default"
 
     def test_custom_predict_size(self, tmp_path):
         task = PredictTask(predict_size=48, cache_home=tmp_path)
