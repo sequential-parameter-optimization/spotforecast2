@@ -75,8 +75,9 @@ def execute_optuna(
             exog=exog_train,
             n_trials=task.config.n_trials_optuna,
             random_state=task.config.random_state,
-            return_best=False,
-            verbose=False,
+            return_best=True,
+            verbose=task.verbose,
+            show_progress=task._show_progress,
         )
 
         best_params = tuning_results.iloc[0].params

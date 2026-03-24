@@ -188,6 +188,9 @@ class BaseTask:
             any manual call to save_models().
         log_level:
             Logging level for the pipeline logger.
+        verbose:
+            Whether to print verbose messages during data preparation and outlier detection.
+            Defaults to ``False``.
         config_overrides:
             Extra keyword arguments forwarded to
             ConfigMulti.
@@ -232,6 +235,7 @@ class BaseTask:
         train_days: int = 365 * 2,
         val_days: int = 7 * 2,
         log_level: int = logging.INFO,
+        verbose=False,
         **config_overrides: Any,
     ) -> None:
         # Task identifier (overridden by subclasses via _task_name)
@@ -257,6 +261,7 @@ class BaseTask:
         self.auto_save_models = auto_save_models
         self.train_days = train_days
         self.val_days = val_days
+        self.verbose = verbose
         # Logger
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self.logger.setLevel(log_level)
@@ -280,10 +285,29 @@ class BaseTask:
 
         # Build ConfigMulti — merge explicit arguments with overrides
         self.config = self._build_config(**config_overrides)
+        self._attach_file_handler()
 
     # ------------------------------------------------------------------
     # Configuration
     # ------------------------------------------------------------------
+
+    def _attach_file_handler(self) -> None:
+        """Attach a FileHandler to self.logger writing to get_cache_home()/logging/."""
+        log_dir = get_cache_home(self.cache_home) / "logging"
+        log_dir.mkdir(parents=True, exist_ok=True)
+        log_file = log_dir / f"{self.data_frame_name}.log"
+        # Loggers are singletons — avoid adding duplicate FileHandlers
+        for h in self.logger.handlers:
+            if isinstance(h, logging.FileHandler) and Path(h.baseFilename) == log_file:
+                return
+        handler = logging.FileHandler(log_file, encoding="utf-8")
+        handler.setFormatter(
+            logging.Formatter(
+                "%(asctime)s  %(levelname)-8s  %(name)s  %(message)s",
+                datefmt="%Y-%m-%d %H:%M:%S",
+            )
+        )
+        self.logger.addHandler(handler)
 
     def _build_config(self, **overrides: Any) -> ConfigMulti:
         """Create a ConfigMulti from the stored pipeline arguments."""
@@ -388,8 +412,8 @@ class BaseTask:
             self.config.targets = all_targets
 
         df_pipeline = demo_data.set_index(self.index_name)
-        df_pipeline = agg_and_resample_data(df_pipeline, verbose=True)
-        basic_ts_checks(df_pipeline, verbose=True)
+        df_pipeline = agg_and_resample_data(df_pipeline, verbose=self.verbose)
+        basic_ts_checks(df_pipeline, verbose=self.verbose)
 
         self.config.targets = [
             c for c in self.config.targets if c in df_pipeline.columns
@@ -403,7 +427,7 @@ class BaseTask:
         ) = get_start_end(
             data=df_pipeline,
             forecast_horizon=self.config.predict_size,
-            verbose=True,
+            verbose=self.verbose,
         )
 
         self.df_pipeline = df_pipeline
@@ -436,7 +460,7 @@ class BaseTask:
                     column=col,
                     lower_threshold=lower,
                     upper_threshold=upper,
-                    verbose=True,
+                    verbose=self.verbose,
                 )
 
         if self.config.use_outlier_detection:
@@ -529,7 +553,7 @@ class BaseTask:
             longitude=self.config.longitude,
             timezone=self.config.timezone,
             freq="h",
-            verbose=True,
+            verbose=self.verbose,
         )
         self.logger.info("  Weather features: %s", weather_features.shape)
 

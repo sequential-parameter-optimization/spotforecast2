@@ -4,6 +4,7 @@
 """Tests for CleanTask and execute_clean."""
 
 import importlib
+import shutil
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -320,10 +321,10 @@ class TestCleanTaskRun:
     def test_run_accepts_show_kwarg_without_error(self, tmp_path):
         from spotforecast2.manager.multitask.clean import CleanTask
 
-        # BaseTask.__init__ creates the dir; delete it to test empty-dir path
+        # BaseTask.__init__ creates the dir (with logging/ subdir); remove it entirely
         cache = tmp_path / "does_not_exist"
         task = CleanTask(cache_home=cache)
-        cache.rmdir()  # remove the dir that init created
+        shutil.rmtree(cache)  # remove the dir (and logging/ subdir) that init created
         result = task.run(show=True)
         assert result["status"] == "empty"
 
@@ -341,10 +342,10 @@ class TestCleanTaskRun:
     def test_run_returns_empty_for_missing_dir(self, tmp_path):
         from spotforecast2.manager.multitask.clean import CleanTask
 
-        # BaseTask.__init__ creates the dir; delete it to test empty-dir path
+        # BaseTask.__init__ creates the dir (with logging/ subdir); remove it entirely
         cache = tmp_path / "no_cache_here"
         task = CleanTask(cache_home=cache)
-        cache.rmdir()  # remove the dir that init created
+        shutil.rmtree(cache)  # remove the dir (and logging/ subdir) that init created
         result = task.run()
 
         assert result["status"] == "empty"
@@ -393,10 +394,10 @@ class TestMultiTaskCleanDispatch:
     def test_run_task_clean_returns_empty_for_missing_cache(self, tmp_path):
         from spotforecast2.manager.multitask.multi import MultiTask
 
-        # MultiTask.__init__ creates the dir; delete it to test empty-dir path
+        # MultiTask.__init__ creates the dir (with logging/ subdir); remove it entirely
         cache = tmp_path / "no_cache"
         mt = MultiTask(cache_home=cache, predict_size=24)
-        cache.rmdir()  # remove the dir that init created
+        shutil.rmtree(cache)  # remove the dir (and logging/ subdir) that init created
         result = mt.run_task_clean()
 
         assert result["status"] == "empty"
@@ -414,10 +415,10 @@ class TestMultiTaskCleanDispatch:
     def test_run_dispatches_clean_via_run_method(self, tmp_path):
         from spotforecast2.manager.multitask.multi import MultiTask
 
-        # MultiTask.__init__ creates the dir; delete it to test empty-dir path
+        # MultiTask.__init__ creates the dir (with logging/ subdir); remove it entirely
         cache = tmp_path / "no_cache"
         mt = MultiTask(task="clean", cache_home=cache, predict_size=24)
-        cache.rmdir()  # remove the dir that init created
+        shutil.rmtree(cache)  # remove the dir (and logging/ subdir) that init created
         result = mt.run(show=False)
 
         assert result["status"] == "empty"

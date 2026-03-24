@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-from .curate_data import (
+from spotforecast2_safe.preprocessing.curate_data import (
     get_start_end,
     curate_holidays,
     curate_weather,
