@@ -61,7 +61,6 @@ from spotforecast2.manager.plotter import PredictionFigure, plot_with_outliers
 from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.preprocessing.imputation import apply_imputation
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2_safe.data.fetch_data import fetch_data
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +151,7 @@ class BaseTask:
         cache_data:
             Whether to cache intermediate data to disk. Boolean flag.
         cache_home:
-            Cache directory path. String or Path. 
+            Cache directory path. String or Path.
         agg_weights:
             Per-target aggregation weights.
         index_name:

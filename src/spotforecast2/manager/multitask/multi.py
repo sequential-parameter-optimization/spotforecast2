@@ -32,7 +32,7 @@ class MultiTask(BaseTask):
     """Orchestrates a multi-target time-series forecasting pipeline.
 
     Data must be provided either as a pandas DataFrame via ``dataframe``.
-    A test dataset can optionally be provided via ``data_test``. 
+    A test dataset can optionally be provided via ``data_test``.
 
     The typical usage flow is:
 
@@ -104,7 +104,7 @@ class MultiTask(BaseTask):
         *,
         task: str = "lazy",
         dataframe: Optional[pd.DataFrame] = None,
-        data_test: Optional[pd.DataFrame] = None,        
+        data_test: Optional[pd.DataFrame] = None,
         data_frame_name: str = "default",
         cache_data: bool = True,
         cache_home: Optional[Path] = None,

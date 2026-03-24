@@ -310,7 +310,6 @@ class TestConfigDelegation:
         task = LazyTask(index_name="ts")
         assert task.config.index_name == "ts"
 
-
     def test_config_overrides(self):
         """Extra kwargs go to ConfigMulti constructor."""
         task = LazyTask(country_code="FR", random_state=42)
@@ -581,7 +580,6 @@ class TestSearchSpaces:
 
 class TestPrepareData:
     """Integration test: prepare_data with explicit data."""
-
 
     def test_multitask_with_dataframe(self, demo_df):
         mt = MultiTask(dataframe=demo_df)
