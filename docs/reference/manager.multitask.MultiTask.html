@@ -471,6 +471,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">MultiTask</span></a>
   </div>
 </li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/manager.multitask.run.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">run</span></a>
+  </div>
+</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -857,31 +863,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">'lazy'</span>,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    data_frame_name<span class="op">=</span><span class="st">'demo10'</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    data_source<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    data_test<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    data_home<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    cache_data<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    agg_weights<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    index_name<span class="op">=</span><span class="st">'DateTime'</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    bounds<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    contamination<span class="op">=</span><span class="fl">0.03</span>,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">'weighted'</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">15</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    n_trials_spotoptim<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    n_initial_spotoptim<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    train_days<span class="op">=</span><span class="dv">365</span> <span class="op">*</span> <span class="dv">2</span>,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    val_days<span class="op">=</span><span class="dv">7</span> <span class="op">*</span> <span class="dv">2</span>,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span>logging.INFO,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>config_overrides,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    data_test<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    data_frame_name<span class="op">=</span><span class="st">'default'</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    cache_data<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    agg_weights<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    index_name<span class="op">=</span><span class="st">'DateTime'</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    bounds<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    contamination<span class="op">=</span><span class="fl">0.03</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">'weighted'</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    n_trials_spotoptim<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    n_initial_spotoptim<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    train_days<span class="op">=</span><span class="dv">365</span> <span class="op">*</span> <span class="dv">2</span>,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    val_days<span class="op">=</span><span class="dv">7</span> <span class="op">*</span> <span class="dv">2</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span>logging.INFO,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>config_overrides,</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Orchestrates a multi-target time-series forecasting pipeline.</p>
-<p>Data must be provided either as a pandas DataFrame via <code>dataframe</code> or as a full CSV file path via <code>data_source</code>. If both are given, the DataFrame takes precedence and the CSV path is ignored. If neither is provided, <code>prepare_data</code> raises <code>ValueError</code>.</p>
+<p>Data must be provided either as a pandas DataFrame via <code>dataframe</code>. A test dataset can optionally be provided via <code>data_test</code>.</p>
 <p>The typical usage flow is:</p>
 <ol type="1">
 <li>Instantiate with configuration arguments.</li>
@@ -912,136 +916,118 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="even">
 <td>dataframe</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
-<td>Pre-loaded input DataFrame. When supplied, <code>prepare_data</code> uses this DataFrame directly instead of reading from a CSV file. The DataFrame must contain a datetime column matching <code>index_name</code> plus at least one numeric target column.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>data_frame_name</td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>Identifier for the active dataset, used for cache-directory naming and model file naming.</td>
-<td><code>'demo10'</code></td>
-</tr>
-<tr class="even">
-<td>data_source</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
-<td>Full path to the input CSV file. Only used when <code>dataframe</code> is <code>None</code>.</td>
+<td>Pre-loaded input DataFrame with Train data. The DataFrame must contain a datetime column matching <code>index_name</code> plus at least one numeric target column.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
 <td>data_test</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
-<td>Full path to the test CSV file. <code>None</code> means no test data.</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
+<td>Pre-loaded input DataFrame with Test data. The DataFrame must contain a datetime column matching <code>index_name</code> plus at least one numeric target column. Optional.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
-<td>data_home</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</td>
-<td>Optional path to a data directory.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
 <td>cache_data</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to cache intermediate data to disk.</td>
 <td><code>True</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>cache_home</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</td>
 <td>Cache directory path.</td>
 <td><code>None</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>agg_weights</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/functions.html#float">float</a>]]</td>
 <td>Per-target aggregation weights.</td>
 <td><code>None</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>index_name</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Datetime column name in the raw CSV / DataFrame.</td>
 <td><code>'DateTime'</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>number_folds</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of validation folds.</td>
 <td><code>10</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>predict_size</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Forecast horizon in hours.</td>
 <td><code>24</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>bounds</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>]]</td>
 <td>Per-column hard outlier bounds <code>(lower, upper)</code>.</td>
 <td><code>None</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>contamination</td>
 <td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
 <td>IsolationForest contamination fraction.</td>
 <td><code>0.03</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>imputation_method</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
 <td>Gap-filling strategy.</td>
 <td><code>'weighted'</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>use_exogenous_features</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to build exogenous features.</td>
 <td><code>True</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>n_trials_optuna</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of Optuna Bayesian-search trials.</td>
 <td><code>15</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>n_trials_spotoptim</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Number of SpotOptim surrogate-search trials.</td>
 <td><code>10</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>n_initial_spotoptim</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Initial random evaluations for SpotOptim.</td>
 <td><code>5</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>auto_save_models</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Whether to automatically save fitted models to disk after each training run. Defaults to <code>True</code> so that saved models are immediately available for the predict task without any manual call to <code>save_models</code>.</td>
 <td><code>True</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>train_days</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Length of the training window in days. Controls <code>TRAIN_SIZE</code> and <code>config.train_size</code>. Defaults to <code>365 * 2</code> (two years).</td>
 <td><code>365 * 2</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>val_days</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Length of each validation fold in days. The total validation span is <code>val_days * number_folds</code>. Controls <code>DELTA_VAL</code> and <code>config.delta_val</code>. Defaults to <code>7 * 10</code> (ten weeks).</td>
 <td><code>7 * 2</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>log_level</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Logging level for the pipeline logger.</td>
 <td><code>logging.INFO</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>config_overrides</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Extra keyword arguments forwarded to ConfigMulti.</td>
@@ -1052,7 +1038,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="e5ee6648" class="cell" data-execution_count="1">
+<div id="28e45e9b" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask <span class="im">import</span> MultiTask</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
@@ -1066,24 +1052,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell-output cell-output-stdout">
 <pre><code>DataFrame stored: True
 Task: lazy</code></pre>
-</div>
-</div>
-<div id="60221f66" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask <span class="im">import</span> MultiTask</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> get_package_data_home</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>csv_path <span class="op">=</span> <span class="bu">str</span>(get_package_data_home() <span class="op">/</span> <span class="st">"demo10.csv"</span>)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(data_source<span class="op">=</span>csv_path, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>mt.prepare_data()</span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Pipeline shape: </span><span class="sc">{</span>mt<span class="sc">.</span>df_pipeline<span class="sc">.</span>shape<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>Original data shape: (18118, 11)
-Data resampled with rule='h', closed='left', label='left', aggregation='mean'.
-Resampled data shape: (18118, 11)
-The time series data has a valid datetime index that is sorted and complete.
-Data range: 2019-12-01T00:00 to 2021-12-24T21:00
-Covariate data range: 2019-12-01T00:00 to 2021-12-25T21:00
-Pipeline shape: (18118, 11)</code></pre>
 </div>
 </div>
 </section>
@@ -1125,7 +1093,7 @@ Pipeline shape: (18118, 11)</code></pre>
 </table>
 <section id="spotforecast2.manager.multitask.MultiTask.run" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run">run</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run(task<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>, <span class="op">**</span>kwargs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run(task<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>, <span class="op">**</span>kwargs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Run the task specified by <code>task</code> (or <code>self.TASK</code>).</p>
 <section id="parameters-1" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
@@ -1205,11 +1173,11 @@ Pipeline shape: (18118, 11)</code></pre>
 </section>
 <section id="spotforecast2.manager.multitask.MultiTask.run_task_clean" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_clean">run_task_clean</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_clean(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_clean(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Remove all cached data from the pipeline cache directory.</p>
 <p>Does not require prepare_data() to be called first.</p>
 <section id="parameters-2" class="level4 doc-section doc-section-parameters">
@@ -1286,7 +1254,7 @@ Pipeline shape: (18118, 11)</code></pre>
 </section>
 <section id="spotforecast2.manager.multitask.MultiTask.run_task_lazy" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_lazy">run_task_lazy</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_lazy(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_lazy(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Lazy Fitting with default LightGBM parameters.</p>
 <section id="parameters-3" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
@@ -1336,7 +1304,7 @@ Pipeline shape: (18118, 11)</code></pre>
 </section>
 <section id="spotforecast2.manager.multitask.MultiTask.run_task_optuna" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_optuna">run_task_optuna</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_optuna(search_space<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_optuna(search_space<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Optuna Bayesian hyperparameter tuning.</p>
 <section id="parameters-4" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
@@ -1392,11 +1360,11 @@ Pipeline shape: (18118, 11)</code></pre>
 </section>
 <section id="spotforecast2.manager.multitask.MultiTask.run_task_predict" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_predict">run_task_predict</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_predict(</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    task_name<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    max_age_days<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_predict(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    task_name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    max_age_days<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Predict-only using previously saved models.</p>
 <p>Loads fitted models from the cache directory and produces predictions without any training. Raises <code>RuntimeError</code> if no saved models are found.</p>
 <section id="parameters-5" class="level4 doc-section doc-section-parameters">
@@ -1478,7 +1446,7 @@ Pipeline shape: (18118, 11)</code></pre>
 </section>
 <section id="spotforecast2.manager.multitask.MultiTask.run_task_spotoptim" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_spotoptim">run_task_spotoptim</h3>
-<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_spotoptim(search_space<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_spotoptim(search_space<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>SpotOptim surrogate-model Bayesian tuning.</p>
 <section id="parameters-6" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
