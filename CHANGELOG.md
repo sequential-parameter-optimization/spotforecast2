@@ -1,3 +1,9 @@
+## [0.22.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.21.0...v0.22.0-rc.1) (2026-03-24)
+
+### Features
+
+* log_level ([2ab6730](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2ab67302a1028dafe7ef115a0b7508f27619151c))
+
 ## [0.21.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.20.0...v0.21.0) (2026-03-24)
 
 ### Features
