@@ -1004,7 +1004,7 @@ build_exogenous_features → run</code></pre>
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="d931339c" class="cell" data-execution_count="1">
+<div id="08e47060" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask.runner <span class="im">import</span> run</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
@@ -1013,7 +1013,7 @@ build_exogenous_features → run</code></pre>
 <span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>))</span>
 <span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(df, task<span class="op">=</span><span class="st">"lazy"</span>, project_name<span class="op">=</span><span class="st">"demo10"</span>, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(forecast.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(forecast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Original data shape: (18118, 11)
 Data resampled with rule='h', closed='left', label='left', aggregation='mean'.
@@ -1099,7 +1099,26 @@ WeightFunction: all sample weights for the requested index are zero (the window 
 2021-12-24 23:00:00+00:00  7048.321873
 2021-12-25 00:00:00+00:00  6737.210432
 2021-12-25 01:00:00+00:00  6413.015804
-2021-12-25 02:00:00+00:00  6222.748145</code></pre>
+2021-12-25 02:00:00+00:00  6222.748145
+2021-12-25 03:00:00+00:00  6341.865422
+2021-12-25 04:00:00+00:00  7224.224033
+2021-12-25 05:00:00+00:00  7908.086984
+2021-12-25 06:00:00+00:00  8492.615352
+2021-12-25 07:00:00+00:00  8632.740730
+2021-12-25 08:00:00+00:00  8646.154844
+2021-12-25 09:00:00+00:00  8592.319747
+2021-12-25 10:00:00+00:00  8514.139080
+2021-12-25 11:00:00+00:00  8500.185418
+2021-12-25 12:00:00+00:00  8593.009900
+2021-12-25 13:00:00+00:00  8758.344139
+2021-12-25 14:00:00+00:00  8765.180988
+2021-12-25 15:00:00+00:00  8783.875537
+2021-12-25 16:00:00+00:00  8791.741071
+2021-12-25 17:00:00+00:00  8761.624638
+2021-12-25 18:00:00+00:00  8772.071874
+2021-12-25 19:00:00+00:00  8832.281119
+2021-12-25 20:00:00+00:00  9323.247695
+2021-12-25 21:00:00+00:00  9095.549114</code></pre>
 </div>
 </div>
 
