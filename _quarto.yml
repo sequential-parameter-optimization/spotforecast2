@@ -96,6 +96,8 @@ website:
                 file: docs/reference/manager.multitask.CleanTask.qmd
               - text: "MultiTask"
                 file: docs/reference/manager.multitask.MultiTask.qmd
+              - text: "run"
+                file: docs/reference/manager.multitask.run.qmd
           - section: "Model Selection"
             contents:
               - text: "bayesian_search"
@@ -269,6 +271,7 @@ quartodoc:
         - manager.multitask.PredictTask
         - manager.multitask.CleanTask
         - manager.multitask.MultiTask
+        - manager.multitask.run
 
     - title: "Forecaster"
       desc: "Forecasting utilities and metrics."

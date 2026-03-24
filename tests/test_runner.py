@@ -98,8 +98,8 @@ class TestSignature:
     def test_has_bounds_param(self):
         assert "bounds" in self._sig().parameters
 
-    def test_has_data_frame_name_param(self):
-        assert "data_frame_name" in self._sig().parameters
+    def test_has_project_name_param(self):
+        assert "project_name" in self._sig().parameters
 
     def test_has_kwargs(self):
         p = self._sig().parameters
@@ -111,8 +111,8 @@ class TestSignature:
     def test_bounds_default_is_none(self):
         assert self._sig().parameters["bounds"].default is None
 
-    def test_data_frame_name_default(self):
-        assert self._sig().parameters["data_frame_name"].default == "demo10"
+    def test_project_name_default(self):
+        assert self._sig().parameters["project_name"].default == "test_project"
 
 
 # ---------------------------------------------------------------------------
@@ -148,11 +148,12 @@ class TestCleanTask:
     @patch("spotforecast2.manager.multitask.runner.MultiTask")
     def test_multitask_constructed_with_clean(self, MockMT):
         MockMT.return_value = _mock_mt()
-        run(_DUMMY_DF, task="clean", data_frame_name="mydata")
+        run(_DUMMY_DF, task="clean", project_name="mydata")
         MockMT.assert_called_once_with(
             task="clean",
-            dataframe=_DUMMY_DF,
             data_frame_name="mydata",
+            cache_data=True,
+            cache_home=None,
         )
 
     @patch("spotforecast2.manager.multitask.runner.MultiTask")
@@ -182,6 +183,13 @@ class TestCleanTask:
         run(_DUMMY_DF, task="clean", cache_home="/tmp/cache")
         _, kwargs = MockMT.call_args
         assert kwargs["cache_home"] == "/tmp/cache"
+
+    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    def test_extra_kwargs_forwarded_to_multitask(self, MockMT):
+        MockMT.return_value = _mock_mt()
+        run(_DUMMY_DF, task="clean", predict_size=48)
+        _, kwargs = MockMT.call_args
+        assert kwargs["predict_size"] == 48
 
     @patch("spotforecast2.manager.multitask.runner.MultiTask")
     def test_agg_weights_not_forwarded_for_clean(self, MockMT):
@@ -301,7 +309,7 @@ class TestPipelineTasks:
     def test_data_frame_name_forwarded(self, MockMT, task):
         mt = _mock_mt()
         MockMT.return_value = mt
-        run(_DUMMY_DF, task=task, data_frame_name="mydata")
+        run(_DUMMY_DF, task=task, project_name="mydata")
         _, kwargs = MockMT.call_args
         assert kwargs["data_frame_name"] == "mydata"
 
