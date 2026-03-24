@@ -1,3 +1,9 @@
+## [0.21.0-rc.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.21.0-rc.2...v0.21.0-rc.3) (2026-03-24)
+
+### Bug Fixes
+
+* save_forecaster cleanup ([1f71221](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1f71221ef7b50256caa697b51a562ec40bdd1c82))
+
 ## [0.21.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.21.0-rc.1...v0.21.0-rc.2) (2026-03-24)
 
 ### Bug Fixes
