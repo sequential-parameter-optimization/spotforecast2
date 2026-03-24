@@ -50,7 +50,7 @@ def bayesian_search_forecaster(
     return_best: bool = True,
     n_jobs: int | str = "auto",
     verbose: bool = False,
-    show_progress: bool = True,
+    show_progress: bool = False,
     suppress_warnings: bool = False,
     output_file: str | None = None,
     kwargs_create_study: dict | None = None,
@@ -98,7 +98,7 @@ def bayesian_search_forecaster(
         verbose: If True, print number of folds used for cross-validation.
             Default is False.
         show_progress: Whether to show an Optuna progress bar during
-            optimization. Default is True.
+            optimization. Default is False.
         suppress_warnings: If True, suppress spotforecast warnings during
             hyperparameter search. Default is False.
         output_file: Filename or full path to save results as TSV. If None,
@@ -446,14 +446,15 @@ def _bayesian_search_optuna(
 
         forecaster.fit(y=y, exog=exog, store_in_sample_residuals=True)
 
-        print(
-            f"`Forecaster` refitted using the best-found lags and parameters, "
-            f"and the whole data set: \n"
-            f"  Lags: {best_lags} \n"
-            f"  Parameters: {best_params}\n"
-            f"  {'Backtesting' if cv_name == 'TimeSeriesFold' else 'One-step-ahead'} "
-            f"metric: {best_metric}"
-        )
+        if verbose or show_progress:
+            print(
+                f"`Forecaster` refitted using the best-found lags and parameters, "
+                f"and the whole data set: \n"
+                f"  Lags: {best_lags} \n"
+                f"  Parameters: {best_params}\n"
+                f"  {'Backtesting' if cv_name == 'TimeSeriesFold' else 'One-step-ahead'} "
+                f"metric: {best_metric}"
+            )
 
     set_skforecast_warnings(suppress_warnings, action="default")
 

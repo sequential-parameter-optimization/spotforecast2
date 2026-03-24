@@ -86,6 +86,9 @@ def execute_clean(
     item_names: List[str] = [item.name for item in items]
 
     if dry_run:
+        print(f"[clean] Dry run — would delete: {target_dir}")
+        for item in items:
+            print(f"  Would remove: {item.name}")
         task.logger.info("[clean] Dry run — would delete: %s", target_dir)
         for item in items:
             task.logger.info("  Would remove: %s", item.name)
@@ -105,7 +108,7 @@ def execute_clean(
         ) from exc
 
     task.logger.info("[clean] Cache removed successfully: %s", target_dir)
-    print("success")
+    print(f"[clean] Cache removed successfully: {target_dir}")
     return {
         "status": "success",
         "cache_dir": target_dir,

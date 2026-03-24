@@ -51,7 +51,7 @@ class MultiTask(BaseTask):
             Defaults to ``"lazy"``.
         dataframe: Pre-loaded input DataFrame with Train data. The DataFrame must contain a
             datetime column matching ``index_name`` plus at least one
-            numeric target column.
+            numeric target column. Optionnal for the "clean" task, but required for all other tasks.
         data_test: Pre-loaded input DataFrame with Test data. The DataFrame must contain a
             datetime column matching ``index_name`` plus at least one
             numeric target column. Optional.
@@ -80,6 +80,7 @@ class MultiTask(BaseTask):
             ``DELTA_VAL`` and ``config.delta_val``.  Defaults to
             ``7 * 10`` (ten weeks).
         log_level: Logging level for the pipeline logger.
+        dry_run: If ``True``, do not clean cache or save models.  Useful for testing and debugging.
         config_overrides: Extra keyword arguments forwarded to
             ConfigMulti.
 
@@ -123,10 +124,15 @@ class MultiTask(BaseTask):
         train_days: int = 365 * 2,
         val_days: int = 7 * 2,
         log_level: int = logging.INFO,
+        verbose: bool = False,
+        dry_run: bool = False,
+        show_progress: bool = False,
         **config_overrides: Any,
     ) -> None:
         # Set _task_name before super().__init__ so self.TASK is correct
         self._task_name = task
+        self._dry_run = dry_run
+        self._show_progress = show_progress
         super().__init__(
             dataframe=dataframe,
             data_test=data_test,
@@ -148,6 +154,7 @@ class MultiTask(BaseTask):
             train_days=train_days,
             val_days=val_days,
             log_level=log_level,
+            verbose=verbose,
             **config_overrides,
         )
 
@@ -171,6 +178,7 @@ class MultiTask(BaseTask):
         self,
         search_space: Optional[Callable] = None,
         show: bool = True,
+        show_progress: bool = False,
     ) -> Dict[str, Any]:
         """Optuna Bayesian hyperparameter tuning.
 
@@ -289,12 +297,13 @@ class MultiTask(BaseTask):
             "optuna": self.run_task_optuna,
             "spotoptim": self.run_task_spotoptim,
             "predict": self.run_task_predict,
-            "clean": self.run_task_clean,
         }
-        if task not in dispatch:
+        if task not in {*dispatch, "clean"}:
             raise ValueError(
-                f"Unknown task '{task}'. Choose from: {list(dispatch.keys())}"
+                f"Unknown task '{task}'. Choose from: {sorted({*dispatch, 'clean'})}"
             )
+        if task == "clean":
+            return self.run_task_clean(show=show, dry_run=self._dry_run)
         return dispatch[task](show=show)
 
     # ------------------------------------------------------------------

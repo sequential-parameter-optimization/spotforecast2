@@ -9,10 +9,9 @@ run) behind a one-call interface.
 """
 
 from typing import Any, List, Optional, Tuple
-
 import pandas as pd
-
 from spotforecast2.manager.multitask.multi import MultiTask
+from spotforecast2_safe.data.fetch_data import get_cache_home
 
 _DEFAULT_BOUNDS: List[Tuple[float, float]] = [
     (-2500, 4500),
@@ -47,16 +46,20 @@ _ALL_TASKS = _PIPELINE_TASKS | {"clean"}
 
 
 def run(
-    dataframe: pd.DataFrame,
+    dataframe: pd.DataFrame = None,
     task: str = "lazy",
-    cache_data: bool = False,
+    cache_data: bool = True,
     cache_home: Optional[str] = None,
     bounds: Optional[List[Tuple[float, float]]] = None,
     agg_weights: Optional[List[float]] = None,
     project_name: str = "test_project",
     n_trials_optuna: Optional[int] = 10,
-    train_days: Optional[int] = 3*365,
+    train_days: Optional[int] = 3 * 365,
     val_days: Optional[int] = 31,
+    show_progress: bool = False,
+    plot_with_outliers: bool = False,
+    show: bool = False,
+    verbose: bool = False,
     **kwargs: Any,
 ) -> pd.DataFrame:
     """Run the MultiTask forecasting pipeline and return predictions.
@@ -74,7 +77,7 @@ def run(
     Args:
         dataframe: Input time-series data.  Must contain a datetime
             column matching the configured ``index_name`` and at least one
-            numeric target column.
+            numeric target column. Optional for the ``"clean"`` task, but required for all other tasks. Defaults to ``None``.
         task: Pipeline mode — one of ``"lazy"``, ``"optuna"``,
             ``"spotoptim"``, ``"predict"``, or ``"clean"``.
             Defaults to ``"lazy"``.
@@ -91,9 +94,13 @@ def run(
             package defaults.
         project_name: Identifier used for cache-directory and
             model-file naming.  Defaults to ``"test_project"``.
-        train_days: Optional number of days in the training window. Defaults to 3 years (1095 days). 
+        train_days: Optional number of days in the training window. Defaults to 3 years (1095 days).
         val_days: Optional number of days in the validation window.  If
             ``None``, the default of 31 days is used.
+        show_progress: Whether to show an Optuna progress bar during optimization. Default is False.
+        plot_with_outliers: Whether to generate a visualization of the data with outliers highlighted.  Defaults to False.
+        show: Whether to display prediction figures after running each task.  Defaults to False.
+        verbose: Default is False.
         **kwargs: Additional keyword arguments forwarded verbatim to
             MultiTask (e.g. ``predict_size``, ``train_days``,
             ``val_days``, ``cache_home``).
@@ -117,11 +124,18 @@ def run(
         df = fetch_data(filename=str(data_home / "demo10.csv"))
 
         forecast = run(df, task="lazy", project_name="demo10", predict_size=24)
-        print(forecast.head())
+        print(forecast)
         ```
     """
     if task not in _ALL_TASKS:
         raise ValueError(f"Unknown task '{task}'. Choose from: {sorted(_ALL_TASKS)}")
+
+    if cache_data and cache_home is None:
+        # issue a warning if caching is enabled but no cache_home is provided, as this will use the package default cache location
+        print(
+            f"[run] Warning: cache_data is True but no cache_home provided. Using package default cache location {get_cache_home()}."
+        )
+        cache_home = get_cache_home()
 
     if task == "clean":
         mt = MultiTask(
@@ -150,11 +164,15 @@ def run(
         n_trials_optuna=n_trials_optuna,
         train_days=train_days,
         val_days=val_days,
+        show_progress=show_progress,
+        verbose=verbose,
         **kwargs,
     )
     mt.prepare_data()
     mt.detect_outliers()
+    if plot_with_outliers:
+        mt.plot_with_outliers()  # optional visualization step; can be removed if not desired
     mt.impute()
     mt.build_exogenous_features()
-    result = mt.run(show=False)
+    result = mt.run(show=show)
     return result["future_pred"].to_frame("forecast")

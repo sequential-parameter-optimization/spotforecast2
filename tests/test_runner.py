@@ -147,13 +147,15 @@ class TestUnknownTask:
 class TestCleanTask:
     @patch("spotforecast2.manager.multitask.runner.MultiTask")
     def test_multitask_constructed_with_clean(self, MockMT):
+        from spotforecast2_safe.data.fetch_data import get_cache_home
+
         MockMT.return_value = _mock_mt()
         run(_DUMMY_DF, task="clean", project_name="mydata")
         MockMT.assert_called_once_with(
             task="clean",
             data_frame_name="mydata",
             cache_data=True,
-            cache_home=None,
+            cache_home=get_cache_home(),
         )
 
     @patch("spotforecast2.manager.multitask.runner.MultiTask")
