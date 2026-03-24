@@ -1,3 +1,9 @@
+## [0.19.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.18.0...v0.19.0-rc.1) (2026-03-24)
+
+### Features
+
+* runner ([f11ffa3](https://github.com/sequential-parameter-optimization/spotforecast2/commit/f11ffa3a9f5682f6f9f17b3b1d782d533de52715))
+
 ## [0.18.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.17.0...v0.18.0) (2026-03-23)
 
 ### Features
