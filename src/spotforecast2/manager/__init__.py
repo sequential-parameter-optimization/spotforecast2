@@ -17,6 +17,7 @@ from spotforecast2.manager.multitask import (
     PredictTask,
     SpotOptimTask,
     agg_predictor,
+    run,
 )
 from spotforecast2.manager.plotter import (
     make_plot,
@@ -47,6 +48,7 @@ __all__ = [
     "PredictTask",
     "SpotOptimTask",
     "agg_predictor",
+    "run",
     "make_plot",
     "plot_actual_vs_predicted",
     "plot_with_outliers",

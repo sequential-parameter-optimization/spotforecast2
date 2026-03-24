@@ -63,7 +63,6 @@ from spotforecast2_safe.preprocessing.imputation import apply_imputation
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.data.fetch_data import fetch_data
 
-
 logger = logging.getLogger(__name__)
 
 

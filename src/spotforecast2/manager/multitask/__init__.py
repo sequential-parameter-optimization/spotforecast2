@@ -27,14 +27,16 @@ from spotforecast2.manager.multitask.optuna import OptunaTask
 from spotforecast2.manager.multitask.predict import PredictTask
 from spotforecast2.manager.multitask.spotoptim import SpotOptimTask
 from spotforecast2.manager.multitask.multi import MultiTask
+from spotforecast2.manager.multitask.runner import run
 
 __all__ = [
     "BaseTask",
     "CleanTask",
     "LazyTask",
+    "MultiTask",
     "OptunaTask",
     "PredictTask",
     "SpotOptimTask",
-    "MultiTask",
     "agg_predictor",
+    "run",
 ]
