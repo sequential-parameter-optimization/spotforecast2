@@ -38,7 +38,6 @@ from spotforecast2_safe.manager.features import (
 )
 from joblib import dump as _joblib_dump
 from joblib import load as _joblib_load
-from spotforecast2_safe.manager.persistence import save_forecaster as _save_forecaster
 from spotforecast2_safe.manager.predictor import build_prediction_package
 from spotforecast2_safe.preprocessing import (
     RollingFeatures as RollingFeaturesUnified,
@@ -762,12 +761,6 @@ class BaseTask:
             weight_func=self.weight_func,
         )
 
-    def _save_forecaster(self, forecaster: Any, task_name: str, target: str) -> None:
-        """Save a fitted forecaster to the cache directory."""
-        model_dir = get_cache_home(self.config.cache_home) / "unified_pipeline"
-        path = _save_forecaster(forecaster, model_dir, target, task_name=task_name)
-        self.logger.info("  Saved: %s", path)
-
     # ------------------------------------------------------------------
     # Tuning-result persistence
     # ------------------------------------------------------------------
@@ -1114,7 +1107,6 @@ class BaseTask:
     ) -> Dict[str, Any]:
         """Fit, save, and build prediction package for one target."""
         forecaster.fit(y=y_train, exog=exog_train)
-        self._save_forecaster(forecaster, task_name, target)
         pkg = build_prediction_package(
             forecaster=forecaster,
             target=target,
