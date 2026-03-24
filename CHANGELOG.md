@@ -1,3 +1,17 @@
+## [0.20.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.19.0...v0.20.0-rc.1) (2026-03-24)
+
+### Features
+
+* increased train val ([e319831](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e3198312e7731283823b92b581417cc85c2bc276))
+
+### Bug Fixes
+
+* data_home data_source removed ([e6b05b0](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e6b05b0a14774a2150717f17a24f0975efd40eb2))
+* default data length ([8ff8ede](https://github.com/sequential-parameter-optimization/spotforecast2/commit/8ff8ede8e1daba201d460a78b9f8bd870f56b1a3))
+* pyproject.toml ([2b5338f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2b5338f3293a3a562eaf4d38f89fe582c05bfed6))
+* setting for run ([dba6725](https://github.com/sequential-parameter-optimization/spotforecast2/commit/dba672562431ba983316b91d3982794aa62af76d))
+* task clean ([469f99a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/469f99ae211464d2958e99b299116b2544313a8a))
+
 ## [0.19.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.18.0...v0.19.0) (2026-03-24)
 
 ### Features
