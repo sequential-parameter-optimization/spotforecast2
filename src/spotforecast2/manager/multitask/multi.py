@@ -120,8 +120,8 @@ class MultiTask(BaseTask):
         n_trials_spotoptim: int = 10,
         n_initial_spotoptim: int = 5,
         auto_save_models: bool = True,
-        train_days: int = 365 * 2,
-        val_days: int = 7 * 2,
+        train_days: int = 365 * 3,
+        val_days: int = 7 * 4,
         log_level: int = logging.INFO,
         **config_overrides: Any,
     ) -> None:
