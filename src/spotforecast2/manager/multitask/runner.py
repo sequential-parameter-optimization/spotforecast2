@@ -127,7 +127,7 @@ def run(
         mt = MultiTask(
             task="clean",
             data_frame_name=project_name,
-            cache_data=cache_data,
+            cache_data=True,
             cache_home=cache_home,
             **kwargs,
         )
