@@ -76,9 +76,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bcbce66894bfa8e7e94e40e0186b9bb8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-84acb973695ec2d34aa8fbb1426e6acd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-9869d8b7442de1229a34c2db70b9e7b6.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-84acb973695ec2d34aa8fbb1426e6acd.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-5b87ed80954e26ea15f9296f3680d709.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-ec0254ad7b8ffb92aa268097323fad65.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-5b87ed80954e26ea15f9296f3680d709.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -1016,7 +1016,8 @@ build_exogenous_features → run</code></pre>
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="30ab8edc" class="cell" data-execution_count="1">
+<p>Run the pipeline using cached or default model parameters (<code>"lazy"</code> task):</p>
+<div id="3e91c084" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask.runner <span class="im">import</span> run</span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
@@ -1094,6 +1095,402 @@ WeightFunction: all sample weights for the requested index are zero (the window 
 2021-12-25 19:00:00+00:00  8832.281119
 2021-12-25 20:00:00+00:00  9323.247695
 2021-12-25 21:00:00+00:00  9095.549114</code></pre>
+</div>
+</div>
+<p>Tune hyperparameters via Optuna Bayesian search (<code>"optuna"</code> task):</p>
+<div id="4959ba35" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask.runner <span class="im">import</span> run</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>))</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    df,</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"optuna"</span>,</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span><span class="st">"demo10"</span>,</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">20</span>,</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(forecast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[run] Warning: cache_data is True but no cache_home provided. Using package default cache location /home/runner/.spotforecast2_cache.</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #ffaf00; text-decoration-color: #ffaf00">╭─────────────────────────────── IgnoredArgumentWarning ───────────────────────────────╮</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> The number of bins has been reduced from 10 to 4 due to duplicated edges caused by   <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> repeated predicted values.\n\nCategory :                                             <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> spotforecast2.exceptions.IgnoredArgumentWarning\nLocation :                          <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> /opt/hostedtoolcache/Python/3.13.12/x64/lib/python3.13/site-packages/spotforecast2_s <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> afe/preprocessing/_binner.py:231\nSuppress : warnings.simplefilter('ignore',         <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> category=IgnoredArgumentWarning)                                                     <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">╰──────────────────────────────────────────────────────────────────────────────────────╯</span>
+</pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #ffaf00; text-decoration-color: #ffaf00">╭─────────────────────────────── IgnoredArgumentWarning ───────────────────────────────╮</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> The number of bins has been reduced from 10 to 4 due to duplicated edges caused by   <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> repeated predicted values.\n\nCategory :                                             <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> spotforecast2.exceptions.IgnoredArgumentWarning\nLocation :                          <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> /opt/hostedtoolcache/Python/3.13.12/x64/lib/python3.13/site-packages/spotforecast2_s <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> afe/preprocessing/_binner.py:231\nSuppress : warnings.simplefilter('ignore',         <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> category=IgnoredArgumentWarning)                                                     <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">╰──────────────────────────────────────────────────────────────────────────────────────╯</span>
+</pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #ffaf00; text-decoration-color: #ffaf00">╭─────────────────────────────── IgnoredArgumentWarning ───────────────────────────────╮</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> The number of bins has been reduced from 10 to 5 due to duplicated edges caused by   <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> repeated predicted values.\n\nCategory :                                             <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> spotforecast2.exceptions.IgnoredArgumentWarning\nLocation :                          <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> /opt/hostedtoolcache/Python/3.13.12/x64/lib/python3.13/site-packages/spotforecast2_s <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> afe/preprocessing/_binner.py:231\nSuppress : warnings.simplefilter('ignore',         <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> category=IgnoredArgumentWarning)                                                     <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">╰──────────────────────────────────────────────────────────────────────────────────────╯</span>
+</pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #ffaf00; text-decoration-color: #ffaf00">╭─────────────────────────────── IgnoredArgumentWarning ───────────────────────────────╮</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> The number of bins has been reduced from 10 to 5 due to duplicated edges caused by   <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> repeated predicted values.\n\nCategory :                                             <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> spotforecast2.exceptions.IgnoredArgumentWarning\nLocation :                          <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> /opt/hostedtoolcache/Python/3.13.12/x64/lib/python3.13/site-packages/spotforecast2_s <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> afe/preprocessing/_binner.py:231\nSuppress : warnings.simplefilter('ignore',         <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span> category=IgnoredArgumentWarning)                                                     <span style="color: #ffaf00; text-decoration-color: #ffaf00">│</span>
+<span style="color: #ffaf00; text-decoration-color: #ffaf00">╰──────────────────────────────────────────────────────────────────────────────────────╯</span>
+</pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                              forecast
+2021-12-24 22:00:00+00:00  8148.342385
+2021-12-24 23:00:00+00:00  6997.158010
+2021-12-25 00:00:00+00:00  6586.398430
+2021-12-25 01:00:00+00:00  6456.057884
+2021-12-25 02:00:00+00:00  6367.531465
+2021-12-25 03:00:00+00:00  6496.285868
+2021-12-25 04:00:00+00:00  7310.357274
+2021-12-25 05:00:00+00:00  7838.107548
+2021-12-25 06:00:00+00:00  8038.801517
+2021-12-25 07:00:00+00:00  8239.832047
+2021-12-25 08:00:00+00:00  8272.491595
+2021-12-25 09:00:00+00:00  8316.836721
+2021-12-25 10:00:00+00:00  8512.000096
+2021-12-25 11:00:00+00:00  8530.437813
+2021-12-25 12:00:00+00:00  8752.725245
+2021-12-25 13:00:00+00:00  8709.376078
+2021-12-25 14:00:00+00:00  8735.193328
+2021-12-25 15:00:00+00:00  8823.038603
+2021-12-25 16:00:00+00:00  8957.700103
+2021-12-25 17:00:00+00:00  9094.075003
+2021-12-25 18:00:00+00:00  9132.866571
+2021-12-25 19:00:00+00:00  9187.803658
+2021-12-25 20:00:00+00:00  9259.551237
+2021-12-25 21:00:00+00:00  8472.024640</code></pre>
+</div>
+</div>
+<p>Load previously saved models and predict without retraining (<code>"predict"</code> task). A prior training run (<code>"lazy"</code> or <code>"optuna"</code>) must have saved models to the cache first:</p>
+<div id="7c6e3a9e" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask.runner <span class="im">import</span> run</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>))</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(df, task<span class="op">=</span><span class="st">"predict"</span>, project_name<span class="op">=</span><span class="st">"demo10"</span>, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
+<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(forecast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[run] Warning: cache_data is True but no cache_home provided. Using package default cache location /home/runner/.spotforecast2_cache.
+                              forecast
+2021-12-24 22:00:00+00:00  8148.342385
+2021-12-24 23:00:00+00:00  6997.158010
+2021-12-25 00:00:00+00:00  6586.398430
+2021-12-25 01:00:00+00:00  6456.057884
+2021-12-25 02:00:00+00:00  6367.531465
+2021-12-25 03:00:00+00:00  6496.285868
+2021-12-25 04:00:00+00:00  7310.357274
+2021-12-25 05:00:00+00:00  7838.107548
+2021-12-25 06:00:00+00:00  8038.801517
+2021-12-25 07:00:00+00:00  8239.832047
+2021-12-25 08:00:00+00:00  8272.491595
+2021-12-25 09:00:00+00:00  8316.836721
+2021-12-25 10:00:00+00:00  8512.000096
+2021-12-25 11:00:00+00:00  8530.437813
+2021-12-25 12:00:00+00:00  8752.725245
+2021-12-25 13:00:00+00:00  8709.376078
+2021-12-25 14:00:00+00:00  8735.193328
+2021-12-25 15:00:00+00:00  8823.038603
+2021-12-25 16:00:00+00:00  8957.700103
+2021-12-25 17:00:00+00:00  9094.075003
+2021-12-25 18:00:00+00:00  9132.866571
+2021-12-25 19:00:00+00:00  9187.803658
+2021-12-25 20:00:00+00:00  9259.551237
+2021-12-25 21:00:00+00:00  8472.024640</code></pre>
+</div>
+</div>
+<p>Remove all cached models and artefacts for a project (<code>"clean"</code> task). Returns an empty DataFrame:</p>
+<div id="a009b3ef" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask.runner <span class="im">import</span> run</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> run(task<span class="op">=</span><span class="st">"clean"</span>, project_name<span class="op">=</span><span class="st">"demo10"</span>)</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result.empty)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[run] Warning: cache_data is True but no cache_home provided. Using package default cache location /home/runner/.spotforecast2_cache.
+[clean] Cache removed successfully: /home/runner/.spotforecast2_cache
+True</code></pre>
 </div>
 </div>
 
