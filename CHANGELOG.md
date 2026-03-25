@@ -1,3 +1,9 @@
+## [0.22.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.1...v0.22.2) (2026-03-25)
+
+### Bug Fixes
+
+* runner ([4f17b7b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/4f17b7b26544db9d22f7d058aaa86ca2ce503976))
+
 ## [0.22.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.0...v0.22.1) (2026-03-25)
 
 ### Bug Fixes
