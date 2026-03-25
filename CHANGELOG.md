@@ -1,3 +1,9 @@
+## [0.22.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.0...v0.22.1) (2026-03-25)
+
+### Bug Fixes
+
+* base.py arguments ([2d2a105](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2d2a10598f6a8f9306ba47fe32d703f064cedde5))
+
 ## [0.22.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.0...v0.22.1-rc.1) (2026-03-25)
 
 ### Bug Fixes
