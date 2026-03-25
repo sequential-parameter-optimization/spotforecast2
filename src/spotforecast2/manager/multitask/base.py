@@ -1267,14 +1267,37 @@ class BaseTask:
     # Abstract run
     # ------------------------------------------------------------------
 
-    def run(self, show: bool = True, **kwargs: Any) -> Dict[str, Any]:
+    def run(  # noqa: PLR0913
+        self,
+        show: bool = True,
+        task: Optional[str] = None,
+        task_name: Optional[str] = None,
+        use_tuned_params: bool = True,
+        max_age_days: Optional[float] = None,
+        search_space: Optional[Any] = None,
+        dry_run: bool = False,
+        cache_home: Optional[Path] = None,
+        **kwargs: Any,
+    ) -> Dict[str, Any]:
         """Execute the task-specific training / tuning pipeline.
 
         Subclasses **must** override this method.
 
         Args:
             show: If ``True``, display prediction figures.
-            **kwargs: Task-specific arguments (e.g. ``search_space``).
+            task: Task mode override (used by ``MultiTask``).
+            task_name: Restrict model loading to a specific source task
+                (used by ``PredictTask``).
+            use_tuned_params: Load cached tuning results when available
+                (used by ``LazyTask``).
+            max_age_days: Maximum age in days for cached results
+                (used by ``LazyTask`` and ``PredictTask``).
+            search_space: Hyperparameter search-space definition
+                (used by ``OptunaTask`` and ``SpotOptimTask``).
+            dry_run: Report what would be deleted without removing anything
+                (used by ``CleanTask``).
+            cache_home: Override the cache directory (used by ``CleanTask``).
+            **kwargs: Additional task-specific arguments.
 
         Returns:
             Aggregated prediction package for the task.
