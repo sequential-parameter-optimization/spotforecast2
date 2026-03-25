@@ -118,6 +118,9 @@ def run(
         ValueError: If ``task`` is not one of the supported task names.
 
     Examples:
+        Run the pipeline using cached or default model parameters
+        (``"lazy"`` task):
+
         ```{python}
         import pandas as pd
         from spotforecast2.manager.multitask.runner import run
@@ -128,6 +131,52 @@ def run(
 
         forecast = run(df, task="lazy", project_name="demo10", predict_size=24)
         print(forecast)
+        ```
+
+        Tune hyperparameters via Optuna Bayesian search (``"optuna"`` task):
+
+        ```{python}
+        import pandas as pd
+        from spotforecast2.manager.multitask.runner import run
+        from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+
+        data_home = get_package_data_home()
+        df = fetch_data(filename=str(data_home / "demo10.csv"))
+
+        forecast = run(
+            df,
+            task="optuna",
+            project_name="demo10",
+            n_trials_optuna=20,
+            predict_size=24,
+        )
+        print(forecast)
+        ```
+
+        Load previously saved models and predict without retraining
+        (``"predict"`` task).  A prior training run (``"lazy"`` or
+        ``"optuna"``) must have saved models to the cache first:
+
+        ```{python}
+        import pandas as pd
+        from spotforecast2.manager.multitask.runner import run
+        from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+
+        data_home = get_package_data_home()
+        df = fetch_data(filename=str(data_home / "demo10.csv"))
+
+        forecast = run(df, task="predict", project_name="demo10", predict_size=24)
+        print(forecast)
+        ```
+
+        Remove all cached models and artefacts for a project
+        (``"clean"`` task).  Returns an empty DataFrame:
+
+        ```{python}
+        from spotforecast2.manager.multitask.runner import run
+
+        result = run(task="clean", project_name="demo10")
+        print(result.empty)
         ```
     """
     if task not in _ALL_TASKS:
