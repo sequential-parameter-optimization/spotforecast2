@@ -48,7 +48,6 @@ _ALL_TASKS = _PIPELINE_TASKS | {"clean"}
 def run(
     dataframe: pd.DataFrame = None,
     task: str = "lazy",
-    cache_data: bool = True,
     cache_home: Optional[str] = None,
     bounds: Optional[List[Tuple[float, float]]] = None,
     agg_weights: Optional[List[float]] = None,
@@ -56,6 +55,7 @@ def run(
     n_trials_optuna: Optional[int] = 10,
     train_days: Optional[int] = 3 * 365,
     val_days: Optional[int] = 31,
+    imputation_method: str = "weighted",
     show_progress: bool = False,
     plot_with_outliers: bool = False,
     show: bool = False,
@@ -82,8 +82,6 @@ def run(
         task: Pipeline mode — one of ``"lazy"``, ``"optuna"``,
             ``"spotoptim"``, ``"predict"``, or ``"clean"``.
             Defaults to ``"lazy"``.
-        cache_data: Whether to cache the preprocessed data.  Defaults to
-            ``False``.
         cache_home: Optional path to the cache directory.  Defaults to
             ``None``, which uses the package default cache location that
             is defined via spotforecast2_safe's `get_cache_home()`.
@@ -98,10 +96,18 @@ def run(
         train_days: Optional number of days in the training window. Defaults to 3 years (1095 days).
         val_days: Optional number of days in the validation window.  If
             ``None``, the default of 31 days is used.
-        show_progress: Whether to show an Optuna progress bar during optimization. Default is False.
-        plot_with_outliers: Whether to generate a visualization of the data with outliers highlighted.  Defaults to False.
-        show: Whether to display prediction figures after running each task.  Defaults to False.
-        verbose: Default is False.
+        imputation_method: Method used for imputation of detected
+            outliers.  Passed to the ``imputation_method`` argument of
+            MultiTask. Options are ``"weighted"`` or ``"linear"``. Defaults to ``"weighted"``.
+        show_progress:
+            Whether to print progress messages during pipeline execution.
+            Defaults to False.
+        plot_with_outliers:
+            Whether to generate a visualization of the data with outliers highlighted.  Defaults to False.
+        show:
+            Whether to display prediction figures after running each task.  Defaults to False.
+        verbose:
+            Default is False.
         log_level:
             Logging level. Default is 40 (ERROR). Other common values include 0 (NOTSET), 10 (DEBUG), 20 (INFO), 30 (WARNING), 50 (CRITICAL).
         **kwargs: Additional keyword arguments forwarded verbatim to
@@ -122,34 +128,34 @@ def run(
         (``"lazy"`` task):
 
         ```{python}
-        import pandas as pd
         from spotforecast2.manager.multitask.runner import run
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
         data_home = get_package_data_home()
-        df = fetch_data(filename=str(data_home / "demo100.csv"))
+        df = fetch_data(filename=str(data_home / "demo02.csv"))
 
-        forecast = run(df, task="lazy", project_name="demo10", train_days = 10 * 365, predict_size=24)
+        forecast = run(df, task="lazy", project_name="demo02", train_days = 365, predict_size=24, imputation_method="linear")
         print(forecast)
         ```
 
         Tune hyperparameters via Optuna Bayesian search (``"optuna"`` task):
 
         ```{python}
-        import pandas as pd
         from spotforecast2.manager.multitask.runner import run
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
         data_home = get_package_data_home()
-        df = fetch_data(filename=str(data_home / "demo100.csv"))
+        df = fetch_data(filename=str(data_home / "demo02.csv"))
 
         forecast = run(
             df,
             task="optuna",
-            project_name="demo100",
-            n_trials_optuna=20,
+            project_name="demo02",
+            n_trials_optuna=5,
             predict_size=24,
-            train_days = 10 * 365
+            train_days=365,
+            val_days=7,
+            imputation_method="linear"
         )
         print(forecast)
         ```
@@ -159,14 +165,13 @@ def run(
         ``"optuna"``) must have saved models to the cache first:
 
         ```{python}
-        import pandas as pd
         from spotforecast2.manager.multitask.runner import run
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
         data_home = get_package_data_home()
-        df = fetch_data(filename=str(data_home / "demo10.csv"))
+        df = fetch_data(filename=str(data_home / "demo02.csv"))
 
-        forecast = run(df, task="predict", project_name="demo10", predict_size=24)
+        forecast = run(df, task="predict", project_name="demo02", predict_size=24, imputation_method="linear")
         print(forecast)
         ```
 
@@ -176,25 +181,20 @@ def run(
         ```{python}
         from spotforecast2.manager.multitask.runner import run
 
-        result = run(task="clean", project_name="demo10")
+        result = run(task="clean", project_name="demo02")
         print(result.empty)
         ```
     """
     if task not in _ALL_TASKS:
         raise ValueError(f"Unknown task '{task}'. Choose from: {sorted(_ALL_TASKS)}")
 
-    if cache_data and cache_home is None:
-        # issue a warning if caching is enabled but no cache_home is provided, as this will use the package default cache location
-        print(
-            f"[run] Warning: cache_data is True but no cache_home provided. Using package default cache location {get_cache_home()}."
-        )
+    if cache_home is None:
         cache_home = get_cache_home()
 
     if task == "clean":
         mt = MultiTask(
             task="clean",
             data_frame_name=project_name,
-            cache_data=True,
             cache_home=cache_home,
             **kwargs,
         )
@@ -212,11 +212,11 @@ def run(
         data_frame_name=project_name,
         agg_weights=effective_agg_weights,
         bounds=effective_bounds,
-        cache_data=cache_data,
         cache_home=cache_home,
         n_trials_optuna=n_trials_optuna,
         train_days=train_days,
         val_days=val_days,
+        imputation_method=imputation_method,
         show_progress=show_progress,
         verbose=verbose,
         log_level=log_level,

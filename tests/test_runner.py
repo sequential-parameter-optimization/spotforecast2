@@ -114,6 +114,9 @@ class TestSignature:
     def test_project_name_default(self):
         assert self._sig().parameters["project_name"].default == "test_project"
 
+    def test_no_cache_data_param(self):
+        assert "cache_data" not in self._sig().parameters
+
 
 # ---------------------------------------------------------------------------
 # ValueError on unknown task
@@ -154,7 +157,6 @@ class TestCleanTask:
         MockMT.assert_called_once_with(
             task="clean",
             data_frame_name="mydata",
-            cache_data=True,
             cache_home=get_cache_home(),
         )
 

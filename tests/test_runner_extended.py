@@ -7,10 +7,10 @@ Covers behaviors complementary to test_runner.py:
 
 - show=True/False forwarded to mt.run()
 - plot_with_outliers=True/False controls mt.plot_with_outliers() call
-- cache_data=True with no explicit cache_home triggers warning and
-  auto-resolves to get_cache_home()
-- cache_data=False leaves cache_home as None without printing a warning
-- Explicit cache_home is forwarded as-is and suppresses the warning
+- cache_home=None auto-resolves to get_cache_home() for both pipeline
+  and clean tasks
+- Explicit cache_home is forwarded as-is for both pipeline and clean tasks
+- No warning is printed when cache_home is None
 - Custom agg_weights forwarded to MultiTask constructor
 - Scalar parameters n_trials_optuna, train_days, val_days, show_progress,
   verbose, and log_level forwarded to MultiTask constructor
@@ -124,57 +124,53 @@ class TestPlotWithOutliers:
 
 
 # ---------------------------------------------------------------------------
-# cache_data / cache_home interaction
+# cache_home auto-resolution
 # ---------------------------------------------------------------------------
 
 
-class TestCacheDataBehavior:
+class TestCacheHomeBehavior:
     """Tests auto-resolution and forwarding of cache_home."""
 
     @patch("spotforecast2.manager.multitask.runner.MultiTask")
-    def test_cache_data_true_no_home_uses_get_cache_home(self, MockMT):
+    def test_none_cache_home_auto_resolves_for_pipeline_task(self, MockMT):
         from spotforecast2_safe.data.fetch_data import get_cache_home
 
         mt = _mock_mt()
         MockMT.return_value = mt
-        run(_DUMMY_DF, task="lazy", cache_data=True, cache_home=None)
+        run(_DUMMY_DF, task="lazy", cache_home=None)
         _, kwargs = MockMT.call_args
         assert kwargs["cache_home"] == get_cache_home()
 
     @patch("spotforecast2.manager.multitask.runner.MultiTask")
-    def test_cache_data_true_no_home_prints_warning(self, MockMT, capsys):
-        MockMT.return_value = _mock_mt()
-        run(_DUMMY_DF, task="lazy", cache_data=True, cache_home=None)
-        captured = capsys.readouterr()
-        assert "Warning" in captured.out
+    def test_none_cache_home_auto_resolves_for_clean_task(self, MockMT):
+        from spotforecast2_safe.data.fetch_data import get_cache_home
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
-    def test_cache_data_false_no_warning_printed(self, MockMT, capsys):
-        MockMT.return_value = _mock_mt()
-        run(_DUMMY_DF, task="lazy", cache_data=False)
-        captured = capsys.readouterr()
-        assert captured.out == ""
-
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
-    def test_cache_data_false_cache_home_none_forwarded(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
-        run(_DUMMY_DF, task="lazy", cache_data=False, cache_home=None)
+        run(_DUMMY_DF, task="clean", cache_home=None)
         _, kwargs = MockMT.call_args
-        assert kwargs["cache_home"] is None
+        assert kwargs["cache_home"] == get_cache_home()
 
     @patch("spotforecast2.manager.multitask.runner.MultiTask")
-    def test_explicit_cache_home_forwarded_as_is(self, MockMT):
+    def test_explicit_cache_home_forwarded_for_pipeline_task(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
-        run(_DUMMY_DF, task="lazy", cache_data=True, cache_home="/my/cache")
+        run(_DUMMY_DF, task="lazy", cache_home="/my/cache")
         _, kwargs = MockMT.call_args
         assert kwargs["cache_home"] == "/my/cache"
 
     @patch("spotforecast2.manager.multitask.runner.MultiTask")
-    def test_explicit_cache_home_suppresses_warning(self, MockMT, capsys):
+    def test_explicit_cache_home_forwarded_for_clean_task(self, MockMT):
+        mt = _mock_mt()
+        MockMT.return_value = mt
+        run(_DUMMY_DF, task="clean", cache_home="/my/cache")
+        _, kwargs = MockMT.call_args
+        assert kwargs["cache_home"] == "/my/cache"
+
+    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    def test_no_warning_printed_when_cache_home_none(self, MockMT, capsys):
         MockMT.return_value = _mock_mt()
-        run(_DUMMY_DF, task="lazy", cache_data=True, cache_home="/my/cache")
+        run(_DUMMY_DF, task="lazy", cache_home=None)
         captured = capsys.readouterr()
         assert captured.out == ""
 
