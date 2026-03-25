@@ -51,7 +51,7 @@ class MultiTask(BaseTask):
             Defaults to ``"lazy"``.
         dataframe: Pre-loaded input DataFrame with Train data. The DataFrame must contain a
             datetime column matching ``index_name`` plus at least one
-            numeric target column. Optionnal for the "clean" task, but required for all other tasks.
+            numeric target column. Optional for the "clean" task, but required for all other tasks.
         data_test: Pre-loaded input DataFrame with Test data. The DataFrame must contain a
             datetime column matching ``index_name`` plus at least one
             numeric target column. Optional.
