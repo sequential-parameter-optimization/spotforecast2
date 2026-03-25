@@ -115,10 +115,11 @@ def run(
             ``val_days``, ``cache_home``).
 
     Returns:
-        DataFrame whose index is the forecast horizon timestamps and
-        whose single column ``"forecast"`` contains the aggregated
-        predicted values.  For the ``"clean"`` task an empty DataFrame
-        is returned.
+        pd.DataFrame:
+            DataFrame whose index is the forecast horizon timestamps and
+            whose single column ``"forecast"`` contains the aggregated
+            predicted values.  For the ``"clean"`` task an empty DataFrame
+            is returned.
 
     Raises:
         ValueError: If ``task`` is not one of the supported task names.
