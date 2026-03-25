@@ -127,9 +127,9 @@ def run(
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
         data_home = get_package_data_home()
-        df = fetch_data(filename=str(data_home / "demo10.csv"))
+        df = fetch_data(filename=str(data_home / "demo100.csv"))
 
-        forecast = run(df, task="lazy", project_name="demo10", predict_size=24)
+        forecast = run(df, task="lazy", project_name="demo10", train_days = 10 * 365, predict_size=24)
         print(forecast)
         ```
 
@@ -141,14 +141,15 @@ def run(
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
         data_home = get_package_data_home()
-        df = fetch_data(filename=str(data_home / "demo10.csv"))
+        df = fetch_data(filename=str(data_home / "demo100.csv"))
 
         forecast = run(
             df,
             task="optuna",
-            project_name="demo10",
+            project_name="demo100",
             n_trials_optuna=20,
             predict_size=24,
+            train_days = 10 * 365
         )
         print(forecast)
         ```
