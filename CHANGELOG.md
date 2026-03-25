@@ -1,3 +1,16 @@
+## [0.22.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.0-rc.1...v0.22.0-rc.2) (2026-03-25)
+
+### Bug Fixes
+
+* weather ([044e43f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/044e43ff1cd21d54e726e44d254f183b47f1f8ab))
+* weather data caching ([7f3b1c5](https://github.com/sequential-parameter-optimization/spotforecast2/commit/7f3b1c5f9e5f191baed6ad65ab06487db2e0d849))
+
+## [0.22.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.21.0...v0.22.0-rc.1) (2026-03-24)
+
+### Features
+
+* log_level ([2ab6730](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2ab67302a1028dafe7ef115a0b7508f27619151c))
+
 ## [0.21.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.20.0...v0.21.0) (2026-03-24)
 
 ### Features

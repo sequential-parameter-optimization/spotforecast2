@@ -17,7 +17,6 @@ from . import model_selection
 from . import preprocessing
 from . import stats
 from . import utils
-from . import weather
 from spotforecast2_safe.manager.configurator import ConfigEntsoe
 
 Config = ConfigEntsoe
@@ -31,7 +30,6 @@ __all__ = [
     "preprocessing",
     "stats",
     "utils",
-    "weather",
 ]
 
 

@@ -60,6 +60,7 @@ def run(
     plot_with_outliers: bool = False,
     show: bool = False,
     verbose: bool = False,
+    log_level: int = 40,
     **kwargs: Any,
 ) -> pd.DataFrame:
     """Run the MultiTask forecasting pipeline and return predictions.
@@ -101,6 +102,8 @@ def run(
         plot_with_outliers: Whether to generate a visualization of the data with outliers highlighted.  Defaults to False.
         show: Whether to display prediction figures after running each task.  Defaults to False.
         verbose: Default is False.
+        log_level:
+            Logging level. Default is 40 (ERROR). Other common values include 0 (NOTSET), 10 (DEBUG), 20 (INFO), 30 (WARNING), 50 (CRITICAL).
         **kwargs: Additional keyword arguments forwarded verbatim to
             MultiTask (e.g. ``predict_size``, ``train_days``,
             ``val_days``, ``cache_home``).
@@ -166,6 +169,7 @@ def run(
         val_days=val_days,
         show_progress=show_progress,
         verbose=verbose,
+        log_level=log_level,
         **kwargs,
     )
     mt.prepare_data()

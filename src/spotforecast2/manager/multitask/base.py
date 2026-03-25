@@ -552,6 +552,7 @@ class BaseTask:
             longitude=self.config.longitude,
             timezone=self.config.timezone,
             freq="h",
+            cache_home=self.config.cache_home if self.cache_data else None,
             verbose=self.verbose,
         )
         self.logger.info("  Weather features: %s", weather_features.shape)

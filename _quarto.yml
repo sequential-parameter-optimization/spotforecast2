@@ -162,10 +162,6 @@ website:
                 file: docs/reference/utils.generate_holiday.qmd
               - text: "validation"
                 file: docs/reference/utils.validation.qmd
-          - section: "Weather"
-            contents:
-              - text: "weather_client"
-                file: docs/reference/weather.weather_client.qmd
 
       - section: "Processing Guides"
         contents:
@@ -291,11 +287,6 @@ quartodoc:
         - tasks.task_n_to_1_dataframe
         - tasks.task_n_to_1_with_covariates
         - tasks.task_n_to_1_with_covariates_and_dataframe
-
-    - title: "Weather"
-      desc: "Weather client utilities."
-      contents:
-        - weather.weather_client
 
     - title: "Utils"
       desc: "Validation and data transformation utilities."
