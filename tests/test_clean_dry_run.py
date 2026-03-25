@@ -32,7 +32,6 @@ from spotforecast2.manager.multitask.runner import run
 # ---------------------------------------------------------------------------
 
 
-
 def _populated_cache(tmp_path: Path) -> Path:
     """Create a cache directory with two items and return its path."""
     cache = tmp_path / "sf2_cache"
