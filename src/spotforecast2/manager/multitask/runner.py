@@ -111,18 +111,18 @@ def run(
         log_level:
             Logging level. Default is 40 (ERROR). Other common values include 0 (NOTSET), 10 (DEBUG), 20 (INFO), 30 (WARNING), 50 (CRITICAL).
         **kwargs: Additional keyword arguments forwarded verbatim to
-            MultiTask (e.g. ``predict_size``, ``train_days``,
-            ``val_days``, ``cache_home``).
+            MultiTask.
 
     Returns:
-        pd.DataFrame:
+        DataFrame:
             DataFrame whose index is the forecast horizon timestamps and
             whose single column ``"forecast"`` contains the aggregated
             predicted values.  For the ``"clean"`` task an empty DataFrame
             is returned.
 
     Raises:
-        ValueError: If ``task`` is not one of the supported task names.
+        ValueError:
+            If ``task`` is not one of the supported task names.
 
     Examples:
         Run the pipeline using cached or default model parameters
@@ -131,6 +131,8 @@ def run(
         ```{python}
         from spotforecast2.manager.multitask.runner import run
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+        import warnings
+        warnings.filterwarnings("ignore")
 
         data_home = get_package_data_home()
         df = fetch_data(filename=str(data_home / "demo02.csv"))
@@ -144,6 +146,8 @@ def run(
         ```{python}
         from spotforecast2.manager.multitask.runner import run
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+        import warnings
+        warnings.filterwarnings("ignore")
 
         data_home = get_package_data_home()
         df = fetch_data(filename=str(data_home / "demo02.csv"))
@@ -168,6 +172,8 @@ def run(
         ```{python}
         from spotforecast2.manager.multitask.runner import run
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+        import warnings
+        warnings.filterwarnings("ignore")
 
         data_home = get_package_data_home()
         df = fetch_data(filename=str(data_home / "demo02.csv"))
