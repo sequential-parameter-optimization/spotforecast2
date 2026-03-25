@@ -147,8 +147,6 @@ class BaseTask:
         data_frame_name:
             Identifier for the active dataset, used for
             cache-directory naming and model file naming.
-        cache_data:
-            Whether to cache intermediate data to disk. Boolean flag.
         cache_home:
             Cache directory path. String or Path.
         agg_weights:
@@ -217,7 +215,6 @@ class BaseTask:
         dataframe: Optional[pd.DataFrame] = None,
         data_test: Optional[pd.DataFrame] = None,
         data_frame_name: str = "default",
-        cache_data: bool = True,
         cache_home: Optional[Path] = None,
         agg_weights: Optional[List[float]] = None,
         index_name: str = "DateTime",
@@ -244,7 +241,6 @@ class BaseTask:
         self._dataframe = dataframe
         self.data_frame_name = data_frame_name
         self.data_test = data_test
-        self.cache_data = cache_data
         self.cache_home = cache_home
         self.agg_weights = agg_weights
         self.index_name = index_name
@@ -317,7 +313,6 @@ class BaseTask:
             "use_exogenous_features": self.use_exogenous_features,
             "index_name": self.index_name,
             "cache_home": get_cache_home(self.cache_home),
-            "cache_data": self.cache_data,
             "n_trials_optuna": self.n_trials_optuna,
             "n_trials_spotoptim": self.n_trials_spotoptim,
             "n_initial_spotoptim": self.n_initial_spotoptim,
@@ -552,7 +547,7 @@ class BaseTask:
             longitude=self.config.longitude,
             timezone=self.config.timezone,
             freq="h",
-            cache_home=self.config.cache_home if self.cache_data else None,
+            cache_home=self.config.cache_home,
             verbose=self.verbose,
         )
         self.logger.info("  Weather features: %s", weather_features.shape)

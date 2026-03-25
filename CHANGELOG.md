@@ -1,3 +1,14 @@
+## [0.22.3-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.2...v0.22.3-rc.1) (2026-03-25)
+
+### Bug Fixes
+
+* cache via cache_home ([6996b2d](https://github.com/sequential-parameter-optimization/spotforecast2/commit/6996b2da1b4ea3dfb3ec7c070345c788a7dc97e0))
+
+### Documentation
+
+* demo10 -> demo100 ([8b52033](https://github.com/sequential-parameter-optimization/spotforecast2/commit/8b520331568910045c0ea0f01423b8c874b5229e))
+* return df ([709c588](https://github.com/sequential-parameter-optimization/spotforecast2/commit/709c588dc984402216311b3a71bbd12c6dca448b))
+
 ## [0.22.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.1...v0.22.2) (2026-03-25)
 
 ### Bug Fixes

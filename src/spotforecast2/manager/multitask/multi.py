@@ -55,7 +55,6 @@ class MultiTask(BaseTask):
         data_test: Pre-loaded input DataFrame with Test data. The DataFrame must contain a
             datetime column matching ``index_name`` plus at least one
             numeric target column. Optional.
-        cache_data: Whether to cache intermediate data to disk.
         cache_home: Cache directory path.
         agg_weights: Per-target aggregation weights.
         index_name: Datetime column name in the raw CSV / DataFrame.
@@ -107,7 +106,6 @@ class MultiTask(BaseTask):
         dataframe: Optional[pd.DataFrame] = None,
         data_test: Optional[pd.DataFrame] = None,
         data_frame_name: str = "default",
-        cache_data: bool = True,
         cache_home: Optional[Path] = None,
         agg_weights: Optional[List[float]] = None,
         index_name: str = "DateTime",
@@ -137,7 +135,6 @@ class MultiTask(BaseTask):
             dataframe=dataframe,
             data_test=data_test,
             data_frame_name=data_frame_name,
-            cache_data=cache_data,
             cache_home=cache_home,
             agg_weights=agg_weights,
             index_name=index_name,
