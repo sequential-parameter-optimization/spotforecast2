@@ -33,7 +33,7 @@ except ImportError:
     )
 
 from spotforecast2.exceptions import IgnoredArgumentWarning
-from spotforecast2.forecaster.metrics import _get_metric, add_y_train_argument
+from spotforecast2_safe.forecaster.metrics import _get_metric, add_y_train_argument
 from spotforecast2.forecaster.utils import date_to_index_position, initialize_lags
 from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
 from spotforecast2.model_selection.utils_common import (

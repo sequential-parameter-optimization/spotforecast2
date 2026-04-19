@@ -38,47 +38,39 @@ from spotforecast2_safe.manager.models import (
 config = ConfigEntsoe()
 
 
-# Wrapper classes that inject config values for safety-critical consistency
-class ForecasterRecursiveLGBM(_ForecasterRecursiveLGBMBase):
-    """
-    LGBM forecaster with config-injected defaults.
+def _inject_config_defaults(kwargs: dict) -> dict:
+    """Fill constructor kwargs with ConfigEntsoe defaults (unless already set)."""
+    defaults = {
+        "periods": config.periods,
+        "country_code": config.API_COUNTRY_CODE,
+        "random_state": config.random_state,
+        "end_dev": config.end_train_default,
+        "train_size": config.train_size,
+        "delta_val": config.delta_val,
+        "predict_size": config.predict_size,
+        "refit_size": config.refit_size,
+    }
+    for key, value in defaults.items():
+        kwargs.setdefault(key, value)
+    return kwargs
 
-    Ensures all model instances use consistent configuration values
-    from ConfigEntsoe for periods, country_code, and random_state.
-    """
+
+class ForecasterRecursiveLGBM(_ForecasterRecursiveLGBMBase):
+    """LGBM forecaster with ConfigEntsoe-injected defaults."""
 
     def __init__(self, iteration: int, lags: int = 12, **kwargs):
-        # Inject config values if not explicitly provided
-        kwargs.setdefault("periods", config.periods)
-        kwargs.setdefault("country_code", config.API_COUNTRY_CODE)
-        kwargs.setdefault("random_state", config.random_state)
-        kwargs.setdefault("end_dev", config.end_train_default)
-        kwargs.setdefault("train_size", config.train_size)
-        kwargs.setdefault("delta_val", config.delta_val)
-        kwargs.setdefault("predict_size", config.predict_size)
-        kwargs.setdefault("refit_size", config.refit_size)
-        super().__init__(iteration=iteration, lags=lags, **kwargs)
+        super().__init__(
+            iteration=iteration, lags=lags, **_inject_config_defaults(kwargs)
+        )
 
 
 class ForecasterRecursiveXGB(_ForecasterRecursiveXGBBase):
-    """
-    XGBoost forecaster with config-injected defaults.
-
-    Ensures all model instances use consistent configuration values
-    from ConfigEntsoe for periods, country_code, and random_state.
-    """
+    """XGBoost forecaster with ConfigEntsoe-injected defaults."""
 
     def __init__(self, iteration: int, lags: int = 12, **kwargs):
-        # Inject config values if not explicitly provided
-        kwargs.setdefault("periods", config.periods)
-        kwargs.setdefault("country_code", config.API_COUNTRY_CODE)
-        kwargs.setdefault("random_state", config.random_state)
-        kwargs.setdefault("end_dev", config.end_train_default)
-        kwargs.setdefault("train_size", config.train_size)
-        kwargs.setdefault("delta_val", config.delta_val)
-        kwargs.setdefault("predict_size", config.predict_size)
-        kwargs.setdefault("refit_size", config.refit_size)
-        super().__init__(iteration=iteration, lags=lags, **kwargs)
+        super().__init__(
+            iteration=iteration, lags=lags, **_inject_config_defaults(kwargs)
+        )
 
 
 # Configure logging

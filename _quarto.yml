@@ -62,12 +62,8 @@ website:
                 file: docs/reference/exceptions.qmd
           - section: "Forecaster"
             contents:
-              - text: "metrics"
-                file: docs/reference/forecaster.metrics.qmd
               - text: "utils"
                 file: docs/reference/forecaster.utils.qmd
-              - text: "recursive._warnings"
-                file: docs/reference/forecaster.recursive._warnings.qmd
           - section: "Manager"
             contents:
               - text: "models.forecaster_recursive_model_full"
@@ -106,8 +102,6 @@ website:
                 file: docs/reference/model_selection.grid_search.qmd
               - text: "random_search"
                 file: docs/reference/model_selection.random_search.qmd
-              - text: "split_base"
-                file: docs/reference/model_selection.split_base.qmd
               - text: "split_ts_cv"
                 file: docs/reference/model_selection.split_ts_cv.qmd
               - text: "spotoptim_search"
@@ -120,14 +114,8 @@ website:
             contents:
               - text: "_binner"
                 file: docs/reference/preprocessing._binner.qmd
-              - text: "_common"
-                file: docs/reference/preprocessing._common.qmd
-              - text: "_differentiator"
-                file: docs/reference/preprocessing._differentiator.qmd
               - text: "_rolling"
                 file: docs/reference/preprocessing._rolling.qmd
-              - text: "outlier"
-                file: docs/reference/preprocessing.outlier.qmd
               - text: "outlier_plots"
                 file: docs/reference/preprocessing.outlier_plots.qmd
               - text: "split"
@@ -158,8 +146,6 @@ website:
                 file: docs/reference/utils.data_transform.qmd
               - text: "forecaster_config"
                 file: docs/reference/utils.forecaster_config.qmd
-              - text: "generate_holiday"
-                file: docs/reference/utils.generate_holiday.qmd
               - text: "validation"
                 file: docs/reference/utils.validation.qmd
 
@@ -228,10 +214,7 @@ quartodoc:
       desc: "Data curation, outlier detection, and split tools."
       contents:
         - preprocessing._binner
-        - preprocessing._common
-        - preprocessing._differentiator
         - preprocessing._rolling
-        - preprocessing.outlier
         - preprocessing.outlier_plots
         - preprocessing.split
         - preprocessing.time_series_visualization
@@ -242,7 +225,6 @@ quartodoc:
         - model_selection.bayesian_search
         - model_selection.grid_search
         - model_selection.random_search
-        - model_selection.split_base
         - model_selection.split_ts_cv
         - model_selection.spotoptim_search
         - model_selection.utils_common
@@ -269,9 +251,7 @@ quartodoc:
     - title: "Forecaster"
       desc: "Forecasting utilities and metrics."
       contents:
-        - forecaster.metrics
         - forecaster.utils
-        - forecaster.recursive._warnings
 
     - title: "Stats"
       desc: "Statistical analysis tools."
@@ -293,7 +273,6 @@ quartodoc:
       contents:
         - utils.data_transform
         - utils.forecaster_config
-        - utils.generate_holiday
         - utils.validation
 
     - title: "Exceptions"

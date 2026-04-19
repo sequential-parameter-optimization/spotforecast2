@@ -23,7 +23,7 @@ from spotforecast2_safe.preprocessing.imputation import (
     WeightFunction,
 )
 from .split import split_abs_train_val_test, split_rel_train_val_test
-from ._differentiator import TimeSeriesDifferentiator
+from spotforecast2_safe.preprocessing._differentiator import TimeSeriesDifferentiator
 from ._binner import QuantileBinner
 from ._rolling import RollingFeatures
 

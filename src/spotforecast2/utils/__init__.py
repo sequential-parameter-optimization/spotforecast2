@@ -23,7 +23,7 @@ from spotforecast2.utils.forecaster_config import (
     initialize_weights,
     check_select_fit_kwargs,
 )
-from spotforecast2.utils.generate_holiday import create_holiday_df
+from spotforecast2_safe.utils.generate_holiday import create_holiday_df
 
 __all__ = [
     "check_y",

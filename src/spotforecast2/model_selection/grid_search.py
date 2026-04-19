@@ -23,7 +23,7 @@ from spotforecast2.model_selection.utils_common import (
     check_one_step_ahead_input,
     select_n_jobs_backtesting,
 )
-from spotforecast2.forecaster.metrics import add_y_train_argument, _get_metric
+from spotforecast2_safe.forecaster.metrics import add_y_train_argument, _get_metric
 from spotforecast2.forecaster.utils import date_to_index_position
 from spotforecast2.model_selection.utils_metrics import (
     _calculate_metrics_one_step_ahead,

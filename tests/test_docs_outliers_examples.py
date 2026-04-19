@@ -17,7 +17,7 @@ import pandas as pd
 import pytest
 
 # Import the functions being tested
-from spotforecast2.preprocessing.outlier import get_outliers
+from spotforecast2_safe.preprocessing.outlier import get_outliers
 
 # ============================================================================
 # Fixtures
