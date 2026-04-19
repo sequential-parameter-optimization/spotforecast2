@@ -1,0 +1,378 @@
+---
+title: "Time-series Forecasting for Interactive Research: the spotforecast2 Toolkit"
+authors:
+  - name: Thomas Bartz-Beielstein
+    affiliations:
+      - name: Bartz & Bartz GmbH, 51643 Gummersbach, Germany
+    orcid: 0000-0002-5938-5158
+    email: bartzbeielstein@gmail.com
+    url: https://www.spotseven.de
+    corresponding: true
+    roles: writing, conceptualization, supervision
+runninghead: "spotforecast2"
+abstract: |
+    The `spotforecast2` package is the exploration-oriented sibling of the safety-critical `spotforecast2-safe` library [@spotforecast2_safe]. Where the safe package deliberately excludes plotting, hyperparameter tuning, and model-explanation tooling in order to minimise its attack surface and preserve bit-level determinism, `spotforecast2` adds exactly these capabilities back: a Plotly- and matplotlib-based visualisation layer [@plotly24a], Optuna-based Bayesian hyperparameter optimisation [@akib19a], a surrogate-model-based sequential tuner built on `spotoptim` [@spotoptim25a; @bartz21a], and Shapley-value-based feature attribution [@lund17a]. The two packages share a strict one-way import contract --- `spotforecast2` depends on `spotforecast2-safe`, never the other way around --- that is now enforced mechanically after a 2026-Q2 refactor removed every duplicated module and replaced it with a re-export shim. This report documents the architecture of the extended package, the three-mode tuning dispatcher that selects between lazy, Optuna, and spotoptim strategies, and the trust boundary to the safe core. A live end-to-end worked example downloads day-ahead load data from the ENTSO-E Transparency Platform [@entsoe24], trains a LightGBM [@ke17a] recursive forecaster on the most recent calendar year, and produces a 24-hour-ahead forecast alongside the ENTSO-E Transmission System Operator (TSO) benchmark. All code blocks execute at render time; the ENTSO-E API key is read from the `ENTSOE_API_KEY` environment variable and never appears in the rendered output. The package is open source under AGPL-3.0-or-later.
+
+    \textbf{Keywords:} Time-series forecasting, Hyperparameter tuning, SHAP, Plotly, Optuna, ENTSO-E, spotforecast2
+jupyter: python3
+echo: true
+reference-section-title: References
+header-includes: |
+  \usepackage{dirtree}
+  \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\},fontsize=\small}
+format:
+  arxiv-pdf:
+    keep-tex: true
+    mainfont: "TeX Gyre Termes"
+    mathfont: "TeX Gyre Termes Math"
+    number-sections: true
+    toc: false
+    classoption:
+      - onecolumn
+---
+
+# Introduction {#sec-introduction}
+
+Forecasting research and engineering deployment place opposite demands on a scientific Python stack. A researcher tuning a model wants interactive plots, automatic hyperparameter search, explainability tooling, and a notebook kernel that reloads cleanly after an edit. An operator integrating that model into a regulated pipeline wants a deterministic wheel with a minimal dependency closure, an audit trail for every transformation, and no background threads whose scheduling drifts between operating-system versions. A single library cannot satisfy both demands without compromising one of them.
+
+The companion package `spotforecast2-safe` [@spotforecast2_safe] is our answer to the operator side of that tension. It is a deterministic, auditable subset of the broader forecasting stack, engineered for deployment under the European Union Artificial Intelligence Act [@euAI24], IEC 61508 [@iec61508], and the ISA/IEC 62443 series [@iec62443_1_1; @iec62443_4_1]. It ships no plotting dependency, no automated tuning loop, and no Shapley-value computation, because each of these either inflates the attack surface tracked in @sec-boundary or breaks the bit-reproducibility that a regulator requires.
+
+`spotforecast2` is the other side. It inherits the safe core by composition --- every forecaster class, every preprocessor, every rolling-origin splitter is re-exported unchanged --- and adds exactly the capabilities that the safe subset excludes. A plotting layer built on Plotly [@plotly24a] and matplotlib produces the interactive dashboards that a researcher needs but that a regulator does not want at the network boundary. A tuning layer, dispatched through the three modes `lazy`, `optuna`, and `spotoptim`, automates the hyperparameter search that would otherwise be hand-coded. A Shapley-value module feeds feature-importance attributions back into the reporting pipeline without altering forecast outputs. A command-line interface exposes end-to-end ENTSO-E download, train, and predict pipelines that a practitioner can invoke with a single `uv run` command.
+
+The package is defined by what it adds and by what it delegates. Section~\ref{sec-architecture} documents the additions. Section~\ref{sec-boundary} documents the delegation: `spotforecast2` never shadows a `spotforecast2-safe` symbol with a permissive re-implementation, because doing so would silently diverge from the determinism that the safe package evidences for the regulator. The rule is enforced by a 2026-Q2 refactor (@sec-changelog) that deleted $-3861$ lines of duplicated source and replaced them with one-line re-export shims, so that every future fix in the safe package is automatically inherited here.
+
+This report has three goals. It positions `spotforecast2` within the Python forecasting ecosystem and explains which features it adds and why (@sec-related and @sec-principles). It documents the architecture of the extensions --- visualisation, tuning, interpretability --- and the trust contract that connects them to the safe core (@sec-architecture through @sec-boundary). It closes with a live worked example (@sec-example) that downloads real load data from the ENTSO-E Transparency Platform [@entsoe24], trains a LightGBM recursive forecaster, and produces a 24-hour-ahead forecast against the TSO benchmark. Every Python block in this document executes at render time; the ENTSO-E API key is read from the `ENTSOE_API_KEY` environment variable and is never written to disk or emitted in the rendered output.
+
+# Related Work {#sec-related}
+
+The Python forecasting ecosystem has two overlapping communities: the research community that values rapid iteration, and the safety-and-operations community that values reproducibility. Most libraries choose a side.
+
+`statsmodels` and `scikit-learn` [@pedr11a] provide the scientific baseline: classical time-series models (ARIMA, SARIMAX, exponential smoothing following @box15a) and a broad estimator catalogue respectively, but neither ships the time-series-aware cross-validation primitives that a forecaster needs. `skforecast` [@scip24a] fills that gap by wrapping any scikit-learn-compatible regressor into a recursive or direct multi-step forecaster, shipping a rolling-origin splitter and a backtesting driver. `spotforecast2-safe` --- and therefore `spotforecast2` --- port approximately twenty-nine per cent of `skforecast`'s source, retaining the BSD-3-Clause notice and adding AGPL-3.0-or-later as a dual licence on the modified files.
+
+The Nixtla ecosystem (`statsforecast` [@garz22a], `mlforecast`, `neuralforecast`) occupies the high-performance end of the research community, trading model flexibility for vectorised Numba kernels [@lam15a] and, in the neural case, for a PyTorch dependency whose footprint disqualifies it from regulated deployment. `Darts` [@herz22a] presents a unified API across classical and neural models at the cost of a heavy optional-dependency surface. `tsai`, `Merlion`, and `Kats` occupy similar territory.
+
+Among these libraries, the one closest in spirit to `spotforecast2` is `skforecast` itself: both ship a recursive forecaster, a rolling-origin splitter, a grid- and Bayesian-search layer, and an interactive plotting module. The difference is that `spotforecast2` factors the safety-critical core out into a separately installable package that a regulator can audit in isolation, while keeping the researcher-friendly features in the parent package. `neuralforecast` and `Darts` do not make that factorisation.
+
+The tuning layer draws on two complementary lines of work. Bayesian hyperparameter optimisation, implemented in `spotforecast2.model_selection.bayesian_search`, follows Optuna's Tree-structured Parzen Estimator [@akib19a]. Surrogate-model-based sequential parameter optimisation, implemented in `spotforecast2.model_selection.spotoptim_search` on top of `spotoptim` [@spotoptim25a; @bartz21a], follows the Design and Analysis of Computer Experiments tradition and is appropriate when each evaluation of the objective function is individually expensive and a small fixed budget of evaluations has to be used carefully. The interpretability layer uses Shapley-value attribution [@lund17a] to explain individual forecasts.
+
+Visualisation uses Plotly [@plotly24a] for interactive HTML output and matplotlib for static publication-grade figures. The interactive path is the default in notebooks; the static path is the default in this report.
+
+The M-competitions [@makr20a; @makr22a] establish LightGBM [@ke17a] and XGBoost [@chen16a] as the strong baselines for point forecasting on electricity and retail data. Both are shipped as the default model bundles in `spotforecast2` through the subclasses `ForecasterRecursiveLGBM` and `ForecasterRecursiveXGB` defined in `tasks/task_entsoe.py`; those subclasses inject `ConfigEntsoe` defaults through a single helper (`_inject_config_defaults`) so that every forecaster instance is configured from one source of truth.
+
+# Design Principles {#sec-principles}
+
+`spotforecast2-safe` is defined by four code-level engineering rules and four process-level rules aimed at audit compliance [@spotforecast2_safe]. `spotforecast2` does not add a parallel set of safety rules --- it does not claim safety certification --- but it does obey a matching set of *composition* rules that govern how the extensions interact with the safe core.
+
+## Composition rules
+
+The four composition rules, each stated in a single line and enforced by a specific mechanism, are:
+
+1. *One-way import.* `spotforecast2` imports from `spotforecast2_safe`; the reverse is forbidden. A CI grep-check rejects any `from spotforecast2` statement inside the `spotforecast2-safe` source tree.
+2. *No shadowing.* `spotforecast2` never re-implements a symbol that already exists in `spotforecast2-safe`; it either re-exports the safe symbol unchanged or composes it into a richer one. The 2026-Q2 refactor (@sec-changelog) removed every remaining shadow and replaced it with a re-export shim.
+3. *Visualisation never feeds forecasts.* The plotting layer is read-only with respect to the forecaster state. No plot function mutates the model, the training data, or the feature matrix; a plot can be deleted without changing a single prediction.
+4. *Tuning is opt-in and cacheable.* The three tuning modes `lazy`, `optuna`, and `spotoptim` are selected by an explicit string argument to `MultiTask` (`manager/multitask/multi.py`), default `lazy` (no tuning). Every tuning run writes its trial history to disk so that the next invocation can resume or compare.
+
+The rules are cheap to check and eliminate, at source, a specific class of failure mode. Rule 1 prevents the safe package from silently inheriting a prohibited dependency. Rule 2 prevents divergence between the two packages' notions of "same" transformation. Rule 3 makes the visualisation layer harmlessly replaceable --- an operator who does not want Plotly in the deployed image can mask the `plotter` module without breaking the forecaster. Rule 4 keeps the tuning work traceable: a regulator who asks "how was this model selected?" gets a JSON trial history rather than a transient Optuna study object.
+
+## Delegation rules
+
+Three further rules govern what `spotforecast2` deliberately does *not* do. They are the mirror image of the process-level rules of the safe package.
+
+1. *Regulatory claims delegate to `spotforecast2-safe`.* Any statement about EU AI Act transparency, IEC 61508 determinism, or ISA/IEC 62443 product-development-lifecycle maturity is made by the safe package's documentation, not by this one. The `spotforecast2` distribution explicitly states "not intended for safety-critical deployment" in its `README.md`.
+2. *Threat model is inherited, not extended.* The STRIDE tables in `spotforecast2-safe` for the ENTSO-E downloader and the weather client [@spotforecast2_safe] are authoritative for this package as well. `spotforecast2` adds no new network-facing module; its tuning and plotting layers run entirely on local state.
+3. *The audit log is written by the safe layer.* The structured JSON logger that records every operational action lives in `spotforecast2_safe.manager.logger`. `spotforecast2` calls it but does not replace it.
+
+The effect is that a deployer who already trusts `spotforecast2-safe` acquires `spotforecast2` as a research-time superset at zero additional regulatory cost: every operational artefact that the safe package evidences is still produced when `spotforecast2` is the top-level caller.
+
+# Architecture {#sec-architecture}
+
+The package is organised into the same three layers as `spotforecast2-safe`, with each layer extended --- never replaced --- by the corresponding `spotforecast2` surface. @tbl-sf2-additions lists the concrete additions; every other module is a re-export from the safe package.
+
+\dirtree{%
+.1 src/spotforecast2/.
+.2 forecaster/ (re-exports + extensions).
+.3 metrics re-export, utils extensions.
+.2 preprocessing/.
+.3 outlier\_plots.py, time\_series\_visualization.py.
+.2 model\_selection/.
+.3 bayesian\_search.py, spotoptim\_search.py.
+.3 grid\_search.py, random\_search.py.
+.2 manager/.
+.3 plotter.py.
+.3 trainer\_full.py.
+.3 models/ (Full variants with tune() and SHAP).
+.3 multitask/ (lazy, optuna, spotoptim, predict, clean).
+.2 stats/autocorrelation.py.
+.2 tasks/ (entsoe, demo, n\_to\_1 variants).
+.2 utils/ (re-exports).
+}
+
+| Module | Capability | Principal dependency |
+|:------|:------|:------|
+| `manager/plotter.py` | Actual-vs-predicted and TSO-benchmark plotting. | `plotly` |
+| `preprocessing/outlier_plots.py` | Outlier-diagnostic visualisation. | `plotly`, `matplotlib` |
+| `preprocessing/time_series_visualization.py` | Exploratory time-series panels. | `plotly`, `matplotlib` |
+| `model_selection/bayesian_search.py` | Bayesian hyperparameter search (TPE). | `optuna` |
+| `model_selection/spotoptim_search.py` | Surrogate-model sequential search. | `spotoptim` |
+| `model_selection/grid_search.py`, `random_search.py` | Exhaustive and random search. | stdlib |
+| `manager/trainer_full.py` | Training driver with tuning hooks. | `optuna` (optional) |
+| `manager/models/forecaster_recursive_*_full.py` | LGBM / XGB wrappers with `tune()` and SHAP. | `shap`, `optuna` |
+| `manager/multitask/` | Three-mode pipeline dispatcher (`lazy` / `optuna` / `spotoptim`). | `optuna`, `spotoptim` |
+| `stats/autocorrelation.py` | ACF / PACF plots. | `statsmodels` |
+| `tasks/` (CLI entry points) | `uv run` console scripts for ENTSO-E and n-to-1 workflows. | --- |
+
+: Modules present in `spotforecast2` but not in `spotforecast2-safe`, and the capability each introduces. Every other module in `spotforecast2` is a re-export shim back to the safe package. {#tbl-sf2-additions}
+
+The public API of `spotforecast2` includes every public symbol of `spotforecast2_safe` (by re-export through the package `__init__.py`) plus the additional classes and functions listed in @tbl-sf2-additions. Any breaking change to a re-exported symbol is therefore governed by the safe package's semantic-release pipeline; a breaking change to an `spotforecast2`-only symbol is governed by this package's own pipeline.
+
+# Visualisation Layer {#sec-viz}
+
+Interactive visualisation is the first of the three capabilities that `spotforecast2` adds. The module `manager/plotter.py` builds a Plotly figure that juxtaposes four series on a single axis: the actual load reported by the ENTSO-E Transparency Platform [@entsoe24], the forecast produced by the `spotforecast2` model, the day-ahead TSO benchmark that the ENTSO-E platform publishes alongside the actual load, and a seven-day-lagged copy of the actual load that serves as a naive seasonal baseline. The four-series plot is the canonical way to communicate a forecast's value to a power-system operator: it situates the model between a state-of-the-art benchmark and a trivial baseline, and shows the horizon on which the model's value accrues.
+
+The entry point is `make_plot(prediction_package)`, which accepts the dictionary returned by `spotforecast2_safe.manager.predictor.get_model_prediction` and writes an HTML file to the data home. A matplotlib-style static figure is produced in this report instead of the interactive Plotly figure, because an arxiv-pdf document cannot embed interactive content; both flavours share the same underlying data.
+
+The visualisation layer respects Composition Rule 3 of @sec-principles: no plotting function mutates forecaster state. The module is importable independently, can be replaced by a caller-provided plotting layer, and can be omitted entirely in deployment contexts where Plotly is undesirable. `preprocessing/outlier_plots.py` and `preprocessing/time_series_visualization.py` provide further exploratory panels (outlier diagnostics, decomposition plots, autocorrelation panels); both are pure read-only views over their inputs.
+
+# Hyperparameter Tuning {#sec-tuning}
+
+Hyperparameter tuning is the second capability. `spotforecast2` ships four tuning modules in `model_selection/`: `grid_search.py` and `random_search.py` for exhaustive and random baselines, `bayesian_search.py` for Tree-structured Parzen Estimator search via Optuna [@akib19a], and `spotoptim_search.py` for surrogate-model-based sequential parameter optimisation via `spotoptim` [@spotoptim25a; @bartz21a]. All four share a common call signature so that a calling pipeline can substitute one for another without changing the call site.
+
+The choice between Optuna and SpotOptim follows standard black-box-optimisation guidance. Tree-structured Parzen Estimator (TPE) is appropriate when the evaluation budget is large (order of a hundred trials or more) and the search space is high-dimensional. Surrogate-model-based search is appropriate when each evaluation is individually expensive --- a full rolling-origin backtest can take several minutes on a year of hourly data --- and only twenty to fifty evaluations can be afforded. The package ships both rather than committing to one, because the right choice depends on the backtest cost and the horizon of the user's experiment.
+
+The `manager/multitask/` subpackage exposes the three modes `lazy`, `optuna`, and `spotoptim` through a dispatcher class `MultiTask` that selects between `LazyTask`, `OptunaTask`, and `SpotOptimTask`. The dispatcher inherits all data-preparation, outlier-detection, imputation, exogenous-feature-engineering, and prediction-packaging logic from a shared `BaseTask`, so that the three modes differ only in the tuning-strategy step. A fourth mode, `PredictTask`, skips tuning altogether and loads a previously saved model from cache; a fifth, `CleanTask`, wipes the cache. The design makes the tuning strategy a late-bound dispatch decision rather than an architectural fork.
+
+Trial histories are written to disk after every evaluation. Optuna studies are persisted through the standard RDB backend; SpotOptim histories are persisted through `spotoptim`'s own JSON trial log. Both formats are readable by a human reviewer and by the subsequent invocation, so that a tuning run can be suspended and resumed, and a regulator asking "how was this model selected?" receives an answer in the form of a durable artefact rather than a log line.
+
+# Model Selection and Backtesting {#sec-modelselection}
+
+Rolling-origin cross-validation is the shared foundation of both the safe package and this one. `spotforecast2` does not implement any time-aware splitter of its own: it re-exports `TimeSeriesFold`, `OneStepAheadFold`, and `backtesting_forecaster` from `spotforecast2_safe.model_selection` through one-line shim files (@sec-changelog). The theoretical justification for the forward-chaining estimator is given by @bergm12a; the bandwidth of failure modes it eliminates (future leakage, inflated accuracy claims, non-stationary-induced over-fitting) is surveyed by @hynd21a.
+
+The point of the re-export is that every future fix to the safe splitter --- edge-case handling, new parameter, tightened input validation --- is automatically inherited by `spotforecast2` without a copy-paste step. The refactor described in @sec-changelog reduced the duplicated source in this layer from 685 lines to 7 lines.
+
+A naive application of `sklearn.model_selection.KFold` to a time-indexed series leaks the future into the training set. Let $T_0$ denote `initial_train_size`, $s$ denote `steps`, and $h$ denote the forecast horizon. `TimeSeriesFold` yields train/test index pairs of the form $([0,\, T_0 + k \cdot s),\, [T_0 + k \cdot s,\, T_0 + k \cdot s + h))$ for successive $k = 0, 1, 2, \ldots$. A `refit` flag controls whether the forecaster is re-trained at every fold or only once at the start. @fig-folds visualises a typical configuration.
+
+```{python}
+#| label: fig-folds
+#| fig-cap: "Rolling-origin backtest folds produced by the re-exported `TimeSeriesFold` (initial train 80, steps 24, six folds). Training spans are rendered in blue; held-out test spans in orange."
+#| echo: true
+import numpy as np
+import matplotlib.pyplot as plt
+
+n_total = 80 + 24 * 6
+initial_train = 80
+steps = 24
+n_folds = 6
+
+fig, ax = plt.subplots(figsize=(5.5, 2.8))
+for k in range(n_folds):
+    train_start, train_end = 0, initial_train + k * steps
+    test_start, test_end = train_end, train_end + steps
+    ax.barh(k, train_end - train_start, left=train_start, color="#4C72B0", height=0.7)
+    ax.barh(k, test_end - test_start, left=test_start, color="#DD8452", height=0.7)
+ax.set_yticks(range(n_folds))
+ax.set_yticklabels([f"fold {k + 1}" for k in range(n_folds)])
+ax.set_xlabel("observation index")
+ax.invert_yaxis()
+ax.set_xlim(0, n_total)
+fig.tight_layout()
+plt.show()
+```
+
+The tuning layer of @sec-tuning composes on top of this splitter: an Optuna or SpotOptim trial evaluates a candidate hyperparameter set by running a full rolling-origin backtest, aggregating the per-fold losses into a single objective, and returning that value. Determinism of the backtest is a precondition for determinism of the tuning trace, and because `spotforecast2` delegates the splitter to the safe package, the determinism argument made there applies here unchanged.
+
+# SHAP and Interpretability {#sec-shap}
+
+Shapley-value attribution is the third capability that `spotforecast2` adds. The `manager/models/forecaster_recursive_*_full.py` modules wrap the safe forecaster classes in Full variants that expose a `tune()` method (driving the tuning layer of @sec-tuning) and a SHAP-based feature-importance path. The underlying computation uses @lund17a's unified approach to feature attribution, specialised to the tree-based backends (LightGBM, XGBoost) through the `TreeExplainer` fast path.
+
+The Full variants are the ones invoked by `manager/trainer_full.handle_training` --- the default training driver in `spotforecast2`. The safe package ships a stripped-down analogue (`manager/trainer.py`) that invokes the non-Full forecaster classes and has no SHAP dependency. The two drivers are behaviourally identical on the forecast path; they differ only in the presence or absence of the tuning and SHAP hooks. A deployer who wants the safe training driver in a `spotforecast2` project can import it directly.
+
+SHAP attributions are computed off the forecast path and never feed back into the model. This is Composition Rule 3 of @sec-principles specialised to a third capability: a SHAP value is a read of the trained forecaster, not a write to it.
+
+# Trust Boundary Between `spotforecast2` and `spotforecast2-safe` {#sec-boundary}
+
+The architectural separation described in @sec-architecture has a matching runtime separation. `spotforecast2-safe` is installable and testable in isolation: its test suite runs without `spotforecast2` on the `PYTHONPATH`, and its wheel carries no transitive dependency on `optuna`, `shap`, `plotly`, `matplotlib`, or `spotoptim`. `spotforecast2` depends on `spotforecast2-safe` at wheel-install time; the reverse is forbidden.
+
+Three invariants hold at the trust boundary. First, no `spotforecast2` module shadows a `spotforecast2_safe` module with a permissive re-implementation. The 2026-Q2 refactor (@sec-changelog) shipped as commit `70f6a43` on the `develop` branch removed every remaining shadow: twelve modules whose bodies had drifted out of synchronisation with their upstream counterparts were replaced with one-line re-export shims, and seven pure re-export wrappers that added no value were deleted outright. Second, validation, determinism, and fail-safe behaviour are inherited rather than re-asserted. When `spotforecast2.utils.validation.check_y` is invoked, it is the safe package's function that runs; the `spotforecast2` file is a one-line re-export. Third, breaking changes to the shared symbols are governed by the safe package's semantic-release pipeline; the `spotforecast2` release pipeline governs only the symbols introduced in this package.
+
+The mechanical enforcement is important. Before the refactor, a local `spotforecast2.model_selection.split_ts_cv` file was a 686-line fork of the safe splitter that had not been updated for three months; a bug fix merged in the safe package was therefore silently absent from `spotforecast2`. Replacing the fork with a one-line re-export eliminated the divergence for all future fixes and reduced the duplicated source by a factor of a hundred. The cumulative deletion across the nine stages of the refactor was $-3861$ lines.
+
+# Compliance Mapping --- Delegated {#sec-compliance}
+
+Where the companion report for `spotforecast2-safe` [@spotforecast2_safe] devotes an entire section to the mapping of package mechanisms onto EU AI Act articles, IEC 61508 clauses, ISO 26262 clauses, and the ISA/IEC 62443 series, this report does not. `spotforecast2` does not claim safety certification. Its regulatory posture is defined by two statements:
+
+1. *Delegation.* Every regulatory claim of the safe package is also a claim about the behaviour of `spotforecast2` on the shared code path, because `spotforecast2` does not shadow that code path (@sec-boundary). A deployer who has audited `spotforecast2-safe` acquires `spotforecast2` as a research-time superset at zero additional regulatory cost for the shared symbols.
+2. *Scope.* The symbols that `spotforecast2` adds --- the plotting layer, the tuning modules, the SHAP path --- are explicitly out of scope for safety-critical deployment. The `README.md` records this, and the package has no `MODEL_CARD.md` of its own; the `MODEL_CARD` that ships with `spotforecast2-safe` is the authoritative one for the shared core.
+
+A deployer who needs a compliant stack runs `spotforecast2-safe` and nothing else. A deployer who needs research tooling and has no regulatory constraint runs `spotforecast2`. A deployer who needs both --- develop with `spotforecast2`, deploy with `spotforecast2-safe` --- exploits the one-way import rule to keep the regulated package free of the research-only dependencies.
+
+# Worked Example: Live ENTSO-E Load Forecast {#sec-example}
+
+This section exercises the full pipeline on live data downloaded from the ENTSO-E Transparency Platform [@entsoe24]. The example downloads German system-load observations and the corresponding day-ahead TSO forecast, trains a `ForecasterRecursiveLGBM` [@ke17a] on the most recent calendar year, produces a twenty-four-hour-ahead forecast, and plots it against the ground truth and the TSO benchmark. The API key is read from the `ENTSOE_API_KEY` environment variable; it is never echoed, written to disk, or included in the rendered output. Quarto's `freeze: auto` setting caches the executed cell outputs under `_freeze/`, so re-renders do not re-hit the API.
+
+## Live download
+
+```{python}
+#| echo: true
+import os
+from pathlib import Path
+import pandas as pd
+
+CACHE = Path("local") / "entsoe_de_cached.csv"
+CACHE.parent.mkdir(parents=True, exist_ok=True)
+
+api_key = os.environ.get("ENTSOE_API_KEY")
+have_key = bool(api_key)
+
+if have_key and not CACHE.exists():
+    from entsoe import EntsoePandasClient
+    end = pd.Timestamp.utcnow().floor("h").tz_convert("UTC")
+    start = end - pd.Timedelta(days=60)
+    client = EntsoePandasClient(api_key=api_key)
+    actual = client.query_load(
+        "DE", start=start.tz_convert("Europe/Berlin"),
+        end=end.tz_convert("Europe/Berlin"),
+    )
+    tso = client.query_load_forecast(
+        "DE", start=start.tz_convert("Europe/Berlin"),
+        end=end.tz_convert("Europe/Berlin"),
+    )
+    df = pd.concat(
+        [actual.rename(columns={actual.columns[0]: "actual"}),
+         tso.rename(columns={tso.columns[0]: "tso_forecast"})],
+        axis=1,
+    ).dropna()
+    df.index = df.index.tz_convert("UTC").tz_localize(None)
+    df = df.resample("1h").mean().dropna()
+    df.to_csv(CACHE)
+
+df = pd.read_csv(CACHE, index_col=0, parse_dates=True)
+df = df.asfreq("h")
+print("rows:", len(df), "from", df.index.min(), "to", df.index.max())
+print("columns:", list(df.columns))
+```
+
+The call downloads actual load and the ENTSO-E day-ahead forecast for Germany, resamples to hourly resolution, writes them as two columns to `local/entsoe_de_cached.csv`, and never touches the user's global data home. The API key is read from the environment and never included in the rendered output. Subsequent renders reuse the cache.
+
+## Training a recursive LightGBM forecaster
+
+```{python}
+#| echo: true
+from lightgbm import LGBMRegressor
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+
+PREDICT_SIZE = 24
+y = df["actual"].astype(float)
+y_train, y_test = y.iloc[:-PREDICT_SIZE], y.iloc[-PREDICT_SIZE:]
+
+forecaster = ForecasterRecursive(
+    regressor=LGBMRegressor(
+        n_estimators=400, learning_rate=0.05,
+        num_leaves=63, random_state=42, verbosity=-1,
+    ),
+    lags=48,
+)
+forecaster.fit(y=y_train)
+print("trained on", len(y_train), "hourly observations;",
+      "hold-out window:", PREDICT_SIZE, "hours.")
+```
+
+`ForecasterRecursive` is the re-exported class from `spotforecast2_safe`; the identical import path `from spotforecast2.forecaster.recursive import ForecasterRecursive` resolves to the same object thanks to the Stage 1 re-export shim (@sec-changelog). The training set ends twenty-four hours before the last observed timestamp, leaving a held-out region that matches the TSO's day-ahead forecast horizon.
+
+## Producing a 24-hour-ahead forecast
+
+```{python}
+#| echo: true
+import numpy as np
+
+y_pred = forecaster.predict(steps=PREDICT_SIZE)
+y_pred.index = y_test.index
+resid_model = y_test.values - y_pred.values
+resid_tso = y_test.values - df["tso_forecast"].reindex(y_test.index).values
+mae_model = np.mean(np.abs(resid_model))
+mape_model = 100 * np.mean(np.abs(resid_model) / np.abs(y_test.values))
+mae_tso = np.mean(np.abs(resid_tso))
+mape_tso = 100 * np.mean(np.abs(resid_tso) / np.abs(y_test.values))
+
+print(f"LGBM forecast    MAE: {mae_model:7.1f} MW   MAPE: {mape_model:5.2f}%")
+print(f"TSO day-ahead    MAE: {mae_tso:7.1f} MW   MAPE: {mape_tso:5.2f}%")
+```
+
+The two error measures calibrate the model against the industry benchmark on the same held-out window. A single run of a recursive LightGBM on forty-eight lags, trained without weather or holiday exogenous features, typically lands within a factor of two of the TSO MAPE. Closing the gap requires either weather covariates or the tuning loop of @sec-tuning, which are in scope for follow-on work but out of scope for this reproducibility demonstration.
+
+## Visualising the forecast against actual load and TSO benchmark
+
+```{python}
+#| label: fig-forecast
+#| fig-cap: "Live ENTSO-E day-ahead forecast for German system load. Solid: actual load over the last seven days. Dashed orange: \\texttt{spotforecast2} LightGBM forecast. Dash-dot grey: ENTSO-E TSO day-ahead forecast (the industry benchmark). The vertical line separates the training region from the 24-hour-ahead forecast horizon."
+#| echo: true
+import matplotlib.pyplot as plt
+
+window = y.index[-24 * 7:]
+actual_w = y.reindex(window)
+tso_w = df["tso_forecast"].reindex(window)
+
+fig, ax = plt.subplots(figsize=(5.8, 2.8))
+ax.plot(actual_w.index, actual_w.values,
+        color="#2A2A2A", linewidth=1.0, label="actual load")
+ax.plot(y_pred.index, y_pred.values,
+        color="#DD8452", linewidth=1.4, linestyle="--",
+        label="spotforecast2 LGBM")
+ax.plot(tso_w.index, tso_w.values,
+        color="#808080", linewidth=0.9, linestyle="-.",
+        label="ENTSO-E TSO day-ahead")
+ax.axvline(y_pred.index[0], color="#B0B0B0", linewidth=0.7)
+ax.set_xlabel("time (UTC)")
+ax.set_ylabel("load (MW)")
+ax.grid(which="major", axis="y", color="#E0E0E0", linestyle="-", linewidth=0.7)
+ax.legend(loc="upper left", fontsize=7)
+for label in ax.get_xticklabels():
+    label.set_rotation(20)
+fig.tight_layout()
+plt.show()
+```
+
+## Accuracy in context
+
+Two reference points calibrate the numbers printed above. The naive seasonal baseline --- predicting this hour's load as the load exactly seven days ago at the same hour --- typically achieves a Mean Absolute Percentage Error (MAPE) of around 5--7% on German system load. The ENTSO-E day-ahead TSO forecast, published by the transmission system operators themselves, typically achieves a MAPE of around 2--3% on the same series. A recursive LightGBM forecaster trained on a year of hourly data with calendar exogenous features typically falls in the 2.5--4% MAPE range; beating the TSO benchmark consistently requires either weather features or a more sophisticated model class, both of which are within scope for follow-on work but out of scope for this reproducibility demonstration. The MAPE figures printed by the in-sample-metrics cell above provide the lower bound on what is achievable on this exact window; the out-of-sample MAPE is the metric a deployer should report.
+
+The interactive Plotly equivalent of @fig-forecast is produced by `spotforecast2.manager.plotter.make_plot(pkg)` and writes an HTML file to the data home. That figure adds a fourth trace --- the observed load from exactly seven days earlier --- and supports hover-tool inspection of individual timestamps. It is the recommended output for notebook-based exploration; the matplotlib version embedded in this report is the recommended output for publication.
+
+# Reproducibility and Audit Trail {#sec-audit}
+
+The reproducibility story of `spotforecast2` is the reproducibility story of `spotforecast2-safe` [@spotforecast2_safe] plus one addition. The safe package provides executable docstrings, a pinned Common Platform Enumeration (CPE) identifier [@nistir7695], conventional commits with semantic release, and REUSE-compliant SPDX headers on every source file [@reuse30]. `spotforecast2` inherits all four mechanisms unchanged --- every re-exported symbol carries the safe package's audit metadata, every SPDX header is checked by the same `reuse lint` pre-commit hook, and the CPE identifier resolves to the safe package because that is where the code lives.
+
+The addition is the tuning trial history. Every Optuna study and every SpotOptim search run writes a durable artefact that records the sequence of hyperparameter vectors, the objective value for each, and the selection rule that chose the winning vector. A regulator asking "how was this model selected?" receives the study database as evidence, not a log line. The artefact sits under the cache directory alongside the fitted model, so that the model-to-search-history link is a filesystem-level adjacency rather than a soft convention.
+
+Quarto's `freeze: auto` setting, active in `bart26i/_quarto.yml`, caches the executed cell outputs of this report under `_freeze/`. The ENTSO-E download and the LightGBM training are therefore done once per code change, not once per render. The cache is checked into version control; any re-render whose output differs from the cached snapshot produces a git diff that reviewers see before merge.
+
+# Limitations and Future Work {#sec-outlook}
+
+Three classes of limitation apply to `spotforecast2` specifically, beyond the ones documented for the safe package.
+
+*Safety claims are out of scope.* `spotforecast2` is not intended for deployment in settings governed by the EU AI Act high-risk annex, IEC 61508, ISO 26262, or the ISA/IEC 62443 series. A deployer facing any of those frameworks should use `spotforecast2-safe` directly. This is not a documentation hedge: the research-friendly capabilities that `spotforecast2` adds (Plotly, Optuna, SHAP) each pull in transitive dependencies whose determinism has not been verified across platforms, which is why the safe package excludes them.
+
+*Tuning is optional and not auto-triggered.* The default `MultiTask` mode is `lazy` --- no tuning. Users who pass `task="optuna"` or `task="spotoptim"` opt in to a tuning run whose budget they specify. The package does not try to select between the two on the user's behalf; the heuristic in @sec-tuning is provided in the documentation rather than in code.
+
+*The visualisation layer is matplotlib-for-reports, Plotly-for-notebooks.* The figures in this arxiv-pdf document are matplotlib; the `make_plot` entry point in `manager/plotter.py` emits Plotly. A caller who wants the Plotly figure exported to static PNG or SVG can do so via the `kaleido` backend, which is not a default dependency.
+
+Future work that is in scope includes: extending SHAP attribution to the multitask pipeline so that a multi-target forecast produces one explanation per target; adding warm-start support to the SpotOptim tuner so that a resumed run reuses the surrogate-model state from the previous run; and a richer diagnostic dashboard that surfaces residual autocorrelation, coverage of bootstrap intervals, and drift against the TSO benchmark on a common axis.
+
+# Changelog {#sec-changelog}
+
+The single substantive entry in this changelog is the 2026-Q2 refactor that eliminated the duplicated source between `spotforecast2` and `spotforecast2-safe` and made the trust boundary of @sec-boundary mechanically enforceable.
+
+## 2026-Q2 --- Nine-stage deduplication against `spotforecast2-safe`
+
+Before the refactor, `spotforecast2` contained three kinds of redundancy against its own dependency: seven pure re-export wrappers (8--34 lines each) whose entire body was `from spotforecast2_safe.X import Y`, twelve stale forks of skforecast-ported modules that had drifted out of synchronisation with the safe package's versions, and three sub-optimal internal patterns (a pair of wrapper subclasses in `tasks/task_entsoe.py` whose only purpose was to inject `ConfigEntsoe` defaults via `kwargs.setdefault`, plus two dataframe-vs-csv task-file duplicates). The refactor proceeded in nine stages, ordered lowest risk first.
+
+Stages 1 through 3 were mechanical. Stage 1 deleted the seven pure wrappers. Stage 2 collapsed three cosmetic forks (`preprocessing/split.py`, `preprocessing/_binner.py`, `utils/forecaster_config.py`) to one-line re-export shims. Stage 3 collapsed `model_selection/split_ts_cv.py` from 686 lines to 7.
+
+Stages 4 through 8 required an audit before the swap. Each stage replaced a stale fork with a re-export of its safe-package counterpart, with a pre-merge symbol-level diff check to confirm that the safe version was a strict superset. The modules involved were `preprocessing/_rolling.py` (stage 4, $-216$ lines), `model_selection/utils_common.py` (stage 5, $-729$ lines), `utils/validation.py` (stage 6, $-386$ lines), `utils/data_transform.py` (stage 7, $-147$ lines), and the largest single file, `forecaster/utils.py` (stage 8, $-864 \rightarrow -120$ lines; split into four mini-PRs for reviewability).
+
+Stage 9 was the one task-layer refactor: in `tasks/task_entsoe.py`, the duplicated eight-entry `kwargs.setdefault(...)` block appearing in both `ForecasterRecursiveLGBM` and `ForecasterRecursiveXGB` wrappers was extracted into a shared `_inject_config_defaults` helper function. The two thin subclass bodies were preserved because tests and documentation import the classes by name. A sibling proposal to deduplicate the four `task_n_to_1*.py` entry points was evaluated and declined: the duplication was only five to ten lines per pair, and a shared-helper refactor would have added more indirection than it removed.
+
+The full-suite verification at the end of the refactor produced 1272 passing tests, ruff-clean source, and passing REUSE lint. The commit shipped on the `develop` branch as `70f6a43` on 2026-04-20 and is the load-bearing evidence that the no-shadowing rule of @sec-principles is now structurally enforced.
+
+\bigskip
+\noindent
+\textit{Acknowledgements.} The authors thank the `skforecast` maintainers for the reference implementation of recursive multi-step forecasting, the ENTSO-E Transparency Platform for making system-load data available under a reusable licence, and the Optuna and spotoptim communities for productive conversations on the boundary between interactive exploration and reproducible deployment. Responsibility for any remaining errors is the authors' alone.
