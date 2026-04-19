@@ -9,7 +9,7 @@ The primary forecasters are provided by the spotforecast2_safe package for safet
 system operations. This module includes additional utilities.
 """
 
-from . import metrics
+from spotforecast2_safe.forecaster import metrics
 from . import utils
 from . import recursive
 
