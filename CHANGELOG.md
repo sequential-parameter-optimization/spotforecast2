@@ -1,3 +1,9 @@
+## [0.22.4](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.3...v0.22.4) (2026-04-19)
+
+### Code Refactoring
+
+* dedupe sf2 against spotforecast2-safe (-3861 LOC) ([70f6a43](https://github.com/sequential-parameter-optimization/spotforecast2/commit/70f6a43a311c1f963276571e1222a334dd9ad594))
+
 ## [0.22.4-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.3...v0.22.4-rc.1) (2026-04-19)
 
 ### Code Refactoring
