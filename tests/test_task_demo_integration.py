@@ -14,7 +14,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from spotforecast2_safe.manager.datasets import DemoConfig, load_actual_combined
+from spotforecast2_safe.data import DemoConfig, load_actual_combined
 
 
 class TestLoadActualCombinedIntegration:
