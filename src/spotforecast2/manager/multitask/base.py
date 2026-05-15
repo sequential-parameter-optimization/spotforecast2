@@ -23,7 +23,7 @@ from lightgbm import LGBMRegressor
 
 from spotforecast2_safe.data.fetch_data import get_cache_home
 from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
-from spotforecast2_safe.manager.exo.calendar import (
+from spotforecast2_safe.calendar import (
     get_calendar_features,
     get_day_night_features,
     get_holiday_features,
