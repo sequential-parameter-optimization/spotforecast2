@@ -1,3 +1,14 @@
+## [0.22.5](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.4...v0.22.5) (2026-05-15)
+
+### Documentation
+
+* **bart26i:** add technical report on the spotforecast2 toolkit ([470c486](https://github.com/sequential-parameter-optimization/spotforecast2/commit/470c486f60f3ab85b1aa5032d248488b1805e8f9))
+* **multitask:** switch run() examples from linear interpolation to Gap Weighting ([166c0a7](https://github.com/sequential-parameter-optimization/spotforecast2/commit/166c0a7c0c15326c3db92ca69035ceb42b54b8c2))
+
+### Code Refactoring
+
+* follow spotforecast2-safe demo modules move ([69b0ef7](https://github.com/sequential-parameter-optimization/spotforecast2/commit/69b0ef7051ff60503646b5b48255d1210725cf42))
+
 ## [0.22.4](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.3...v0.22.4) (2026-04-19)
 
 ### Code Refactoring
