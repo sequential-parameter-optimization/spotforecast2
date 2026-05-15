@@ -55,7 +55,7 @@ from spotforecast2_safe.processing.n2n_predict_with_covariates import (
     n2n_predict_with_covariates,
 )
 from spotforecast2_safe.manager.tools import _parse_bool
-from spotforecast2_safe.manager.datasets import DemoConfig, load_actual_combined
+from spotforecast2_safe.data import DemoConfig, load_actual_combined
 from spotforecast2.manager.plotter import plot_actual_vs_predicted
 
 warnings.simplefilter("ignore")

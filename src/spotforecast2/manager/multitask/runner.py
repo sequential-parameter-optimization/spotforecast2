@@ -98,7 +98,15 @@ def run(
             ``None``, the default of 31 days is used.
         imputation_method: Method used for imputation of detected
             outliers.  Passed to the ``imputation_method`` argument of
-            MultiTask. Options are ``"weighted"`` or ``"linear"``. Defaults to ``"weighted"``.
+            MultiTask. Options are ``"weighted"`` or ``"linear"``. Defaults
+            to ``"weighted"``.  Prefer ``"weighted"`` (Gap Weighting) for
+            data with leading or trailing gaps: it forward/back-fills the
+            frame and emits a weight series that zero-weights samples
+            within ``window_size`` of any original gap, so the forecaster
+            never trains on the fill values.  ``"linear"`` only fills
+            internal gaps and lets endpoint NaN survive, so the
+            downstream fit raises ``ValueError`` if leading or trailing
+            NaN remain.
         show_progress:
             Whether to print progress messages during pipeline execution.
             Defaults to False.
@@ -137,7 +145,7 @@ def run(
         data_home = get_package_data_home()
         df = fetch_data(filename=str(data_home / "demo02.csv"))
 
-        forecast = run(df, task="lazy", project_name="demo02", train_days = 365, predict_size=24, imputation_method="linear")
+        forecast = run(df, task="lazy", project_name="demo02", train_days = 365, predict_size=24, imputation_method="weighted")
         print(forecast)
         ```
 
@@ -160,7 +168,7 @@ def run(
             predict_size=24,
             train_days=365,
             val_days=7,
-            imputation_method="linear"
+            imputation_method="weighted"
         )
         print(forecast)
         ```
@@ -178,7 +186,7 @@ def run(
         data_home = get_package_data_home()
         df = fetch_data(filename=str(data_home / "demo02.csv"))
 
-        forecast = run(df, task="predict", project_name="demo02", predict_size=24, imputation_method="linear")
+        forecast = run(df, task="predict", project_name="demo02", predict_size=24, imputation_method="weighted")
         print(forecast)
         ```
 
