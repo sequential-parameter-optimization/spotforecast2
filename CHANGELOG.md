@@ -1,3 +1,9 @@
+## [0.22.6](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.5...v0.22.6) (2026-05-16)
+
+### Code Refactoring
+
+* follow spotforecast2-safe calendar consolidation ([8bbe93b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/8bbe93b3f73a44a517eac81c868de2cfcd717b3a)), closes [sequential-parameter-optimization/spotforecast2-safe#151](https://github.com/sequential-parameter-optimization/spotforecast2-safe/issues/151)
+
 ## [0.22.6-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.5...v0.22.6-rc.1) (2026-05-15)
 
 ### Code Refactoring
