@@ -29,7 +29,7 @@ from spotforecast2.manager.trainer_full import handle_training as handle_trainin
 
 from spotforecast2.manager.plotter import make_plot
 from spotforecast2 import ConfigEntsoe
-from spotforecast2_safe.manager.models import (
+from spotforecast2_safe.forecaster.wrappers import (
     ForecasterRecursiveLGBM as _ForecasterRecursiveLGBMBase,
     ForecasterRecursiveXGB as _ForecasterRecursiveXGBBase,
 )

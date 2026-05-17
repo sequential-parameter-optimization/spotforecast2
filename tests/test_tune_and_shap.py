@@ -13,9 +13,7 @@ import pytest
 from lightgbm import LGBMRegressor
 
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2_safe.manager.models.forecaster_recursive_model import (
-    ForecasterRecursiveModel,
-)
+from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveModel
 from spotforecast2.manager.models.forecaster_recursive_model_full import (
     ForecasterRecursiveModelFull,
 )
@@ -89,7 +87,7 @@ class TestTune:
         assert "simulated" not in src.lower()
 
     @patch(
-        "spotforecast2_safe.manager.models.forecaster_recursive_model.load_timeseries"
+        "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
     )
     @patch(
         "spotforecast2.manager.models.forecaster_recursive_model_full.load_timeseries"
@@ -135,7 +133,7 @@ class TestTune:
         mock_bsf.assert_called_once()
 
     @patch(
-        "spotforecast2_safe.manager.models.forecaster_recursive_model.load_timeseries"
+        "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
     )
     @patch(
         "spotforecast2.manager.models.forecaster_recursive_model_full.load_timeseries"
