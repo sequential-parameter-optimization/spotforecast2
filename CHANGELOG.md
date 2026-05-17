@@ -1,3 +1,9 @@
+## [0.22.8](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.7...v0.22.8) (2026-05-17)
+
+### Code Refactoring
+
+* follow spotforecast2-safe forecaster/wrappers consolidation ([851bf61](https://github.com/sequential-parameter-optimization/spotforecast2/commit/851bf61155253d3f91ee11b9c646941eb7defe89)), closes [#169](https://github.com/sequential-parameter-optimization/spotforecast2/issues/169)
+
 ## [0.22.8-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.7...v0.22.8-rc.1) (2026-05-17)
 
 ### Code Refactoring
