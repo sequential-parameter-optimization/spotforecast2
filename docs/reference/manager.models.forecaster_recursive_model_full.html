@@ -780,7 +780,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>manager.models.forecaster_recursive_model_full</h1>
 <p><code>manager.models.forecaster_recursive_model_full</code></p>
 <p>Full-featured base forecasting model with Bayesian tuning and SHAP.</p>
-<p>This module extends :class:<code>~spotforecast2_safe.manager.models.forecaster_recursive_model.ForecasterRecursiveModel</code> from <code>spotforecast2-safe</code> with real Bayesian hyperparameter search (Optuna) and SHAP-based feature importance (<code>shap.TreeExplainer</code>).</p>
+<p>This module extends :class:<code>~spotforecast2_safe.forecaster.wrappers.model.ForecasterRecursiveModel</code> from <code>spotforecast2-safe</code> with real Bayesian hyperparameter search (Optuna) and SHAP-based feature importance (<code>shap.TreeExplainer</code>).</p>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> <span class="im">from</span> spotforecast2.manager.models <span class="im">import</span> ForecasterRecursiveModelFull</span>

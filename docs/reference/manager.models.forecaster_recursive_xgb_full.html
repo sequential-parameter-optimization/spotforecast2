@@ -827,7 +827,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
 <span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>XGBoost forecaster with real Bayesian tuning and SHAP.</p>
-<p>Inherits the XGBoost forecaster initialisation from :class:<code>~spotforecast2_safe.manager.models.forecaster_recursive_xgb.ForecasterRecursiveXGB</code> (<code>spotforecast2-safe</code>) and adds the real :meth:<code>tune</code> and :meth:<code>get_global_shap_feature_importance</code> from :class:<code>~spotforecast2.manager.models.ForecasterRecursiveModelFull</code>.</p>
+<p>Inherits the XGBoost forecaster initialisation from :class:<code>~spotforecast2_safe.forecaster.wrappers.xgb.ForecasterRecursiveXGB</code> (<code>spotforecast2-safe</code>) and adds the real :meth:<code>tune</code> and :meth:<code>get_global_shap_feature_importance</code> from :class:<code>~spotforecast2.manager.models.ForecasterRecursiveModelFull</code>.</p>
 <p>The MRO ensures that :meth:<code>tune</code> and SHAP methods resolve from <code>ForecasterRecursiveModelFull</code>, while the XGBoost-specific <code>__init__</code> (estimator wiring) comes from <code>ForecasterRecursiveXGB</code>.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
@@ -874,7 +874,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span></span>
 <span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="op">&gt;&gt;&gt;</span> model.iteration</span>
 <span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="dv">0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div id="f47454cc" class="cell" data-execution_count="1">
+<div id="08264f9c" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.models <span class="im">import</span> ForecasterRecursiveXGBFull</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> ForecasterRecursiveXGBFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Model name: </span><span class="sc">{</span>model<span class="sc">.</span>name<span class="sc">}</span><span class="ss">"</span>)</span>
