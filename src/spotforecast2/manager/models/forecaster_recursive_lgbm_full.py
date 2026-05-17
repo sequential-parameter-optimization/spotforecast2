@@ -23,9 +23,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from spotforecast2_safe.manager.models.forecaster_recursive_lgbm import (
-    ForecasterRecursiveLGBM,
-)
+from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveLGBM
 from spotforecast2.manager.models.forecaster_recursive_model_full import (
     ForecasterRecursiveModelFull,
 )
@@ -37,7 +35,7 @@ class ForecasterRecursiveLGBMFull(
     """LGBM forecaster with real Bayesian tuning and SHAP.
 
     Inherits the LightGBM forecaster initialisation from
-    :class:`~spotforecast2_safe.manager.models.forecaster_recursive_lgbm.ForecasterRecursiveLGBM`
+    :class:`~spotforecast2_safe.forecaster.wrappers.lgbm.ForecasterRecursiveLGBM`
     (``spotforecast2-safe``) and adds the real :meth:`tune` and
     :meth:`get_global_shap_feature_importance` from
     :class:`~spotforecast2.manager.models.ForecasterRecursiveModelFull`.

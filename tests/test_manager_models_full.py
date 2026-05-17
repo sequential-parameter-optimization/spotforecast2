@@ -35,13 +35,9 @@ from spotforecast2.manager import (
     ForecasterRecursiveLGBMFull as _LFullMgr,
     ForecasterRecursiveXGBFull as _XFullMgr,
 )
-from spotforecast2_safe.manager.models.forecaster_recursive_model import (
+from spotforecast2_safe.forecaster.wrappers import (
     ForecasterRecursiveModel,
-)
-from spotforecast2_safe.manager.models.forecaster_recursive_lgbm import (
     ForecasterRecursiveLGBM,
-)
-from spotforecast2_safe.manager.models.forecaster_recursive_xgb import (
     ForecasterRecursiveXGB,
 )
 

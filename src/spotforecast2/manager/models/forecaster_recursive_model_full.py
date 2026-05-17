@@ -3,7 +3,7 @@
 
 """Full-featured base forecasting model with Bayesian tuning and SHAP.
 
-This module extends :class:`~spotforecast2_safe.manager.models.forecaster_recursive_model.ForecasterRecursiveModel`
+This module extends :class:`~spotforecast2_safe.forecaster.wrappers.model.ForecasterRecursiveModel`
 from ``spotforecast2-safe`` with real Bayesian hyperparameter search (Optuna)
 and SHAP-based feature importance (``shap.TreeExplainer``).
 
@@ -27,9 +27,7 @@ import shap
 
 from spotforecast2.model_selection import bayesian_search_forecaster
 from spotforecast2_safe.data.fetch_data import load_timeseries
-from spotforecast2_safe.manager.models.forecaster_recursive_model import (
-    ForecasterRecursiveModel,
-)
+from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveModel
 from spotforecast2.manager.trainer_full import SEARCH_SPACES
 from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
 
