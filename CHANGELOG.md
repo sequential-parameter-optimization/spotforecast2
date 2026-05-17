@@ -1,3 +1,9 @@
+## [0.22.7](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.6...v0.22.7) (2026-05-17)
+
+### Code Refactoring
+
+* follow spotforecast2-safe weather consolidation ([2ef453a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2ef453ab34c8dfbf15c43d96f402c56d33f7b9f2))
+
 ## [0.22.6](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.5...v0.22.6) (2026-05-16)
 
 ### Code Refactoring
