@@ -23,9 +23,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from spotforecast2_safe.manager.models.forecaster_recursive_xgb import (
-    ForecasterRecursiveXGB,
-)
+from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveXGB
 from spotforecast2.manager.models.forecaster_recursive_model_full import (
     ForecasterRecursiveModelFull,
 )
@@ -35,7 +33,7 @@ class ForecasterRecursiveXGBFull(ForecasterRecursiveModelFull, ForecasterRecursi
     """XGBoost forecaster with real Bayesian tuning and SHAP.
 
     Inherits the XGBoost forecaster initialisation from
-    :class:`~spotforecast2_safe.manager.models.forecaster_recursive_xgb.ForecasterRecursiveXGB`
+    :class:`~spotforecast2_safe.forecaster.wrappers.xgb.ForecasterRecursiveXGB`
     (``spotforecast2-safe``) and adds the real :meth:`tune` and
     :meth:`get_global_shap_feature_importance` from
     :class:`~spotforecast2.manager.models.ForecasterRecursiveModelFull`.
