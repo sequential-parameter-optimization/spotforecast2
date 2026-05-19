@@ -1,3 +1,15 @@
+## [1.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.8...v1.0.0) (2026-05-19)
+
+### ⚠ BREAKING CHANGES
+
+* **deps:** users pinning spotforecast2-safe<8 must upgrade.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+
+### Miscellaneous Chores
+
+* **deps:** bump spotforecast2-safe lower bound to 8.0.0 and track renamed persistence helpers ([929afff](https://github.com/sequential-parameter-optimization/spotforecast2/commit/929afffb20abbd312a75b94e5f3f33f292ea09eb))
+
 ## [1.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v0.22.8...v1.0.0-rc.1) (2026-05-19)
 
 ### ⚠ BREAKING CHANGES
