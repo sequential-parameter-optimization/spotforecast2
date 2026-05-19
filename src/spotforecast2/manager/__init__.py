@@ -33,7 +33,7 @@ from spotforecast2.manager.models import (
 
 # spotforecast2.manager.models is now a package; the above import works
 # transparently via spotforecast2/manager/models/__init__.py
-from spotforecast2_safe.manager.configurator import ConfigEntsoe
+from spotforecast2_safe.configurator import ConfigEntsoe
 
 __all__ = [
     "BaseTask",

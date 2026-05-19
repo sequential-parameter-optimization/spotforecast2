@@ -227,21 +227,21 @@ class TestFromConfig:
     """Verify from_config works on Full model subclasses."""
 
     def test_lgbm_from_config_returns_instance(self):
-        from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
         cfg = ConfigMulti()
         model = ForecasterRecursiveLGBMFull.from_config(iteration=1, config=cfg)
         assert isinstance(model, ForecasterRecursiveLGBMFull)
 
     def test_lgbm_from_config_predict_size(self):
-        from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
         cfg = ConfigMulti(predict_size=48)
         model = ForecasterRecursiveLGBMFull.from_config(iteration=0, config=cfg)
         assert model.predict_size == 48
 
     def test_lgbm_from_config_n_trials_override(self):
-        from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
         cfg = ConfigMulti()
         model = ForecasterRecursiveLGBMFull.from_config(
@@ -250,14 +250,14 @@ class TestFromConfig:
         assert model.n_trials == 5
 
     def test_xgb_from_config_returns_instance(self):
-        from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
         cfg = ConfigMulti()
         model = ForecasterRecursiveXGBFull.from_config(iteration=0, config=cfg)
         assert isinstance(model, ForecasterRecursiveXGBFull)
 
     def test_xgb_from_config_random_state(self):
-        from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
         cfg = ConfigMulti(random_state=7)
         model = ForecasterRecursiveXGBFull.from_config(iteration=0, config=cfg)

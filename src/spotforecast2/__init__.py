@@ -17,7 +17,7 @@ from . import model_selection
 from . import preprocessing
 from . import stats
 from . import utils
-from spotforecast2_safe.manager.configurator import ConfigEntsoe
+from spotforecast2_safe.configurator import ConfigEntsoe
 
 Config = ConfigEntsoe
 
