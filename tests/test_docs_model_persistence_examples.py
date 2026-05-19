@@ -23,9 +23,9 @@ import pytest
 
 from spotforecast2.preprocessing import WeightFunction
 from spotforecast2_safe.manager.persistence import (
-    _ensure_model_dir,
-    _get_model_filepath,
-    _model_directory_exists,
+    ensure_model_dir,
+    get_model_filepath,
+    model_directory_exists,
 )
 from spotforecast2_safe.data.fetch_data import get_cache_home
 
@@ -158,64 +158,64 @@ class TestCacheDirectoryManagement:
     Based on docs: "Programmatic Configuration" section
     """
 
-    def test_ensure_model_dir_creates_directory(self, temp_model_dir):
-        """Test _ensure_model_dir creates directories."""
+    def testensure_model_dir_creates_directory(self, temp_model_dir):
+        """Test ensure_model_dir creates directories."""
         new_dir = temp_model_dir / "forecasters"
 
-        result = _ensure_model_dir(new_dir)
+        result = ensure_model_dir(new_dir)
 
         assert result.exists()
         assert result.is_dir()
 
-    def test_ensure_model_dir_with_nested_path(self, temp_model_dir):
-        """Test _ensure_model_dir with nested directory structure."""
+    def testensure_model_dir_with_nested_path(self, temp_model_dir):
+        """Test ensure_model_dir with nested directory structure."""
         nested_path = temp_model_dir / "cache" / "models" / "forecasters"
 
-        result = _ensure_model_dir(nested_path)
+        result = ensure_model_dir(nested_path)
 
         assert result.exists()
         assert nested_path.exists()
 
-    def test_ensure_model_dir_idempotent(self, temp_model_dir):
-        """Test that _ensure_model_dir is idempotent."""
+    def testensure_model_dir_idempotent(self, temp_model_dir):
+        """Test that ensure_model_dir is idempotent."""
         model_dir = temp_model_dir / "models"
 
         # Call twice
-        result1 = _ensure_model_dir(model_dir)
-        result2 = _ensure_model_dir(model_dir)
+        result1 = ensure_model_dir(model_dir)
+        result2 = ensure_model_dir(model_dir)
 
         # Both should return same path
         assert result1 == result2
         assert result1.exists()
 
-    def test_model_directory_exists_true(self, temp_model_dir):
-        """Test _model_directory_exists returns True for existing directory."""
-        assert _model_directory_exists(temp_model_dir) is True
+    def testmodel_directory_exists_true(self, temp_model_dir):
+        """Test model_directory_exists returns True for existing directory."""
+        assert model_directory_exists(temp_model_dir) is True
 
-    def test_model_directory_exists_false(self, temp_model_dir):
-        """Test _model_directory_exists returns False for non-existing directory."""
+    def testmodel_directory_exists_false(self, temp_model_dir):
+        """Test model_directory_exists returns False for non-existing directory."""
         nonexistent = temp_model_dir / "does_not_exist"
-        assert _model_directory_exists(nonexistent) is False
+        assert model_directory_exists(nonexistent) is False
 
-    def test_model_directory_exists_with_string_path(self, temp_model_dir):
-        """Test _model_directory_exists works with string paths."""
-        assert _model_directory_exists(str(temp_model_dir)) is True
+    def testmodel_directory_exists_with_string_path(self, temp_model_dir):
+        """Test model_directory_exists works with string paths."""
+        assert model_directory_exists(str(temp_model_dir)) is True
 
-    def test_get_model_filepath_format(self, temp_model_dir):
-        """Test _get_model_filepath generates correct format.
+    def testget_model_filepath_format(self, temp_model_dir):
+        """Test get_model_filepath generates correct format.
 
         Based on docs: "Default Cache Directory" section naming convention
         """
-        filepath = _get_model_filepath(temp_model_dir, "power")
+        filepath = get_model_filepath(temp_model_dir, "power")
 
         assert filepath.name == "forecaster_power.joblib"
         assert filepath.suffix == ".joblib"
         assert filepath.parent == temp_model_dir
 
-    def test_get_model_filepath_multiple_targets(self, temp_model_dir):
-        """Test _get_model_filepath for multiple targets."""
+    def testget_model_filepath_multiple_targets(self, temp_model_dir):
+        """Test get_model_filepath for multiple targets."""
         targets = ["power", "energy", "demand"]
-        filepaths = [_get_model_filepath(temp_model_dir, t) for t in targets]
+        filepaths = [get_model_filepath(temp_model_dir, t) for t in targets]
 
         # All should be unique
         assert len(set(str(fp) for fp in filepaths)) == len(targets)
@@ -223,12 +223,12 @@ class TestCacheDirectoryManagement:
         # All should have .joblib extension
         assert all(fp.suffix == ".joblib" for fp in filepaths)
 
-    def test_get_model_filepath_with_special_characters(self, temp_model_dir):
-        """Test _get_model_filepath handles special characters in target names.
+    def testget_model_filepath_with_special_characters(self, temp_model_dir):
+        """Test get_model_filepath handles special characters in target names.
 
         From docs: "Models are stored in the format: model_dir/forecaster_{target_name}.joblib"
         """
-        filepath = _get_model_filepath(temp_model_dir, "WWW_HE:FIRA158117")
+        filepath = get_model_filepath(temp_model_dir, "WWW_HE:FIRA158117")
 
         assert "WWW_HE:FIRA158117" in filepath.name
         assert filepath.name == "forecaster_WWW_HE:FIRA158117.joblib"
@@ -362,35 +362,35 @@ class TestHelperFunctions:
     Based on docs: "Helper Functions (Advanced Usage)" section
     """
 
-    def test_ensure_model_dir_creates_parent_directories(self, temp_model_dir):
-        """Test that _ensure_model_dir creates all parent directories."""
+    def testensure_model_dir_creates_parent_directories(self, temp_model_dir):
+        """Test that ensure_model_dir creates all parent directories."""
         deep_path = temp_model_dir / "a" / "b" / "c" / "d" / "forecasters"
 
-        result = _ensure_model_dir(deep_path)
+        result = ensure_model_dir(deep_path)
 
         assert result.exists()
         assert deep_path.exists()
 
-    def test_get_model_filepath_returns_path_object(self, temp_model_dir):
-        """Test that _get_model_filepath returns Path objects."""
-        filepath = _get_model_filepath(temp_model_dir, "test_model")
+    def testget_model_filepath_returns_path_object(self, temp_model_dir):
+        """Test that get_model_filepath returns Path objects."""
+        filepath = get_model_filepath(temp_model_dir, "test_model")
 
         assert isinstance(filepath, Path)
 
-    def test_get_model_filepath_consistency(self, temp_model_dir):
-        """Test that calling _get_model_filepath multiple times is consistent."""
-        filepath1 = _get_model_filepath(temp_model_dir, "model")
-        filepath2 = _get_model_filepath(temp_model_dir, "model")
+    def testget_model_filepath_consistency(self, temp_model_dir):
+        """Test that calling get_model_filepath multiple times is consistent."""
+        filepath1 = get_model_filepath(temp_model_dir, "model")
+        filepath2 = get_model_filepath(temp_model_dir, "model")
 
         assert filepath1 == filepath2
 
-    def test_model_directory_exists_with_path_object(self, temp_model_dir):
-        """Test _model_directory_exists works with Path objects."""
-        assert _model_directory_exists(temp_model_dir) is True
+    def testmodel_directory_exists_with_path_object(self, temp_model_dir):
+        """Test model_directory_exists works with Path objects."""
+        assert model_directory_exists(temp_model_dir) is True
 
-    def test_model_directory_exists_with_string(self, temp_model_dir):
-        """Test _model_directory_exists works with string paths."""
-        assert _model_directory_exists(str(temp_model_dir)) is True
+    def testmodel_directory_exists_with_string(self, temp_model_dir):
+        """Test model_directory_exists works with string paths."""
+        assert model_directory_exists(str(temp_model_dir)) is True
 
 
 # ============================================================================
@@ -451,7 +451,7 @@ class TestDocumentationExamples:
 
         From docs: "Models are stored in the format: model_dir/forecaster_{target_name}.joblib"
         """
-        filepath = _get_model_filepath(temp_model_dir, "power")
+        filepath = get_model_filepath(temp_model_dir, "power")
 
         assert filepath.name == "forecaster_power.joblib"
 
@@ -525,8 +525,8 @@ class TestSafetyCriticalValidation:
     def test_model_directory_creation_atomicity(self, temp_model_dir):
         """Verify model directory creation is atomic operations."""
         # Should be safe to call multiple times
-        dir1 = _ensure_model_dir(temp_model_dir / "models")
-        dir2 = _ensure_model_dir(temp_model_dir / "models")
+        dir1 = ensure_model_dir(temp_model_dir / "models")
+        dir2 = ensure_model_dir(temp_model_dir / "models")
 
         # Should result in same directory
         assert dir1 == dir2
@@ -535,7 +535,7 @@ class TestSafetyCriticalValidation:
     def test_cache_path_uniqueness(self, temp_model_dir):
         """Verify each model gets unique cache path."""
         targets = ["target_a", "target_b", "target_c"]
-        paths = [_get_model_filepath(temp_model_dir, t) for t in targets]
+        paths = [get_model_filepath(temp_model_dir, t) for t in targets]
 
         # All paths should be unique
         assert len(set(str(p) for p in paths)) == len(targets)
@@ -614,13 +614,13 @@ class TestEdgeCasesAndRobustness:
         for i in range(20):
             long_path = long_path / f"level_{i:02d}"
 
-        result = _ensure_model_dir(long_path)
+        result = ensure_model_dir(long_path)
         assert result.exists()
 
     def test_cache_path_with_unicode_characters(self, temp_model_dir):
         """Test model paths with unicode characters."""
         unicode_target = "température_énergie_naïve"
-        filepath = _get_model_filepath(temp_model_dir, unicode_target)
+        filepath = get_model_filepath(temp_model_dir, unicode_target)
 
         assert unicode_target in filepath.name
         assert filepath.suffix == ".joblib"
