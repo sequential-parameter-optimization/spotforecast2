@@ -1,3 +1,9 @@
+## [1.0.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.0...v1.0.1) (2026-05-19)
+
+### Code Refactoring
+
+* **deps:** follow spotforecast2-safe configurator path promotion ([55e560f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/55e560fed698fa745eae1885b0985754f2c11e8b)), closes [sequential-parameter-optimization/spotforecast2-safe#193](https://github.com/sequential-parameter-optimization/spotforecast2-safe/issues/193) [#193](https://github.com/sequential-parameter-optimization/spotforecast2/issues/193)
+
 ## [1.0.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.0...v1.0.1-rc.1) (2026-05-19)
 
 ### Code Refactoring
