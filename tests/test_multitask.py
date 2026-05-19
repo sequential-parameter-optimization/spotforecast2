@@ -251,7 +251,7 @@ class TestConfigDelegation:
     """Verify constructor args are correctly forwarded to ConfigMulti."""
 
     def test_config_is_config_multi(self):
-        from spotforecast2_safe.manager.configurator.config_multi import ConfigMulti
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
         assert isinstance(_lazy().config, ConfigMulti)
 
