@@ -181,38 +181,38 @@ The system implements intelligent selective retraining:
 For advanced use cases, you can directly use the persistence helper functions:
 
 ```python
-from spotforecast2_safe.processing.n2n_predict_with_covariates import (
-    _ensure_model_dir,
-    _get_model_filepath,
-    _save_forecasters,
-    _load_forecasters,
-    _model_directory_exists
+from spotforecast2_safe.manager.persistence import (
+    ensure_model_dir,
+    get_model_filepath,
+    save_forecasters,
+    load_forecasters,
+    model_directory_exists,
 )
 
 # Create/ensure model directory exists
-model_dir = _ensure_model_dir("./my_models")
+model_dir = ensure_model_dir("./my_models")
 
 # Get path for a specific model
-path = _get_model_filepath(model_dir, "power")
+path = get_model_filepath(model_dir, "power")
 # Returns: my_models/forecaster_power.joblib
 
 # Load cached models
-forecasters, missing = _load_forecasters(
+forecasters, missing = load_forecasters(
     ["power", "energy", "temperature"],
     model_dir,
-    verbose=True
+    verbose=True,
 )
 # Returns: (loaded_forecasters_dict, missing_targets_list)
 
 # Save models to disk
-saved_paths = _save_forecasters(
+saved_paths = save_forecasters(
     {"power": forecaster_obj, "energy": forecaster_obj},
     model_dir,
-    verbose=True
+    verbose=True,
 )
 
 # Check if cache directory exists
-if _model_directory_exists(model_dir):
+if model_directory_exists(model_dir):
     print("Cache directory found")
 ```
 
