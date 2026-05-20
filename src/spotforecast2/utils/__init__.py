@@ -12,7 +12,7 @@ from spotforecast2.utils.validation import (
     DataTypeWarning,
     check_exog_dtypes,
 )
-from spotforecast2_safe.utils.validation import check_predict_input
+from spotforecast2_safe.preprocessing.checking import check_predict_input
 from spotforecast2.utils.data_transform import (
     input_to_frame,
     expand_index,
