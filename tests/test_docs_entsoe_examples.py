@@ -19,17 +19,17 @@ class TestConfigExamples:
         Example: Creating default configuration.
 
         ```python
-        from spotforecast2 import Config
+        from spotforecast2_safe.configurator import ConfigEntsoe
 
-        config = Config()
+        config = ConfigEntsoe()
         print(config.API_COUNTRY_CODE)  # 'DE'
         print(config.predict_size)      # 24
         print(config.random_state)      # 314159
         ```
         """
-        from spotforecast2 import Config
+        from spotforecast2_safe.configurator import ConfigEntsoe
 
-        config = Config()
+        config = ConfigEntsoe()
 
         assert config.API_COUNTRY_CODE == "DE"
         assert config.predict_size == 24
@@ -40,10 +40,10 @@ class TestConfigExamples:
         Example: Creating custom configuration.
 
         ```python
-        from spotforecast2 import Config
+        from spotforecast2_safe.configurator import ConfigEntsoe
         import pandas as pd
 
-        config = Config(
+        config = ConfigEntsoe(
             api_country_code='FR',
             predict_size=48,
             refit_size=14,
@@ -53,9 +53,9 @@ class TestConfigExamples:
         print(config.predict_size)      # 48
         ```
         """
-        from spotforecast2 import Config
+        from spotforecast2_safe.configurator import ConfigEntsoe
 
-        config = Config(
+        config = ConfigEntsoe(
             api_country_code="FR", predict_size=48, refit_size=14, random_state=42
         )
 
@@ -69,16 +69,16 @@ class TestConfigExamples:
         Example: Accessing period configurations.
 
         ```python
-        from spotforecast2 import Config
+        from spotforecast2_safe.configurator import ConfigEntsoe
 
-        config = Config()
+        config = ConfigEntsoe()
         for period in config.periods:
             print(f"{period.name}: {period.n_periods} basis functions")
         ```
         """
-        from spotforecast2 import Config
+        from spotforecast2_safe.configurator import ConfigEntsoe
 
-        config = Config()
+        config = ConfigEntsoe()
 
         assert len(config.periods) == 5
         period_names = [p.name for p in config.periods]
@@ -166,11 +166,11 @@ class TestExogBuilderExamples:
         Example: Building features using config periods.
 
         ```python
-        from spotforecast2 import Config
+        from spotforecast2_safe.configurator import ConfigEntsoe
         from spotforecast2_safe.preprocessing import ExogBuilder
         import pandas as pd
 
-        config = Config()
+        config = ConfigEntsoe()
         builder = ExogBuilder(
             periods=config.periods,
             country_code=config.API_COUNTRY_CODE
@@ -182,11 +182,11 @@ class TestExogBuilderExamples:
         print(f"Generated {X.shape[1]} features for {X.shape[0]} hours")
         ```
         """
-        from spotforecast2 import Config
+        from spotforecast2_safe.configurator import ConfigEntsoe
         from spotforecast2_safe.preprocessing import ExogBuilder
         import pandas as pd
 
-        config = Config()
+        config = ConfigEntsoe()
         builder = ExogBuilder(
             periods=config.periods, country_code=config.API_COUNTRY_CODE
         )

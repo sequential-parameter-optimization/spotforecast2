@@ -12,7 +12,7 @@ appropriate for daily (hourly) patterns.
 import numpy as np
 import pandas as pd
 
-from spotforecast2 import Config
+from spotforecast2_safe.configurator import ConfigEntsoe
 from spotforecast2_safe.data import Period
 from spotforecast2_safe.preprocessing import RepeatingBasisFunction
 
@@ -86,7 +86,7 @@ class TestPeriodConfiguration:
         - quarterly: n_periods=4 for 4-quarter cycle (1:1 ratio)
         - yearly: n_periods=12 for 365-day cycle (1:30 ratio)
         """
-        config = Config()
+        config = ConfigEntsoe()
 
         ratios = []
         for period in config.periods:
@@ -143,7 +143,7 @@ class TestPeriodConfiguration:
         - Evening peak (5-8 PM)
         - Night valley (12-6 AM)
         """
-        config = Config()
+        config = ConfigEntsoe()
         daily_period = config.periods[0]
 
         rbf = RepeatingBasisFunction(
@@ -205,7 +205,7 @@ class TestPeriodConfiguration:
 
         Calculates the total feature dimensionality impact.
         """
-        config_12 = Config()  # default with n_periods=12 for daily
+        config_12 = ConfigEntsoe()  # default with n_periods=12 for daily
 
         # Alternative config with n_periods=24 for daily
         custom_periods_24 = [
@@ -217,7 +217,7 @@ class TestPeriodConfiguration:
                 name="yearly", n_periods=12, column="dayofyear", input_range=(1, 365)
             ),
         ]
-        config_24 = Config(periods=custom_periods_24)
+        config_24 = ConfigEntsoe(periods=custom_periods_24)
 
         # Calculate total feature dimensions
         total_features_12 = sum(p.n_periods for p in config_12.periods)
