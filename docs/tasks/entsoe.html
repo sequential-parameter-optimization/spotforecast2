@@ -777,7 +777,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#period-dataclass" id="toc-period-dataclass" class="nav-link" data-scroll-target="#period-dataclass">Period Dataclass</a></li>
   <li><a href="#repeatingbasisfunction" id="toc-repeatingbasisfunction" class="nav-link" data-scroll-target="#repeatingbasisfunction">RepeatingBasisFunction</a></li>
   <li><a href="#exogbuilder" id="toc-exogbuilder" class="nav-link" data-scroll-target="#exogbuilder">ExogBuilder</a></li>
-  <li><a href="#using-config-with-exogbuilder" id="toc-using-config-with-exogbuilder" class="nav-link" data-scroll-target="#using-config-with-exogbuilder">Using Config with ExogBuilder</a></li>
+  <li><a href="#using-configentsoe-with-exogbuilder" id="toc-using-configentsoe-with-exogbuilder" class="nav-link" data-scroll-target="#using-configentsoe-with-exogbuilder">Using ConfigEntsoe with ExogBuilder</a></li>
   </ul></li>
   <li><a href="#data-preprocessing" id="toc-data-preprocessing" class="nav-link" data-scroll-target="#data-preprocessing">Data Preprocessing</a>
   <ul class="collapse">
@@ -890,11 +890,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>The ENTSO-E task uses a configuration class that can be customized programmatically. All configuration parameters have sensible defaults but can be overridden when needed.</p>
 <section id="using-default-configuration" class="level3">
 <h3 class="anchored" data-anchor-id="using-default-configuration">Using Default Configuration</h3>
-<div id="e0a19706" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2 <span class="im">import</span> Config</span>
+<div id="3f09f44f" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator <span class="im">import</span> ConfigEntsoe</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Create default configuration instance</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> Config()</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> ConfigEntsoe()</span>
 <span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Access configuration values</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(config.API_COUNTRY_CODE)  <span class="co"># 'DE'</span></span>
@@ -909,11 +909,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="custom-configuration" class="level3">
 <h3 class="anchored" data-anchor-id="custom-configuration">Custom Configuration</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2 <span class="im">import</span> Config</span>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator <span class="im">import</span> ConfigEntsoe</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Create custom configuration</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>custom_config <span class="op">=</span> Config(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>custom_config <span class="op">=</span> ConfigEntsoe(</span>
 <span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    api_country_code<span class="op">=</span><span class="st">'DE'</span>,</span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">48</span>,</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    refit_size<span class="op">=</span><span class="dv">14</span>,</span>
@@ -1010,7 +1010,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="time-intervals-for-download-training-prediction-validation-and-testing" class="level3">
 <h3 class="anchored" data-anchor-id="time-intervals-for-download-training-prediction-validation-and-testing">Time intervals for download, training, prediction, validation, and testing</h3>
 <p>Download interval is defined by the start/end timestamps passed to the download command.</p>
-<p>Training, prediction, validation, and testing intervals are configured via the Config class. The CLI uses default configuration values which can be modified programmatically:</p>
+<p>Training, prediction, validation, and testing intervals are configured via the <code>ConfigEntsoe</code> class. The CLI uses default configuration values which can be modified programmatically:</p>
 <ul>
 <li>training end time: config.end_train_default (defaults to “2025-12-31 00:00+00:00”)</li>
 <li>training window size: config.train_size (defaults to 3 years)</li>
@@ -1092,14 +1092,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(X.shape)  <span class="co"># (25, 21) - 12 + 7 + 2 (holiday, weekend)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
-<section id="using-config-with-exogbuilder" class="level3">
-<h3 class="anchored" data-anchor-id="using-config-with-exogbuilder">Using Config with ExogBuilder</h3>
+<section id="using-configentsoe-with-exogbuilder" class="level3">
+<h3 class="anchored" data-anchor-id="using-configentsoe-with-exogbuilder">Using ConfigEntsoe with ExogBuilder</h3>
 <p>Combine configuration and feature building:</p>
-<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2 <span class="im">import</span> Config</span>
+<div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator <span class="im">import</span> ConfigEntsoe</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.preprocessing <span class="im">import</span> ExogBuilder</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> Config()</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> ConfigEntsoe()</span>
 <span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>builder <span class="op">=</span> ExogBuilder(</span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>    periods<span class="op">=</span>config.periods,</span>
 <span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>    country_code<span class="op">=</span>config.API_COUNTRY_CODE</span>
