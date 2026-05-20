@@ -14,14 +14,15 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from spotforecast2_safe.data import DemoConfig, load_actual_combined
+from spotforecast2_safe.configurator import ConfigDemo
+from spotforecast2_safe.data import load_actual_combined
 
 
 class TestLoadActualCombinedIntegration:
     """Test integration of load_actual_combined in task_demo workflow."""
 
     def test_load_actual_combined_with_demo_config(self):
-        """Test loading actual data using DemoConfig as in task_demo.py."""
+        """Test loading actual data using ConfigDemo as in task_demo.py."""
         # Create temporary CSV file
         with tempfile.NamedTemporaryFile(mode="w", suffix=".csv", delete=False) as f:
             f.write("timestamp,col1,col2,col3\n")
@@ -37,7 +38,7 @@ class TestLoadActualCombinedIntegration:
             columns = ["col1", "col2", "col3"]
 
             # Use load_actual_combined as in task_demo.py
-            config = DemoConfig(data_path=Path(DATA_PATH).expanduser())
+            config = ConfigDemo(data_path=Path(DATA_PATH).expanduser())
             actual_combined = load_actual_combined(
                 config=config,
                 columns=columns,
@@ -68,7 +69,7 @@ class TestLoadActualCombinedIntegration:
                     f.write(f"2020-01-01 {i:02d}:00:00,{i},{i*2}\n")
 
             # Use the file
-            config = DemoConfig(data_path=data_file)
+            config = ConfigDemo(data_path=data_file)
             result = load_actual_combined(
                 config=config,
                 columns=["A", "B"],
@@ -89,7 +90,7 @@ class TestLoadActualCombinedIntegration:
 
         try:
             # Config has default horizon of 24
-            config = DemoConfig(data_path=temp_path, forecast_horizon=24)
+            config = ConfigDemo(data_path=temp_path, forecast_horizon=24)
 
             # Override with custom horizon
             result = load_actual_combined(
@@ -119,7 +120,7 @@ class TestLoadActualCombinedIntegration:
             # Standard weights from task_demo.py
             WEIGHTS = [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0]
 
-            config = DemoConfig(data_path=temp_path)
+            config = ConfigDemo(data_path=temp_path)
             result = load_actual_combined(
                 config=config,
                 columns=columns,
@@ -159,7 +160,7 @@ class TestTaskDemoWorkflow:
             baseline_predictions_columns = columns
 
             # Load actual combined as in task_demo.py
-            config = DemoConfig(data_path=Path(DATA_PATH).expanduser())
+            config = ConfigDemo(data_path=Path(DATA_PATH).expanduser())
             actual_combined = load_actual_combined(
                 config=config,
                 columns=list(baseline_predictions_columns),
@@ -188,7 +189,7 @@ class TestErrorHandling:
 
     def test_missing_file_error(self):
         """Test error when data file does not exist."""
-        config = DemoConfig(data_path=Path("/nonexistent/path/data.csv"))
+        config = ConfigDemo(data_path=Path("/nonexistent/path/data.csv"))
 
         with pytest.raises(FileNotFoundError):
             load_actual_combined(
@@ -206,7 +207,7 @@ class TestErrorHandling:
             temp_path = Path(f.name)
 
         try:
-            config = DemoConfig(data_path=temp_path)
+            config = ConfigDemo(data_path=temp_path)
 
             with pytest.raises(ValueError, match="Missing columns in test data"):
                 load_actual_combined(
@@ -237,7 +238,7 @@ class TestBackwardCompatibility:
             forecast_horizon = 5
 
             # New implementation
-            config = DemoConfig(data_path=temp_path)
+            config = ConfigDemo(data_path=temp_path)
             new_result = load_actual_combined(
                 config=config,
                 columns=columns,

@@ -16,7 +16,7 @@ from spotforecast2.tasks.task_entsoe import (
     ForecasterRecursiveLGBM,
     ForecasterRecursiveXGB,
 )
-from spotforecast2_safe.data.data import Period
+from spotforecast2_safe.data.data_classes import Period
 from spotforecast2_safe.preprocessing import ExogBuilder, RepeatingBasisFunction
 
 

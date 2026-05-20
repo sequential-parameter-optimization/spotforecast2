@@ -18,7 +18,7 @@ The plot includes:
 
 Safety-Critical Features:
     - Uses load_actual_combined from spotforecast2_safe for validated data loading
-    - DemoConfig provides immutable configuration with sensible defaults
+    - ConfigDemo provides immutable configuration with sensible defaults
     - Path objects ensure cross-platform compatibility
     - Comprehensive error handling with file existence checks
 
@@ -55,7 +55,8 @@ from spotforecast2_safe.processing.n2n_predict_with_covariates import (
     n2n_predict_with_covariates,
 )
 from spotforecast2_safe.utils.parse import parse_bool
-from spotforecast2_safe.data import DemoConfig, load_actual_combined
+from spotforecast2_safe.configurator import ConfigDemo
+from spotforecast2_safe.data import load_actual_combined
 from spotforecast2.manager.plotter import plot_actual_vs_predicted
 
 warnings.simplefilter("ignore")
@@ -187,7 +188,7 @@ def main(
     # --- Ground truth ---
     columns = list(baseline_predictions.columns)
     # Use load_actual_combined from spotforecast2_safe with minimal config
-    config = DemoConfig(data_path=Path(DATA_PATH).expanduser())
+    config = ConfigDemo(data_path=Path(DATA_PATH).expanduser())
     actual_combined = load_actual_combined(
         config=config,
         columns=columns,
