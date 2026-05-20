@@ -13,12 +13,12 @@ from spotforecast2.utils.validation import (
     check_exog_dtypes,
 )
 from spotforecast2_safe.preprocessing.checking import check_predict_input
-from spotforecast2.utils.data_transform import (
+from spotforecast2.preprocessing.data_transform import (
     input_to_frame,
     expand_index,
 )
-from spotforecast2_safe.utils.data_transform import transform_dataframe
-from spotforecast2.utils.forecaster_config import (
+from spotforecast2_safe.preprocessing.data_transform import transform_dataframe
+from spotforecast2.preprocessing.forecaster_config import (
     initialize_lags,
     initialize_weights,
     check_select_fit_kwargs,
