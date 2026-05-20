@@ -114,8 +114,12 @@ website:
             contents:
               - text: "_binner"
                 file: docs/reference/preprocessing._binner.qmd
-              - text: "_rolling"
-                file: docs/reference/preprocessing._rolling.qmd
+              - text: "data_transform"
+                file: docs/reference/preprocessing.data_transform.qmd
+              - text: "forecaster_config"
+                file: docs/reference/preprocessing.forecaster_config.qmd
+              - text: "rolling"
+                file: docs/reference/preprocessing.rolling.qmd
               - text: "outlier_plots"
                 file: docs/reference/preprocessing.outlier_plots.qmd
               - text: "split"
@@ -142,10 +146,6 @@ website:
                 file: docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.qmd
           - section: "Utils"
             contents:
-              - text: "data_transform"
-                file: docs/reference/utils.data_transform.qmd
-              - text: "forecaster_config"
-                file: docs/reference/utils.forecaster_config.qmd
               - text: "validation"
                 file: docs/reference/utils.validation.qmd
 
@@ -214,7 +214,9 @@ quartodoc:
       desc: "Data curation, outlier detection, and split tools."
       contents:
         - preprocessing._binner
-        - preprocessing._rolling
+        - preprocessing.data_transform
+        - preprocessing.forecaster_config
+        - preprocessing.rolling
         - preprocessing.outlier_plots
         - preprocessing.split
         - preprocessing.time_series_visualization
@@ -271,8 +273,6 @@ quartodoc:
     - title: "Utils"
       desc: "Validation and data transformation utilities."
       contents:
-        - utils.data_transform
-        - utils.forecaster_config
         - utils.validation
 
     - title: "Exceptions"
