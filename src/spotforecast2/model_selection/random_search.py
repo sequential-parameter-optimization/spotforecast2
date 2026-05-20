@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import ParameterSampler
 from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
-from spotforecast2_safe.model_selection import OneStepAheadFold
+from spotforecast2_safe.splitter import OneStepAheadFold
 from spotforecast2.model_selection.grid_search import (
     _evaluate_grid_hyperparameters,
 )

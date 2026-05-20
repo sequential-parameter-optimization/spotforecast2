@@ -45,7 +45,8 @@ from spotforecast2.model_selection.utils_metrics import (
     _calculate_metrics_one_step_ahead,
 )
 from spotforecast2_safe.exceptions import set_skforecast_warnings
-from spotforecast2_safe.model_selection import OneStepAheadFold, _backtesting_forecaster
+from spotforecast2_safe.splitter import OneStepAheadFold
+from spotforecast2_safe.backtesting import _backtesting_forecaster
 
 logger = logging.getLogger(__name__)
 
@@ -315,7 +316,7 @@ def spotoptim_objective(
         ```{python}
         import numpy as np
         import pandas as pd
-        from spotforecast2_safe.model_selection import TimeSeriesFold
+        from spotforecast2_safe.splitter import TimeSeriesFold
         from spotforecast2.model_selection.spotoptim_search import spotoptim_objective
 
         # Mock forecaster for documentation
