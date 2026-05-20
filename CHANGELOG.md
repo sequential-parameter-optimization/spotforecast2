@@ -8,6 +8,15 @@
 
 * update quartodoc config for recent module renames ([db96dd3](https://github.com/sequential-parameter-optimization/spotforecast2/commit/db96dd36ffc766b060c4594731674e4e1e93d315))
 
+## [1.0.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.1...v1.0.2) (2026-05-20)
+
+### Code Refactoring
+
+* **deps:** follow spotforecast2-safe _rolling → rolling rename ([fdeae12](https://github.com/sequential-parameter-optimization/spotforecast2/commit/fdeae124f2501bef878f215a42a17853f2363a9d)), closes [#199](https://github.com/sequential-parameter-optimization/spotforecast2/issues/199)
+* **deps:** follow spotforecast2-safe splitter + backtesting split ([79aee06](https://github.com/sequential-parameter-optimization/spotforecast2/commit/79aee0621e0b8ab6e0a447ce513397956151f326)), closes [#195](https://github.com/sequential-parameter-optimization/spotforecast2/issues/195)
+* **deps:** follow spotforecast2-safe utils/{data_transform,forecaster_config} → preprocessing ([a4e19f8](https://github.com/sequential-parameter-optimization/spotforecast2/commit/a4e19f8b76479e9574c1ee3e08468131da2169d5)), closes [#204](https://github.com/sequential-parameter-optimization/spotforecast2/issues/204)
+* **deps:** follow spotforecast2-safe utils/validation → preprocessing/checking ([1ece455](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1ece455f1b90260fca2670df3dcc03633c52b91b)), closes [#197](https://github.com/sequential-parameter-optimization/spotforecast2/issues/197)
+
 ## [1.0.2-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.1...v1.0.2-rc.1) (2026-05-20)
 
 ### Code Refactoring
