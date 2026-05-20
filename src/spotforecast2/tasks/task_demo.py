@@ -54,7 +54,7 @@ from spotforecast2_safe.processing.n2n_predict import n2n_predict
 from spotforecast2_safe.processing.n2n_predict_with_covariates import (
     n2n_predict_with_covariates,
 )
-from spotforecast2_safe.manager.tools import _parse_bool
+from spotforecast2_safe.utils.parse import parse_bool
 from spotforecast2_safe.data import DemoConfig, load_actual_combined
 from spotforecast2.manager.plotter import plot_actual_vs_predicted
 
@@ -212,7 +212,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the spotforecast2 demo task.")
     parser.add_argument(
         "--force_train",
-        type=_parse_bool,
+        type=parse_bool,
         default=True,
         help="Force training (true/false, case-insensitive).",
     )

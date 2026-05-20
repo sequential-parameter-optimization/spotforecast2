@@ -76,10 +76,10 @@ All configuration parameters have sensible defaults but can be overridden when n
 ### Using Default Configuration
 
 ```{python}
-from spotforecast2 import Config
+from spotforecast2_safe.configurator import ConfigEntsoe
 
 # Create default configuration instance
-config = Config()
+config = ConfigEntsoe()
 
 # Access configuration values
 print(config.API_COUNTRY_CODE)  # 'DE'
@@ -90,11 +90,11 @@ print(config.train_size)        # Timedelta(days=1095)
 ### Custom Configuration
 
 ```python
-from spotforecast2 import Config
+from spotforecast2_safe.configurator import ConfigEntsoe
 import pandas as pd
 
 # Create custom configuration
-custom_config = Config(
+custom_config = ConfigEntsoe(
     api_country_code='DE',
     predict_size=48,
     refit_size=14,
@@ -128,7 +128,7 @@ For more details, see the [ConfigEntsoe API documentation](../reference/index.qm
 
 Download interval is defined by the start/end timestamps passed to the download command.
 
-Training, prediction, validation, and testing intervals are configured via the Config class.
+Training, prediction, validation, and testing intervals are configured via the `ConfigEntsoe` class.
 The CLI uses default configuration values which can be modified programmatically:
 
 - training end time: config.end_train_default (defaults to "2025-12-31 00:00+00:00")
@@ -226,16 +226,16 @@ X = builder.build(
 print(X.shape)  # (25, 21) - 12 + 7 + 2 (holiday, weekend)
 ```
 
-### Using Config with ExogBuilder
+### Using ConfigEntsoe with ExogBuilder
 
 Combine configuration and feature building:
 
 ```python
-from spotforecast2 import Config
+from spotforecast2_safe.configurator import ConfigEntsoe
 from spotforecast2_safe.preprocessing import ExogBuilder
 import pandas as pd
 
-config = Config()
+config = ConfigEntsoe()
 builder = ExogBuilder(
     periods=config.periods,
     country_code=config.API_COUNTRY_CODE
