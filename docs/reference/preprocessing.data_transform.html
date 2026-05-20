@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>preprocessing._rolling – spotforecast2</title>
+<title>preprocessing.data_transform – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -270,7 +270,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/preprocessing._binner.html">Preprocessing</a></li><li class="breadcrumb-item"><a href="../../docs/reference/preprocessing._rolling.html">_rolling</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/preprocessing._binner.html">Preprocessing</a></li><li class="breadcrumb-item"><a href="../../docs/reference/preprocessing.data_transform.html">data_transform</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -502,8 +502,20 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing._rolling.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">_rolling</span></a>
+  <a href="../../docs/reference/preprocessing.data_transform.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text">data_transform</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/preprocessing.forecaster_config.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">forecaster_config</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/preprocessing.rolling.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">rolling</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -599,18 +611,6 @@ ul.task-list li input[type="checkbox"] {
           </a> 
       </div>
       <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/utils.data_transform.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">data_transform</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/utils.forecaster_config.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">forecaster_config</span></a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/utils.validation.html" class="sidebar-item-text sidebar-link">
@@ -723,20 +723,20 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#spotforecast2.preprocessing._rolling" id="toc-spotforecast2.preprocessing._rolling" class="nav-link active" data-scroll-target="#spotforecast2.preprocessing._rolling">preprocessing._rolling</a></li>
+  <li><a href="#spotforecast2.preprocessing.data_transform" id="toc-spotforecast2.preprocessing.data_transform" class="nav-link active" data-scroll-target="#spotforecast2.preprocessing.data_transform">preprocessing.data_transform</a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/preprocessing._rolling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/preprocessing.data_transform.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/preprocessing._binner.html">Preprocessing</a></li><li class="breadcrumb-item"><a href="../../docs/reference/preprocessing._rolling.html">_rolling</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/preprocessing._binner.html">Preprocessing</a></li><li class="breadcrumb-item"><a href="../../docs/reference/preprocessing.data_transform.html">data_transform</a></li></ol></nav></header>
 
 
 
 
 
-<section id="spotforecast2.preprocessing._rolling" class="level1">
-<h1>preprocessing._rolling</h1>
-<p><code>preprocessing._rolling</code></p>
+<section id="spotforecast2.preprocessing.data_transform" class="level1">
+<h1>preprocessing.data_transform</h1>
+<p><code>preprocessing.data_transform</code></p>
 
 
 </section>
@@ -1169,7 +1169,7 @@ ul.task-list li input[type="checkbox"] {
     </div>   
     <div class="nav-footer-center">
 <p>Copyright © 2024-2026 bartzbeielstein | <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/preprocessing._rolling.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/preprocessing.data_transform.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
