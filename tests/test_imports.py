@@ -1,10 +1,10 @@
-from spotforecast2_safe.data.data import Period as PeriodFull
+from spotforecast2_safe.data.data_classes import Period as PeriodFull
 from spotforecast2_safe.data import Period as PeriodData
 from spotforecast2_safe import Period as PeriodTop
 
 
 def test_import_period_full():
-    """Verify import from spotforecast2_safe.data.data."""
+    """Verify import from spotforecast2_safe.data.data_classes."""
     period = PeriodFull(name="test", n_periods=10, column="test", input_range=(0, 10))
     assert period.name == "test"
 
