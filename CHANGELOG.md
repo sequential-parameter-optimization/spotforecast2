@@ -1,3 +1,14 @@
+## [1.0.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.2...v1.0.3) (2026-05-20)
+
+### Bug Fixes
+
+* ConfigEntsoe import from sf2-safe made explicit ([cc72b53](https://github.com/sequential-parameter-optimization/spotforecast2/commit/cc72b53545c250d1a440c0d9b10f3f6ffc408e40))
+* **tasks:** follow sf2-safe manager.tools._parse_bool → utils.parse.parse_bool ([43d6791](https://github.com/sequential-parameter-optimization/spotforecast2/commit/43d679114ae96d62cb865227caffa56076c92e41))
+
+### Documentation
+
+* update quartodoc config for recent module renames ([db96dd3](https://github.com/sequential-parameter-optimization/spotforecast2/commit/db96dd36ffc766b060c4594731674e4e1e93d315))
+
 ## [1.0.2-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.2-rc.1...v1.0.2-rc.2) (2026-05-20)
 
 ### Bug Fixes
