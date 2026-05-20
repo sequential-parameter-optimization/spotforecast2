@@ -2,7 +2,7 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later AND BSD-3-Clause
 
-from spotforecast2_safe.model_selection.utils_common import (
+from spotforecast2_safe.splitter.utils_common import (
     OneStepAheadValidationWarning,
     check_backtesting_input,
     check_one_step_ahead_input,

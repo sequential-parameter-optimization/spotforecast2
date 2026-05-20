@@ -3,7 +3,7 @@ import pandas as pd
 from unittest.mock import patch
 
 from spotforecast2.model_selection.spotoptim_search import spotoptim_objective
-from spotforecast2_safe.model_selection import TimeSeriesFold, OneStepAheadFold
+from spotforecast2_safe.splitter import TimeSeriesFold, OneStepAheadFold
 
 
 class MockForecaster:
