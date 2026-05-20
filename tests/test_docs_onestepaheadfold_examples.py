@@ -11,7 +11,7 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.linear_model import Ridge
 
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2_safe.model_selection import OneStepAheadFold
+from spotforecast2_safe.splitter import OneStepAheadFold
 from spotforecast2.model_selection import backtesting_forecaster
 
 
