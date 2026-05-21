@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>manager.multitask.multitask – spotforecast2</title>
+<title>multitask.cleantask – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -305,7 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.multitask.MultiTask.html">MultiTask</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.agg_predictor.html">Multitask</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.CleanTask.html">CleanTask</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -341,7 +341,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false">
- <span class="menu-text">Exceptions</span></a>
+ <span class="menu-text">Warnings</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -349,7 +349,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/exceptions.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/warnings.exceptions.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">exceptions</span></a>
   </div>
 </li>
@@ -358,7 +358,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
- <span class="menu-text">Forecaster</span></a>
+ <span class="menu-text">Models</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -366,102 +366,101 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/forecaster.utils.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">utils</span></a>
+  <a href="../../docs/reference/models.forecaster_recursive_model_full.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">forecaster_recursive_model_full</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/models.forecaster_recursive_lgbm_full.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">forecaster_recursive_lgbm_full</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/models.forecaster_recursive_xgb_full.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">forecaster_recursive_xgb_full</span></a>
   </div>
 </li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
- <span class="menu-text">Manager</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
+ <span class="menu-text">Trainer</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">models.forecaster_recursive_model_full</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.models.forecaster_recursive_lgbm_full.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">models.forecaster_recursive_lgbm_full</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.models.forecaster_recursive_xgb_full.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">models.forecaster_recursive_xgb_full</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.plotter.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">plotter</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.trainer_full.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/trainer.trainer_full.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">trainer_full</span></a>
   </div>
 </li>
+      </ul>
+  </li>
+          <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
+ <span class="menu-text">Multitask</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.agg_predictor.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/multitask.agg_predictor.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">agg_predictor</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.BaseTask.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/multitask.BaseTask.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">BaseTask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.LazyTask.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/multitask.LazyTask.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">LazyTask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.OptunaTask.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/multitask.OptunaTask.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OptunaTask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.SpotOptimTask.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/multitask.SpotOptimTask.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">SpotOptimTask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.PredictTask.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/multitask.PredictTask.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">PredictTask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.CleanTask.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/multitask.CleanTask.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">CleanTask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.MultiTask.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../docs/reference/multitask.MultiTask.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">MultiTask</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/manager.multitask.run.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/multitask.run.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">run</span></a>
   </div>
 </li>
@@ -469,13 +468,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
  <span class="menu-text">Model Selection</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/model_selection.bayesian_search.html" class="sidebar-item-text sidebar-link">
@@ -510,52 +509,28 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false">
- <span class="menu-text">Preprocessing</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="false" aria-label="Toggle section">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+ <span class="menu-text">Plots</span></a>
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing._binner.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">_binner</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing.data_transform.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">data_transform</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing.forecaster_config.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">forecaster_config</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing.rolling.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">rolling</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing.outlier_plots.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/plots.outlier_plots.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">outlier_plots</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing.split.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">split</span></a>
+  <a href="../../docs/reference/plots.plotter.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">plotter</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/preprocessing.time_series_visualization.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/plots.time_series_visualization.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">time_series_visualization</span></a>
   </div>
 </li>
@@ -563,13 +538,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
  <span class="menu-text">Stats</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-7" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-7" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/stats.autocorrelation.html" class="sidebar-item-text sidebar-link">
@@ -580,13 +555,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
  <span class="menu-text">Tasks</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-8" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/tasks.task_demo.html" class="sidebar-item-text sidebar-link">
@@ -625,23 +600,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
       </ul>
   </li>
-          <li class="sidebar-item sidebar-item-section">
-      <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false">
- <span class="menu-text">Utils</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-9" role="navigation" aria-expanded="false" aria-label="Toggle section">
-            <i class="bi bi-chevron-right ms-2"></i>
-          </a> 
-      </div>
-      <ul id="quarto-sidebar-section-9" class="collapse list-unstyled sidebar-section depth2 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/utils.validation.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">validation</span></a>
-  </div>
-</li>
-      </ul>
-  </li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -664,7 +622,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
             <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false">
- <span class="menu-text">Preprocessing Guides</span></a>
+ <span class="menu-text">Plots Guides</span></a>
           <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-11" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
@@ -672,13 +630,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-11" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/preprocessing/outliers.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/plots/outliers.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Outlier Detection</span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/preprocessing/time_series_visualization.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/plots/time_series_visualization.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">Time Series Visualization</span></a>
   </div>
 </li>
@@ -746,27 +704,21 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#parameters" id="toc-parameters" class="nav-link active" data-scroll-target="#parameters">Parameters</a></li>
-  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link active" data-scroll-target="#examples">Examples</a></li>
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
   <ul class="collapse">
-  <li><a href="#spotforecast2.manager.multitask.MultiTask.run" id="toc-spotforecast2.manager.multitask.MultiTask.run" class="nav-link" data-scroll-target="#spotforecast2.manager.multitask.MultiTask.run">run</a></li>
-  <li><a href="#spotforecast2.manager.multitask.MultiTask.run_task_clean" id="toc-spotforecast2.manager.multitask.MultiTask.run_task_clean" class="nav-link" data-scroll-target="#spotforecast2.manager.multitask.MultiTask.run_task_clean">run_task_clean</a></li>
-  <li><a href="#spotforecast2.manager.multitask.MultiTask.run_task_lazy" id="toc-spotforecast2.manager.multitask.MultiTask.run_task_lazy" class="nav-link" data-scroll-target="#spotforecast2.manager.multitask.MultiTask.run_task_lazy">run_task_lazy</a></li>
-  <li><a href="#spotforecast2.manager.multitask.MultiTask.run_task_optuna" id="toc-spotforecast2.manager.multitask.MultiTask.run_task_optuna" class="nav-link" data-scroll-target="#spotforecast2.manager.multitask.MultiTask.run_task_optuna">run_task_optuna</a></li>
-  <li><a href="#spotforecast2.manager.multitask.MultiTask.run_task_predict" id="toc-spotforecast2.manager.multitask.MultiTask.run_task_predict" class="nav-link" data-scroll-target="#spotforecast2.manager.multitask.MultiTask.run_task_predict">run_task_predict</a></li>
-  <li><a href="#spotforecast2.manager.multitask.MultiTask.run_task_spotoptim" id="toc-spotforecast2.manager.multitask.MultiTask.run_task_spotoptim" class="nav-link" data-scroll-target="#spotforecast2.manager.multitask.MultiTask.run_task_spotoptim">run_task_spotoptim</a></li>
+  <li><a href="#spotforecast2.multitask.CleanTask.run" id="toc-spotforecast2.multitask.CleanTask.run" class="nav-link" data-scroll-target="#spotforecast2.multitask.CleanTask.run">run</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/manager.multitask.MultiTask.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/multitask.CleanTask.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.models.forecaster_recursive_model_full.html">Manager</a></li><li class="breadcrumb-item"><a href="../../docs/reference/manager.multitask.MultiTask.html">MultiTask</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.agg_predictor.html">Multitask</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.CleanTask.html">CleanTask</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">manager.multitask.MultiTask</h1>
+<h1 class="title">multitask.CleanTask</h1>
 </div>
 
 
@@ -783,200 +735,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">'lazy'</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    data_test<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    data_frame_name<span class="op">=</span><span class="st">'default'</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    agg_weights<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    index_name<span class="op">=</span><span class="st">'DateTime'</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    bounds<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    contamination<span class="op">=</span><span class="fl">0.03</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">'weighted'</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">15</span>,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    n_trials_spotoptim<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    n_initial_spotoptim<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    train_days<span class="op">=</span><span class="dv">365</span> <span class="op">*</span> <span class="dv">2</span>,</span>
-<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    val_days<span class="op">=</span><span class="dv">7</span> <span class="op">*</span> <span class="dv">2</span>,</span>
-<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span>logging.INFO,</span>
-<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>config_overrides,</span>
-<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Orchestrates a multi-target time-series forecasting pipeline.</p>
-<p>Data must be provided either as a pandas DataFrame via <code>dataframe</code>. A test dataset can optionally be provided via <code>data_test</code>.</p>
-<p>The typical usage flow is:</p>
-<ol type="1">
-<li>Instantiate with configuration arguments.</li>
-<li>Call method <code>prepare_data</code> to load, resample, and validate data.</li>
-<li>Call method <code>detect_outliers</code> to apply hard bounds and IsolationForest.</li>
-<li>Call method <code>impute</code> to fill gaps.</li>
-<li>Call method <code>build_exogenous_features</code> to construct weather / calendar / day-night / holiday covariates.</li>
-<li>Call method <code>run</code> (or individual <code>run_task_*</code> methods) to train, predict, and aggregate.</li>
-</ol>
-<section id="parameters" class="level2 doc-section doc-section-parameters">
-<h2 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>task</td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>Pipeline task mode — <code>"lazy"</code>, <code>"optuna"</code>, <code>"spotoptim"</code>, <code>"predict"</code>, or <code>"clean"</code>. Defaults to <code>"lazy"</code>.</td>
-<td><code>'lazy'</code></td>
-</tr>
-<tr class="even">
-<td>dataframe</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
-<td>Pre-loaded input DataFrame with Train data. The DataFrame must contain a datetime column matching <code>index_name</code> plus at least one numeric target column. Optional for the “clean” task, but required for all other tasks.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>data_test</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
-<td>Pre-loaded input DataFrame with Test data. The DataFrame must contain a datetime column matching <code>index_name</code> plus at least one numeric target column. Optional.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>cache_home</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</td>
-<td>Cache directory path.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>agg_weights</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/functions.html#float">float</a>]]</td>
-<td>Per-target aggregation weights.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>index_name</td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>Datetime column name in the raw CSV / DataFrame.</td>
-<td><code>'DateTime'</code></td>
-</tr>
-<tr class="odd">
-<td>number_folds</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Number of validation folds.</td>
-<td><code>10</code></td>
-</tr>
-<tr class="even">
-<td>predict_size</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Forecast horizon in hours.</td>
-<td><code>24</code></td>
-</tr>
-<tr class="odd">
-<td>bounds</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/stdtypes.html#tuple">tuple</a>]]</td>
-<td>Per-column hard outlier bounds <code>(lower, upper)</code>.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>contamination</td>
-<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
-<td>IsolationForest contamination fraction.</td>
-<td><code>0.03</code></td>
-</tr>
-<tr class="odd">
-<td>imputation_method</td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>Gap-filling strategy.</td>
-<td><code>'weighted'</code></td>
-</tr>
-<tr class="even">
-<td>use_exogenous_features</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Whether to build exogenous features.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="odd">
-<td>n_trials_optuna</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Number of Optuna Bayesian-search trials.</td>
-<td><code>15</code></td>
-</tr>
-<tr class="even">
-<td>n_trials_spotoptim</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Number of SpotOptim surrogate-search trials.</td>
-<td><code>10</code></td>
-</tr>
-<tr class="odd">
-<td>n_initial_spotoptim</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Initial random evaluations for SpotOptim.</td>
-<td><code>5</code></td>
-</tr>
-<tr class="even">
-<td>auto_save_models</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Whether to automatically save fitted models to disk after each training run. Defaults to <code>True</code> so that saved models are immediately available for the predict task without any manual call to <code>save_models</code>.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="odd">
-<td>train_days</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Length of the training window in days. Controls <code>TRAIN_SIZE</code> and <code>config.train_size</code>. Defaults to <code>365 * 2</code> (two years).</td>
-<td><code>365 * 2</code></td>
-</tr>
-<tr class="even">
-<td>val_days</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Length of each validation fold in days. The total validation span is <code>val_days * number_folds</code>. Controls <code>DELTA_VAL</code> and <code>config.delta_val</code>. Defaults to <code>7 * 10</code> (ten weeks).</td>
-<td><code>7 * 2</code></td>
-</tr>
-<tr class="odd">
-<td>log_level</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Logging level for the pipeline logger.</td>
-<td><code>logging.INFO</code></td>
-</tr>
-<tr class="even">
-<td>dry_run</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>If <code>True</code>, do not clean cache or save models. Useful for testing and debugging.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="odd">
-<td>config_overrides</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
-<td>Extra keyword arguments forwarded to ConfigMulti.</td>
-<td><code>{}</code></td>
-</tr>
-</tbody>
-</table>
-</section>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>multitask.CleanTask(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    data_test<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    data_frame_name<span class="op">=</span><span class="st">'default'</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    agg_weights<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    index_name<span class="op">=</span><span class="st">'DateTime'</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    bounds<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    contamination<span class="op">=</span><span class="fl">0.03</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">'weighted'</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">15</span>,</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    n_trials_spotoptim<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    n_initial_spotoptim<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>    train_days<span class="op">=</span><span class="dv">365</span> <span class="op">*</span> <span class="dv">2</span>,</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>    val_days<span class="op">=</span><span class="dv">7</span> <span class="op">*</span> <span class="dv">2</span>,</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span>logging.INFO,</span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>config_overrides,</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Cache-cleaning task — removes all cached data from the pipeline cache.</p>
+<p>CleanTask deletes the entire cache directory configured for the pipeline, including saved models, tuning results, and any other cached artefacts written by training or tuning tasks.</p>
+<p>Unlike training or prediction tasks, CleanTask does not require prepare_data() to be called before run(). It operates purely on the file system and can be used as a standalone reset mechanism between experiments or deployments.</p>
+<p>Passing <code>dry_run=True</code> to run() reports what would be deleted without actually removing anything, which is useful for inspecting cache contents before committing to removal.</p>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="d979daa6" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask <span class="im">import</span> MultiTask</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>))</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(dataframe<span class="op">=</span>df, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"DataFrame stored: </span><span class="sc">{</span>mt<span class="sc">.</span>_dataframe <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span><span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Task: </span><span class="sc">{</span>mt<span class="sc">.</span>TASK<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="6057e0d4" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> CleanTask</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> CleanTask(data_frame_name<span class="op">=</span><span class="st">"demo10"</span>)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Task: </span><span class="sc">{</span>task<span class="sc">.</span>TASK<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Task name: </span><span class="sc">{</span>task<span class="sc">.</span>_task_name<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>DataFrame stored: True
-Task: lazy</code></pre>
+<pre><code>Task: clean
+Task name: clean</code></pre>
 </div>
 </div>
 </section>
@@ -991,37 +787,18 @@ Task: lazy</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#spotforecast2.manager.multitask.MultiTask.run">run</a></td>
-<td>Run the task specified by <code>task</code> (or <code>self.TASK</code>).</td>
-</tr>
-<tr class="even">
-<td><a href="#spotforecast2.manager.multitask.MultiTask.run_task_clean">run_task_clean</a></td>
+<td><a href="#spotforecast2.multitask.CleanTask.run">run</a></td>
 <td>Remove all cached data from the pipeline cache directory.</td>
-</tr>
-<tr class="odd">
-<td><a href="#spotforecast2.manager.multitask.MultiTask.run_task_lazy">run_task_lazy</a></td>
-<td>Lazy Fitting with default LightGBM parameters.</td>
-</tr>
-<tr class="even">
-<td><a href="#spotforecast2.manager.multitask.MultiTask.run_task_optuna">run_task_optuna</a></td>
-<td>Optuna Bayesian hyperparameter tuning.</td>
-</tr>
-<tr class="odd">
-<td><a href="#spotforecast2.manager.multitask.MultiTask.run_task_predict">run_task_predict</a></td>
-<td>Predict-only using previously saved models.</td>
-</tr>
-<tr class="even">
-<td><a href="#spotforecast2.manager.multitask.MultiTask.run_task_spotoptim">run_task_spotoptim</a></td>
-<td>SpotOptim surrogate-model Bayesian tuning.</td>
 </tr>
 </tbody>
 </table>
-<section id="spotforecast2.manager.multitask.MultiTask.run" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run">run</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run(task<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>, <span class="op">**</span>kwargs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Run the task specified by <code>task</code> (or <code>self.TASK</code>).</p>
-<section id="parameters-1" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
+<section id="spotforecast2.multitask.CleanTask.run" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.multitask.CleanTask.run">run</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>multitask.CleanTask.run(dry_run<span class="op">=</span><span class="va">False</span>, cache_home<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>, <span class="op">**</span>kwargs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Remove all cached data from the pipeline cache directory.</p>
+<p>Does not require prepare_data() to be called first.</p>
+<section id="parameters" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1033,15 +810,21 @@ Task: lazy</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td>task</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
-<td>Override the task mode. <code>None</code> uses <code>self.TASK</code>.</td>
-<td><code>None</code></td>
+<td>dry_run</td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
+<td>If <code>True</code>, report what would be deleted without actually removing anything. Useful for inspecting the cache before committing to removal.</td>
+<td><code>False</code></td>
 </tr>
 <tr class="even">
+<td>cache_home</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</td>
+<td>Override the directory to clean. <code>None</code> uses the directory configured on this instance via <code>get_cache_home()</code>.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="odd">
 <td>show</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>If <code>True</code>, display prediction figures.</td>
+<td>Accepted for API consistency with other tasks. Not used by the clean task.</td>
 <td><code>True</code></td>
 </tr>
 </tbody>
@@ -1061,12 +844,7 @@ Task: lazy</code></pre>
 <tr class="odd">
 <td></td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>Aggregated prediction package. Per-target results are stored</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>on <code>self.results[&lt;task_key&gt;]</code>.</td>
+<td>Dict with keys: status: <code>"success"</code>, <code>"dry_run"</code>, or <code>"empty"</code>. cache_dir: The Path targeted for cleaning. deleted_items: Names of top-level items removed (or that would have been removed in <code>dry_run</code> mode).</td>
 </tr>
 </tbody>
 </table>
@@ -1084,349 +862,29 @@ Task: lazy</code></pre>
 <tbody>
 <tr class="odd">
 <td></td>
-<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
-<td>If <code>task</code> is not one of <code>"lazy"</code>, <code>"optuna"</code>, <code>"spotoptim"</code>, <code>"predict"</code>, <code>"clean"</code>.</td>
-</tr>
-<tr class="even">
-<td></td>
 <td><a href="https://docs.python.org/3/library/exceptions.html#RuntimeError">RuntimeError</a></td>
-<td>If method <code>prepare_data</code> has not been called (for training and prediction tasks).</td>
+<td>If the cache directory cannot be removed due to a permissions error or OS-level failure.</td>
 </tr>
 </tbody>
 </table>
 </section>
-</section>
-<section id="spotforecast2.manager.multitask.MultiTask.run_task_clean" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_clean">run_task_clean</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_clean(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Remove all cached data from the pipeline cache directory.</p>
-<p>Does not require prepare_data() to be called first.</p>
-<section id="parameters-2" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>show</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Accepted for API consistency. Not used by the clean task.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="even">
-<td>dry_run</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>If <code>True</code>, report what would be deleted without actually removing anything.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="odd">
-<td>cache_home</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/pathlib.html#pathlib.Path">Path</a>]</td>
-<td>Override the directory to clean. <code>None</code> uses the cache directory configured on this instance.</td>
-<td><code>None</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns-1" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>Dict with keys status, cache_dir, and deleted_items.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="raises-1" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-1">Raises</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/exceptions.html#RuntimeError">RuntimeError</a></td>
-<td>If the cache directory cannot be removed.</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="spotforecast2.manager.multitask.MultiTask.run_task_lazy" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_lazy">run_task_lazy</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_lazy(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Lazy Fitting with default LightGBM parameters.</p>
-<section id="parameters-3" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>show</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>If <code>True</code>, display prediction figures.</td>
-<td><code>True</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns-2" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-2">Returns</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>Aggregated prediction package. Per-target results in</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td><code>self.results["lazy"]</code>.</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="spotforecast2.manager.multitask.MultiTask.run_task_optuna" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_optuna">run_task_optuna</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_optuna(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    search_space<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Optuna Bayesian hyperparameter tuning.</p>
-<section id="parameters-4" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>search_space</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>]</td>
-<td>Callable <code>(trial) -&gt; dict</code>.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>show</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>If <code>True</code>, display prediction figures.</td>
-<td><code>True</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns-3" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-3">Returns</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>Aggregated prediction package. Per-target results in</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td><code>self.results["optuna"]</code>.</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="spotforecast2.manager.multitask.MultiTask.run_task_predict" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_predict">run_task_predict</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_predict(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    task_name<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    max_age_days<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Predict-only using previously saved models.</p>
-<p>Loads fitted models from the cache directory and produces predictions without any training. Raises <code>RuntimeError</code> if no saved models are found.</p>
-<section id="parameters-5" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>show</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>If <code>True</code>, display prediction figures.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="even">
-<td>task_name</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
-<td>Restrict model loading to a specific source task (<code>"lazy"</code>, <code>"optuna"</code>, or <code>"spotoptim"</code>). <code>None</code> loads the most recent model regardless of source.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>max_age_days</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/functions.html#float">float</a>]</td>
-<td>Maximum age in days for saved models. <code>None</code> accepts any age.</td>
-<td><code>None</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns-4" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-4">Returns</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>Aggregated prediction package. Per-target results in</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td><code>self.results["predict"]</code>.</td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="raises-2" class="level4 doc-section doc-section-raises">
-<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-2">Raises</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/exceptions.html#RuntimeError">RuntimeError</a></td>
-<td>If no saved models are found.</td>
-</tr>
-</tbody>
-</table>
-</section>
-</section>
-<section id="spotforecast2.manager.multitask.MultiTask.run_task_spotoptim" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.manager.multitask.MultiTask.run_task_spotoptim">run_task_spotoptim</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>manager.multitask.MultiTask.run_task_spotoptim(search_space<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>SpotOptim surrogate-model Bayesian tuning.</p>
-<section id="parameters-6" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>search_space</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]]</td>
-<td>Dictionary defining the SpotOptim search space.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>show</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>If <code>True</code>, display prediction figures.</td>
-<td><code>True</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns-5" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-5">Returns</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>Aggregated prediction package. Per-target results in</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td><code>self.results["spotoptim"]</code>.</td>
-</tr>
-</tbody>
-</table>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div id="e3f2fd32" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> CleanTask</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> tempfile.TemporaryDirectory() <span class="im">as</span> tmp:</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    task <span class="op">=</span> CleanTask(cache_home<span class="op">=</span>Path(tmp) <span class="op">/</span> <span class="st">"test_cache"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> task.run(dry_run<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(result[<span class="st">"status"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[clean] Dry run — would delete: /tmp/tmp7ngm2lvc/test_cache
+  Would remove: logging
+dry_run</code></pre>
+</div>
+</div>
 
 
 </section>
@@ -1861,7 +1319,7 @@ Task: lazy</code></pre>
     </div>   
     <div class="nav-footer-center">
 <p>Copyright © 2024-2026 bartzbeielstein | <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/manager.multitask.MultiTask.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/multitask.CleanTask.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
