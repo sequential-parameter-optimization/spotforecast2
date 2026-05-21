@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.1.0...v1.1.1) (2026-05-21)
+
+### Bug Fixes
+
+* cyclic ([68df473](https://github.com/sequential-parameter-optimization/spotforecast2/commit/68df473bf9070f63b9a6a7e158878bc1c90bb0dc))
+* cyclic 2 ([349d655](https://github.com/sequential-parameter-optimization/spotforecast2/commit/349d655e99eaf617928615eca4ba5852c64457ad))
+
 ## [1.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.8...v1.1.0) (2026-05-21)
 
 ### Features
