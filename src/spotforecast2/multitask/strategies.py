@@ -33,6 +33,11 @@ from typing import Any, Callable, Dict, Optional, Protocol
 
 import pandas as pd
 
+from spotforecast2.multitask.search_spaces import (
+    _default_optuna_search_space,
+    _default_spotoptim_search_space,
+)
+
 
 class TrainingStrategy(Protocol):
     """Strategy interface for preparing a forecaster before the final fit.
@@ -53,7 +58,6 @@ class TrainingStrategy(Protocol):
         exog_train: Optional[pd.DataFrame] = None,
     ) -> Any:
         """Return a forecaster ready for the final fit step."""
-        ...
 
 
 class LazyStrategy:
@@ -138,7 +142,6 @@ class OptunaStrategy:
         exog_train: Optional[pd.DataFrame] = None,
     ) -> Any:
         from spotforecast2.model_selection import bayesian_search_forecaster
-        from spotforecast2.multitask.optuna import _default_optuna_search_space
 
         search_space = self.search_space or _default_optuna_search_space
         cv = task.cv_ts(y_train)
@@ -189,7 +192,6 @@ class SpotOptimStrategy:
         exog_train: Optional[pd.DataFrame] = None,
     ) -> Any:
         from spotforecast2.model_selection import spotoptim_search_forecaster
-        from spotforecast2.multitask.spotoptim import _default_spotoptim_search_space
 
         search_space = self.search_space or _default_spotoptim_search_space()
         cv = task.cv_ts(y_train)
