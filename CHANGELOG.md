@@ -1,3 +1,9 @@
+## [1.0.4-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.4-rc.1...v1.0.4-rc.2) (2026-05-21)
+
+### Bug Fixes
+
+* clean imports ([cc17582](https://github.com/sequential-parameter-optimization/spotforecast2/commit/cc1758246831183b6275d5b65c499f19954f21ab))
+
 ## [1.0.4-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.3...v1.0.4-rc.1) (2026-05-21)
 
 ### Bug Fixes
