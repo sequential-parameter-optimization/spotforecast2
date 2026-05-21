@@ -10,25 +10,16 @@ hyperparameters, then re-fits with the best discovered parameters.
 from typing import Any, Callable, Dict, Optional
 
 from spotforecast2.multitask.base import BaseTask
-from spotforecast2.multitask.strategies import OptunaStrategy
+from spotforecast2.multitask.strategies import (
+    OptunaStrategy,
+    _default_optuna_search_space,
+)
 
-
-def _default_optuna_search_space(trial: Any) -> Dict[str, Any]:
-    """Built-in Optuna search space for LightGBM."""
-    return {
-        "num_leaves": trial.suggest_int("num_leaves", 8, 256),
-        "max_depth": trial.suggest_int("max_depth", 3, 16),
-        "learning_rate": trial.suggest_float("learning_rate", 0.001, 0.2, log=True),
-        "n_estimators": trial.suggest_int("n_estimators", 50, 1000, log=True),
-        "bagging_fraction": trial.suggest_float("bagging_fraction", 0.5, 1),
-        "feature_fraction": trial.suggest_float("feature_fraction", 0.5, 1),
-        "reg_alpha": trial.suggest_float("reg_alpha", 0.01, 100),
-        "reg_lambda": trial.suggest_float("reg_lambda", 0.01, 100),
-        "lags": trial.suggest_categorical(
-            "lags",
-            [24, 48, [1, 2, 24], [1, 2, 24, 48], [1, 2, 23, 24, 47, 48]],
-        ),
-    }
+__all__ = [
+    "OptunaTask",
+    "execute_optuna",
+    "_default_optuna_search_space",
+]
 
 
 def execute_optuna(

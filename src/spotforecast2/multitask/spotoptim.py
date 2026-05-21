@@ -10,29 +10,16 @@ Effective with small trial budgets.
 from typing import Any, Dict, Optional
 
 from spotforecast2.multitask.base import BaseTask
-from spotforecast2.multitask.strategies import SpotOptimStrategy
+from spotforecast2.multitask.strategies import (
+    SpotOptimStrategy,
+    _default_spotoptim_search_space,
+)
 
-
-def _default_spotoptim_search_space() -> Dict[str, Any]:
-    """Built-in SpotOptim search space for LightGBM."""
-    return {
-        "num_leaves": (8, 256),
-        "max_depth": (3, 16),
-        "learning_rate": (0.0001, 0.1, "log10"),
-        "n_estimators": (10, 1000, "log10"),
-        "bagging_fraction": (0.5, 1.0),
-        "feature_fraction": (0.5, 1.0),
-        "reg_alpha": (0.01, 100.0),
-        "reg_lambda": (0.01, 100.0),
-        "lags": [
-            "[1, 2, 3, 11, 12, 22, 23, 24, 47, 48, 167, 168]",
-            "48",
-            "24",
-            "[1, 2, 24, 48]",
-            "[1, 2, 23, 24, 47, 48]",
-            "[1, 2, 11, 12, 23, 24, 167, 168]",
-        ],
-    }
+__all__ = [
+    "SpotOptimTask",
+    "execute_spotoptim",
+    "_default_spotoptim_search_space",
+]
 
 
 def execute_spotoptim(
