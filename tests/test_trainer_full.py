@@ -291,3 +291,56 @@ def test_handle_training_naive_end_dev_localised(mock_get, mock_train, tmp_path)
 
     # Should not raise; naive timestamp is localised internally
     handle_training(StubForecaster, model_name="stub", model_dir=tmp_path)
+
+
+# ---------------------------------------------------------------------------
+# on_missing plumbing — guards against sf2-safe's strict default
+# ---------------------------------------------------------------------------
+
+
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
+def test_handle_training_forwards_on_missing(mock_get, mock_train, tmp_path):
+    """on_missing is forwarded verbatim to train_new_model."""
+    mock_get.return_value = (-1, None)
+
+    handle_training(
+        StubForecaster,
+        model_name="stub",
+        model_dir=tmp_path,
+        on_missing="ffill_bfill",
+    )
+
+    assert mock_train.call_args.kwargs["on_missing"] == "ffill_bfill"
+
+
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
+def test_handle_training_default_on_missing_is_passthrough(
+    mock_get, mock_train, tmp_path
+):
+    """Default is 'passthrough' so LinearlyInterpolateTS handles gaps."""
+    mock_get.return_value = (-1, None)
+
+    handle_training(StubForecaster, model_name="stub", model_dir=tmp_path)
+
+    assert mock_train.call_args.kwargs["on_missing"] == "passthrough"
+
+
+@patch("spotforecast2.trainer.trainer_full.fetch_data")
+def test_train_new_model_passes_on_missing_to_constructor(
+    mock_fetch_data, dummy_data, tmp_path
+):
+    """train_new_model forwards on_missing into the model constructor."""
+    mock_fetch_data.return_value = dummy_data
+
+    model = train_new_model(
+        model_class=DummyModel,
+        n_iteration=0,
+        save_to_file=False,
+        end_dev="2023-01-08",
+        data_filename=str(tmp_path / "dummy.csv"),
+        on_missing="raise",
+    )
+
+    assert model.kwargs["on_missing"] == "raise"

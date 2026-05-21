@@ -12,7 +12,12 @@ from typing import Any, Optional, Union
 import pandas as pd
 from joblib import dump
 
-from spotforecast2_safe.data.fetch_data import fetch_data, get_cache_home, get_data_home
+from spotforecast2_safe.data.fetch_data import (
+    OnMissing,
+    fetch_data,
+    get_cache_home,
+    get_data_home,
+)
 from spotforecast2_safe.manager.trainer import get_last_model
 from spotforecast2_safe.preprocessing import RollingFeatures
 
@@ -107,6 +112,7 @@ def train_new_model(
     model_dir: Optional[Union[str, Path]] = None,
     end_dev: Optional[Union[str, pd.Timestamp]] = None,
     data_filename: Optional[str] = None,
+    on_missing: OnMissing = "passthrough",
     **kwargs: Any,
 ) -> Any:
     """
@@ -156,6 +162,12 @@ def train_new_model(
             Relative paths are resolved against :func:`~spotforecast2_safe.data.fetch_data.get_data_home`.
             If None, a ``ValueError`` is raised by :func:`~spotforecast2_safe.data.fetch_data.fetch_data`.
             Defaults to None.
+        on_missing:
+            How the model's ``tune()`` step should treat NaN rows in the
+            time-series loaded via
+            :func:`~spotforecast2_safe.data.fetch_data.load_timeseries`.
+            Defaults to ``"passthrough"`` because the downstream
+            ``LinearlyInterpolateTS`` step already imputes gaps.
         **kwargs (Any):
             Additional keyword arguments to be passed to the model constructor.
 
@@ -237,6 +249,7 @@ def train_new_model(
         iteration=n_iteration,
         end_dev=end_train_cutoff,
         train_size=train_size,
+        on_missing=on_missing,
         **kwargs,
     )
     logger.debug("Model initialized: %s", model)
@@ -283,6 +296,7 @@ def handle_training(
     end_dev: Optional[Union[str, pd.Timestamp]] = None,
     data_filename: Optional[str] = None,
     hours_until_retrain: int = 168,
+    on_missing: OnMissing = "passthrough",
     **kwargs: Any,
 ) -> None:
     """Check if a new model needs to be trained and trigger training if necessary.
@@ -323,6 +337,11 @@ def handle_training(
             used.
         hours_until_retrain:
             Number of hours after which the existing model is  considered stale and retraining is triggered.  Default is 168 hours (7 days).
+        on_missing:
+            Forwarded to :func:`train_new_model` and ultimately to
+            :func:`~spotforecast2_safe.data.fetch_data.load_timeseries`.
+            Defaults to ``"passthrough"`` so the model's
+            ``LinearlyInterpolateTS`` step handles gaps.
         **kwargs:
             Extra keyword arguments forwarded to the model constructor.
 
@@ -397,6 +416,7 @@ def handle_training(
             model_dir=model_dir,
             end_dev=end_dev,
             data_filename=data_filename,
+            on_missing=on_missing,
             **kwargs,
         )
         return
@@ -416,6 +436,7 @@ def handle_training(
             model_dir=model_dir,
             end_dev=end_dev,
             data_filename=data_filename,
+            on_missing=on_missing,
             **kwargs,
         )
         return
@@ -445,6 +466,7 @@ def handle_training(
             model_dir=model_dir,
             end_dev=end_dev,
             data_filename=data_filename,
+            on_missing=on_missing,
             **kwargs,
         )
     else:

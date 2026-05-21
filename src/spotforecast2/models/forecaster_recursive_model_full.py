@@ -26,7 +26,7 @@ import pandas as pd
 import shap
 
 from spotforecast2.model_selection import bayesian_search_forecaster
-from spotforecast2_safe.data.fetch_data import load_timeseries
+from spotforecast2_safe.data.fetch_data import OnMissing, load_timeseries
 from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveModel
 from spotforecast2.trainer.trainer_full import SEARCH_SPACES
 from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
@@ -50,6 +50,10 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
     Args:
         iteration: Training iteration index (0-based).
         n_trials: Number of Optuna trials for Bayesian search.
+        on_missing: How :meth:`tune` should treat NaN rows when calling
+            :func:`~spotforecast2_safe.data.fetch_data.load_timeseries`.
+            Defaults to ``"passthrough"`` since the next step
+            (``LinearlyInterpolateTS``) imputes the gaps.
         **kwargs: Forwarded to :class:`ForecasterRecursiveModel`.
 
     Examples:
@@ -69,10 +73,12 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
         self,
         iteration: int,
         n_trials: int = _DEFAULT_N_TRIALS,
+        on_missing: OnMissing = "passthrough",
         **kwargs: Any,
     ):
         super().__init__(iteration, **kwargs)
         self.n_trials = n_trials
+        self.on_missing: OnMissing = on_missing
 
     # ------------------------------------------------------------------
     # Bayesian hyperparameter tuning
@@ -99,8 +105,10 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
         """
         logger.info("Tuning %s Forecaster %d", self.name.upper(), self.iteration)
 
-        # Load and preprocess data
-        y = load_timeseries()
+        # Load and preprocess data. on_missing='passthrough' is the
+        # default so LinearlyInterpolateTS (next line) can decide; the
+        # safe loader's default ('raise') would abort before imputation.
+        y = load_timeseries(on_missing=self.on_missing)
         y = LinearlyInterpolateTS().fit_transform(y)
         X = self.preprocessor.build(start_date=y.index.min(), end_date=self.end_dev)
 
