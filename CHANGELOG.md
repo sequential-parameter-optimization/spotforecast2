@@ -1,3 +1,9 @@
+## [1.0.6-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.5...v1.0.6-rc.1) (2026-05-21)
+
+### Bug Fixes
+
+* **deps:** override bundled npm to patch picomatch/brace-expansion/ip-address CVEs ([cb671b0](https://github.com/sequential-parameter-optimization/spotforecast2/commit/cb671b0628400c4d6ef5abda8020e844fb88cb1c))
+
 ## [1.0.5](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.4...v1.0.5) (2026-05-21)
 
 ### Code Refactoring
