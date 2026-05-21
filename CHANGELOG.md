@@ -1,3 +1,9 @@
+## [1.0.8](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.7...v1.0.8) (2026-05-21)
+
+### Bug Fixes
+
+* use ffill_bfill in LinearlyInterpolateTS to handle endpoint NaN ([1311eed](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1311eed26763eeffdd5834e3cbe3bcb5df4cd890))
+
 ## [1.0.7](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.6...v1.0.7) (2026-05-21)
 
 ### Bug Fixes
