@@ -1,5 +1,5 @@
 """
-Tests for spotforecast2.model_selection.utils_common module.
+Tests for spotforecast2_safe.splitter.utils_common module.
 """
 
 import pytest
@@ -9,14 +9,14 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 
-from spotforecast2.model_selection.utils_common import (
+from spotforecast2_safe.splitter.utils_common import (
     initialize_lags_grid,
     check_backtesting_input,
     check_one_step_ahead_input,
     select_n_jobs_backtesting,
     OneStepAheadValidationWarning,
 )
-from spotforecast2.model_selection import TimeSeriesFold, OneStepAheadFold
+from spotforecast2_safe.splitter import TimeSeriesFold, OneStepAheadFold
 
 
 class TestInitializeLagsGrid:

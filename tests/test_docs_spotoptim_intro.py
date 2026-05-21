@@ -3,11 +3,8 @@ import pandas as pd
 from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2.model_selection import (
-    TimeSeriesFold,
-    OneStepAheadFold,
-    spotoptim_search_forecaster,
-)
+from spotforecast2_safe.splitter import TimeSeriesFold, OneStepAheadFold
+from spotforecast2.model_selection import spotoptim_search_forecaster
 from spotoptim.hyperparameters import ParameterSet
 
 

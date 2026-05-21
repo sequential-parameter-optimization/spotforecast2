@@ -35,8 +35,8 @@ except ImportError:
 from spotforecast2.exceptions import IgnoredArgumentWarning
 from spotforecast2_safe.forecaster.metrics import _get_metric, add_y_train_argument
 from spotforecast2.forecaster.utils import date_to_index_position, initialize_lags
-from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
-from spotforecast2.model_selection.utils_common import (
+from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
+from spotforecast2_safe.splitter.utils_common import (
     check_backtesting_input,
     check_one_step_ahead_input,
     select_n_jobs_backtesting,
@@ -172,10 +172,8 @@ def spotoptim_search_forecaster(
         import pandas as pd
         from sklearn.linear_model import Ridge
         from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-        from spotforecast2.model_selection import (
-            TimeSeriesFold,
-            spotoptim_search_forecaster,
-        )
+        from spotforecast2_safe.splitter import TimeSeriesFold
+        from spotforecast2.model_selection import spotoptim_search_forecaster
 
         np.random.seed(42)
         y = pd.Series(
@@ -440,7 +438,7 @@ def spotoptim_search(
         import pandas as pd
         from sklearn.linear_model import Ridge
         from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-        from spotforecast2.model_selection import TimeSeriesFold
+        from spotforecast2_safe.splitter import TimeSeriesFold
         from spotforecast2.model_selection.spotoptim_search import spotoptim_search
 
         np.random.seed(42)

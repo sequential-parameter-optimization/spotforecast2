@@ -10,7 +10,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.ensemble import GradientBoostingRegressor
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2.model_selection import backtesting_forecaster, TimeSeriesFold
+from spotforecast2_safe.backtesting import backtesting_forecaster
+from spotforecast2_safe.splitter import TimeSeriesFold
 
 # Simulate realistic energy load data with daily and weekly patterns
 rng = np.random.default_rng(42)

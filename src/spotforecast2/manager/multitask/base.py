@@ -57,7 +57,7 @@ from spotforecast2_safe.processing.agg_predict import agg_predict
 from sklearn.model_selection import TimeSeriesSplit as _SklearnTimeSeriesSplit
 
 from spotforecast2.manager.plotter import PredictionFigure, plot_with_outliers
-from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
+from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.preprocessing.imputation import apply_imputation
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 

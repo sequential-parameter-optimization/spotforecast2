@@ -21,7 +21,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from spotforecast2.preprocessing import WeightFunction
+from spotforecast2_safe.preprocessing.imputation import WeightFunction
 from spotforecast2_safe.manager.persistence import (
     ensure_model_dir,
     get_model_filepath,
@@ -409,7 +409,7 @@ class TestDocumentationExamples:
 
         From docs:
         ```python
-        from spotforecast2.preprocessing import WeightFunction
+        from spotforecast2_safe.preprocessing.imputation import WeightFunction
 
         weights_series = pd.Series([1.0, 0.9, 0.8], index=[0, 1, 2])
         weight_func = WeightFunction(weights_series)
