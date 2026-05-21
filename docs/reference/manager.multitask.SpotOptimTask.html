@@ -496,20 +496,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/model_selection.split_ts_cv.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">split_ts_cv</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../../docs/reference/model_selection.spotoptim_search.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">spotoptim_search</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/model_selection.utils_common.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">utils_common</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -816,7 +804,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Uses <code>spotoptim</code> for surrogate-model-based Bayesian optimisation. Effective with small trial budgets.</p>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="b6ebc34f" class="cell" data-execution_count="1">
+<div id="1e7a2324" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.manager.multitask <span class="im">import</span> SpotOptimTask</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> SpotOptimTask(n_trials_spotoptim<span class="op">=</span><span class="dv">10</span>, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
