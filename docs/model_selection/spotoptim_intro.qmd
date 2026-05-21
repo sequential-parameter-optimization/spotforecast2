@@ -40,10 +40,8 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import Ridge
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2.model_selection import (
-    TimeSeriesFold,
-    spotoptim_search_forecaster,
-)
+from spotforecast2_safe.splitter import TimeSeriesFold
+from spotforecast2.model_selection import spotoptim_search_forecaster
 
 # 1. Generate realistic target data
 np.random.seed(42)
@@ -90,7 +88,7 @@ Now, let's explore an advanced configuration. We'll use a `ParameterSet` object 
 
 ```{python}
 from sklearn.ensemble import RandomForestRegressor
-from spotforecast2.model_selection import OneStepAheadFold
+from spotforecast2_safe.splitter import OneStepAheadFold
 from spotoptim.hyperparameters import ParameterSet
 
 # Data generation

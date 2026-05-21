@@ -2,10 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn.linear_model import Ridge
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2.model_selection import (
-    TimeSeriesFold,
-    spotoptim_search_forecaster,
-)
+from spotforecast2_safe.splitter import TimeSeriesFold
+from spotforecast2.model_selection import spotoptim_search_forecaster
 
 
 def test_spotoptim_search_show_progress_arg():

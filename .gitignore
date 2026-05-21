@@ -255,7 +255,7 @@ mkdocs.yml.bak
 # MkDocs build output
 site/
 /.local
-.claude/settings.json
+.claude/
 docs/tasks/improved2.quarto_ipynb_1
 docs/tasks/improved2.quarto_ipynb_2
 TASK.md

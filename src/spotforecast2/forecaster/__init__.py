@@ -4,17 +4,16 @@
 """
 Forecaster module for spotforecast2.
 
-This module provides forecasting classes and utilities for time series prediction.
-The primary forecasters are provided by the spotforecast2_safe package for safety-critical
-system operations. This module includes additional utilities.
+This module exposes the local forecaster utilities and the `recursive`
+subpackage. Symbols from `spotforecast2_safe` (e.g. `metrics`,
+`ForecasterRecursive`) are not re-exported here; import them directly from
+their fully qualified `spotforecast2_safe.*` paths.
 """
 
-from spotforecast2_safe.forecaster import metrics
 from . import utils
 from . import recursive
 
 __all__ = [
-    "metrics",
     "utils",
     "recursive",
 ]

@@ -21,11 +21,11 @@ except ImportError:
         ImportWarning,
     )
 
-from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
+from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.splitter import OneStepAheadFold
 from spotforecast2_safe.backtesting import _backtesting_forecaster
 from spotforecast2_safe.forecaster.metrics import add_y_train_argument, _get_metric
-from spotforecast2.model_selection.utils_common import (
+from spotforecast2_safe.splitter.utils_common import (
     check_one_step_ahead_input,
     check_backtesting_input,
     select_n_jobs_backtesting,

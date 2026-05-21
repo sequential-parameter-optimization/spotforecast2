@@ -12,10 +12,8 @@ import pytest
 from sklearn.linear_model import Ridge
 
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2.model_selection import (
-    TimeSeriesFold,
-    spotoptim_search_forecaster,
-)
+from spotforecast2_safe.splitter import TimeSeriesFold
+from spotforecast2.model_selection import spotoptim_search_forecaster
 from spotforecast2.model_selection.spotoptim_search import (
     array_to_params,
     convert_search_space,

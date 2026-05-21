@@ -9,8 +9,6 @@ The primary forecasters are imported from spotforecast2_safe for safety-critical
 Additional utilities and convenience classes are provided here.
 """
 
-__version__ = "0.1.0"
-
 from . import forecaster
 from . import manager
 from . import model_selection

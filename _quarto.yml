@@ -102,12 +102,8 @@ website:
                 file: docs/reference/model_selection.grid_search.qmd
               - text: "random_search"
                 file: docs/reference/model_selection.random_search.qmd
-              - text: "split_ts_cv"
-                file: docs/reference/model_selection.split_ts_cv.qmd
               - text: "spotoptim_search"
                 file: docs/reference/model_selection.spotoptim_search.qmd
-              - text: "utils_common"
-                file: docs/reference/model_selection.utils_common.qmd
               - text: "utils_metrics"
                 file: docs/reference/model_selection.utils_metrics.qmd
           - section: "Preprocessing"
@@ -227,9 +223,7 @@ quartodoc:
         - model_selection.bayesian_search
         - model_selection.grid_search
         - model_selection.random_search
-        - model_selection.split_ts_cv
         - model_selection.spotoptim_search
-        - model_selection.utils_common
         - model_selection.utils_metrics
 
     - title: "Manager"

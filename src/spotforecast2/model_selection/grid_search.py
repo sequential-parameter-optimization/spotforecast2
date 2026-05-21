@@ -15,9 +15,9 @@ from sklearn.model_selection import ParameterGrid
 from spotforecast2.exceptions import (
     IgnoredArgumentWarning,
 )
-from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
+from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.splitter import OneStepAheadFold
-from spotforecast2.model_selection.utils_common import (
+from spotforecast2_safe.splitter.utils_common import (
     initialize_lags_grid,
     check_backtesting_input,
     check_one_step_ahead_input,

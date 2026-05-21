@@ -6,7 +6,8 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import GradientBoostingRegressor
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2.model_selection import backtesting_forecaster, TimeSeriesFold
+from spotforecast2_safe.backtesting import backtesting_forecaster
+from spotforecast2_safe.splitter import TimeSeriesFold
 
 
 def test_safety_critical_example():

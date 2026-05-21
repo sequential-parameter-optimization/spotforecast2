@@ -22,7 +22,7 @@ import pytest
 from sklearn.model_selection import TimeSeriesSplit as SklearnTimeSeriesSplit
 
 from spotforecast2.manager.multitask import LazyTask
-from spotforecast2.model_selection.split_ts_cv import TimeSeriesFold
+from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 
 # ---------------------------------------------------------------------------
 # Constants & helpers
