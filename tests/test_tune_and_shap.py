@@ -252,6 +252,63 @@ class TestTopLevelImport:
 
         assert ForecasterRecursiveModelFull is not None
 
+
+# ------------------------------------------------------------------
+# on_missing — guards against sf2-safe's strict default
+# ------------------------------------------------------------------
+
+
+class TestOnMissing:
+    def test_default_on_missing_is_passthrough(self):
+        """Default lets LinearlyInterpolateTS handle gaps in tune()."""
+        model = ForecasterRecursiveLGBMFull(iteration=0)
+        assert model.on_missing == "passthrough"
+
+    def test_on_missing_stored_from_kwarg(self):
+        model = ForecasterRecursiveLGBMFull(iteration=0, on_missing="ffill_bfill")
+        assert model.on_missing == "ffill_bfill"
+
+    @patch(
+        "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
+    )
+    @patch(
+        "spotforecast2.models.forecaster_recursive_model_full.load_timeseries"
+    )
+    @patch(
+        "spotforecast2.models.forecaster_recursive_model_full.bayesian_search_forecaster"
+    )
+    def test_tune_passes_on_missing_to_load_timeseries(
+        self, mock_bsf, mock_load_models, mock_load_safe, hourly_series
+    ):
+        """tune() forwards self.on_missing to load_timeseries."""
+        mock_load_models.return_value = hourly_series.copy()
+        mock_load_safe.return_value = hourly_series.copy()
+
+        results_df = pd.DataFrame(
+            {
+                "lags": [np.array([1, 2, 3])],
+                "params": [{"n_estimators": 50}],
+                "mean_absolute_error": [1.0],
+                "name": ["lgbm"],
+            }
+        )
+        mock_bsf.return_value = (results_df, MagicMock())
+
+        model = ForecasterRecursiveLGBMFull(
+            iteration=0,
+            end_dev="2022-01-15 00:00+00:00",
+            save_model_to_file=False,
+            on_missing="ffill_bfill",
+        )
+        model.forecaster = ForecasterRecursive(
+            estimator=LGBMRegressor(n_jobs=-1, verbose=-1, random_state=42),
+            lags=3,
+        )
+
+        model.tune()
+
+        mock_load_models.assert_called_once_with(on_missing="ffill_bfill")
+
     def test_import_lgbm(self):
         from spotforecast2.models import ForecasterRecursiveLGBMFull
 
