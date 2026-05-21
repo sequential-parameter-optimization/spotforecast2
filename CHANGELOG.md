@@ -1,3 +1,9 @@
+## [1.0.7](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.6...v1.0.7) (2026-05-21)
+
+### Bug Fixes
+
+* plumb on_missing through handle_training to load_timeseries ([e324c8d](https://github.com/sequential-parameter-optimization/spotforecast2/commit/e324c8d782f3dedfb954c036bd0b5d2fc4d8ae8d))
+
 ## [1.0.6](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.5...v1.0.6) (2026-05-21)
 
 ### Bug Fixes
