@@ -10,10 +10,8 @@ hyperparameters, then re-fits with the best discovered parameters.
 from typing import Any, Callable, Dict, Optional
 
 from spotforecast2.multitask.base import BaseTask
-from spotforecast2.multitask.strategies import (
-    OptunaStrategy,
-    _default_optuna_search_space,
-)
+from spotforecast2.multitask.search_spaces import _default_optuna_search_space
+from spotforecast2.multitask.strategies import OptunaStrategy
 
 __all__ = [
     "OptunaTask",

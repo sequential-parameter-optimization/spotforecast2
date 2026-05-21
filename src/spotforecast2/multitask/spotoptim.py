@@ -10,10 +10,8 @@ Effective with small trial budgets.
 from typing import Any, Dict, Optional
 
 from spotforecast2.multitask.base import BaseTask
-from spotforecast2.multitask.strategies import (
-    SpotOptimStrategy,
-    _default_spotoptim_search_space,
-)
+from spotforecast2.multitask.search_spaces import _default_spotoptim_search_space
+from spotforecast2.multitask.strategies import SpotOptimStrategy
 
 __all__ = [
     "SpotOptimTask",
