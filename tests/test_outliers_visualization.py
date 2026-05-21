@@ -7,7 +7,7 @@ from unittest.mock import patch, MagicMock
 
 from spotforecast2_safe.preprocessing.outlier import get_outliers
 
-from spotforecast2.preprocessing.outlier_plots import (
+from spotforecast2.plots.outlier_plots import (
     visualize_outliers_hist,
     visualize_outliers_plotly_scatter,
 )
@@ -229,7 +229,7 @@ class TestVisualizeOutliersHist:
 class TestVisualizeOutliersPlotlyScatter:
     """Test suite for visualize_outliers_plotly_scatter function."""
 
-    @patch("spotforecast2.preprocessing.outlier_plots.go")
+    @patch("spotforecast2.plots.outlier_plots.go")
     def test_visualize_outliers_plotly_scatter_basic(self, mock_go):
         """Test basic Plotly scatter visualization."""
         np.random.seed(42)
@@ -262,11 +262,11 @@ class TestVisualizeOutliersPlotlyScatter:
         data_cleaned = data_original.copy()
 
         # Patch go to be None to simulate missing plotly
-        with patch("spotforecast2.preprocessing.outlier_plots.go", None):
+        with patch("spotforecast2.plots.outlier_plots.go", None):
             with pytest.raises(ImportError, match="plotly is required"):
                 visualize_outliers_plotly_scatter(data_cleaned, data_original)
 
-    @patch("spotforecast2.preprocessing.outlier_plots.go")
+    @patch("spotforecast2.plots.outlier_plots.go")
     def test_visualize_outliers_plotly_scatter_with_columns(self, mock_go):
         """Test Plotly scatter with specific columns."""
         np.random.seed(42)
@@ -309,7 +309,7 @@ class TestVisualizeOutliersPlotlyScatter:
                 data_cleaned, data_original, columns=["NonExistent"]
             )
 
-    @patch("spotforecast2.preprocessing.outlier_plots.go")
+    @patch("spotforecast2.plots.outlier_plots.go")
     def test_visualize_outliers_plotly_scatter_with_kwargs(self, mock_go):
         """Test Plotly scatter with additional kwargs."""
         np.random.seed(42)
@@ -340,7 +340,7 @@ class TestIntegration:
     """Integration tests for outlier detection and visualization."""
 
     @patch("matplotlib.pyplot.show")
-    @patch("spotforecast2.preprocessing.outlier_plots.go")
+    @patch("spotforecast2.plots.outlier_plots.go")
     def test_outlier_workflow(self, mock_go, mock_show):
         """Test complete outlier detection and visualization workflow."""
         np.random.seed(42)

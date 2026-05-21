@@ -16,7 +16,7 @@ Covers:
 import numpy as np
 import pandas as pd
 
-from spotforecast2.manager.multitask import (
+from spotforecast2.multitask import (
     BaseTask,
     LazyTask,
     MultiTask,
@@ -24,8 +24,7 @@ from spotforecast2.manager.multitask import (
     SpotOptimTask,
     agg_predictor,
 )
-from spotforecast2.manager.multitask.base import agg_predictor as _agg_predictor_base
-from spotforecast2.manager import agg_predictor as _agg_predictor_manager
+from spotforecast2.multitask.base import agg_predictor as _agg_predictor_base
 
 # ---------------------------------------------------------------------------
 # Test helpers
@@ -68,31 +67,20 @@ class TestImportPaths:
     """agg_predictor must be importable from all expected locations."""
 
     def test_import_from_multitask_package(self):
-        from spotforecast2.manager.multitask import agg_predictor as ap
+        from spotforecast2.multitask import agg_predictor as ap
 
         assert callable(ap)
 
     def test_import_from_multitask_base(self):
-        from spotforecast2.manager.multitask.base import agg_predictor as ap
-
-        assert callable(ap)
-
-    def test_import_from_manager_package(self):
-        from spotforecast2.manager import agg_predictor as ap
+        from spotforecast2.multitask.base import agg_predictor as ap
 
         assert callable(ap)
 
     def test_all_paths_same_object(self):
         assert agg_predictor is _agg_predictor_base
-        assert agg_predictor is _agg_predictor_manager
 
     def test_in_multitask_all(self):
-        from spotforecast2.manager.multitask import __all__
-
-        assert "agg_predictor" in __all__
-
-    def test_in_manager_all(self):
-        from spotforecast2.manager import __all__
+        from spotforecast2.multitask import __all__
 
         assert "agg_predictor" in __all__
 
@@ -382,7 +370,7 @@ class TestTaskRunReturnsAggregatedValues:
     """execute_* functions and run() must return Dict[str, Any] (aggregated pkg)."""
 
     def test_execute_lazy_returns_aggregated_keys(self):
-        from spotforecast2.manager.multitask.lazy import execute_lazy
+        from spotforecast2.multitask.lazy import execute_lazy
 
         task = _inject_pipeline(LazyTask(use_exogenous_features=False, predict_size=24))
         result = execute_lazy(task, show=False)
@@ -393,7 +381,7 @@ class TestTaskRunReturnsAggregatedValues:
         assert "train_actual" in result
 
     def test_execute_lazy_stores_per_target_in_results(self):
-        from spotforecast2.manager.multitask.lazy import execute_lazy
+        from spotforecast2.multitask.lazy import execute_lazy
 
         task = _inject_pipeline(LazyTask(use_exogenous_features=False, predict_size=24))
         execute_lazy(task, show=False)
@@ -402,7 +390,7 @@ class TestTaskRunReturnsAggregatedValues:
         assert "B" in task.results["lazy"]
 
     def test_execute_lazy_populates_agg_results(self):
-        from spotforecast2.manager.multitask.lazy import execute_lazy
+        from spotforecast2.multitask.lazy import execute_lazy
 
         task = _inject_pipeline(LazyTask(use_exogenous_features=False, predict_size=24))
         execute_lazy(task, show=False)

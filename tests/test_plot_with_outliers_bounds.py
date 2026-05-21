@@ -16,7 +16,7 @@ import numpy as np
 import pandas as pd
 import plotly.graph_objects as go
 
-from spotforecast2.manager.plotter import plot_with_outliers
+from spotforecast2.plots.plotter import plot_with_outliers
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -60,15 +60,10 @@ def _captured_figures(
 
 
 class TestPlotWithOutliersImport:
-    """Verify the function is importable from the manager package."""
-
-    def test_importable_from_manager(self):
-        from spotforecast2.manager import plot_with_outliers as fn  # noqa: F401
-
-        assert callable(fn)
+    """Verify the function is importable from the plots package."""
 
     def test_importable_from_plotter(self):
-        from spotforecast2.manager.plotter import plot_with_outliers as fn  # noqa: F401
+        from spotforecast2.plots.plotter import plot_with_outliers as fn  # noqa: F401
 
         assert callable(fn)
 

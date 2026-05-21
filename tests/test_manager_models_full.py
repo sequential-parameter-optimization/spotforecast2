@@ -14,26 +14,21 @@ Covers:
 
 import pandas as pd
 
-from spotforecast2.manager.models.forecaster_recursive_model_full import (
+from spotforecast2.models.forecaster_recursive_model_full import (
     ForecasterRecursiveModelFull,
 )
-from spotforecast2.manager.models.forecaster_recursive_lgbm_full import (
+from spotforecast2.models.forecaster_recursive_lgbm_full import (
     ForecasterRecursiveLGBMFull,
 )
-from spotforecast2.manager.models.forecaster_recursive_xgb_full import (
+from spotforecast2.models.forecaster_recursive_xgb_full import (
     ForecasterRecursiveXGBFull,
 )
 
 # Package-level aliases — used by TestImports to verify re-export paths
-from spotforecast2.manager.models import (
+from spotforecast2.models import (
     ForecasterRecursiveModelFull as _MFull,
     ForecasterRecursiveLGBMFull as _LFull,
     ForecasterRecursiveXGBFull as _XFull,
-)
-from spotforecast2.manager import (
-    ForecasterRecursiveModelFull as _MFullMgr,
-    ForecasterRecursiveLGBMFull as _LFullMgr,
-    ForecasterRecursiveXGBFull as _XFullMgr,
 )
 from spotforecast2_safe.forecaster.wrappers import (
     ForecasterRecursiveModel,
@@ -57,15 +52,6 @@ class TestImports:
 
     def test_package_models_xgb_full(self):
         assert ForecasterRecursiveXGBFull is _XFull
-
-    def test_manager_model_full(self):
-        assert ForecasterRecursiveModelFull is _MFullMgr
-
-    def test_manager_lgbm_full(self):
-        assert ForecasterRecursiveLGBMFull is _LFullMgr
-
-    def test_manager_xgb_full(self):
-        assert ForecasterRecursiveXGBFull is _XFullMgr
 
 
 # ---------------------------------------------------------------------------

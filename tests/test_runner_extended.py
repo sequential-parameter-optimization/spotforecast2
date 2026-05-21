@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Additional pytest tests for spotforecast2.manager.multitask.runner.run().
+"""Additional pytest tests for spotforecast2.multitask.runner.run().
 
 Covers behaviors complementary to test_runner.py:
 
@@ -26,7 +26,7 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 import pytest
 
-from spotforecast2.manager.multitask.runner import _DEFAULT_AGG_WEIGHTS, run
+from spotforecast2.multitask.runner import _DEFAULT_AGG_WEIGHTS, run
 
 # ---------------------------------------------------------------------------
 # Shared test fixtures
@@ -63,21 +63,21 @@ def _mock_mt(future_pred: pd.Series = _FUTURE_PRED) -> MagicMock:
 class TestShowParameter:
     """Tests that the show flag is forwarded correctly to mt.run()."""
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_show_true_passed_to_run(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
         run(_DUMMY_DF, task="lazy", show=True)
         mt.run.assert_called_once_with(show=True)
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_show_false_passed_to_run(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
         run(_DUMMY_DF, task="lazy", show=False)
         mt.run.assert_called_once_with(show=False)
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_show_default_is_false(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -93,28 +93,28 @@ class TestShowParameter:
 class TestPlotWithOutliers:
     """Tests that plot_with_outliers controls mt.plot_with_outliers() calls."""
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_plot_with_outliers_true_calls_method(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
         run(_DUMMY_DF, task="lazy", plot_with_outliers=True)
         mt.plot_with_outliers.assert_called_once()
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_plot_with_outliers_false_does_not_call_method(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
         run(_DUMMY_DF, task="lazy", plot_with_outliers=False)
         mt.plot_with_outliers.assert_not_called()
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_plot_with_outliers_default_is_off(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
         run(_DUMMY_DF, task="lazy")
         mt.plot_with_outliers.assert_not_called()
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_plot_with_outliers_clean_task_never_called(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -131,7 +131,7 @@ class TestPlotWithOutliers:
 class TestCacheHomeBehavior:
     """Tests auto-resolution and forwarding of cache_home."""
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_none_cache_home_auto_resolves_for_pipeline_task(self, MockMT):
         from spotforecast2_safe.data.fetch_data import get_cache_home
 
@@ -141,7 +141,7 @@ class TestCacheHomeBehavior:
         _, kwargs = MockMT.call_args
         assert kwargs["cache_home"] == get_cache_home()
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_none_cache_home_auto_resolves_for_clean_task(self, MockMT):
         from spotforecast2_safe.data.fetch_data import get_cache_home
 
@@ -151,7 +151,7 @@ class TestCacheHomeBehavior:
         _, kwargs = MockMT.call_args
         assert kwargs["cache_home"] == get_cache_home()
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_explicit_cache_home_forwarded_for_pipeline_task(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -159,7 +159,7 @@ class TestCacheHomeBehavior:
         _, kwargs = MockMT.call_args
         assert kwargs["cache_home"] == "/my/cache"
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_explicit_cache_home_forwarded_for_clean_task(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -167,7 +167,7 @@ class TestCacheHomeBehavior:
         _, kwargs = MockMT.call_args
         assert kwargs["cache_home"] == "/my/cache"
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_no_warning_printed_when_cache_home_none(self, MockMT, capsys):
         MockMT.return_value = _mock_mt()
         run(_DUMMY_DF, task="lazy", cache_home=None)
@@ -183,7 +183,7 @@ class TestCacheHomeBehavior:
 class TestAggWeights:
     """Tests custom and default agg_weights forwarding."""
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_custom_agg_weights_forwarded(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -192,7 +192,7 @@ class TestAggWeights:
         _, kwargs = MockMT.call_args
         assert kwargs["agg_weights"] == custom_weights
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_none_agg_weights_uses_default(self, MockMT):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -210,7 +210,7 @@ class TestAggWeights:
 class TestScalarParameterForwarding:
     """Tests that scalar constructor params are forwarded for pipeline tasks."""
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_n_trials_optuna_forwarded(self, MockMT, task):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -218,7 +218,7 @@ class TestScalarParameterForwarding:
         _, kwargs = MockMT.call_args
         assert kwargs["n_trials_optuna"] == 50
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_train_days_forwarded(self, MockMT, task):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -226,7 +226,7 @@ class TestScalarParameterForwarding:
         _, kwargs = MockMT.call_args
         assert kwargs["train_days"] == 180
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_val_days_forwarded(self, MockMT, task):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -234,7 +234,7 @@ class TestScalarParameterForwarding:
         _, kwargs = MockMT.call_args
         assert kwargs["val_days"] == 14
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_show_progress_forwarded(self, MockMT, task):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -242,7 +242,7 @@ class TestScalarParameterForwarding:
         _, kwargs = MockMT.call_args
         assert kwargs["show_progress"] is True
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_verbose_forwarded(self, MockMT, task):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -250,7 +250,7 @@ class TestScalarParameterForwarding:
         _, kwargs = MockMT.call_args
         assert kwargs["verbose"] is True
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_log_level_forwarded(self, MockMT, task):
         mt = _mock_mt()
         MockMT.return_value = mt
@@ -267,37 +267,37 @@ class TestScalarParameterForwarding:
 class TestReturnValueProperties:
     """Tests the shape, type, and content of the returned DataFrame."""
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_return_has_exactly_one_column(self, MockMT):
         MockMT.return_value = _mock_mt()
         result = run(_DUMMY_DF, task="lazy")
         assert len(result.columns) == 1
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_return_column_name_is_forecast(self, MockMT):
         MockMT.return_value = _mock_mt()
         result = run(_DUMMY_DF, task="lazy")
         assert result.columns[0] == "forecast"
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_return_index_matches_future_pred(self, MockMT):
         MockMT.return_value = _mock_mt()
         result = run(_DUMMY_DF, task="lazy")
         pd.testing.assert_index_equal(result.index, _FUTURE_PRED.index)
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_return_values_match_future_pred(self, MockMT):
         MockMT.return_value = _mock_mt()
         result = run(_DUMMY_DF, task="lazy")
         assert list(result["forecast"]) == list(_FUTURE_PRED.values)
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_forecast_column_is_numeric(self, MockMT):
         MockMT.return_value = _mock_mt()
         result = run(_DUMMY_DF, task="lazy")
         assert pd.api.types.is_numeric_dtype(result["forecast"])
 
-    @patch("spotforecast2.manager.multitask.runner.MultiTask")
+    @patch("spotforecast2.multitask.runner.MultiTask")
     def test_clean_returns_empty_dataframe(self, MockMT):
         MockMT.return_value = _mock_mt()
         result = run(_DUMMY_DF, task="clean")

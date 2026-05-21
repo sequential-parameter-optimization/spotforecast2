@@ -9,22 +9,21 @@ The primary forecasters are imported from spotforecast2_safe for safety-critical
 Additional utilities and convenience classes are provided here.
 """
 
-from . import forecaster
-from . import manager
+from . import warnings  # noqa: F401  imported for warnings-style side effect
 from . import model_selection
-from . import preprocessing
+from . import models
+from . import multitask
+from . import plots
 from . import stats
-from . import utils
+from . import trainer
 
 __all__ = [
-    "forecaster",
-    "manager",
     "model_selection",
-    "preprocessing",
+    "models",
+    "multitask",
+    "plots",
     "stats",
-    "utils",
+    "trainer",
+    "warnings",
 ]
 
-
-def hello() -> str:
-    return "Hello from spotforecast2!"

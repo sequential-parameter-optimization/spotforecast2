@@ -1,0 +1,42 @@
+# SPDX-FileCopyrightText: 2026 bartzbeielstein
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+"""Multi-target forecasting pipeline orchestrator.
+
+This package provides a class hierarchy for multi-target time-series
+forecasting pipelines:
+
+- BaseTask — shared data-preparation and helper logic.
+- LazyTask — lazy fitting with default parameters.
+- OptunaTask — Optuna Bayesian hyperparameter tuning.
+- SpotOptimTask — SpotOptim surrogate-model tuning.
+- PredictTask — predict-only using saved models.
+- CleanTask — removes all cached data from the pipeline cache directory.
+- MultiTask — dispatcher that selects one of the tasks
+  via a ``task`` parameter.
+
+Public API
+----------
+All classes are importable directly from ``spotforecast2.multitask``.
+"""
+
+from spotforecast2.multitask.base import BaseTask, agg_predictor
+from spotforecast2.multitask.clean import CleanTask
+from spotforecast2.multitask.lazy import LazyTask
+from spotforecast2.multitask.optuna import OptunaTask
+from spotforecast2.multitask.predict import PredictTask
+from spotforecast2.multitask.spotoptim import SpotOptimTask
+from spotforecast2.multitask.multi import MultiTask
+from spotforecast2.multitask.runner import run
+
+__all__ = [
+    "BaseTask",
+    "CleanTask",
+    "LazyTask",
+    "MultiTask",
+    "OptunaTask",
+    "PredictTask",
+    "SpotOptimTask",
+    "agg_predictor",
+    "run",
+]

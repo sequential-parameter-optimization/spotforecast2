@@ -2,15 +2,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 from __future__ import annotations
+from importlib.util import find_spec
 import numpy as np
 import pandas as pd
-
-from spotforecast2.forecaster.utils import check_optional_dependency
-
-try:
-    from statsmodels.tsa.stattools import acf, pacf
-except ImportError:
-    acf, pacf = None, None
 
 
 def calculate_lag_autocorrelation(
@@ -112,7 +106,12 @@ def calculate_lag_autocorrelation(
         3    4         0.068719
 
     """
-    check_optional_dependency("statsmodels")
+    if find_spec("statsmodels") is None:
+        raise ImportError(
+            "'statsmodels' is required for calculate_lag_autocorrelation. "
+            "Install it with: pip install 'spotforecast2[stats]'"
+        )
+    from statsmodels.tsa.stattools import acf, pacf
 
     if not isinstance(data, (pd.Series, pd.DataFrame)):
         raise TypeError(

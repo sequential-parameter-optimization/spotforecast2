@@ -8,7 +8,7 @@ import tempfile
 import shutil
 import pandas as pd
 import plotly.graph_objects as go
-from spotforecast2.manager.plotter import make_plot, PredictionFigure
+from spotforecast2.plots.plotter import make_plot, PredictionFigure
 
 
 def _make_pkg(
@@ -306,7 +306,7 @@ class TestMakePlot(unittest.TestCase):
     def tearDown(self):
         shutil.rmtree(self.test_dir)
 
-    @patch("spotforecast2.manager.plotter.get_data_home")
+    @patch("spotforecast2.plots.plotter.get_data_home")
     def test_make_plot_saves_to_default_path(self, mock_get_home):
         mock_get_home.return_value = self.test_dir
         fig = make_plot(self.mock_pkg)

@@ -10,7 +10,7 @@ to ensure they execute correctly and produce expected results.
 
 import doctest
 
-from spotforecast2.manager import plotter
+from spotforecast2.plots import plotter
 
 
 def test_docstring_examples_plotter():

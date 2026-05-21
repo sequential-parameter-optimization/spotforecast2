@@ -5,7 +5,7 @@ import pytest
 import pandas as pd
 from unittest.mock import patch
 
-from spotforecast2.manager.trainer_full import train_new_model, handle_training
+from spotforecast2.trainer.trainer_full import train_new_model, handle_training
 
 
 class DummyModel:
@@ -30,8 +30,8 @@ def dummy_data():
     return pd.DataFrame({"load": range(10)}, index=dates)
 
 
-@patch("spotforecast2.manager.trainer_full.fetch_data")
-@patch("spotforecast2.manager.trainer_full.dump")
+@patch("spotforecast2.trainer.trainer_full.fetch_data")
+@patch("spotforecast2.trainer.trainer_full.dump")
 def test_train_new_model_basic(mock_dump, mock_fetch_data, dummy_data, tmp_path):
     """Test basic model training and saving behavior."""
     mock_fetch_data.return_value = dummy_data
@@ -69,7 +69,7 @@ def test_train_new_model_basic(mock_dump, mock_fetch_data, dummy_data, tmp_path)
     mock_dump.assert_called_once_with(model, expected_path, compress=3)
 
 
-@patch("spotforecast2.manager.trainer_full.fetch_data")
+@patch("spotforecast2.trainer.trainer_full.fetch_data")
 def test_train_new_model_no_end_dev(mock_fetch_data, dummy_data, tmp_path):
     """Test automatic calculation of end_dev based on data."""
     mock_fetch_data.return_value = dummy_data
@@ -86,7 +86,7 @@ def test_train_new_model_no_end_dev(mock_fetch_data, dummy_data, tmp_path):
     assert model.end_dev == expected_cutoff
 
 
-@patch("spotforecast2.manager.trainer_full.fetch_data")
+@patch("spotforecast2.trainer.trainer_full.fetch_data")
 def test_train_new_model_empty_data(mock_fetch_data, tmp_path):
     """Test behavior when no data is returned."""
     mock_fetch_data.return_value = pd.DataFrame()
@@ -99,8 +99,8 @@ def test_train_new_model_empty_data(mock_fetch_data, tmp_path):
     assert model is None
 
 
-@patch("spotforecast2.manager.trainer_full.fetch_data")
-@patch("spotforecast2.manager.trainer_full.dump")
+@patch("spotforecast2.trainer.trainer_full.fetch_data")
+@patch("spotforecast2.trainer.trainer_full.dump")
 def test_train_new_model_default_naming(
     mock_dump, mock_fetch_data, dummy_data, tmp_path
 ):
@@ -155,8 +155,8 @@ def _stale_model(days_ago: int = 10) -> StubForecaster:
 # ---------------------------------------------------------------------------
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_no_model_trains_iteration_0(mock_get, mock_train, tmp_path):
     """Empty cache → triggers train_new_model at iteration 0."""
     mock_get.return_value = (-1, None)
@@ -167,8 +167,8 @@ def test_handle_training_no_model_trains_iteration_0(mock_get, mock_train, tmp_p
     assert mock_train.call_args[0][1] == 0  # n_iteration positional arg
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_recent_model_skips(mock_get, mock_train, tmp_path):
     """Model trained 24 h ago (< 168 h threshold) → no retraining."""
     mock_get.return_value = (1, _recent_model(hours_ago=24))
@@ -178,8 +178,8 @@ def test_handle_training_recent_model_skips(mock_get, mock_train, tmp_path):
     mock_train.assert_not_called()
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_old_model_retrains(mock_get, mock_train, tmp_path):
     """Model trained 10 days ago (> 168 h) → retrains at n_iteration + 1."""
     mock_get.return_value = (2, _stale_model(days_ago=10))
@@ -190,8 +190,8 @@ def test_handle_training_old_model_retrains(mock_get, mock_train, tmp_path):
     assert mock_train.call_args[0][1] == 3  # iteration 2 + 1
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_force_retrains_recent(mock_get, mock_train, tmp_path):
     """force=True with a recent model still triggers retraining."""
     mock_get.return_value = (0, _recent_model(hours_ago=6))
@@ -202,8 +202,8 @@ def test_handle_training_force_retrains_recent(mock_get, mock_train, tmp_path):
     assert mock_train.call_args[0][1] == 1  # iteration 0 + 1
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_missing_end_dev_forces_retrain(mock_get, mock_train, tmp_path):
     """Model without end_dev attribute → warns and forces retraining."""
 
@@ -218,8 +218,8 @@ def test_handle_training_missing_end_dev_forces_retrain(mock_get, mock_train, tm
     assert mock_train.call_args[0][1] == 4  # iteration 3 + 1
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_default_name_from_class(mock_get, mock_train, tmp_path):
     """model_name=None → infers lower-cased class name."""
     mock_get.return_value = (-1, None)
@@ -230,8 +230,8 @@ def test_handle_training_default_name_from_class(mock_get, mock_train, tmp_path)
     assert mock_train.call_args[1]["model_name"] == "stubforecaster"
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_passes_kwargs(mock_get, mock_train, tmp_path):
     """Extra kwargs are forwarded to train_new_model."""
     mock_get.return_value = (-1, None)
@@ -249,8 +249,8 @@ def test_handle_training_passes_kwargs(mock_get, mock_train, tmp_path):
     assert kwargs["another"] == "hello"
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_passes_end_dev_and_train_size(mock_get, mock_train, tmp_path):
     """end_dev and train_size are forwarded to train_new_model."""
     mock_get.return_value = (-1, None)
@@ -270,8 +270,8 @@ def test_handle_training_passes_end_dev_and_train_size(mock_get, mock_train, tmp
     assert kwargs["train_size"] == size
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_at_exactly_168_hours(mock_get, mock_train, tmp_path):
     """Model trained exactly 168 h ago meets the >= threshold → retrains."""
     mock_get.return_value = (1, _recent_model(hours_ago=168))
@@ -281,8 +281,8 @@ def test_handle_training_at_exactly_168_hours(mock_get, mock_train, tmp_path):
     mock_train.assert_called_once()
 
 
-@patch("spotforecast2.manager.trainer_full.train_new_model")
-@patch("spotforecast2.manager.trainer_full.get_last_model")
+@patch("spotforecast2.trainer.trainer_full.train_new_model")
+@patch("spotforecast2.trainer.trainer_full.get_last_model")
 def test_handle_training_naive_end_dev_localised(mock_get, mock_train, tmp_path):
     """Model with timezone-naive end_dev is handled without error."""
     naive_model = StubForecaster(0, pd.Timestamp.now() - pd.Timedelta(hours=24))

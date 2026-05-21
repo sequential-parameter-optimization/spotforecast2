@@ -25,7 +25,7 @@ from typing import Any, Dict
 import numpy as np
 import pytest
 
-from spotforecast2.manager.multitask import BaseTask, LazyTask
+from spotforecast2.multitask import BaseTask, LazyTask
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -377,12 +377,12 @@ class TestMethodAvailability:
         assert callable(getattr(cls, "load_tuning_results"))
 
     def test_optuna_task_has_save(self):
-        from spotforecast2.manager.multitask import OptunaTask
+        from spotforecast2.multitask import OptunaTask
 
         assert hasattr(OptunaTask, "save_tuning_results")
 
     def test_spotoptim_task_has_save(self):
-        from spotforecast2.manager.multitask import SpotOptimTask
+        from spotforecast2.multitask import SpotOptimTask
 
         assert hasattr(SpotOptimTask, "save_tuning_results")
 

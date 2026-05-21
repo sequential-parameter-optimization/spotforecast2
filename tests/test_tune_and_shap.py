@@ -14,13 +14,13 @@ from lightgbm import LGBMRegressor
 
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveModel
-from spotforecast2.manager.models.forecaster_recursive_model_full import (
+from spotforecast2.models.forecaster_recursive_model_full import (
     ForecasterRecursiveModelFull,
 )
-from spotforecast2.manager.models.forecaster_recursive_lgbm_full import (
+from spotforecast2.models.forecaster_recursive_lgbm_full import (
     ForecasterRecursiveLGBMFull,
 )
-from spotforecast2.manager.models.forecaster_recursive_xgb_full import (
+from spotforecast2.models.forecaster_recursive_xgb_full import (
     ForecasterRecursiveXGBFull,
 )
 
@@ -90,10 +90,10 @@ class TestTune:
         "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
     )
     @patch(
-        "spotforecast2.manager.models.forecaster_recursive_model_full.load_timeseries"
+        "spotforecast2.models.forecaster_recursive_model_full.load_timeseries"
     )
     @patch(
-        "spotforecast2.manager.models.forecaster_recursive_model_full.bayesian_search_forecaster"
+        "spotforecast2.models.forecaster_recursive_model_full.bayesian_search_forecaster"
     )
     def test_tune_calls_bayesian_search(
         self, mock_bsf, mock_load_models, mock_load_safe, hourly_series
@@ -136,10 +136,10 @@ class TestTune:
         "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
     )
     @patch(
-        "spotforecast2.manager.models.forecaster_recursive_model_full.load_timeseries"
+        "spotforecast2.models.forecaster_recursive_model_full.load_timeseries"
     )
     @patch(
-        "spotforecast2.manager.models.forecaster_recursive_model_full.bayesian_search_forecaster"
+        "spotforecast2.models.forecaster_recursive_model_full.bayesian_search_forecaster"
     )
     def test_tune_saves_model_when_flag_set(
         self, mock_bsf, mock_load_models, mock_load_safe, hourly_series
@@ -247,17 +247,17 @@ class TestShap:
 
 
 class TestTopLevelImport:
-    def test_import_from_manager(self):
-        from spotforecast2.manager import ForecasterRecursiveModelFull
+    def test_import_from_models(self):
+        from spotforecast2.models import ForecasterRecursiveModelFull
 
         assert ForecasterRecursiveModelFull is not None
 
     def test_import_lgbm(self):
-        from spotforecast2.manager import ForecasterRecursiveLGBMFull
+        from spotforecast2.models import ForecasterRecursiveLGBMFull
 
         assert ForecasterRecursiveLGBMFull is not None
 
     def test_import_xgb(self):
-        from spotforecast2.manager import ForecasterRecursiveXGBFull
+        from spotforecast2.models import ForecasterRecursiveXGBFull
 
         assert ForecasterRecursiveXGBFull is not None

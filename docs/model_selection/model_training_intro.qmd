@@ -2,7 +2,7 @@
 title: "Introduction to Model Training"
 ---
 
-The `train_new_model()` function in `spotforecast2.manager.trainer_full` serves as the primary gateway for bootstrapping a forecasting context. It is designed to cleanly separate the complex realities of data ingestion, training window creation (cutoffs), hyperparameter tuning, and cross-platform model persistence.
+The `train_new_model()` function in `spotforecast2.trainer.trainer_full` serves as the primary gateway for bootstrapping a forecasting context. It is designed to cleanly separate the complex realities of data ingestion, training window creation (cutoffs), hyperparameter tuning, and cross-platform model persistence.
 
 This guide explores the standard approach to training models with `train_new_model()`, evaluating argument utility, and demonstrating both basic and advanced scenarios.
 
@@ -30,7 +30,7 @@ Let's look at the most basic way to initialize and launch tuning for a new model
 
 ```{python}
 import pandas as pd
-from spotforecast2.manager.trainer_full import train_new_model
+from spotforecast2.trainer.trainer_full import train_new_model
 
 # 1. Define a Mock Model Class meeting the API requirements
 class MockForecaster:
@@ -108,7 +108,7 @@ import pandas as pd
 from sklearn.linear_model import Ridge
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
-from spotforecast2.manager.trainer_full import train_new_model
+from spotforecast2.trainer.trainer_full import train_new_model
 
 class FunctionalForecaster:
     # Notice we capture `dataset_path` from dynamic **kwargs
@@ -172,7 +172,7 @@ from sklearn.linear_model import Ridge
 from sklearn.metrics import mean_absolute_error
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
-from spotforecast2.manager.trainer_full import train_new_model
+from spotforecast2.trainer.trainer_full import train_new_model
 import plotly.graph_objects as go
 
 class VisualizingForecaster:
@@ -265,7 +265,7 @@ from lightgbm import LGBMRegressor
 from sklearn.metrics import mean_absolute_error
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
-from spotforecast2.manager.trainer_full import train_new_model
+from spotforecast2.trainer.trainer_full import train_new_model
 import plotly.graph_objects as go
 
 class LGBMVisualizingForecaster:
@@ -374,7 +374,7 @@ import tempfile
 from pathlib import Path
 import pandas as pd
 from spotforecast2_safe.data.fetch_data import get_package_data_home
-from spotforecast2.manager.trainer_full import handle_training
+from spotforecast2.trainer.trainer_full import handle_training
 
 # We define a lightweight dummy model for demonstration.
 # In reality, this would be a full ForecasterRecursive implementation.
@@ -414,7 +414,7 @@ Now consider a scenario where time has passed, and we want to actively force the
 import tempfile
 from pathlib import Path
 from spotforecast2_safe.data.fetch_data import get_package_data_home
-from spotforecast2.manager.trainer_full import handle_training
+from spotforecast2.trainer.trainer_full import handle_training
 
 class AdvancedModel:
     def __init__(self, iteration, end_dev, train_size, **kwargs):
