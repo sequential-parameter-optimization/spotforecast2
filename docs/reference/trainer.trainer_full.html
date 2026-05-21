@@ -778,8 +778,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    end_dev<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    data_filename<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    hours_until_retrain<span class="op">=</span><span class="dv">168</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    on_missing<span class="op">=</span><span class="st">'passthrough'</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Check if a new model needs to be trained and trigger training if necessary.</p>
 <p>Inspects the most recently saved model (if any) and trains a new one when the model cache is empty, the existing model’s <code>end_dev</code> is older than <code>hours_until_retrain</code> hours, or <code>force=True</code> is passed. All training parameters are forwarded verbatim to :func:<code>train_new_model</code>.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
@@ -843,6 +844,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <td><code>168</code></td>
 </tr>
 <tr class="odd">
+<td>on_missing</td>
+<td><code>OnMissing</code></td>
+<td>Forwarded to :func:<code>train_new_model</code> and ultimately to :func:<code>~spotforecast2_safe.data.fetch_data.load_timeseries</code>. Defaults to <code>"passthrough"</code> so the model’s <code>LinearlyInterpolateTS</code> step handles gaps.</td>
+<td><code>'passthrough'</code></td>
+</tr>
+<tr class="even">
 <td>**kwargs</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Extra keyword arguments forwarded to the model constructor.</td>
@@ -872,7 +879,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="examples" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
-<div id="e8e2d02b" class="cell" data-execution_count="1">
+<div id="ee0aabf8" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> unittest.mock <span class="im">import</span> patch</span>
@@ -1045,8 +1052,9 @@ Scenario 4 — forced retraining called: True</code></pre>
 <span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    model_dir<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    end_dev<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    data_filename<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    on_missing<span class="op">=</span><span class="st">'passthrough'</span>,</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Train a new forecaster model and optionally save it to disk.</p>
 <p>This function fetches the latest data, calculates the training cutoff, initializes a model of the given class, triggers the tuning process, and saves the model following the naming convention: <code>{model_name}_forecaster_{n_iteration}.joblib</code>.</p>
 <section id="parameters-3" class="level4 doc-section doc-section-parameters">
@@ -1110,6 +1118,12 @@ Scenario 4 — forced retraining called: True</code></pre>
 <td><code>None</code></td>
 </tr>
 <tr class="odd">
+<td>on_missing</td>
+<td><code>OnMissing</code></td>
+<td>How the model’s <code>tune()</code> step should treat NaN rows in the time-series loaded via :func:<code>~spotforecast2_safe.data.fetch_data.load_timeseries</code>. Defaults to <code>"passthrough"</code> because the downstream <code>LinearlyInterpolateTS</code> step already imputes gaps.</td>
+<td><code>'passthrough'</code></td>
+</tr>
+<tr class="even">
 <td>**kwargs</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Additional keyword arguments to be passed to the model constructor.</td>
@@ -1124,7 +1138,7 @@ Scenario 4 — forced retraining called: True</code></pre>
 </section>
 <section id="examples-3" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-3">Examples</h4>
-<div id="56b6b725" class="cell" data-execution_count="2">
+<div id="3f16414c" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.trainer.trainer_full <span class="im">import</span> train_new_model</span>
 <span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a></span>
