@@ -1,3 +1,9 @@
+## [1.1.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.8...v1.1.0-rc.1) (2026-05-21)
+
+### Features
+
+* preparing entsoe ([35bb791](https://github.com/sequential-parameter-optimization/spotforecast2/commit/35bb791b77f3d7c30203ae9fce780e504df7feb2))
+
 ## [1.0.8](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.0.7...v1.0.8) (2026-05-21)
 
 ### Bug Fixes
