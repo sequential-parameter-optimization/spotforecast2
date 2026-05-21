@@ -109,7 +109,10 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
         # default so LinearlyInterpolateTS (next line) can decide; the
         # safe loader's default ('raise') would abort before imputation.
         y = load_timeseries(on_missing=self.on_missing)
-        y = LinearlyInterpolateTS().fit_transform(y)
+        # Linear interpolation can't bridge endpoint NaN (no right anchor
+        # for the latest hours not yet ingested); ffill_bfill handles
+        # those tail gaps so training has a complete series.
+        y = LinearlyInterpolateTS(on_missing="ffill_bfill").fit_transform(y)
         X = self.preprocessor.build(start_date=y.index.min(), end_date=self.end_dev)
 
         # Training window boundaries
