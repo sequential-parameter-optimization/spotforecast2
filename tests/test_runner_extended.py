@@ -26,7 +26,7 @@ from unittest.mock import MagicMock, patch
 import pandas as pd
 import pytest
 
-from spotforecast2.multitask.runner import _DEFAULT_AGG_WEIGHTS, run
+from spotforecast2.multitask.runner import _DEMO10_AGG_WEIGHTS, run
 
 # ---------------------------------------------------------------------------
 # Shared test fixtures
@@ -198,7 +198,7 @@ class TestAggWeights:
         MockMT.return_value = mt
         run(_DUMMY_DF, task="lazy", agg_weights=None)
         _, kwargs = MockMT.call_args
-        assert kwargs["agg_weights"] == _DEFAULT_AGG_WEIGHTS
+        assert kwargs["agg_weights"] == _DEMO10_AGG_WEIGHTS
 
 
 # ---------------------------------------------------------------------------

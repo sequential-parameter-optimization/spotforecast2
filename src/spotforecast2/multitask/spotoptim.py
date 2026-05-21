@@ -10,7 +10,7 @@ Effective with small trial budgets.
 from typing import Any, Dict, Optional
 
 from spotforecast2.multitask.base import BaseTask
-from spotforecast2.model_selection import spotoptim_search_forecaster
+from spotforecast2.multitask.strategies import SpotOptimStrategy
 
 
 def _default_spotoptim_search_space() -> Dict[str, Any]:
@@ -42,6 +42,8 @@ def execute_spotoptim(
 ) -> Dict[str, Any]:
     """Execute SpotOptim tuning for all targets on ``task``.
 
+    Thin wrapper around ``BaseTask._run_strategy`` using ``SpotOptimStrategy``.
+
     Args:
         task: A class `BaseTask` (or subclass) instance with prepared data.
         show: If ``True``, display prediction figures.
@@ -50,73 +52,18 @@ def execute_spotoptim(
 
     Returns:
         Aggregated prediction package (weighted combination of all targets).
-        Per-target packages are stored on ``task.results["spotoptim"]``.        When ``task.auto_save_models`` is ``True`` (the default), fitted
-        models are saved to disk so PredictTask can load them directly."""
-    task._ensure_pipeline_ready()
-    if search_space is None:
-        search_space = _default_spotoptim_search_space()
-    results: Dict[str, Dict[str, Any]] = {}
-
-    for target in task.config.targets:
-        task.logger.info(
-            "[task 4] Target '%s': SpotOptim tuning (%d trials)...",
-            target,
-            task.config.n_trials_spotoptim,
-        )
-        y_train, exog_train, exog_future = task._get_target_data(target)
-        forecaster = task.create_forecaster()
-
-        cv = task.cv_ts(y_train)
-
-        tuning_results, optimizer = spotoptim_search_forecaster(
-            forecaster=forecaster,
-            y=y_train,
-            cv=cv,
-            search_space=search_space,
-            metric="mean_absolute_error",
-            exog=exog_train,
-            return_best=True,
-            random_state=task.config.random_state,
-            verbose=False,
-            n_trials=task.config.n_trials_spotoptim,
-            n_initial=task.config.n_initial_spotoptim,
-        )
-
-        best_params = tuning_results.iloc[0].params
-        best_lags = tuning_results.iloc[0].lags
-        task.logger.info("  Best params: %s", best_params)
-        task.logger.info("  Best lags: %s", best_lags)
-
-        task.save_tuning_results(
-            target=target,
-            task_name="spotoptim",
-            best_params=best_params,
-            best_lags=best_lags,
-        )
-
-        forecaster_tuned = task.create_forecaster()
-        forecaster_tuned.set_params(**best_params)
-        if hasattr(forecaster_tuned, "set_lags"):
-            forecaster_tuned.set_lags(best_lags)
-
-        results[target] = task._train_and_predict_target(
-            target=target,
-            task_name="task 4: SpotOptim Tuned",
-            forecaster=forecaster_tuned,
-            y_train=y_train,
-            exog_train=exog_train,
-            exog_future=exog_future,
-        )
-        if show:
-            task._show_prediction_figure(
-                results[target], target, "task 4: SpotOptim Tuned"
-            )
-
-    task.results["spotoptim"] = results
-    if getattr(task, "auto_save_models", True):
-        task.save_models(task_name="spotoptim")
-    agg_pkg = task._aggregate_and_show(results, "task 4: SpotOptim Tuned", show=show)
-    return agg_pkg
+        Per-target packages are stored on ``task.results["spotoptim"]``.
+        When ``task.auto_save_models`` is ``True`` (the default), fitted
+        models are saved to disk so PredictTask can load them directly.
+    """
+    strategy = SpotOptimStrategy(search_space=search_space)
+    return task._run_strategy(
+        strategy,
+        task_name="task 4: SpotOptim Tuned",
+        results_key="spotoptim",
+        show=show,
+        log_prefix="[task 4] ",
+    )
 
 
 class SpotOptimTask(BaseTask):

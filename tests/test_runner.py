@@ -26,8 +26,8 @@ import pytest
 
 from spotforecast2.multitask.runner import (
     _ALL_TASKS,
-    _DEFAULT_AGG_WEIGHTS,
-    _DEFAULT_BOUNDS,
+    _DEMO10_AGG_WEIGHTS,
+    _DEMO10_BOUNDS,
     run,
 )
 
@@ -233,7 +233,7 @@ class TestPipelineTasks:
         MockMT.return_value = mt
         run(_DUMMY_DF, task=task)
         _, kwargs = MockMT.call_args
-        assert kwargs["agg_weights"] == _DEFAULT_AGG_WEIGHTS
+        assert kwargs["agg_weights"] == _DEMO10_AGG_WEIGHTS
 
     @patch("spotforecast2.multitask.runner.MultiTask")
     def test_default_bounds_used_when_none(self, MockMT, task):
@@ -241,7 +241,7 @@ class TestPipelineTasks:
         MockMT.return_value = mt
         run(_DUMMY_DF, task=task, bounds=None)
         _, kwargs = MockMT.call_args
-        assert kwargs["bounds"] == _DEFAULT_BOUNDS
+        assert kwargs["bounds"] == _DEMO10_BOUNDS
 
     @patch("spotforecast2.multitask.runner.MultiTask")
     def test_custom_bounds_forwarded(self, MockMT, task):
@@ -319,15 +319,15 @@ class TestPipelineTasks:
 
 class TestConstants:
     def test_default_bounds_has_11_entries(self):
-        assert len(_DEFAULT_BOUNDS) == 11
+        assert len(_DEMO10_BOUNDS) == 11
 
     def test_default_bounds_are_tuples(self):
-        for entry in _DEFAULT_BOUNDS:
+        for entry in _DEMO10_BOUNDS:
             assert isinstance(entry, tuple)
             assert len(entry) == 2
 
     def test_default_agg_weights_has_11_entries(self):
-        assert len(_DEFAULT_AGG_WEIGHTS) == 11
+        assert len(_DEMO10_AGG_WEIGHTS) == 11
 
     def test_all_tasks_contains_expected(self):
         assert _ALL_TASKS == {"lazy", "optuna", "spotoptim", "predict", "clean"}

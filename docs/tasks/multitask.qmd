@@ -1,0 +1,188 @@
+# spotforecast2 multi-task-target demo {#sec-code-spotforecast2-multitarget}
+
+## Vorbereitung
+
+Bereitstellen des DataFrames `df`:
+
+```{python}
+from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+
+df = fetch_data(filename=str(get_package_data_home() / "demo10.csv"))
+```
+
+
+Ausschalten der Warnungen:
+
+```{python}
+import warnings
+warnings.filterwarnings("ignore")
+```
+
+Konfiguration der Parameter und des Cache-Verzeichnisses:
+
+```{python}
+from spotforecast2_safe.data.fetch_data import get_cache_home
+CACHE_HOME = get_cache_home()
+PROJECT_NAME = "test_001"
+TRAIN_DAYS = 365
+VAL_DAYS = 7
+N_TRIALS_OPTUNA = 5
+```
+
+Importieren der `run`-Funktion aus dem  `spotforecast2` Paket (über Pypi oder Github installiert).
+`Version >= 1.0.6` erforderlich.
+
+```{python}
+from spotforecast2.multitask.runner import run
+```
+
+
+
+## Production
+
+
+### Optuna
+
+Tunen der Hyperparameter (wöchentlich).
+
+```{python}
+forecast = run(dataframe=df,
+            task="optuna", project_name=PROJECT_NAME,
+            cache_home=CACHE_HOME, train_days=TRAIN_DAYS,
+            val_days=VAL_DAYS, n_trials_optuna=N_TRIALS_OPTUNA)
+print(forecast)
+```
+
+
+### Lazy
+
+Model-Fit und Prediction mit den besten Hyperparametern aus Optuna, ohne erneutes Tuning (täglich oder stündlich).
+Wurde die Optuna-Phase noch nicht ausgeführt, wird `lazy` automatisch mit den Standardparametern gestartet.
+
+
+```{python}
+forecast = run(dataframe=df,
+            task="lazy", cache_home=CACHE_HOME,
+            project_name=PROJECT_NAME, train_days=TRAIN_DAYS,
+            val_days=VAL_DAYS,
+            show=True)
+print(forecast)
+```
+
+
+## Zusätzliche Tasks
+
+
+### Predict
+
+Nur Vorhersage, ohne Tuning oder Fit. Die Schritte  `optuna` oder `lazy` müssen bereits einmal gelaufen sein, damit die Ergebnisse im Cache vorliegen.
+
+```{python}
+forecast = run(dataframe=df,
+        task="predict", cache_home=CACHE_HOME,
+        project_name=PROJECT_NAME, train_days=TRAIN_DAYS,
+        val_days=VAL_DAYS)
+print(forecast)
+```
+
+
+### Clean
+
+Löschen der Cache-Daten für das Projekt. Mit `dry_run=True` wird nur angezeigt, welche Dateien gelöscht würden, ohne sie tatsächlich zu entfernen.
+
+```{python}
+run(task="clean", project_name=PROJECT_NAME,
+    cache_home=CACHE_HOME, dry_run=True)
+```
+
+```{python}
+run(task="clean", project_name=PROJECT_NAME,
+    cache_home=CACHE_HOME)
+```
+
+## Dokumentation der Funktion `run`
+
+[https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/manager.multitask.run.html](https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/manager.multitask.run.html)
+
+## Von der Funktion `run` aufgerufene Funktionen
+
+Aufgelistet werden nur Funktionen und Methoden aus den Paketen `spotforecast2`
+und `spotforecast2_safe`. Aufrufe in Drittbibliotheken (`pandas`, `numpy`,
+`scikit-learn`, `lightgbm`, `plotly`, `joblib`, `astral`, …) sind ausgespart.
+Das Beispiel folgt dem Pfad `task="lazy"` (siehe Abschnitt *Lazy* oben).
+
+### Einstiegspunkt
+
+- `spotforecast2.multitask.runner.run`
+  - `spotforecast2_safe.data.fetch_data.get_cache_home` (falls `cache_home is None`)
+  - `spotforecast2.multitask.multi.MultiTask.__init__`
+    - `spotforecast2.multitask.base.BaseTask.__init__`
+      - `spotforecast2.multitask.base.BaseTask._build_config`
+        - `spotforecast2_safe.configurator.config_multi.ConfigMulti`
+      - `spotforecast2.multitask.base.BaseTask._attach_file_handler`
+        - `spotforecast2_safe.data.fetch_data.get_cache_home`
+
+### Phase 1 — `prepare_data`
+
+- `spotforecast2.multitask.base.BaseTask.prepare_data`
+  - `spotforecast2_safe.preprocessing.curate_data.reset_index`
+  - `spotforecast2_safe.preprocessing.curate_data.agg_and_resample_data`
+  - `spotforecast2_safe.preprocessing.curate_data.basic_ts_checks`
+  - `spotforecast2_safe.preprocessing.curate_data.get_start_end`
+
+### Phase 2 — `detect_outliers`
+
+- `spotforecast2.multitask.base.BaseTask.detect_outliers`
+  - `spotforecast2_safe.preprocessing.outlier.manual_outlier_removal`
+  - `spotforecast2_safe.preprocessing.outlier.get_outliers`
+
+### Phase 2b — `plot_with_outliers` (nur falls `plot_with_outliers=True`)
+
+- `spotforecast2.multitask.base.BaseTask.plot_with_outliers`
+  - `spotforecast2.plots.plotter.plot_with_outliers`
+
+### Phase 3 — `impute`
+
+- `spotforecast2.multitask.base.BaseTask.impute`
+  - `spotforecast2_safe.preprocessing.imputation.apply_imputation`
+    - `spotforecast2_safe.preprocessing.imputation.WeightFunction` (bei `imputation_method="weighted"`)
+
+### Phase 4 — `build_exogenous_features`
+
+- `spotforecast2.multitask.base.BaseTask.build_exogenous_features`
+  - `spotforecast2_safe.weather.get_weather_features`
+  - `spotforecast2_safe.calendar.get_calendar_features`
+  - `spotforecast2_safe.calendar.get_day_night_features`
+  - `spotforecast2_safe.calendar.get_holiday_features`
+  - `spotforecast2_safe.manager.features.apply_cyclical_encoding`
+  - `spotforecast2_safe.manager.features.create_interaction_features`
+  - `spotforecast2_safe.manager.features.select_exogenous_features`
+  - `spotforecast2_safe.manager.features.merge_data_and_covariates`
+
+### Phase 5 — `run` (Dispatch auf `LazyTask`)
+
+- `spotforecast2.multitask.multi.MultiTask.run`
+  - `spotforecast2.multitask.lazy.LazyTask.run`
+    - `spotforecast2.multitask.lazy.execute_lazy`
+      - `spotforecast2.multitask.base.BaseTask._ensure_pipeline_ready`
+      - Für jedes Target in `config.targets`:
+        - `spotforecast2.multitask.base.BaseTask._get_target_data`
+          - `spotforecast2_safe.manager.features.get_target_data`
+        - `spotforecast2.multitask.base.BaseTask.create_forecaster`
+          - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.__init__`
+          - `spotforecast2_safe.preprocessing.RollingFeatures`
+        - `spotforecast2.multitask.base.BaseTask.load_tuning_results` (falls `use_tuned_params=True`)
+        - `spotforecast2.multitask.base.BaseTask._train_and_predict_target`
+          - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.fit`
+          - `spotforecast2_safe.manager.predictor.build_prediction_package`
+            - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.create_train_X_y`
+            - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.predict`
+        - `spotforecast2.multitask.base.BaseTask._show_prediction_figure` (falls `show=True`)
+          - `spotforecast2.plots.plotter.PredictionFigure.__init__`
+          - `spotforecast2.plots.plotter.PredictionFigure.make_plot`
+      - `spotforecast2.multitask.base.BaseTask.save_models` (falls `auto_save_models=True`)
+      - `spotforecast2.multitask.base.BaseTask._aggregate_and_show`
+        - `spotforecast2.multitask.base.agg_predictor`
+          - `spotforecast2_safe.processing.agg_predict.agg_predict`
+        - `spotforecast2.plots.plotter.PredictionFigure.__init__` (falls `show=True`)
+        - `spotforecast2.plots.plotter.PredictionFigure.make_plot` (falls `show=True`)

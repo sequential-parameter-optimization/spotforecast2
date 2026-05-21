@@ -253,6 +253,7 @@ def make_plot(
     prediction_package: Dict[str, Any],
     output_path: Optional[Union[str, Path]] = None,
     title: str = "Energy Demand Prediction",
+    save: bool = True,
 ) -> go.Figure:
     """
     Generate and optionally save an interactive prediction plot.
@@ -262,6 +263,11 @@ def make_plot(
         output_path: Path to save the HTML file. If None, it defaults to
             'index.html' in the package's data home directory.
         title: Figure title shown at the top of the plot.
+        save: If True (default), write the figure to ``output_path``.  Pass
+            ``False`` to obtain a figure without any disk side-effect (used by
+            the multitask pipeline, where many figures are produced per run
+            and the auto-write would otherwise overwrite the same file
+            repeatedly).
 
     Returns:
         The generated Plotly Figure object.
@@ -272,6 +278,9 @@ def make_plot(
     """
     predictor_fig = PredictionFigure(prediction_package, title=title)
     fig = predictor_fig.make_plot()
+
+    if not save:
+        return fig
 
     if output_path is None:
         data_home = get_data_home()

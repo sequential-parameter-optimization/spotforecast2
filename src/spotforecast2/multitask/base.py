@@ -15,11 +15,10 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Protocol
 
 import pandas as pd
 from astral import LocationInfo
-from lightgbm import LGBMRegressor
 
 from spotforecast2_safe.data.fetch_data import get_cache_home
 from spotforecast2_safe.configurator.config_multi import ConfigMulti
@@ -39,9 +38,6 @@ from spotforecast2_safe.manager.features import (
 from joblib import dump as _joblib_dump
 from joblib import load as _joblib_load
 from spotforecast2_safe.manager.predictor import build_prediction_package
-from spotforecast2_safe.preprocessing import (
-    RollingFeatures as RollingFeaturesUnified,
-)
 from spotforecast2_safe.preprocessing.curate_data import (
     agg_and_resample_data,
     basic_ts_checks,
@@ -56,12 +52,60 @@ from spotforecast2_safe.processing.agg_predict import agg_predict
 
 from sklearn.model_selection import TimeSeriesSplit as _SklearnTimeSeriesSplit
 
-from spotforecast2.plots.plotter import PredictionFigure, plot_with_outliers
+from spotforecast2.multitask.factories import default_lgbm_forecaster_factory
+from spotforecast2.plots.plotter import make_plot, plot_with_outliers
 from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.preprocessing.imputation import apply_imputation
-from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 
 logger = logging.getLogger(__name__)
+
+
+class PipelineConfig(Protocol):
+    """Structural protocol describing the config surface ``BaseTask`` reads.
+
+    ``ConfigMulti`` already satisfies this protocol; ``ConfigEntsoe`` (and any
+    future config class) only needs to expose the same field names with
+    compatible types.  Documented here so that subclasses can swap config
+    implementations via ``BaseTask(config_cls=...)`` without inheritance.
+    """
+
+    # Targets and aggregation
+    targets: Optional[List[str]]
+    agg_weights: Optional[List[float]]
+    bounds: Optional[List[tuple]]
+    # Forecast horizon and training window
+    predict_size: int
+    train_size: pd.Timedelta
+    delta_val: pd.Timedelta
+    end_train_default: str
+    end_train_ts: Optional[pd.Timestamp]
+    start_train_ts: Optional[pd.Timestamp]
+    # Outlier detection / imputation
+    use_outlier_detection: bool
+    contamination: float
+    imputation_method: str
+    window_size: int
+    # Exogenous features
+    use_exogenous_features: bool
+    include_weather_windows: bool
+    include_holiday_features: bool
+    include_poly_features: bool
+    latitude: float
+    longitude: float
+    timezone: str
+    state: str
+    country_code: str
+    lags_consider: List[int]
+    # Data ranges (derived after data loading)
+    data_start: Optional[pd.Timestamp]
+    data_end: Optional[pd.Timestamp]
+    cov_start: Optional[pd.Timestamp]
+    cov_end: Optional[pd.Timestamp]
+    start_download: Optional[str]
+    end_download: Optional[str]
+    # Misc
+    random_state: int
+    cache_home: Optional[Any]
 
 
 def agg_predictor(
@@ -232,6 +276,7 @@ class BaseTask:
         val_days: int = 7 * 2,
         log_level: int = logging.INFO,
         verbose: bool = False,
+        config_cls: Callable[..., PipelineConfig] = ConfigMulti,
         **config_overrides: Any,
     ) -> None:
         # Task identifier (overridden by subclasses via _task_name)
@@ -257,6 +302,11 @@ class BaseTask:
         self.train_days = train_days
         self.val_days = val_days
         self.verbose = verbose
+        # Config class to instantiate in ``_build_config`` — defaults to
+        # ``ConfigMulti`` so existing callers are unaffected.  Subclasses can
+        # pass ``config_cls=ConfigEntsoe`` (or any class satisfying the
+        # ``PipelineConfig`` protocol) to swap the configuration surface.
+        self._config_cls = config_cls
         # Logger
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self.logger.setLevel(log_level)
@@ -278,7 +328,8 @@ class BaseTask:
         self.results: Dict[str, Dict[str, Any]] = {}
         self.agg_results: Dict[str, Any] = {}
 
-        # Build ConfigMulti — merge explicit arguments with overrides
+        # Build the config instance (defaults to ConfigMulti) — merge explicit
+        # arguments with overrides.
         self.config = self._build_config(**config_overrides)
         self._attach_file_handler()
 
@@ -304,8 +355,14 @@ class BaseTask:
         )
         self.logger.addHandler(handler)
 
-    def _build_config(self, **overrides: Any) -> ConfigMulti:
-        """Create a ConfigMulti from the stored pipeline arguments."""
+    def _build_config(self, **overrides: Any) -> PipelineConfig:
+        """Create a config instance from the stored pipeline arguments.
+
+        Uses ``self._config_cls`` (defaults to ``ConfigMulti``) so subclasses
+        and ENTSO-E-style callers can substitute their own config class
+        without overriding this method.  The instantiated config must satisfy
+        the ``PipelineConfig`` protocol.
+        """
         kwargs: Dict[str, Any] = {
             "predict_size": self.predict_size,
             "contamination": self.contamination,
@@ -325,7 +382,7 @@ class BaseTask:
         if self.agg_weights is not None:
             kwargs["agg_weights"] = self.agg_weights
         kwargs.update(overrides)
-        return ConfigMulti(**kwargs)
+        return self._config_cls(**kwargs)
 
     # ------------------------------------------------------------------
     # Step 1 — Data Preparation
@@ -381,10 +438,15 @@ class BaseTask:
         if demo_data is None:
             demo_data = self._dataframe
         if demo_data is None:
+            data_loader = getattr(self.config, "data_loader", None)
+            if data_loader is not None:
+                demo_data = data_loader(self.config)
+        if demo_data is None:
             raise ValueError(
                 "No data source provided. Pass a DataFrame via the "
-                "'dataframe' constructor argument or the 'demo_data' "
-                "parameter of prepare_data()."
+                "'dataframe' constructor argument, the 'demo_data' parameter "
+                "of prepare_data(), or set 'config.data_loader' to a callable "
+                "returning a DataFrame."
             )
 
         if df_test is None:
@@ -732,11 +794,20 @@ class BaseTask:
             allow_incomplete_fold=True,
         )
 
-    def create_forecaster(self) -> Any:
-        """Create a fresh ForecasterRecursive with shared configuration.
+    def create_forecaster(self, target: Optional[str] = None) -> Any:
+        """Create a fresh forecaster for the given target.
+
+        Delegates to ``config.forecaster_factory`` when set; otherwise falls
+        back to ``default_lgbm_forecaster_factory``.  This factory hook lets
+        the upcoming ENTSO-E integration (and any future single-target task)
+        swap the estimator without subclassing ``BaseTask``.
+
+        Args:
+            target: Optional target column name.  Forwarded to the factory
+                so that custom factories can specialise per target.
 
         Returns:
-            A new, unfitted ``ForecasterRecursive`` instance.
+            A new, unfitted forecaster instance.
 
         Examples:
             ```{python}
@@ -748,14 +819,10 @@ class BaseTask:
             print(f"Lags: {forecaster.lags}")
             ```
         """
-        return ForecasterRecursive(
-            estimator=LGBMRegressor(random_state=self.config.random_state, verbose=-1),
-            lags=self.config.lags_consider[-1],
-            window_features=RollingFeaturesUnified(
-                stats=["mean"], window_sizes=self.config.window_size
-            ),
-            weight_func=self.weight_func,
-        )
+        factory = getattr(self.config, "forecaster_factory", None)
+        if factory is None:
+            factory = default_lgbm_forecaster_factory
+        return factory(self.config, weight_func=self.weight_func, target=target)
 
     # ------------------------------------------------------------------
     # Tuning-result persistence
@@ -1167,10 +1234,11 @@ class BaseTask:
         task_name: str,
     ) -> None:
         """Display a prediction figure for one target."""
-        fig = PredictionFigure(
+        fig = make_plot(
             pred_pkg,
             title=f"Prediction for Target '{target}' ({task_name})",
-        ).make_plot()
+            save=False,
+        )
         fig.show()
 
     def _aggregate_and_show(
@@ -1181,11 +1249,20 @@ class BaseTask:
     ) -> Dict[str, Any]:
         """Aggregate results and optionally display the combined figure.
 
-        Aggregation is always performed.  When ``agg_weights`` is not
-        configured on the task, equal weights are used as the fallback so
-        that every task unconditionally concludes with an aggregated forecast.
-        The result is stored in :attr:`agg_results` keyed by ``task_name``.
+        For multi-target configurations, aggregates via ``agg_predictor``
+        using either the configured ``agg_weights`` or equal weights as a
+        fallback.  For single-target configurations, aggregation is a no-op:
+        the per-target prediction package is returned directly and no extra
+        "Aggregated Forecast" figure is displayed (the per-target figure is
+        the aggregated figure).  The result is stored in
+        :attr:`agg_results` keyed by ``task_name``.
         """
+        if len(self.config.targets) == 1:
+            target = self.config.targets[0]
+            agg_pkg = results[target]
+            self.agg_results[task_name] = agg_pkg
+            return agg_pkg
+
         if self.config.agg_weights is not None:
             active_weights = self.config.agg_weights[: len(self.config.targets)]
         else:
@@ -1202,15 +1279,82 @@ class BaseTask:
         )
         self.agg_results[task_name] = agg_pkg
         if show:
-            fig = PredictionFigure(
+            fig = make_plot(
                 agg_pkg,
                 title=(
                     f"Aggregated Forecast: Weighted Combination of "
                     f"Targets {self.config.targets} ({task_name})"
                 ),
-            ).make_plot()
+                save=False,
+            )
             fig.show()
         return agg_pkg
+
+    # ------------------------------------------------------------------
+    # Strategy dispatch (ADR-001 Step 5)
+    # ------------------------------------------------------------------
+
+    def _run_strategy(
+        self,
+        strategy: Any,
+        task_name: str,
+        results_key: str,
+        show: bool = True,
+        log_prefix: str = "",
+    ) -> Dict[str, Any]:
+        """Run a ``TrainingStrategy`` over every configured target.
+
+        Centralised per-target loop used by ``execute_lazy`` / ``execute_optuna``
+        / ``execute_spotoptim``.  The strategy is responsible only for the
+        per-target *prepare* step (tuning + parameter application); the final
+        fit, optional model save, aggregation, and display all stay in this
+        method so the previously observable ordering is preserved.
+
+        Args:
+            strategy: A ``TrainingStrategy`` instance.
+            task_name: Human-readable label used in log lines, figure titles,
+                and ``agg_results`` keys.
+            results_key: Key under which per-target packages are stored in
+                ``self.results``.
+            show: If ``True``, display per-target and aggregated figures.
+            log_prefix: Optional log-line prefix (e.g. ``"[task 1] "``).
+
+        Returns:
+            Aggregated prediction package.
+        """
+        self._ensure_pipeline_ready()
+        results: Dict[str, Dict[str, Any]] = {}
+
+        for target in self.config.targets:
+            if log_prefix:
+                self.logger.info("%sTarget '%s': %s ...", log_prefix, target, task_name)
+            else:
+                self.logger.info("Target '%s': %s ...", target, task_name)
+
+            y_train, exog_train, exog_future = self._get_target_data(target)
+            forecaster = self.create_forecaster(target=target)
+            prepared = strategy.prepare_forecaster(
+                self,
+                target=target,
+                forecaster=forecaster,
+                y_train=y_train,
+                exog_train=exog_train,
+            )
+            results[target] = self._train_and_predict_target(
+                target=target,
+                task_name=task_name,
+                forecaster=prepared,
+                y_train=y_train,
+                exog_train=exog_train,
+                exog_future=exog_future,
+            )
+            if show:
+                self._show_prediction_figure(results[target], target, task_name)
+
+        self.results[results_key] = results
+        if getattr(self, "auto_save_models", True):
+            self.save_models(task_name=results_key)
+        return self._aggregate_and_show(results, task_name, show=show)
 
     # ------------------------------------------------------------------
     # Internal guards
