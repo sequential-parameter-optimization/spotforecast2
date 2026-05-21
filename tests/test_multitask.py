@@ -21,7 +21,7 @@ import logging
 import pandas as pd
 import pytest
 
-from spotforecast2.manager.multitask import (
+from spotforecast2.multitask import (
     BaseTask,
     LazyTask,
     MultiTask,
@@ -77,46 +77,28 @@ class TestImportPaths:
     """Verify all classes are importable from expected paths."""
 
     def test_import_multitask_from_multitask_package(self):
-        from spotforecast2.manager.multitask import MultiTask as MT
-
-        assert MT is MultiTask
-
-    def test_import_multitask_from_manager_package(self):
-        from spotforecast2.manager import MultiTask as MT
+        from spotforecast2.multitask import MultiTask as MT
 
         assert MT is MultiTask
 
     def test_import_base_task(self):
-        from spotforecast2.manager.multitask import BaseTask as BT
+        from spotforecast2.multitask import BaseTask as BT
 
         assert BT is BaseTask
 
     def test_import_lazy_task(self):
-        from spotforecast2.manager.multitask import LazyTask as LT
+        from spotforecast2.multitask import LazyTask as LT
 
         assert LT is LazyTask
 
     def test_import_optuna_task(self):
-        from spotforecast2.manager.multitask import OptunaTask as OT
+        from spotforecast2.multitask import OptunaTask as OT
 
         assert OT is OptunaTask
 
     def test_import_spotoptim_task(self):
-        from spotforecast2.manager.multitask import SpotOptimTask as ST
+        from spotforecast2.multitask import SpotOptimTask as ST
 
-        assert ST is SpotOptimTask
-
-    def test_import_from_manager_all_classes(self):
-        from spotforecast2.manager import (
-            BaseTask as BT,
-            LazyTask as LT,
-            OptunaTask as OT,
-            SpotOptimTask as ST,
-        )
-
-        assert BT is BaseTask
-        assert LT is LazyTask
-        assert OT is OptunaTask
         assert ST is SpotOptimTask
 
     def test_all_are_classes(self):

@@ -22,7 +22,7 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from spotforecast2.manager.multitask import (
+from spotforecast2.multitask import (
     BaseTask,
     LazyTask,
     OptunaTask,

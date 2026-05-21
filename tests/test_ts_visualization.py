@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from unittest.mock import patch, MagicMock
 
-from spotforecast2.preprocessing.time_series_visualization import (
+from spotforecast2.plots.time_series_visualization import (
     visualize_ts_plotly,
     visualize_ts_comparison,
 )
@@ -45,7 +45,7 @@ class TestVisualizeTsPlotly:
             index=self.dates_test,
         )
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_plotly_basic(self, mock_go):
         """Test basic visualization with three datasets."""
         mock_fig = MagicMock()
@@ -62,7 +62,7 @@ class TestVisualizeTsPlotly:
         # Verify Figure was created for each column
         assert mock_go.Figure.call_count >= 2
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_plotly_single_dataset(self, mock_go):
         """Test visualization with single dataset."""
         mock_fig = MagicMock()
@@ -74,7 +74,7 @@ class TestVisualizeTsPlotly:
 
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_plotly_specific_columns(self, mock_go):
         """Test visualization with specific columns."""
         mock_fig = MagicMock()
@@ -90,7 +90,7 @@ class TestVisualizeTsPlotly:
         # Should create one figure for temperature
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_plotly_custom_colors(self, mock_go):
         """Test visualization with custom colors."""
         mock_fig = MagicMock()
@@ -107,7 +107,7 @@ class TestVisualizeTsPlotly:
 
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_plotly_custom_template(self, mock_go):
         """Test visualization with custom template."""
         mock_fig = MagicMock()
@@ -119,7 +119,7 @@ class TestVisualizeTsPlotly:
 
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_plotly_custom_figsize(self, mock_go):
         """Test visualization with custom figure size."""
         mock_fig = MagicMock()
@@ -131,7 +131,7 @@ class TestVisualizeTsPlotly:
 
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_plotly_with_kwargs(self, mock_go):
         """Test visualization with additional kwargs."""
         mock_fig = MagicMock()
@@ -184,11 +184,11 @@ class TestVisualizeTsPlotly:
         """Test that ImportError is raised when plotly is not available."""
         dataframes = {"Train": self.data_train}
 
-        with patch("spotforecast2.preprocessing.time_series_visualization.go", None):
+        with patch("spotforecast2.plots.time_series_visualization.go", None):
             with pytest.raises(ImportError, match="plotly is required"):
                 visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_plotly_many_datasets(self, mock_go):
         """Test visualization with many datasets (>10)."""
         mock_fig = MagicMock()
@@ -206,7 +206,7 @@ class TestVisualizeTsPlotly:
 
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_plotly_title_suffix(self, mock_go):
         """Test visualization with title suffix."""
         mock_fig = MagicMock()
@@ -237,7 +237,7 @@ class TestVisualizeTsComparison:
             {"temperature": np.random.normal(22, 5, 100)}, index=self.dates2
         )
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_comparison_basic(self, mock_go):
         """Test basic comparison visualization."""
         mock_fig = MagicMock()
@@ -249,7 +249,7 @@ class TestVisualizeTsComparison:
 
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_comparison_with_mean(self, mock_go):
         """Test comparison visualization with mean overlay."""
         mock_fig = MagicMock()
@@ -261,7 +261,7 @@ class TestVisualizeTsComparison:
 
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_ts_comparison_custom_colors(self, mock_go):
         """Test comparison with custom colors."""
         mock_fig = MagicMock()
@@ -283,7 +283,7 @@ class TestVisualizeTsComparison:
         """Test that ImportError is raised when plotly is not available."""
         dataframes = {"Data": self.df1}
 
-        with patch("spotforecast2.preprocessing.time_series_visualization.go", None):
+        with patch("spotforecast2.plots.time_series_visualization.go", None):
             with pytest.raises(ImportError, match="plotly is required"):
                 visualize_ts_comparison(dataframes)
 
@@ -291,7 +291,7 @@ class TestVisualizeTsComparison:
 class TestIntegration:
     """Integration tests for time series visualization."""
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_workflow_train_val_test(self, mock_go):
         """Test complete workflow with train/val/test split."""
         mock_fig = MagicMock()
@@ -332,7 +332,7 @@ class TestIntegration:
 
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_workflow_single_dataset(self, mock_go):
         """Test workflow with single dataset."""
         mock_fig = MagicMock()
@@ -348,7 +348,7 @@ class TestIntegration:
 
         assert mock_go.Figure.called
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_workflow_many_columns(self, mock_go):
         """Test workflow with many columns."""
         mock_fig = MagicMock()

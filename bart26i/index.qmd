@@ -109,7 +109,7 @@ The package is organised into the same three layers as `spotforecast2-safe`, wit
 
 | Module | Capability | Principal dependency |
 |:------|:------|:------|
-| `manager/plotter.py` | Actual-vs-predicted and TSO-benchmark plotting. | `plotly` |
+| `plots/plotter.py` | Actual-vs-predicted and TSO-benchmark plotting. | `plotly` |
 | `preprocessing/outlier_plots.py` | Outlier-diagnostic visualisation. | `plotly`, `matplotlib` |
 | `preprocessing/time_series_visualization.py` | Exploratory time-series panels. | `plotly`, `matplotlib` |
 | `model_selection/bayesian_search.py` | Bayesian hyperparameter search (TPE). | `optuna` |
@@ -127,7 +127,7 @@ The public API of `spotforecast2` consists exactly of the additional classes and
 
 # Visualisation Layer {#sec-viz}
 
-Interactive visualisation is the first of the three capabilities that `spotforecast2` adds. The module `manager/plotter.py` builds a Plotly figure that juxtaposes four series on a single axis: the actual load reported by the ENTSO-E Transparency Platform [@entsoe24], the forecast produced by the `spotforecast2` model, the day-ahead TSO benchmark that the ENTSO-E platform publishes alongside the actual load, and a seven-day-lagged copy of the actual load that serves as a naive seasonal baseline. The four-series plot is the canonical way to communicate a forecast's value to a power-system operator: it situates the model between a state-of-the-art benchmark and a trivial baseline, and shows the horizon on which the model's value accrues.
+Interactive visualisation is the first of the three capabilities that `spotforecast2` adds. The module `plots/plotter.py` builds a Plotly figure that juxtaposes four series on a single axis: the actual load reported by the ENTSO-E Transparency Platform [@entsoe24], the forecast produced by the `spotforecast2` model, the day-ahead TSO benchmark that the ENTSO-E platform publishes alongside the actual load, and a seven-day-lagged copy of the actual load that serves as a naive seasonal baseline. The four-series plot is the canonical way to communicate a forecast's value to a power-system operator: it situates the model between a state-of-the-art benchmark and a trivial baseline, and shows the horizon on which the model's value accrues.
 
 The entry point is `make_plot(prediction_package)`, which accepts the dictionary returned by `spotforecast2_safe.manager.predictor.get_model_prediction` and writes an HTML file to the data home. A matplotlib-style static figure is produced in this report instead of the interactive Plotly figure, because an arxiv-pdf document cannot embed interactive content; both flavours share the same underlying data.
 
@@ -335,7 +335,7 @@ plt.show()
 
 Two reference points calibrate the numbers printed above. The naive seasonal baseline --- predicting this hour's load as the load exactly seven days ago at the same hour --- typically achieves a Mean Absolute Percentage Error (MAPE) of around 5--7% on German system load. The ENTSO-E day-ahead TSO forecast, published by the transmission system operators themselves, typically achieves a MAPE of around 2--3% on the same series. A recursive LightGBM forecaster trained on a year of hourly data with calendar exogenous features typically falls in the 2.5--4% MAPE range; beating the TSO benchmark consistently requires either weather features or a more sophisticated model class, both of which are within scope for follow-on work but out of scope for this reproducibility demonstration. The MAPE figures printed by the in-sample-metrics cell above provide the lower bound on what is achievable on this exact window; the out-of-sample MAPE is the metric a deployer should report.
 
-The interactive Plotly equivalent of @fig-forecast is produced by `spotforecast2.manager.plotter.make_plot(pkg)` and writes an HTML file to the data home. That figure adds a fourth trace --- the observed load from exactly seven days earlier --- and supports hover-tool inspection of individual timestamps. It is the recommended output for notebook-based exploration; the matplotlib version embedded in this report is the recommended output for publication.
+The interactive Plotly equivalent of @fig-forecast is produced by `spotforecast2.plots.plotter.make_plot(pkg)` and writes an HTML file to the data home. That figure adds a fourth trace --- the observed load from exactly seven days earlier --- and supports hover-tool inspection of individual timestamps. It is the recommended output for notebook-based exploration; the matplotlib version embedded in this report is the recommended output for publication.
 
 # Reproducibility and Audit Trail {#sec-audit}
 
@@ -353,7 +353,7 @@ Three classes of limitation apply to `spotforecast2` specifically, beyond the on
 
 *Tuning is optional and not auto-triggered.* The default `MultiTask` mode is `lazy` --- no tuning. Users who pass `task="optuna"` or `task="spotoptim"` opt in to a tuning run whose budget they specify. The package does not try to select between the two on the user's behalf; the heuristic in @sec-tuning is provided in the documentation rather than in code.
 
-*The visualisation layer is matplotlib-for-reports, Plotly-for-notebooks.* The figures in this arxiv-pdf document are matplotlib; the `make_plot` entry point in `manager/plotter.py` emits Plotly. A caller who wants the Plotly figure exported to static PNG or SVG can do so via the `kaleido` backend, which is not a default dependency.
+*The visualisation layer is matplotlib-for-reports, Plotly-for-notebooks.* The figures in this arxiv-pdf document are matplotlib; the `make_plot` entry point in `plots/plotter.py` emits Plotly. A caller who wants the Plotly figure exported to static PNG or SVG can do so via the `kaleido` backend, which is not a default dependency.
 
 Future work that is in scope includes: extending SHAP attribution to the multitask pipeline so that a multi-target forecast produces one explanation per target; adding warm-start support to the SpotOptim tuner so that a resumed run reuses the surrogate-model state from the previous run; and a richer diagnostic dashboard that surfaces residual autocorrelation, coverage of bootstrap intervals, and drift against the TSO benchmark on a common axis.
 

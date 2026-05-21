@@ -27,7 +27,7 @@ import numpy as np
 import pytest
 from sklearn.linear_model import LinearRegression
 
-from spotforecast2.manager.multitask import (
+from spotforecast2.multitask import (
     BaseTask,
     LazyTask,
     OptunaTask,

@@ -56,44 +56,42 @@ website:
         contents:
           - text: "Overview"
             file: docs/reference/index.qmd
-          - section: "Exceptions"
+          - section: "Warnings"
             contents:
               - text: "exceptions"
-                file: docs/reference/exceptions.qmd
-          - section: "Forecaster"
+                file: docs/reference/warnings.exceptions.qmd
+          - section: "Models"
             contents:
-              - text: "utils"
-                file: docs/reference/forecaster.utils.qmd
-          - section: "Manager"
+              - text: "forecaster_recursive_model_full"
+                file: docs/reference/models.forecaster_recursive_model_full.qmd
+              - text: "forecaster_recursive_lgbm_full"
+                file: docs/reference/models.forecaster_recursive_lgbm_full.qmd
+              - text: "forecaster_recursive_xgb_full"
+                file: docs/reference/models.forecaster_recursive_xgb_full.qmd
+          - section: "Trainer"
             contents:
-              - text: "models.forecaster_recursive_model_full"
-                file: docs/reference/manager.models.forecaster_recursive_model_full.qmd
-              - text: "models.forecaster_recursive_lgbm_full"
-                file: docs/reference/manager.models.forecaster_recursive_lgbm_full.qmd
-              - text: "models.forecaster_recursive_xgb_full"
-                file: docs/reference/manager.models.forecaster_recursive_xgb_full.qmd
-              - text: "plotter"
-                file: docs/reference/manager.plotter.qmd
               - text: "trainer_full"
-                file: docs/reference/manager.trainer_full.qmd
+                file: docs/reference/trainer.trainer_full.qmd
+          - section: "Multitask"
+            contents:
               - text: "agg_predictor"
-                file: docs/reference/manager.multitask.agg_predictor.qmd
+                file: docs/reference/multitask.agg_predictor.qmd
               - text: "BaseTask"
-                file: docs/reference/manager.multitask.BaseTask.qmd
+                file: docs/reference/multitask.BaseTask.qmd
               - text: "LazyTask"
-                file: docs/reference/manager.multitask.LazyTask.qmd
+                file: docs/reference/multitask.LazyTask.qmd
               - text: "OptunaTask"
-                file: docs/reference/manager.multitask.OptunaTask.qmd
+                file: docs/reference/multitask.OptunaTask.qmd
               - text: "SpotOptimTask"
-                file: docs/reference/manager.multitask.SpotOptimTask.qmd
+                file: docs/reference/multitask.SpotOptimTask.qmd
               - text: "PredictTask"
-                file: docs/reference/manager.multitask.PredictTask.qmd
+                file: docs/reference/multitask.PredictTask.qmd
               - text: "CleanTask"
-                file: docs/reference/manager.multitask.CleanTask.qmd
+                file: docs/reference/multitask.CleanTask.qmd
               - text: "MultiTask"
-                file: docs/reference/manager.multitask.MultiTask.qmd
+                file: docs/reference/multitask.MultiTask.qmd
               - text: "run"
-                file: docs/reference/manager.multitask.run.qmd
+                file: docs/reference/multitask.run.qmd
           - section: "Model Selection"
             contents:
               - text: "bayesian_search"
@@ -106,22 +104,14 @@ website:
                 file: docs/reference/model_selection.spotoptim_search.qmd
               - text: "utils_metrics"
                 file: docs/reference/model_selection.utils_metrics.qmd
-          - section: "Preprocessing"
+          - section: "Plots"
             contents:
-              - text: "_binner"
-                file: docs/reference/preprocessing._binner.qmd
-              - text: "data_transform"
-                file: docs/reference/preprocessing.data_transform.qmd
-              - text: "forecaster_config"
-                file: docs/reference/preprocessing.forecaster_config.qmd
-              - text: "rolling"
-                file: docs/reference/preprocessing.rolling.qmd
               - text: "outlier_plots"
-                file: docs/reference/preprocessing.outlier_plots.qmd
-              - text: "split"
-                file: docs/reference/preprocessing.split.qmd
+                file: docs/reference/plots.outlier_plots.qmd
+              - text: "plotter"
+                file: docs/reference/plots.plotter.qmd
               - text: "time_series_visualization"
-                file: docs/reference/preprocessing.time_series_visualization.qmd
+                file: docs/reference/plots.time_series_visualization.qmd
           - section: "Stats"
             contents:
               - text: "autocorrelation"
@@ -140,22 +130,18 @@ website:
                 file: docs/reference/tasks.task_n_to_1_with_covariates.qmd
               - text: "task_n_to_1_with_covariates_and_dataframe"
                 file: docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.qmd
-          - section: "Utils"
-            contents:
-              - text: "validation"
-                file: docs/reference/utils.validation.qmd
 
       - section: "Processing Guides"
         contents:
           - text: "Model Persistence"
             file: docs/processing/model_persistence.qmd
             
-      - section: "Preprocessing Guides"
+      - section: "Plots Guides"
         contents:
           - text: "Outlier Detection"
-            file: docs/preprocessing/outliers.qmd
+            file: docs/plots/outliers.qmd
           - text: "Time Series Visualization"
-            file: docs/preprocessing/time_series_visualization.qmd
+            file: docs/plots/time_series_visualization.qmd
 
       - section: "Model Selection Guides"
         contents:
@@ -206,16 +192,12 @@ quartodoc:
   render_interlinks: true
 
   sections:
-    - title: "Preprocessing"
-      desc: "Data curation, outlier detection, and split tools."
+    - title: "Plots"
+      desc: "Outlier, prediction, and time-series visualization tools."
       contents:
-        - preprocessing._binner
-        - preprocessing.data_transform
-        - preprocessing.forecaster_config
-        - preprocessing.rolling
-        - preprocessing.outlier_plots
-        - preprocessing.split
-        - preprocessing.time_series_visualization
+        - plots.outlier_plots
+        - plots.plotter
+        - plots.time_series_visualization
 
     - title: "Model Selection"
       desc: "Search algorithms and cross-validation tools."
@@ -226,28 +208,30 @@ quartodoc:
         - model_selection.spotoptim_search
         - model_selection.utils_metrics
 
-    - title: "Manager"
-      desc: "Model management and configurators."
+    - title: "Models"
+      desc: "Full-featured forecaster classes with Bayesian tuning and SHAP."
       contents:
-        - manager.models.forecaster_recursive_model_full
-        - manager.models.forecaster_recursive_lgbm_full
-        - manager.models.forecaster_recursive_xgb_full
-        - manager.plotter
-        - manager.trainer_full
-        - manager.multitask.agg_predictor
-        - manager.multitask.BaseTask
-        - manager.multitask.LazyTask
-        - manager.multitask.OptunaTask
-        - manager.multitask.SpotOptimTask
-        - manager.multitask.PredictTask
-        - manager.multitask.CleanTask
-        - manager.multitask.MultiTask
-        - manager.multitask.run
+        - models.forecaster_recursive_model_full
+        - models.forecaster_recursive_lgbm_full
+        - models.forecaster_recursive_xgb_full
 
-    - title: "Forecaster"
-      desc: "Forecasting utilities and metrics."
+    - title: "Trainer"
+      desc: "Training driver with tuning hooks."
       contents:
-        - forecaster.utils
+        - trainer.trainer_full
+
+    - title: "Multitask"
+      desc: "Multi-target forecasting pipeline tasks and dispatcher."
+      contents:
+        - multitask.agg_predictor
+        - multitask.BaseTask
+        - multitask.LazyTask
+        - multitask.OptunaTask
+        - multitask.SpotOptimTask
+        - multitask.PredictTask
+        - multitask.CleanTask
+        - multitask.MultiTask
+        - multitask.run
 
     - title: "Stats"
       desc: "Statistical analysis tools."
@@ -264,12 +248,7 @@ quartodoc:
         - tasks.task_n_to_1_with_covariates
         - tasks.task_n_to_1_with_covariates_and_dataframe
 
-    - title: "Utils"
-      desc: "Validation and data transformation utilities."
+    - title: "Warnings"
+      desc: "Warning-style configuration for spotforecast2."
       contents:
-        - utils.validation
-
-    - title: "Exceptions"
-      desc: "Spotforecast exception classes."
-      contents:
-        - exceptions
+        - warnings.exceptions

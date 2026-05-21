@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
-from spotforecast2.manager.plotter import PredictionFigure
+from spotforecast2.plots.plotter import PredictionFigure
 
 
 def test_make_plot_example_execution():

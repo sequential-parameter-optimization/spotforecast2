@@ -12,9 +12,7 @@ from joblib import cpu_count
 from tqdm.auto import tqdm
 from sklearn.model_selection import ParameterGrid
 
-from spotforecast2.exceptions import (
-    IgnoredArgumentWarning,
-)
+from spotforecast2_safe.exceptions import IgnoredArgumentWarning
 from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.splitter import OneStepAheadFold
 from spotforecast2_safe.splitter.utils_common import (
@@ -24,7 +22,7 @@ from spotforecast2_safe.splitter.utils_common import (
     select_n_jobs_backtesting,
 )
 from spotforecast2_safe.forecaster.metrics import add_y_train_argument, _get_metric
-from spotforecast2.forecaster.utils import date_to_index_position
+from spotforecast2_safe.forecaster.utils import date_to_index_position
 from spotforecast2.model_selection.utils_metrics import (
     _calculate_metrics_one_step_ahead,
 )

@@ -1,7 +1,7 @@
 """
 Test suite for time series visualization documentation examples.
 
-Implements pytest tests for all examples from docs/preprocessing/time_series_visualization.qmd
+Implements pytest tests for all examples from docs/plots/time_series_visualization.qmd
 to ensure documentation accuracy and example functionality.
 
 Safety-critical validation scope:
@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from spotforecast2.preprocessing.time_series_visualization import (
+from spotforecast2.plots.time_series_visualization import (
     visualize_ts_plotly,
     visualize_ts_comparison,
 )
@@ -113,7 +113,7 @@ class TestVisualizeTimeSeriesPlotlyBasic:
     Based on docs: "visualize_ts_plotly()" API Reference
     """
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_single_dataset(self, mock_go, sample_timeseries_single_column):
         """Test visualizing a single dataset."""
         dataframes = {"Data": sample_timeseries_single_column}
@@ -121,26 +121,26 @@ class TestVisualizeTimeSeriesPlotlyBasic:
         # Should not raise
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_requires_dict(self, mock_go, sample_timeseries_single_column):
         """Test that visualize_ts_plotly requires dict input."""
         # Should raise TypeError for non-dict input
         with pytest.raises((TypeError, AttributeError)):
             visualize_ts_plotly(sample_timeseries_single_column)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_requires_non_empty_dict(self, mock_go):
         """Test that empty dict raises error."""
         with pytest.raises(ValueError):
             visualize_ts_plotly({})
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_with_multiple_datasets(self, mock_go, train_val_test_split):
         """Test visualizing multiple datasets."""
         # Should not raise
         visualize_ts_plotly(train_val_test_split)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_with_column_selection(
         self, mock_go, sample_timeseries_multicolumn
     ):
@@ -150,7 +150,7 @@ class TestVisualizeTimeSeriesPlotlyBasic:
         # Should not raise
         visualize_ts_plotly(dataframes, columns=["temperature"])
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_with_title_suffix(
         self, mock_go, sample_timeseries_single_column
     ):
@@ -160,7 +160,7 @@ class TestVisualizeTimeSeriesPlotlyBasic:
         # Should not raise
         visualize_ts_plotly(dataframes, title_suffix="[°C]")
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_with_custom_figsize(
         self, mock_go, sample_timeseries_single_column
     ):
@@ -170,7 +170,7 @@ class TestVisualizeTimeSeriesPlotlyBasic:
         # Should not raise
         visualize_ts_plotly(dataframes, figsize=(1400, 600))
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_with_template(self, mock_go, sample_timeseries_single_column):
         """Test specifying template."""
         dataframes = {"Data": sample_timeseries_single_column}
@@ -178,7 +178,7 @@ class TestVisualizeTimeSeriesPlotlyBasic:
         # Should not raise
         visualize_ts_plotly(dataframes, template="plotly_dark")
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_visualize_with_colors(self, mock_go, train_val_test_split):
         """Test custom color mapping."""
         colors = {"Train": "blue", "Validation": "green", "Test": "red"}
@@ -198,19 +198,19 @@ class TestVisualizeTimeSeriesComparison:
     Based on docs: "visualize_ts_comparison()" API Reference
     """
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_comparison_basic(self, mock_go, seasonal_datasets):
         """Test basic comparison visualization."""
         # Should not raise
         visualize_ts_comparison(seasonal_datasets)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_comparison_show_mean(self, mock_go, seasonal_datasets):
         """Test comparison with mean overlay."""
         # Should not raise
         visualize_ts_comparison(seasonal_datasets, show_mean=True)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_comparison_with_colors(self, mock_go, seasonal_datasets):
         """Test comparison with custom colors."""
         colors = {"Winter": "blue", "Spring": "green", "Summer": "red"}
@@ -218,19 +218,19 @@ class TestVisualizeTimeSeriesComparison:
         # Should not raise
         visualize_ts_comparison(seasonal_datasets, colors=colors)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_comparison_with_title_suffix(self, mock_go, seasonal_datasets):
         """Test comparison with title suffix."""
         # Should not raise
         visualize_ts_comparison(seasonal_datasets, title_suffix="[°C]")
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_comparison_requires_non_empty_dict(self, mock_go):
         """Test that empty dict raises error."""
         with pytest.raises(ValueError):
             visualize_ts_comparison({})
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_comparison_with_figsize(self, mock_go, seasonal_datasets):
         """Test comparison with custom figure size."""
         # Should not raise
@@ -248,7 +248,7 @@ class TestCompleteWorkflow:
     Based on docs: "Complete Workflow Examples" section
     """
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_train_val_test_split_workflow(self, mock_go):
         """Test train/validation/test split workflow."""
         np.random.seed(42)
@@ -275,7 +275,7 @@ class TestCompleteWorkflow:
 
         visualize_ts_plotly(dataframes, template="plotly_white", figsize=(1200, 600))
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_multiple_datasets_comparison_workflow(self, mock_go):
         """Test multiple datasets comparison workflow."""
         dates1 = pd.date_range("2024-01-01", periods=100, freq="h")
@@ -295,7 +295,7 @@ class TestCompleteWorkflow:
             colors={"Winter": "blue", "Spring": "green", "Summer": "red"},
         )
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_dynamic_dataset_handling(self, mock_go):
         """Test handling multiple dynamic datasets."""
         np.random.seed(42)
@@ -321,43 +321,43 @@ class TestParametersAndConfiguration:
     Based on docs: "Parameters and Configuration" section
     """
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_figsize_parameter_small(self, mock_go, sample_timeseries_single_column):
         """Test small figure size."""
         dataframes = {"Data": sample_timeseries_single_column}
         visualize_ts_plotly(dataframes, figsize=(800, 400))
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_figsize_parameter_large(self, mock_go, sample_timeseries_single_column):
         """Test large figure size."""
         dataframes = {"Data": sample_timeseries_single_column}
         visualize_ts_plotly(dataframes, figsize=(1600, 800))
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_template_plotly_white(self, mock_go, sample_timeseries_single_column):
         """Test light theme template."""
         dataframes = {"Data": sample_timeseries_single_column}
         visualize_ts_plotly(dataframes, template="plotly_white")
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_template_plotly_dark(self, mock_go, sample_timeseries_single_column):
         """Test dark theme template."""
         dataframes = {"Data": sample_timeseries_single_column}
         visualize_ts_plotly(dataframes, template="plotly_dark")
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_template_plotly_minimal(self, mock_go, sample_timeseries_single_column):
         """Test minimal theme template."""
         dataframes = {"Data": sample_timeseries_single_column}
         visualize_ts_plotly(dataframes, template="plotly")
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_template_ggplot2(self, mock_go, sample_timeseries_single_column):
         """Test ggplot2 theme template."""
         dataframes = {"Data": sample_timeseries_single_column}
         visualize_ts_plotly(dataframes, template="ggplot2")
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_color_customization_hex(self, mock_go, train_val_test_split):
         """Test color customization with hex codes."""
         colors = {
@@ -367,7 +367,7 @@ class TestParametersAndConfiguration:
         }
         visualize_ts_plotly(train_val_test_split, colors=colors)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_color_customization_names(self, mock_go, train_val_test_split):
         """Test color customization with color names."""
         colors = {"Train": "blue", "Validation": "orange", "Test": "green"}
@@ -385,7 +385,7 @@ class TestBestPractices:
     Based on docs: "Best Practices" section
     """
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_datetime_index_handling(self, mock_go):
         """Test proper datetime index handling."""
         # Good: Using datetime index
@@ -396,7 +396,7 @@ class TestBestPractices:
         dataframes = {"Data": df}
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_consistent_column_shapes(self, mock_go):
         """Test consistent data shapes across datasets."""
         np.random.seed(42)
@@ -428,7 +428,7 @@ class TestBestPractices:
 
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_large_dataset_subsampling(self, mock_go):
         """Test subsampling for large datasets."""
         np.random.seed(42)
@@ -442,7 +442,7 @@ class TestBestPractices:
         dataframes = {"Data": df_sub}
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_meaningful_dataset_names(self, mock_go):
         """Test using meaningful dataset names."""
         np.random.seed(42)
@@ -481,7 +481,7 @@ class TestEdgeCases:
     Safety-critical: Ensure robustness to unusual inputs
     """
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_single_value_dataset(self, mock_go):
         """Test with dataset containing single value."""
         dates = pd.date_range("2024-01-01", periods=1, freq="h")
@@ -490,7 +490,7 @@ class TestEdgeCases:
         dataframes = {"Data": df}
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_constant_values(self, mock_go):
         """Test with constant values (no variance)."""
         dates = pd.date_range("2024-01-01", periods=100, freq="h")
@@ -499,7 +499,7 @@ class TestEdgeCases:
         dataframes = {"Data": df}
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_nan_values_in_data(self, mock_go):
         """Test handling NaN values."""
         dates = pd.date_range("2024-01-01", periods=100, freq="h")
@@ -510,7 +510,7 @@ class TestEdgeCases:
         dataframes = {"Data": df}
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_negative_values(self, mock_go):
         """Test with negative values."""
         dates = pd.date_range("2024-01-01", periods=100, freq="h")
@@ -519,7 +519,7 @@ class TestEdgeCases:
         dataframes = {"Data": df}
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_very_large_values(self, mock_go):
         """Test with very large values."""
         dates = pd.date_range("2024-01-01", periods=100, freq="h")
@@ -528,7 +528,7 @@ class TestEdgeCases:
         dataframes = {"Data": df}
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_very_small_values(self, mock_go):
         """Test with very small values."""
         dates = pd.date_range("2024-01-01", periods=100, freq="h")
@@ -537,7 +537,7 @@ class TestEdgeCases:
         dataframes = {"Data": df}
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_many_columns(self, mock_go):
         """Test with many columns."""
         dates = pd.date_range("2024-01-01", periods=100, freq="h")
@@ -559,7 +559,7 @@ class TestAPIExamples:
     Ensures all documented examples work as shown
     """
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_quick_start_basic_visualization(self, mock_go):
         """Test quick start basic visualization example."""
         np.random.seed(42)
@@ -595,7 +595,7 @@ class TestAPIExamples:
 
         visualize_ts_plotly(dataframes)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_quick_start_single_dataset(self, mock_go):
         """Test quick start single dataset example."""
         np.random.seed(42)
@@ -612,7 +612,7 @@ class TestAPIExamples:
         dataframes = {"Data": data_train}
         visualize_ts_plotly(dataframes, columns=["temperature"])
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_quick_start_custom_styling(self, mock_go):
         """Test quick start custom styling example."""
         np.random.seed(42)
@@ -641,7 +641,7 @@ class TestAPIExamples:
             figsize=(1400, 600),
         )
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_api_example_visualize_ts_plotly(self, mock_go):
         """Test API example for visualize_ts_plotly."""
         np.random.seed(42)
@@ -656,7 +656,7 @@ class TestAPIExamples:
 
         visualize_ts_plotly({"Data": df})
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_api_example_visualize_ts_comparison(self, mock_go):
         """Test API example for visualize_ts_comparison."""
         np.random.seed(42)
@@ -681,7 +681,7 @@ class TestDataIntegrity:
     Safety-critical: Ensure data is not corrupted
     """
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_index_integrity(self, mock_go, sample_timeseries_single_column):
         """Test that datetime index is preserved."""
         original_index = sample_timeseries_single_column.index
@@ -692,7 +692,7 @@ class TestDataIntegrity:
         # Verify index unchanged
         assert sample_timeseries_single_column.index.equals(original_index)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_data_values_unchanged(self, mock_go, sample_timeseries_single_column):
         """Test that data values are not modified."""
         original_values = sample_timeseries_single_column.values.copy()
@@ -705,7 +705,7 @@ class TestDataIntegrity:
             sample_timeseries_single_column.values, original_values
         )
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_multiple_datasets_independent(self, mock_go, train_val_test_split):
         """Test that datasets remain independent."""
         original_train = train_val_test_split["Train"].copy()
@@ -727,7 +727,7 @@ class TestSafetyCritical:
     Ensures visualization is reliable for production use
     """
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_handles_missing_columns(self, mock_go, sample_timeseries_multicolumn):
         """Test handling of missing columns."""
         dataframes = {"Data": sample_timeseries_multicolumn}
@@ -736,21 +736,21 @@ class TestSafetyCritical:
         with pytest.raises(ValueError):
             visualize_ts_plotly(dataframes, columns=["nonexistent"])
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_error_on_empty_dataframes(self, mock_go):
         """Test that empty dataframes dict raises error."""
         # Should raise ValueError
         with pytest.raises(ValueError):
             visualize_ts_plotly({})
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_error_on_non_dict_input(self, mock_go, sample_timeseries_single_column):
         """Test that non-dict input raises TypeError."""
         # Should raise TypeError
         with pytest.raises(TypeError):
             visualize_ts_plotly(sample_timeseries_single_column)
 
-    @patch("spotforecast2.preprocessing.time_series_visualization.go")
+    @patch("spotforecast2.plots.time_series_visualization.go")
     def test_comparison_error_on_empty(self, mock_go):
         """Test that comparison also rejects empty dict."""
         with pytest.raises(ValueError):
@@ -785,7 +785,7 @@ class TestMatplotlibAPIExamples:
         """Test API example for plot_zoomed_timeseries."""
         import pandas as pd
         import matplotlib.pyplot as plt
-        from spotforecast2.preprocessing.time_series_visualization import (
+        from spotforecast2.plots.time_series_visualization import (
             plot_zoomed_timeseries,
         )
 
@@ -807,7 +807,7 @@ class TestMatplotlibAPIExamples:
         import pandas as pd
         import numpy as np
         import matplotlib.pyplot as plt
-        from spotforecast2.preprocessing.time_series_visualization import (
+        from spotforecast2.plots.time_series_visualization import (
             plot_seasonality,
         )
 

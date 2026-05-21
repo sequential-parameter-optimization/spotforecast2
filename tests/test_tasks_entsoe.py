@@ -10,7 +10,7 @@ import numpy as np
 import sys
 import pytest
 
-from spotforecast2.manager.plotter import make_plot
+from spotforecast2.plots.plotter import make_plot
 from spotforecast2.tasks.task_entsoe import (
     main,
     ForecasterRecursiveLGBM,
@@ -383,7 +383,7 @@ class TestSafetyCriticalEntsoe:
         }
         output_path = tmp_path / "prediction_plot.html"
 
-        with caplog.at_level(logging.INFO, logger="spotforecast2.manager.plotter"):
+        with caplog.at_level(logging.INFO, logger="spotforecast2.plots.plotter"):
             make_plot(prediction_package, output_path=output_path)
 
         log_text = "\n".join([record.getMessage() for record in caplog.records])
@@ -409,7 +409,7 @@ class TestSafetyCriticalEntsoe:
         }
 
         with patch(
-            "spotforecast2.manager.plotter.get_data_home", return_value=tmp_path
+            "spotforecast2.plots.plotter.get_data_home", return_value=tmp_path
         ):
             test_args = ["task_entsoe.py", "predict", "--plot"]
             with patch.object(sys, "argv", test_args):

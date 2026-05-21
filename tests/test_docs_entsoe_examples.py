@@ -328,9 +328,9 @@ class TestForecasterModelExamples:
         import pandas as pd
         import os
         from spotforecast2_safe.downloader.entsoe import download_new_data
-        from spotforecast2.manager.trainer_full import handle_training as handle_training_safe
+        from spotforecast2.trainer.trainer_full import handle_training as handle_training_safe
         from spotforecast2_safe.manager.predictor import get_model_prediction as get_model_prediction_safe
-        from spotforecast2.manager.plotter import make_plot
+        from spotforecast2.plots.plotter import make_plot
         from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
 
         now = pd.Timestamp.now(tz='UTC').floor('D')
@@ -358,18 +358,18 @@ class TestForecasterModelExamples:
         last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
 
         # Mock components to verify usage without side effects
-        with patch("spotforecast2.manager.trainer_full.handle_training") as mock_train:
+        with patch("spotforecast2.trainer.trainer_full.handle_training") as mock_train:
             with patch(
                 "spotforecast2_safe.manager.predictor.get_model_prediction"
             ) as mock_pred:
-                with patch("spotforecast2.manager.plotter.make_plot") as mock_plot:
+                with patch("spotforecast2.plots.plotter.make_plot") as mock_plot:
                     mock_pred.return_value = pd.DataFrame([1, 2, 3])
 
                     # Step 1-3
                     model_class = ForecasterRecursiveLGBM
                     model_name = "lgbm_advanced"
 
-                    from spotforecast2.manager.trainer_full import (
+                    from spotforecast2.trainer.trainer_full import (
                         handle_training as handle_training_safe,
                     )
 
@@ -391,7 +391,7 @@ class TestForecasterModelExamples:
 
                     # Step 5
                     if predictions is not None:
-                        from spotforecast2.manager.plotter import make_plot
+                        from spotforecast2.plots.plotter import make_plot
 
                         make_plot(predictions)
 

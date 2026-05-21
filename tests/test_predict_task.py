@@ -25,13 +25,13 @@ import pandas as pd
 import pytest
 from sklearn.linear_model import LinearRegression
 
-from spotforecast2.manager.multitask import (
+from spotforecast2.multitask import (
     BaseTask,
     LazyTask,
     MultiTask,
     PredictTask,
 )
-from spotforecast2.manager.multitask.predict import execute_predict
+from spotforecast2.multitask.predict import execute_predict
 from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
 _DEMO_CSV = str(get_package_data_home() / "demo10.csv")
@@ -86,17 +86,12 @@ class TestImports:
     """Verify PredictTask is importable from the expected locations."""
 
     def test_import_from_multitask(self):
-        from spotforecast2.manager.multitask import PredictTask  # noqa: F811
-
-        assert PredictTask is not None
-
-    def test_import_from_manager(self):
-        from spotforecast2.manager import PredictTask  # noqa: F811
+        from spotforecast2.multitask import PredictTask  # noqa: F811
 
         assert PredictTask is not None
 
     def test_import_execute_predict(self):
-        from spotforecast2.manager.multitask.predict import (
+        from spotforecast2.multitask.predict import (
             execute_predict,
         )  # noqa: F811
 

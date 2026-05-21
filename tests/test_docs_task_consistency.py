@@ -22,11 +22,10 @@ TASK_CLASSES = ["LazyTask", "OptunaTask", "SpotOptimTask", "PredictTask", "Clean
 TASK_KEYS = ["lazy", "optuna", "spotoptim", "predict", "clean"]
 ALL_EXPORTED_CLASSES = TASK_CLASSES + ["BaseTask", "MultiTask", "agg_predictor"]
 
-MULTITASK_PKG = "spotforecast2.manager.multitask"
-MANAGER_PKG = "spotforecast2.manager"
+MULTITASK_PKG = "spotforecast2.multitask"
 
 SRC_DIR = Path(__file__).resolve().parent.parent / "src" / "spotforecast2"
-MULTITASK_DIR = SRC_DIR / "manager" / "multitask"
+MULTITASK_DIR = SRC_DIR / "multitask"
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 QUARTO_YML = PROJECT_ROOT / "_quarto.yml"
 
@@ -44,22 +43,12 @@ class TestImportExportConsistency:
         mod = importlib.import_module(MULTITASK_PKG)
         assert hasattr(mod, cls_name), f"{cls_name} missing from {MULTITASK_PKG}"
 
-    @pytest.mark.parametrize("cls_name", TASK_CLASSES)
-    def test_task_importable_from_manager(self, cls_name):
-        mod = importlib.import_module(MANAGER_PKG)
-        assert hasattr(mod, cls_name), f"{cls_name} missing from {MANAGER_PKG}"
-
     @pytest.mark.parametrize("cls_name", ALL_EXPORTED_CLASSES)
     def test_all_exported_in_multitask(self, cls_name):
         mod = importlib.import_module(MULTITASK_PKG)
         assert (
             cls_name in mod.__all__
         ), f"{cls_name} missing from {MULTITASK_PKG}.__all__"
-
-    @pytest.mark.parametrize("cls_name", ALL_EXPORTED_CLASSES)
-    def test_all_exported_in_manager(self, cls_name):
-        mod = importlib.import_module(MANAGER_PKG)
-        assert cls_name in mod.__all__, f"{cls_name} missing from {MANAGER_PKG}.__all__"
 
 
 # ===========================================================================
@@ -71,7 +60,7 @@ class TestBaseTaskDocstring:
     """BaseTask docstring must reference all four task keys."""
 
     def _get_basetask_docstring(self):
-        from spotforecast2.manager.multitask.base import BaseTask
+        from spotforecast2.multitask.base import BaseTask
 
         return inspect.getdoc(BaseTask)
 
@@ -101,7 +90,7 @@ class TestBaseTaskRunMessage:
     """BaseTask.run() error message must list all concrete task classes."""
 
     def test_run_error_lists_all_tasks(self):
-        from spotforecast2.manager.multitask.base import BaseTask
+        from spotforecast2.multitask.base import BaseTask
 
         task = BaseTask.__new__(BaseTask)
         with pytest.raises(NotImplementedError) as exc_info:
@@ -123,7 +112,7 @@ class TestMultiTaskDispatcher:
 
     @pytest.mark.parametrize("task_key", TASK_KEYS)
     def test_dispatcher_accepts_task_key(self, task_key):
-        from spotforecast2.manager.multitask.multi import MultiTask
+        from spotforecast2.multitask.multi import MultiTask
 
         mt = MultiTask.__new__(MultiTask)
         mt.TASK = task_key
@@ -139,14 +128,14 @@ class TestMultiTaskDispatcher:
         ), f"MultiTask missing method '{dispatch[task_key]}'"
 
     def test_dispatcher_rejects_unknown_task(self):
-        from spotforecast2.manager.multitask.multi import MultiTask
+        from spotforecast2.multitask.multi import MultiTask
 
         mt = MultiTask(task="lazy", predict_size=24)
         with pytest.raises(ValueError, match="Unknown task"):
             mt.run(task="nonexistent", show=False)
 
     def test_multitask_docstring_lists_predict(self):
-        from spotforecast2.manager.multitask.multi import MultiTask
+        from spotforecast2.multitask.multi import MultiTask
 
         doc = inspect.getdoc(MultiTask)
         assert (
@@ -176,13 +165,13 @@ class TestModuleDocstrings:
         assert ":class:" not in doc, f":class: found in {MULTITASK_PKG} docstring"
 
     def test_base_module_docstring_mentions_predict(self):
-        from spotforecast2.manager.multitask import base
+        from spotforecast2.multitask import base
 
         doc = base.__doc__
         assert "PredictTask" in doc, "PredictTask not in base module docstring"
 
     def test_base_module_docstring_no_colon_class(self):
-        from spotforecast2.manager.multitask import base
+        from spotforecast2.multitask import base
 
         doc = base.__doc__
         assert ":class:" not in doc, ":class: found in base module docstring"
@@ -240,7 +229,7 @@ class TestQuartodocConfig:
 
     @pytest.mark.parametrize("cls_name", TASK_CLASSES + ["BaseTask", "MultiTask"])
     def test_quartodoc_section_entry(self, quarto_content, cls_name):
-        expected = f"manager.multitask.{cls_name}"
+        expected = f"multitask.{cls_name}"
         assert (
             expected in quarto_content
         ), f"'{expected}' not found in _quarto.yml quartodoc section"
@@ -256,7 +245,7 @@ class TestTaskHierarchy:
 
     @pytest.mark.parametrize("cls_name", TASK_CLASSES + ["MultiTask"])
     def test_inherits_from_base(self, cls_name):
-        from spotforecast2.manager.multitask.base import BaseTask
+        from spotforecast2.multitask.base import BaseTask
 
         mod = importlib.import_module(MULTITASK_PKG)
         cls = getattr(mod, cls_name)
@@ -296,7 +285,7 @@ class TestAutoSaveModels:
     """Training tasks must auto-save models by default."""
 
     def test_base_task_auto_save_default_true(self):
-        from spotforecast2.manager.multitask.base import BaseTask
+        from spotforecast2.multitask.base import BaseTask
 
         task = BaseTask(predict_size=24)
         assert (
@@ -304,7 +293,7 @@ class TestAutoSaveModels:
         ), "BaseTask.auto_save_models should default to True"
 
     def test_base_task_auto_save_can_be_disabled(self):
-        from spotforecast2.manager.multitask.base import BaseTask
+        from spotforecast2.multitask.base import BaseTask
 
         task = BaseTask(predict_size=24, auto_save_models=False)
         assert task.auto_save_models is False
@@ -326,7 +315,7 @@ class TestAutoSaveModels:
         assert task.auto_save_models is False
 
     def test_predict_task_auto_save_attribute(self):
-        from spotforecast2.manager.multitask import PredictTask
+        from spotforecast2.multitask import PredictTask
 
         task = PredictTask(predict_size=24)
         assert hasattr(
@@ -336,7 +325,7 @@ class TestAutoSaveModels:
     def test_execute_lazy_calls_save_models_when_enabled(self):
         from unittest.mock import MagicMock
 
-        from spotforecast2.manager.multitask.lazy import execute_lazy
+        from spotforecast2.multitask.lazy import execute_lazy
 
         task = MagicMock()
         task.auto_save_models = True
@@ -354,7 +343,7 @@ class TestAutoSaveModels:
     def test_execute_lazy_skips_save_models_when_disabled(self):
         from unittest.mock import MagicMock
 
-        from spotforecast2.manager.multitask.lazy import execute_lazy
+        from spotforecast2.multitask.lazy import execute_lazy
 
         task = MagicMock()
         task.auto_save_models = False
@@ -372,7 +361,7 @@ class TestAutoSaveModels:
     def test_execute_optuna_calls_save_models_when_enabled(self):
         from unittest.mock import MagicMock, patch
 
-        from spotforecast2.manager.multitask.optuna import execute_optuna
+        from spotforecast2.multitask.optuna import execute_optuna
 
         task = MagicMock()
         task.auto_save_models = True
@@ -392,7 +381,7 @@ class TestAutoSaveModels:
         mock_results.iloc.__getitem__.return_value = mock_row
 
         with patch(
-            "spotforecast2.manager.multitask.optuna.bayesian_search_forecaster",
+            "spotforecast2.multitask.optuna.bayesian_search_forecaster",
             return_value=(mock_results, None),
         ):
             execute_optuna(task, show=False)
@@ -402,7 +391,7 @@ class TestAutoSaveModels:
     def test_execute_spotoptim_calls_save_models_when_enabled(self):
         from unittest.mock import MagicMock, patch
 
-        from spotforecast2.manager.multitask.spotoptim import execute_spotoptim
+        from spotforecast2.multitask.spotoptim import execute_spotoptim
 
         task = MagicMock()
         task.auto_save_models = True
@@ -423,7 +412,7 @@ class TestAutoSaveModels:
         mock_results.iloc.__getitem__.return_value = mock_row
 
         with patch(
-            "spotforecast2.manager.multitask.spotoptim.spotoptim_search_forecaster",
+            "spotforecast2.multitask.spotoptim.spotoptim_search_forecaster",
             return_value=(mock_results, MagicMock()),
         ):
             execute_spotoptim(task, show=False)

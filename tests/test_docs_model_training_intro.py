@@ -1,6 +1,6 @@
 from unittest.mock import patch
 import pandas as pd
-from spotforecast2.manager.trainer_full import train_new_model
+from spotforecast2.trainer.trainer_full import train_new_model
 
 
 def test_model_training_intro_simple():
@@ -27,7 +27,7 @@ def test_model_training_intro_simple():
         {"load": [1, 2, 3]}, index=pd.date_range("2022-12-01", periods=3, freq="D")
     )
     with patch(
-        "spotforecast2.manager.trainer_full.fetch_data", return_value=dummy_data
+        "spotforecast2.trainer.trainer_full.fetch_data", return_value=dummy_data
     ):
         from spotforecast2_safe.data.fetch_data import get_package_data_home
 
@@ -71,7 +71,7 @@ def test_model_training_intro_advanced():
         {"load": [1, 2, 3]}, index=pd.date_range("2023-12-01", periods=3, freq="D")
     )
     with patch(
-        "spotforecast2.manager.trainer_full.fetch_data", return_value=dummy_data
+        "spotforecast2.trainer.trainer_full.fetch_data", return_value=dummy_data
     ):
         from spotforecast2_safe.data.fetch_data import get_package_data_home
 
@@ -314,7 +314,7 @@ class SimpleModel:
 def test_model_training_intro_handle_training_simple(tmp_path):
     """Validates the Simple handle_training Example from model_training_intro.qmd."""
     from spotforecast2_safe.data.fetch_data import get_package_data_home
-    from spotforecast2.manager.trainer_full import handle_training
+    from spotforecast2.trainer.trainer_full import handle_training
     from pathlib import Path
 
     demo_file = get_package_data_home() / "demo01.csv"
@@ -352,7 +352,7 @@ class AdvancedModel:
 def test_model_training_intro_handle_training_advanced(tmp_path):
     """Validates the Advanced Forced handle_training Example from model_training_intro.qmd."""
     from spotforecast2_safe.data.fetch_data import get_package_data_home
-    from spotforecast2.manager.trainer_full import handle_training
+    from spotforecast2.trainer.trainer_full import handle_training
     from pathlib import Path
 
     demo_file = get_package_data_home() / "demo01.csv"
