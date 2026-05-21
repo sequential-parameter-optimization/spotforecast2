@@ -309,6 +309,51 @@ class TestOnMissing:
 
         mock_load_models.assert_called_once_with(on_missing="ffill_bfill")
 
+    @patch(
+        "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
+    )
+    @patch(
+        "spotforecast2.models.forecaster_recursive_model_full.load_timeseries"
+    )
+    @patch(
+        "spotforecast2.models.forecaster_recursive_model_full.bayesian_search_forecaster"
+    )
+    def test_tune_fills_endpoint_nan_via_interpolator(
+        self, mock_bsf, mock_load_models, mock_load_safe, hourly_series
+    ):
+        """Endpoint NaN (no right anchor for linear interp) must not abort
+        tune(). The interpolator's strict default would raise; tune() uses
+        ffill_bfill so tail gaps from current-data lag are filled."""
+        series_with_tail_nan = hourly_series.copy()
+        series_with_tail_nan.iloc[-32:] = np.nan
+        mock_load_models.return_value = series_with_tail_nan
+        mock_load_safe.return_value = series_with_tail_nan
+
+        results_df = pd.DataFrame(
+            {
+                "lags": [np.array([1, 2, 3])],
+                "params": [{"n_estimators": 50}],
+                "mean_absolute_error": [1.0],
+                "name": ["lgbm"],
+            }
+        )
+        mock_bsf.return_value = (results_df, MagicMock())
+
+        model = ForecasterRecursiveLGBMFull(
+            iteration=0,
+            end_dev="2022-01-15 00:00+00:00",
+            save_model_to_file=False,
+        )
+        model.forecaster = ForecasterRecursive(
+            estimator=LGBMRegressor(n_jobs=-1, verbose=-1, random_state=42),
+            lags=3,
+        )
+
+        # Must not raise: regression guard against sf2-safe's
+        # LinearlyInterpolateTS strict-by-default contract.
+        model.tune()
+        assert model.is_tuned
+
     def test_import_lgbm(self):
         from spotforecast2.models import ForecasterRecursiveLGBMFull
 
