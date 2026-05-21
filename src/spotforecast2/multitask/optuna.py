@@ -10,7 +10,7 @@ hyperparameters, then re-fits with the best discovered parameters.
 from typing import Any, Callable, Dict, Optional
 
 from spotforecast2.multitask.base import BaseTask
-from spotforecast2.model_selection import bayesian_search_forecaster
+from spotforecast2.multitask.strategies import OptunaStrategy
 
 
 def _default_optuna_search_space(trial: Any) -> Dict[str, Any]:
@@ -38,6 +38,8 @@ def execute_optuna(
 ) -> Dict[str, Any]:
     """Execute Optuna Bayesian tuning for all targets on ``task``.
 
+    Thin wrapper around ``BaseTask._run_strategy`` using ``OptunaStrategy``.
+
     Args:
         task: A BaseTask (or subclass) instance with prepared data.
         show: If ``True``, display prediction figures.
@@ -50,71 +52,14 @@ def execute_optuna(
         When ``task.auto_save_models`` is ``True`` (the default), fitted
         models are saved to disk so PredictTask can load them directly.
     """
-    task._ensure_pipeline_ready()
-    if search_space is None:
-        search_space = _default_optuna_search_space
-    results: Dict[str, Dict[str, Any]] = {}
-
-    for target in task.config.targets:
-        task.logger.info(
-            "[task 3] Target '%s': Optuna tuning (%d trials)...",
-            target,
-            task.config.n_trials_optuna,
-        )
-        y_train, exog_train, exog_future = task._get_target_data(target)
-        forecaster = task.create_forecaster()
-
-        cv = task.cv_ts(y_train)
-
-        tuning_results, _ = bayesian_search_forecaster(
-            forecaster=forecaster,
-            y=y_train,
-            cv=cv,
-            search_space=search_space,
-            metric="mean_absolute_error",
-            exog=exog_train,
-            n_trials=task.config.n_trials_optuna,
-            random_state=task.config.random_state,
-            return_best=True,
-            verbose=task.verbose,
-            show_progress=task._show_progress,
-        )
-
-        best_params = tuning_results.iloc[0].params
-        best_lags = tuning_results.iloc[0].lags
-        task.logger.info("  Best params: %s", best_params)
-        task.logger.info("  Best lags: %s", best_lags)
-
-        task.save_tuning_results(
-            target=target,
-            task_name="optuna",
-            best_params=best_params,
-            best_lags=best_lags,
-        )
-
-        forecaster_tuned = task.create_forecaster()
-        forecaster_tuned.set_params(**best_params)
-        if hasattr(forecaster_tuned, "set_lags"):
-            forecaster_tuned.set_lags(best_lags)
-
-        results[target] = task._train_and_predict_target(
-            target=target,
-            task_name="task 3: Optuna Tuned",
-            forecaster=forecaster_tuned,
-            y_train=y_train,
-            exog_train=exog_train,
-            exog_future=exog_future,
-        )
-        if show:
-            task._show_prediction_figure(
-                results[target], target, "task 3: Optuna Tuned"
-            )
-
-    task.results["optuna"] = results
-    if getattr(task, "auto_save_models", True):
-        task.save_models(task_name="optuna")
-    agg_pkg = task._aggregate_and_show(results, "task 3: Optuna Tuned", show=show)
-    return agg_pkg
+    strategy = OptunaStrategy(search_space=search_space)
+    return task._run_strategy(
+        strategy,
+        task_name="task 3: Optuna Tuned",
+        results_key="optuna",
+        show=show,
+        log_prefix="[task 3] ",
+    )
 
 
 class OptunaTask(BaseTask):

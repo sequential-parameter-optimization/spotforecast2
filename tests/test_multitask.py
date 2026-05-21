@@ -479,6 +479,23 @@ class TestCreateForecaster:
         forecaster = _default().create_forecaster()
         assert isinstance(forecaster, ForecasterRecursive)
 
+    def test_forecaster_factory_override_respected(self):
+        """A ``forecaster_factory`` on the config replaces the default."""
+        sentinel = object()
+        captured: dict = {}
+
+        def stub_factory(config, *, weight_func=None, target=None):
+            captured["config"] = config
+            captured["target"] = target
+            return sentinel
+
+        task = _lazy()
+        task.config.forecaster_factory = stub_factory
+        result = task.create_forecaster(target="A")
+        assert result is sentinel
+        assert captured["config"] is task.config
+        assert captured["target"] == "A"
+
 
 # ---------------------------------------------------------------------------
 # MultiTask run() dispatcher

@@ -322,99 +322,104 @@ class TestAutoSaveModels:
             task, "auto_save_models"
         ), "PredictTask should have auto_save_models attribute via BaseTask"
 
-    def test_execute_lazy_calls_save_models_when_enabled(self):
+    def test_execute_lazy_delegates_to_run_strategy_with_lazy_key(self):
+        """``execute_lazy`` delegates to ``BaseTask._run_strategy`` with
+        ``results_key="lazy"`` so the auto-save call inside ``_run_strategy``
+        passes ``task_name="lazy"``.  See ``test_run_strategy_saves_models``
+        below for the save-behaviour contract itself.
+        """
         from unittest.mock import MagicMock
 
         from spotforecast2.multitask.lazy import execute_lazy
+        from spotforecast2.multitask.strategies import LazyStrategy
 
         task = MagicMock()
-        task.auto_save_models = True
-        task.config.targets = ["t1"]
-        task._get_target_data.return_value = (MagicMock(), MagicMock(), MagicMock())
-        task.create_forecaster.return_value = MagicMock()
-        task.load_tuning_results.return_value = None
-        task._train_and_predict_target.return_value = {"future_pred": MagicMock()}
-        task._aggregate_and_show.return_value = {}
-
         execute_lazy(task, show=False)
 
-        task.save_models.assert_called_once_with(task_name="lazy")
+        task._run_strategy.assert_called_once()
+        kwargs = task._run_strategy.call_args.kwargs
+        assert kwargs["results_key"] == "lazy"
+        assert kwargs["show"] is False
+        # First positional arg is the strategy instance.
+        strategy = task._run_strategy.call_args.args[0]
+        assert isinstance(strategy, LazyStrategy)
 
-    def test_execute_lazy_skips_save_models_when_disabled(self):
-        from unittest.mock import MagicMock
-
-        from spotforecast2.multitask.lazy import execute_lazy
-
-        task = MagicMock()
-        task.auto_save_models = False
-        task.config.targets = ["t1"]
-        task._get_target_data.return_value = (MagicMock(), MagicMock(), MagicMock())
-        task.create_forecaster.return_value = MagicMock()
-        task.load_tuning_results.return_value = None
-        task._train_and_predict_target.return_value = {"future_pred": MagicMock()}
-        task._aggregate_and_show.return_value = {}
-
-        execute_lazy(task, show=False)
-
-        task.save_models.assert_not_called()
-
-    def test_execute_optuna_calls_save_models_when_enabled(self):
+    def test_run_strategy_saves_models_when_auto_save_enabled(self):
+        """``_run_strategy`` calls ``save_models(task_name=results_key)`` when
+        ``auto_save_models`` is True, regardless of which strategy ran."""
         from unittest.mock import MagicMock, patch
+
+        from spotforecast2.multitask.base import BaseTask
+
+        task = BaseTask(predict_size=24, auto_save_models=True)
+        task.config.targets = ["t1"]
+        strategy = MagicMock(name="strategy")
+        strategy.prepare_forecaster.return_value = MagicMock(name="prepared")
+
+        with patch.object(task, "_ensure_pipeline_ready"), patch.object(
+            task, "_get_target_data", return_value=(MagicMock(), MagicMock(), MagicMock())
+        ), patch.object(task, "create_forecaster"), patch.object(
+            task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
+        ), patch.object(task, "save_models") as save_models, patch.object(
+            task, "_aggregate_and_show", return_value={}
+        ):
+            task._run_strategy(
+                strategy, task_name="t", results_key="lazy", show=False
+            )
+
+        save_models.assert_called_once_with(task_name="lazy")
+
+    def test_run_strategy_skips_save_models_when_disabled(self):
+        from unittest.mock import MagicMock, patch
+
+        from spotforecast2.multitask.base import BaseTask
+
+        task = BaseTask(predict_size=24, auto_save_models=False)
+        task.config.targets = ["t1"]
+        strategy = MagicMock(name="strategy")
+        strategy.prepare_forecaster.return_value = MagicMock(name="prepared")
+
+        with patch.object(task, "_ensure_pipeline_ready"), patch.object(
+            task, "_get_target_data", return_value=(MagicMock(), MagicMock(), MagicMock())
+        ), patch.object(task, "create_forecaster"), patch.object(
+            task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
+        ), patch.object(task, "save_models") as save_models, patch.object(
+            task, "_aggregate_and_show", return_value={}
+        ):
+            task._run_strategy(
+                strategy, task_name="t", results_key="lazy", show=False
+            )
+
+        save_models.assert_not_called()
+
+    def test_execute_optuna_delegates_to_run_strategy_with_optuna_key(self):
+        from unittest.mock import MagicMock
 
         from spotforecast2.multitask.optuna import execute_optuna
+        from spotforecast2.multitask.strategies import OptunaStrategy
 
         task = MagicMock()
-        task.auto_save_models = True
-        task.config.targets = ["t1"]
-        task.config.n_trials_optuna = 1
-        task.config.random_state = 42
-        task._get_target_data.return_value = (MagicMock(), MagicMock(), MagicMock())
-        task.create_forecaster.return_value = MagicMock()
-        task.cv_ts.return_value = MagicMock()
-        task._train_and_predict_target.return_value = {}
-        task._aggregate_and_show.return_value = {}
+        execute_optuna(task, show=False)
 
-        mock_results = MagicMock()
-        mock_row = MagicMock()
-        mock_row.params = {}
-        mock_row.lags = 24
-        mock_results.iloc.__getitem__.return_value = mock_row
+        task._run_strategy.assert_called_once()
+        kwargs = task._run_strategy.call_args.kwargs
+        assert kwargs["results_key"] == "optuna"
+        assert kwargs["show"] is False
+        strategy = task._run_strategy.call_args.args[0]
+        assert isinstance(strategy, OptunaStrategy)
 
-        with patch(
-            "spotforecast2.multitask.optuna.bayesian_search_forecaster",
-            return_value=(mock_results, None),
-        ):
-            execute_optuna(task, show=False)
-
-        task.save_models.assert_called_once_with(task_name="optuna")
-
-    def test_execute_spotoptim_calls_save_models_when_enabled(self):
-        from unittest.mock import MagicMock, patch
+    def test_execute_spotoptim_delegates_to_run_strategy_with_spotoptim_key(self):
+        from unittest.mock import MagicMock
 
         from spotforecast2.multitask.spotoptim import execute_spotoptim
+        from spotforecast2.multitask.strategies import SpotOptimStrategy
 
         task = MagicMock()
-        task.auto_save_models = True
-        task.config.targets = ["t1"]
-        task.config.n_trials_spotoptim = 1
-        task.config.n_initial_spotoptim = 1
-        task.config.random_state = 42
-        task._get_target_data.return_value = (MagicMock(), MagicMock(), MagicMock())
-        task.create_forecaster.return_value = MagicMock()
-        task.cv_ts.return_value = MagicMock()
-        task._train_and_predict_target.return_value = {}
-        task._aggregate_and_show.return_value = {}
+        execute_spotoptim(task, show=False)
 
-        mock_results = MagicMock()
-        mock_row = MagicMock()
-        mock_row.params = {}
-        mock_row.lags = 24
-        mock_results.iloc.__getitem__.return_value = mock_row
-
-        with patch(
-            "spotforecast2.multitask.spotoptim.spotoptim_search_forecaster",
-            return_value=(mock_results, MagicMock()),
-        ):
-            execute_spotoptim(task, show=False)
-
-        task.save_models.assert_called_once_with(task_name="spotoptim")
+        task._run_strategy.assert_called_once()
+        kwargs = task._run_strategy.call_args.kwargs
+        assert kwargs["results_key"] == "spotoptim"
+        assert kwargs["show"] is False
+        strategy = task._run_strategy.call_args.args[0]
+        assert isinstance(strategy, SpotOptimStrategy)

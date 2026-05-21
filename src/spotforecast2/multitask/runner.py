@@ -13,7 +13,15 @@ import pandas as pd
 from spotforecast2.multitask.multi import MultiTask
 from spotforecast2_safe.data.fetch_data import get_cache_home
 
-_DEFAULT_BOUNDS: List[Tuple[float, float]] = [
+# Demo-dataset presets for ``run()``.
+#
+# These lists are calibrated for the 11-target ENTSO-E demo dataset
+# (``demo10.csv``) used in the package examples and the Quarto docs.  They are
+# *not* general-purpose defaults: a different dataset needs its own bounds and
+# aggregation weights, supplied explicitly to ``run(bounds=..., agg_weights=...)``
+# or carried by a config preset.  Kept here (not on ``ConfigMulti``) so that
+# direct ``ConfigMulti()`` users don't silently inherit demo10-specific values.
+_DEMO10_BOUNDS: List[Tuple[float, float]] = [
     (-2500, 4500),
     (-10, 3000),
     (0, 230),
@@ -27,7 +35,7 @@ _DEFAULT_BOUNDS: List[Tuple[float, float]] = [
     (0, 300),
 ]
 
-_DEFAULT_AGG_WEIGHTS: List[float] = [
+_DEMO10_AGG_WEIGHTS: List[float] = [
     1.0,
     1.0,
     -1.0,
@@ -216,9 +224,9 @@ def run(
         mt.run()
         return pd.DataFrame()
 
-    effective_bounds = bounds if bounds is not None else _DEFAULT_BOUNDS
+    effective_bounds = bounds if bounds is not None else _DEMO10_BOUNDS
     effective_agg_weights = (
-        agg_weights if agg_weights is not None else _DEFAULT_AGG_WEIGHTS
+        agg_weights if agg_weights is not None else _DEMO10_AGG_WEIGHTS
     )
 
     mt = MultiTask(
