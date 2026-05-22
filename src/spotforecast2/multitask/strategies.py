@@ -105,8 +105,16 @@ class LazyStrategy:
 class DefaultsStrategy:
     """Approach 2 — Train with defaults, no tuning, no cached params.
 
-    Stub: raises ``NotImplementedError``.  Will be wired in during the
-    ENTSO-E integration (ADR-001 §5).
+    The simplest possible training strategy: leave the forecaster at the
+    parameters produced by the factory and hand it back to
+    ``_train_and_predict_target`` for the explicit fit.  Use this when the
+    caller wants a deterministic baseline that does *not* benefit from any
+    cached tuning results — useful for ENTSO-E "Approach 2: Training without
+    Tuning" and for regression benchmarking.
+
+    Functionally equivalent to ``LazyStrategy(use_tuned_params=False)``;
+    kept as a distinct class so the ``task="defaults"`` routing reads
+    intent at the call site (no implicit cache lookup).
     """
 
     name = "defaults"
@@ -119,10 +127,8 @@ class DefaultsStrategy:
         y_train: pd.Series,
         exog_train: Optional[pd.DataFrame] = None,
     ) -> Any:
-        raise NotImplementedError(
-            "DefaultsStrategy training will be wired in the ENTSO-E "
-            "integration; see ADR-001 §5."
-        )
+        del task, target, y_train, exog_train  # no preparation needed
+        return forecaster
 
 
 class OptunaStrategy:

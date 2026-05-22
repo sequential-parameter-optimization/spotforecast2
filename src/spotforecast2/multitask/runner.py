@@ -49,7 +49,7 @@ _DEMO10_AGG_WEIGHTS: List[float] = [
     1.0,
 ]
 
-_PIPELINE_TASKS = frozenset({"lazy", "optuna", "spotoptim", "predict"})
+_PIPELINE_TASKS = frozenset({"lazy", "defaults", "optuna", "spotoptim", "predict"})
 _ALL_TASKS = _PIPELINE_TASKS | {"clean"}
 
 
@@ -87,9 +87,11 @@ def run(
         dataframe: Input time-series data.  Must contain a datetime
             column matching the configured ``index_name`` and at least one
             numeric target column. Optional for the ``"clean"`` task, but required for all other tasks. Defaults to ``None``.
-        task: Pipeline mode — one of ``"lazy"``, ``"optuna"``,
-            ``"spotoptim"``, ``"predict"``, or ``"clean"``.
-            Defaults to ``"lazy"``.
+        task: Pipeline mode — one of ``"lazy"``, ``"defaults"``,
+            ``"optuna"``, ``"spotoptim"``, ``"predict"``, or ``"clean"``.
+            ``"defaults"`` fits with the factory defaults and never reads
+            the tuning-result cache; ``"lazy"`` applies cached tuning
+            results when available.  Defaults to ``"lazy"``.
         cache_home: Optional path to the cache directory.  Defaults to
             ``None``, which uses the package default cache location that
             is defined via spotforecast2_safe's `get_cache_home()`.

@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Default hyperparameter search spaces for the multitask tuning strategies.
+"""Default hyperparameter search spaces and per-task constants.
 
 A neutral module imported by both :mod:`spotforecast2.multitask.strategies`
 and the user-facing shim modules :mod:`spotforecast2.multitask.optuna` /
@@ -9,9 +9,33 @@ and the user-facing shim modules :mod:`spotforecast2.multitask.optuna` /
 no shim has to import the strategy module back, and no strategy class has
 to import a shim — eliminating the cyclic-import warning CodeQL raised
 against the lazy-import workaround.
+
+ADR-002 Step 3 additionally relocated ``LAGS_CONSIDER`` and
+``WINDOW_FEATURES`` (the legacy ENTSO-E trainer constants) here so that
+:mod:`spotforecast2.trainer.trainer_full` can be removed in Step 5 without
+breaking anything that still imports those names.
 """
 
-from typing import Any, Dict
+from typing import Any, Dict, List
+
+from spotforecast2_safe.preprocessing import RollingFeatures
+
+
+#: Candidate lag values used by the default Optuna / SpotOptim search
+#: spaces and historically by ``spotforecast2.trainer.trainer_full``.
+LAGS_CONSIDER: List[int] = list(range(1, 24))
+
+#: Default rolling-window features matching the original chag25a
+#: configuration.  Each entry is a separate ``RollingFeatures`` instance to
+#: avoid duplicate-name collisions in spotforecast2-safe's
+#: ``initialize_window_features``.
+WINDOW_FEATURES = [
+    RollingFeatures(stats="mean", window_sizes=24),
+    RollingFeatures(stats="mean", window_sizes=24 * 7),
+    RollingFeatures(stats="mean", window_sizes=24 * 30),
+    RollingFeatures(stats="min", window_sizes=24),
+    RollingFeatures(stats="max", window_sizes=24),
+]
 
 
 def _default_optuna_search_space(trial: Any) -> Dict[str, Any]:

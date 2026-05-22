@@ -330,4 +330,11 @@ class TestConstants:
         assert len(_DEMO10_AGG_WEIGHTS) == 11
 
     def test_all_tasks_contains_expected(self):
-        assert _ALL_TASKS == {"lazy", "optuna", "spotoptim", "predict", "clean"}
+        assert _ALL_TASKS == {
+            "lazy",
+            "defaults",
+            "optuna",
+            "spotoptim",
+            "predict",
+            "clean",
+        }
