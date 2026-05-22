@@ -7,7 +7,10 @@ This package provides a class hierarchy for multi-target time-series
 forecasting pipelines:
 
 - BaseTask — shared data-preparation and helper logic.
-- LazyTask — lazy fitting with default parameters.
+- LazyTask — lazy fitting with default parameters; applies cached tuning
+  results when available.
+- DefaultsTask — fitting with default parameters; never reads the
+  tuning-result cache.  Deterministic baseline.
 - OptunaTask — Optuna Bayesian hyperparameter tuning.
 - SpotOptimTask — SpotOptim surrogate-model tuning.
 - PredictTask — predict-only using saved models.
@@ -22,6 +25,7 @@ All classes are importable directly from ``spotforecast2.multitask``.
 
 from spotforecast2.multitask.base import BaseTask, agg_predictor
 from spotforecast2.multitask.clean import CleanTask
+from spotforecast2.multitask.defaults import DefaultsTask
 from spotforecast2.multitask.lazy import LazyTask
 from spotforecast2.multitask.optuna import OptunaTask
 from spotforecast2.multitask.predict import PredictTask
@@ -32,6 +36,7 @@ from spotforecast2.multitask.runner import run
 __all__ = [
     "BaseTask",
     "CleanTask",
+    "DefaultsTask",
     "LazyTask",
     "MultiTask",
     "OptunaTask",

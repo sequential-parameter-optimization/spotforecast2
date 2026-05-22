@@ -16,6 +16,7 @@ import pandas as pd
 
 from spotforecast2.multitask.base import BaseTask
 from spotforecast2.multitask.clean import execute_clean
+from spotforecast2.multitask.defaults import execute_defaults
 from spotforecast2.multitask.lazy import execute_lazy
 from spotforecast2.multitask.optuna import (
     OptunaTask,
@@ -171,6 +172,22 @@ class MultiTask(BaseTask):
         """
         return execute_lazy(self, show=show)
 
+    def run_task_defaults(self, show: bool = True) -> Dict[str, Any]:
+        """Defaults fitting — no tuning, no cached params.
+
+        Distinct from ``run_task_lazy`` only in that it never consults the
+        tuning-result cache.  Use this for deterministic baselines and for
+        ENTSO-E "Approach 2: Training without Tuning".
+
+        Args:
+            show: If ``True``, display prediction figures.
+
+        Returns:
+            Aggregated prediction package. Per-target results in
+            ``self.results["defaults"]``.
+        """
+        return execute_defaults(self, show=show)
+
     def run_task_optuna(
         self,
         search_space: Optional[Callable] = None,
@@ -283,7 +300,7 @@ class MultiTask(BaseTask):
             on ``self.results[<task_key>]``.
 
         Raises:
-            ValueError: If ``task`` is not one of ``"lazy"``,
+            ValueError: If ``task`` is not one of ``"lazy"``, ``"defaults"``,
                 ``"optuna"``, ``"spotoptim"``, ``"predict"``, ``"clean"``.
             RuntimeError: If method `prepare_data` has not been called
                 (for training and prediction tasks).
@@ -291,6 +308,7 @@ class MultiTask(BaseTask):
         task = task or self.TASK
         dispatch = {
             "lazy": self.run_task_lazy,
+            "defaults": self.run_task_defaults,
             "optuna": self.run_task_optuna,
             "spotoptim": self.run_task_spotoptim,
             "predict": self.run_task_predict,

@@ -19,24 +19,17 @@ from spotforecast2_safe.data.fetch_data import (
     get_data_home,
 )
 from spotforecast2_safe.manager.trainer import get_last_model
-from spotforecast2_safe.preprocessing import RollingFeatures
+from spotforecast2_safe.preprocessing import RollingFeatures  # noqa: F401  (kept for back-compat re-exports)
+
+from spotforecast2.multitask.search_spaces import (  # noqa: F401  (back-compat re-exports)
+    LAGS_CONSIDER,
+    WINDOW_FEATURES,
+)
+
+# Back-compat alias: the legacy public name is ``window_features`` (lower).
+window_features = WINDOW_FEATURES
 
 logger = logging.getLogger(__name__)
-
-
-#: Candidate lag values for hyperparameter search.
-LAGS_CONSIDER: list[int] = list(range(1, 24))
-
-#: Default rolling window features matching the original chag25a configuration.
-#: Each entry is a separate RollingFeatures instance to avoid duplicate-name
-#: collisions in spotforecast2-safe's ``initialize_window_features``.
-window_features = [
-    RollingFeatures(stats="mean", window_sizes=24),
-    RollingFeatures(stats="mean", window_sizes=24 * 7),
-    RollingFeatures(stats="mean", window_sizes=24 * 30),
-    RollingFeatures(stats="min", window_sizes=24),
-    RollingFeatures(stats="max", window_sizes=24),
-]
 
 
 def search_space_lgbm(trial: Any) -> dict:

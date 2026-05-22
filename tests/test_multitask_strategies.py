@@ -10,8 +10,6 @@ to anyone exploring the code), and that each strategy carries the expected
 ``name`` attribute used by the future dispatcher in Step 5.
 """
 
-import pytest
-
 from spotforecast2.multitask.strategies import (
     DefaultsStrategy,
     LazyStrategy,
@@ -43,14 +41,16 @@ def test_spotoptim_strategy_instantiates():
     assert strategy.search_space is None
 
 
-def test_defaults_strategy_raises_not_implemented():
-    """The Defaults stub must raise NotImplementedError with the ADR pointer."""
+def test_defaults_strategy_returns_forecaster_unchanged():
+    """``DefaultsStrategy.prepare_forecaster`` is a no-op pre-fit step that
+    returns the forecaster unchanged (ADR-002 Step 2 implemented the stub)."""
+    sentinel = object()
     strategy = DefaultsStrategy()
-    with pytest.raises(NotImplementedError, match=r"ADR-001"):
-        strategy.prepare_forecaster(
-            task=None,
-            target="any",
-            forecaster=None,
-            y_train=None,
-            exog_train=None,
-        )
+    result = strategy.prepare_forecaster(
+        task=None,
+        target="any",
+        forecaster=sentinel,
+        y_train=None,
+        exog_train=None,
+    )
+    assert result is sentinel
