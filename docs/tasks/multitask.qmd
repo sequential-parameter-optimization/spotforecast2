@@ -125,6 +125,7 @@ Das Beispiel folgt dem Pfad `task="lazy"` (siehe Abschnitt *Lazy* oben).
 ### Phase 1 — `prepare_data`
 
 - `spotforecast2.multitask.base.BaseTask.prepare_data`
+  - `config.data_loader(config)` (falls weder DataFrame noch `demo_data` übergeben wurde — Hook für ENTSO-E-artige Daten­akquisition)
   - `spotforecast2_safe.preprocessing.curate_data.reset_index`
   - `spotforecast2_safe.preprocessing.curate_data.agg_and_resample_data`
   - `spotforecast2_safe.preprocessing.curate_data.basic_ts_checks`
@@ -159,30 +160,50 @@ Das Beispiel folgt dem Pfad `task="lazy"` (siehe Abschnitt *Lazy* oben).
   - `spotforecast2_safe.manager.features.select_exogenous_features`
   - `spotforecast2_safe.manager.features.merge_data_and_covariates`
 
-### Phase 5 — `run` (Dispatch auf `LazyTask`)
+### Phase 5 — `run` (Dispatch auf `LazyTask` via `TrainingStrategy`)
+
+Seit ADR-001 (Refactor 05-2026) läuft die eigentliche Trainings- und
+Vorhersageschleife zentral in `BaseTask._run_strategy`.  Die `execute_*`-Funktionen sind
+zu dünnen Wrappern geschrumpft, die nur noch die passende Strategie wählen.
 
 - `spotforecast2.multitask.multi.MultiTask.run`
   - `spotforecast2.multitask.lazy.LazyTask.run`
     - `spotforecast2.multitask.lazy.execute_lazy`
-      - `spotforecast2.multitask.base.BaseTask._ensure_pipeline_ready`
-      - Für jedes Target in `config.targets`:
-        - `spotforecast2.multitask.base.BaseTask._get_target_data`
-          - `spotforecast2_safe.manager.features.get_target_data`
-        - `spotforecast2.multitask.base.BaseTask.create_forecaster`
-          - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.__init__`
-          - `spotforecast2_safe.preprocessing.RollingFeatures`
-        - `spotforecast2.multitask.base.BaseTask.load_tuning_results` (falls `use_tuned_params=True`)
-        - `spotforecast2.multitask.base.BaseTask._train_and_predict_target`
-          - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.fit`
-          - `spotforecast2_safe.manager.predictor.build_prediction_package`
-            - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.create_train_X_y`
-            - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.predict`
-        - `spotforecast2.multitask.base.BaseTask._show_prediction_figure` (falls `show=True`)
-          - `spotforecast2.plots.plotter.PredictionFigure.__init__`
-          - `spotforecast2.plots.plotter.PredictionFigure.make_plot`
-      - `spotforecast2.multitask.base.BaseTask.save_models` (falls `auto_save_models=True`)
-      - `spotforecast2.multitask.base.BaseTask._aggregate_and_show`
-        - `spotforecast2.multitask.base.agg_predictor`
-          - `spotforecast2_safe.processing.agg_predict.agg_predict`
-        - `spotforecast2.plots.plotter.PredictionFigure.__init__` (falls `show=True`)
-        - `spotforecast2.plots.plotter.PredictionFigure.make_plot` (falls `show=True`)
+      - `spotforecast2.multitask.strategies.LazyStrategy.__init__`
+      - `spotforecast2.multitask.base.BaseTask._run_strategy`
+        - `spotforecast2.multitask.base.BaseTask._ensure_pipeline_ready`
+        - Für jedes Target in `config.targets`:
+          - `spotforecast2.multitask.base.BaseTask._get_target_data`
+            - `spotforecast2_safe.manager.features.get_target_data`
+          - `spotforecast2.multitask.base.BaseTask.create_forecaster`
+            - `config.forecaster_factory(config, weight_func=..., target=...)` (Hook)
+              oder Default:
+            - `spotforecast2.multitask.factories.default_lgbm_forecaster_factory`
+              - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.__init__`
+              - `spotforecast2_safe.preprocessing.RollingFeatures`
+          - `spotforecast2.multitask.strategies.LazyStrategy.prepare_forecaster`
+            - `spotforecast2.multitask.base.BaseTask.load_tuning_results`
+              (falls `use_tuned_params=True` und Cache vorhanden)
+          - `spotforecast2.multitask.base.BaseTask._train_and_predict_target`
+            - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.fit`
+            - `spotforecast2_safe.manager.predictor.build_prediction_package`
+              - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.create_train_X_y`
+              - `spotforecast2_safe.forecaster.recursive.ForecasterRecursive.predict`
+          - `spotforecast2.multitask.base.BaseTask._show_prediction_figure` (falls `show=True`)
+            - `spotforecast2.plots.plotter.make_plot` (`save=False`)
+        - `spotforecast2.multitask.base.BaseTask.save_models` (falls `auto_save_models=True`)
+        - `spotforecast2.multitask.base.BaseTask._aggregate_and_show`
+          - Single-Target-Schnellpfad: das einzige Per-Target-Paket wird unverändert
+            zurückgegeben (kein zusätzlicher Aggregations-Plot).
+          - Multi-Target-Pfad:
+            - `spotforecast2.multitask.base.agg_predictor`
+              - `spotforecast2_safe.processing.agg_predict.agg_predict`
+            - `spotforecast2.plots.plotter.make_plot` (`save=False`, falls `show=True`)
+
+Für `task="optuna"` bzw. `task="spotoptim"` ändert sich nur die Strategie:
+`OptunaStrategy.prepare_forecaster` ruft `bayesian_search_forecaster` mit der
+Default-Suchraum-Funktion aus `spotforecast2.multitask.search_spaces`,
+`SpotOptimStrategy.prepare_forecaster` analog `spotoptim_search_forecaster`.
+Beide speichern die gefundenen besten Parameter über
+`BaseTask.save_tuning_results` und liefern einen frisch instanzierten,
+parametrisierten Forecaster an `_train_and_predict_target` zurück.
