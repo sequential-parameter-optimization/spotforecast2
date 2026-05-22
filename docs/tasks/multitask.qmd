@@ -30,7 +30,6 @@ N_TRIALS_OPTUNA = 5
 ```
 
 Importieren der `run`-Funktion aus dem  `spotforecast2` Paket (über Pypi oder Github installiert).
-`Version >= 1.0.6` erforderlich.
 
 ```{python}
 from spotforecast2.multitask.runner import run
@@ -66,6 +65,22 @@ forecast = run(dataframe=df,
             project_name=PROJECT_NAME, train_days=TRAIN_DAYS,
             val_days=VAL_DAYS,
             show=True)
+print(forecast)
+```
+
+
+### Defaults
+
+Model-Fit mit den Werks-Default-Parametern des Forecaster-Factories.
+Im Gegensatz zu `lazy` werden zwischengespeicherte Tuning-Ergebnisse
+*nicht* gelesen — der deterministische Baseline-Pfad (entspricht
+"Approach 2: Training without Tuning" in der ENTSO-E-Publikation).
+
+```{python}
+forecast = run(dataframe=df,
+            task="defaults", cache_home=CACHE_HOME,
+            project_name=PROJECT_NAME, train_days=TRAIN_DAYS,
+            val_days=VAL_DAYS)
 print(forecast)
 ```
 
@@ -207,3 +222,8 @@ Default-Suchraum-Funktion aus `spotforecast2.multitask.search_spaces`,
 Beide speichern die gefundenen besten Parameter über
 `BaseTask.save_tuning_results` und liefern einen frisch instanzierten,
 parametrisierten Forecaster an `_train_and_predict_target` zurück.
+
+Für `task="defaults"` ist `DefaultsStrategy.prepare_forecaster` ein No-Op:
+der vom Factory erzeugte Forecaster wird unverändert an
+`_train_and_predict_target` weitergereicht, ohne den Tuning-Cache zu
+konsultieren.
