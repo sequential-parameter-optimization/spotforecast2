@@ -2,12 +2,10 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 """Tests for ``LAGS_CONSIDER`` and ``WINDOW_FEATURES`` in
-``multitask/search_spaces.py`` (ADR-002 Step 3).
+``multitask/search_spaces.py``.
 
-This is the canonical home for both constants.  ``trainer_full.py`` still
-imports ``LAGS_CONSIDER`` (a real internal use inside its search-space
-helpers) but is being removed entirely in Step 5; no other re-export
-paths are kept alive.
+Single canonical home (ADR-002 Step 5 deleted the legacy
+``spotforecast2.trainer.trainer_full`` module).
 """
 
 from spotforecast2_safe.preprocessing import RollingFeatures

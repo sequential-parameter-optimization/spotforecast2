@@ -15,7 +15,6 @@ from . import models
 from . import multitask
 from . import plots
 from . import stats
-from . import trainer
 
 __all__ = [
     "model_selection",
@@ -23,7 +22,6 @@ __all__ = [
     "multitask",
     "plots",
     "stats",
-    "trainer",
     "warnings",
 ]
 
