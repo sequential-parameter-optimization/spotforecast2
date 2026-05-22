@@ -710,6 +710,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#spotforecast2.multitask.MultiTask.run" id="toc-spotforecast2.multitask.MultiTask.run" class="nav-link" data-scroll-target="#spotforecast2.multitask.MultiTask.run">run</a></li>
   <li><a href="#spotforecast2.multitask.MultiTask.run_task_clean" id="toc-spotforecast2.multitask.MultiTask.run_task_clean" class="nav-link" data-scroll-target="#spotforecast2.multitask.MultiTask.run_task_clean">run_task_clean</a></li>
+  <li><a href="#spotforecast2.multitask.MultiTask.run_task_defaults" id="toc-spotforecast2.multitask.MultiTask.run_task_defaults" class="nav-link" data-scroll-target="#spotforecast2.multitask.MultiTask.run_task_defaults">run_task_defaults</a></li>
   <li><a href="#spotforecast2.multitask.MultiTask.run_task_lazy" id="toc-spotforecast2.multitask.MultiTask.run_task_lazy" class="nav-link" data-scroll-target="#spotforecast2.multitask.MultiTask.run_task_lazy">run_task_lazy</a></li>
   <li><a href="#spotforecast2.multitask.MultiTask.run_task_optuna" id="toc-spotforecast2.multitask.MultiTask.run_task_optuna" class="nav-link" data-scroll-target="#spotforecast2.multitask.MultiTask.run_task_optuna">run_task_optuna</a></li>
   <li><a href="#spotforecast2.multitask.MultiTask.run_task_predict" id="toc-spotforecast2.multitask.MultiTask.run_task_predict" class="nav-link" data-scroll-target="#spotforecast2.multitask.MultiTask.run_task_predict">run_task_predict</a></li>
@@ -921,7 +922,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="325d8ec9" class="cell" data-execution_count="1">
+<div id="93c4d7f3" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> MultiTask</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
@@ -957,18 +958,22 @@ Task: lazy</code></pre>
 <td>Remove all cached data from the pipeline cache directory.</td>
 </tr>
 <tr class="odd">
+<td><a href="#spotforecast2.multitask.MultiTask.run_task_defaults">run_task_defaults</a></td>
+<td>Defaults fitting — no tuning, no cached params.</td>
+</tr>
+<tr class="even">
 <td><a href="#spotforecast2.multitask.MultiTask.run_task_lazy">run_task_lazy</a></td>
 <td>Lazy Fitting with default LightGBM parameters.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#spotforecast2.multitask.MultiTask.run_task_optuna">run_task_optuna</a></td>
 <td>Optuna Bayesian hyperparameter tuning.</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><a href="#spotforecast2.multitask.MultiTask.run_task_predict">run_task_predict</a></td>
 <td>Predict-only using previously saved models.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#spotforecast2.multitask.MultiTask.run_task_spotoptim">run_task_spotoptim</a></td>
 <td>SpotOptim surrogate-model Bayesian tuning.</td>
 </tr>
@@ -1043,7 +1048,7 @@ Task: lazy</code></pre>
 <tr class="odd">
 <td></td>
 <td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
-<td>If <code>task</code> is not one of <code>"lazy"</code>, <code>"optuna"</code>, <code>"spotoptim"</code>, <code>"predict"</code>, <code>"clean"</code>.</td>
+<td>If <code>task</code> is not one of <code>"lazy"</code>, <code>"defaults"</code>, <code>"optuna"</code>, <code>"spotoptim"</code>, <code>"predict"</code>, <code>"clean"</code>.</td>
 </tr>
 <tr class="even">
 <td></td>
@@ -1131,10 +1136,11 @@ Task: lazy</code></pre>
 </table>
 </section>
 </section>
-<section id="spotforecast2.multitask.MultiTask.run_task_lazy" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_lazy">run_task_lazy</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_lazy(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Lazy Fitting with default LightGBM parameters.</p>
+<section id="spotforecast2.multitask.MultiTask.run_task_defaults" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_defaults">run_task_defaults</h3>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_defaults(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Defaults fitting — no tuning, no cached params.</p>
+<p>Distinct from <code>run_task_lazy</code> only in that it never consults the tuning-result cache. Use this for deterministic baselines and for ENTSO-E “Approach 2: Training without Tuning”.</p>
 <section id="parameters-3" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-3">Parameters</h4>
 <table class="caption-top table">
@@ -1175,20 +1181,16 @@ Task: lazy</code></pre>
 <tr class="even">
 <td></td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td><code>self.results["lazy"]</code>.</td>
+<td><code>self.results["defaults"]</code>.</td>
 </tr>
 </tbody>
 </table>
 </section>
 </section>
-<section id="spotforecast2.multitask.MultiTask.run_task_optuna" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_optuna">run_task_optuna</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_optuna(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    search_space<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Optuna Bayesian hyperparameter tuning.</p>
+<section id="spotforecast2.multitask.MultiTask.run_task_lazy" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_lazy">run_task_lazy</h3>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_lazy(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Lazy Fitting with default LightGBM parameters.</p>
 <section id="parameters-4" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
 <table class="caption-top table">
@@ -1202,12 +1204,6 @@ Task: lazy</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td>search_space</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>]</td>
-<td>Callable <code>(trial) -&gt; dict</code>.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
 <td>show</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>If <code>True</code>, display prediction figures.</td>
@@ -1235,6 +1231,66 @@ Task: lazy</code></pre>
 <tr class="even">
 <td></td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
+<td><code>self.results["lazy"]</code>.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
+<section id="spotforecast2.multitask.MultiTask.run_task_optuna" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_optuna">run_task_optuna</h3>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_optuna(</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    search_space<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Optuna Bayesian hyperparameter tuning.</p>
+<section id="parameters-5" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>search_space</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>]</td>
+<td>Callable <code>(trial) -&gt; dict</code>.</td>
+<td><code>None</code></td>
+</tr>
+<tr class="even">
+<td>show</td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
+<td>If <code>True</code>, display prediction figures.</td>
+<td><code>True</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-4" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-4">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
+<td>Aggregated prediction package. Per-target results in</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
 <td><code>self.results["optuna"]</code>.</td>
 </tr>
 </tbody>
@@ -1243,15 +1299,15 @@ Task: lazy</code></pre>
 </section>
 <section id="spotforecast2.multitask.MultiTask.run_task_predict" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_predict">run_task_predict</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_predict(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    task_name<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    max_age_days<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_predict(</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    task_name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    max_age_days<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Predict-only using previously saved models.</p>
 <p>Loads fitted models from the cache directory and produces predictions without any training. Raises <code>RuntimeError</code> if no saved models are found.</p>
-<section id="parameters-5" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
+<section id="parameters-6" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1283,8 +1339,8 @@ Task: lazy</code></pre>
 </tbody>
 </table>
 </section>
-<section id="returns-4" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-4">Returns</h4>
+<section id="returns-5" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-5">Returns</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1329,10 +1385,10 @@ Task: lazy</code></pre>
 </section>
 <section id="spotforecast2.multitask.MultiTask.run_task_spotoptim" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_spotoptim">run_task_spotoptim</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_spotoptim(search_space<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_spotoptim(search_space<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>SpotOptim surrogate-model Bayesian tuning.</p>
-<section id="parameters-6" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-6">Parameters</h4>
+<section id="parameters-7" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -1358,8 +1414,8 @@ Task: lazy</code></pre>
 </tbody>
 </table>
 </section>
-<section id="returns-5" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-5">Returns</h4>
+<section id="returns-6" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-6">Returns</h4>
 <table class="caption-top table">
 <thead>
 <tr class="header">
