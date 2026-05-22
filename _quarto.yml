@@ -150,8 +150,15 @@ website:
         contents:
           - text: "Overview"
             file: docs/tasks/tasks.qmd
-          - text: "ENTSO-E Guide"
+          - text: "Multitask Tutorial"
+            file: docs/tasks/multitask.qmd
+          - text: "ENTSO-E CLI"
             file: docs/tasks/entsoe.qmd
+
+      - section: "Multitask"
+        contents:
+          - text: "ENTSO-E via run()"
+            file: docs/multitask/entsoe.qmd
 
   page-footer:
     center: |
