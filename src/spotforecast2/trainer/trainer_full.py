@@ -19,15 +19,8 @@ from spotforecast2_safe.data.fetch_data import (
     get_data_home,
 )
 from spotforecast2_safe.manager.trainer import get_last_model
-from spotforecast2_safe.preprocessing import RollingFeatures  # noqa: F401  (kept for back-compat re-exports)
 
-from spotforecast2.multitask.search_spaces import (  # noqa: F401  (back-compat re-exports)
-    LAGS_CONSIDER,
-    WINDOW_FEATURES,
-)
-
-# Back-compat alias: the legacy public name is ``window_features`` (lower).
-window_features = WINDOW_FEATURES
+from spotforecast2.multitask.search_spaces import LAGS_CONSIDER
 
 logger = logging.getLogger(__name__)
 
