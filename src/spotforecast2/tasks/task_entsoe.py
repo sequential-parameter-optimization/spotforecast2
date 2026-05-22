@@ -1,76 +1,148 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""
-Unified CLI task script for ENTSO-E data downloading, model training, and prediction.
+"""Unified CLI for the ENTSO-E single-target forecasting pipeline.
 
-This script acts as the main entry point for the forecasting pipeline, integrating
-downloading, training, and plotting functionalities.
+Thin argparse wrapper over `spotforecast2.multitask.runner.run` with
+`ConfigEntsoe` plugged in via the `data_loader` and `forecaster_factory`
+hooks introduced in ADR-001.  The CLI exposes four subcommands:
 
-Usage:
-    uv run python src/spotforecast2/tasks/task_entsoe.py download --api-key <KEY>
-    uv run python src/spotforecast2/tasks/task_entsoe.py train lgbm
-    uv run python src/spotforecast2/tasks/task_entsoe.py predict --plot
+- ``download`` — fetch raw data from the ENTSO-E Transparency Platform.
+- ``merge`` — concatenate raw CSVs into the interim merged file.
+- ``train`` — fit a model and save it to the cache.
+- ``predict`` — load the saved model and produce a forecast.
+
+Usage::
+
+    spotforecast2-entsoe download --api-key <KEY>
+    spotforecast2-entsoe train lgbm
+    spotforecast2-entsoe predict lgbm --plot
 
 Environment Variables:
-    ENTSOE_API_KEY: The API key for ENTSO-E Transparency Platform.
+    ENTSOE_API_KEY: API key for the ENTSO-E Transparency Platform.
 """
 
 import argparse
 import logging
 import os
 import sys
+from pathlib import Path
+from typing import Any, Optional
 
-from spotforecast2_safe.downloader.entsoe import download_new_data, merge_build_manual
-from spotforecast2_safe.manager.predictor import (
-    get_model_prediction as get_model_prediction_safe,
-)
-from spotforecast2.trainer.trainer_full import handle_training as handle_training_safe
+import pandas as pd
+from lightgbm import LGBMRegressor
+from xgboost import XGBRegressor
 
-from spotforecast2.plots.plotter import make_plot
 from spotforecast2_safe.configurator import ConfigEntsoe
-from spotforecast2_safe.forecaster.wrappers import (
-    ForecasterRecursiveLGBM as _ForecasterRecursiveLGBMBase,
-    ForecasterRecursiveXGB as _ForecasterRecursiveXGBBase,
-)
+from spotforecast2_safe.data.fetch_data import get_data_home
+from spotforecast2_safe.downloader.entsoe import download_new_data, merge_build_manual
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2_safe.preprocessing import RollingFeatures
 
-# Create default configuration instance
-config = ConfigEntsoe()
-
-
-def _inject_config_defaults(kwargs: dict) -> dict:
-    """Fill constructor kwargs with ConfigEntsoe defaults (unless already set)."""
-    defaults = {
-        "periods": config.periods,
-        "country_code": config.API_COUNTRY_CODE,
-        "random_state": config.random_state,
-        "end_dev": config.end_train_default,
-        "train_size": config.train_size,
-        "delta_val": config.delta_val,
-        "predict_size": config.predict_size,
-        "refit_size": config.refit_size,
-    }
-    for key, value in defaults.items():
-        kwargs.setdefault(key, value)
-    return kwargs
+from spotforecast2.multitask.runner import run
 
 
-class ForecasterRecursiveLGBM(_ForecasterRecursiveLGBMBase):
-    """LGBM forecaster with ConfigEntsoe-injected defaults."""
+_PROJECT_BY_MODEL = {"lgbm": "entsoe-lgbm", "xgb": "entsoe-xgb"}
 
-    def __init__(self, iteration: int, lags: int = 12, **kwargs):
-        super().__init__(
-            iteration=iteration, lags=lags, **_inject_config_defaults(kwargs)
+# Default single-target list for ENTSO-E load forecasting.  ``download_new_data``
+# / ``merge_build_manual`` produce a CSV whose load column is named
+# ``Actual Load``; ``Forecasted Load`` is the official day-ahead benchmark
+# kept around as a covariate but not predicted.
+_DEFAULT_TARGETS = ["Actual Load"]
+
+# Single-target ``bounds`` and ``agg_weights`` lists.  Passed explicitly so
+# the runner does NOT substitute its 11-element demo10 defaults.  The wide
+# bounds make the manual outlier-removal step a no-op; IsolationForest still
+# runs through ``config.use_outlier_detection``.
+_DEFAULT_BOUNDS = [(-1e9, 1e9)]
+_DEFAULT_AGG_WEIGHTS = [1.0]
+
+
+def entsoe_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
+    """Read the merged interim ENTSO-E CSV that ``config.data_filename`` points at.
+
+    Args:
+        config: A ``ConfigEntsoe`` with ``data_filename`` set.  Relative paths
+            are resolved against ``spotforecast2_safe.data.fetch_data.get_data_home``.
+
+    Returns:
+        DataFrame indexed by the ENTSO-E timestamp column (``Time (UTC)``)
+        with the load columns as data columns.
+
+    Raises:
+        FileNotFoundError: If the merged CSV does not exist.  Run
+            ``spotforecast2-entsoe download`` and ``merge`` first.
+    """
+    path = Path(config.data_filename)
+    if not path.is_absolute():
+        path = get_data_home() / path
+    if not path.exists():
+        raise FileNotFoundError(
+            f"ENTSO-E merged CSV not found at {path}.  Run "
+            "`spotforecast2-entsoe download` and `merge` first."
         )
+    return pd.read_csv(path, index_col=0, parse_dates=True)
 
 
-class ForecasterRecursiveXGB(_ForecasterRecursiveXGBBase):
-    """XGBoost forecaster with ConfigEntsoe-injected defaults."""
+def entsoe_lgbm_factory(
+    config: ConfigEntsoe,
+    *,
+    weight_func: Optional[Any] = None,
+    target: Optional[str] = None,
+) -> ForecasterRecursive:
+    """LightGBM ForecasterRecursive for the ENTSO-E pipeline.
 
-    def __init__(self, iteration: int, lags: int = 12, **kwargs):
-        super().__init__(
-            iteration=iteration, lags=lags, **_inject_config_defaults(kwargs)
-        )
+    Identical to ``spotforecast2.multitask.factories.default_lgbm_forecaster_factory``;
+    kept as a named helper so the CLI's intent ("use LightGBM here") is
+    visible at the configuration site.
+
+    Args:
+        config: Any object exposing ``random_state``, ``lags_consider``, and
+            ``window_size`` (typically ``ConfigEntsoe``).
+        weight_func: Per-sample weight function from the imputation step.
+        target: Ignored; accepted for factory-signature compatibility.
+    """
+    del target
+    return ForecasterRecursive(
+        estimator=LGBMRegressor(random_state=config.random_state, verbose=-1),
+        lags=config.lags_consider[-1],
+        window_features=RollingFeatures(
+            stats=["mean"], window_sizes=config.window_size
+        ),
+        weight_func=weight_func,
+    )
+
+
+def entsoe_xgb_factory(
+    config: ConfigEntsoe,
+    *,
+    weight_func: Optional[Any] = None,
+    target: Optional[str] = None,
+) -> ForecasterRecursive:
+    """XGBoost ForecasterRecursive for the ENTSO-E pipeline."""
+    del target
+    return ForecasterRecursive(
+        estimator=XGBRegressor(random_state=config.random_state, verbosity=0),
+        lags=config.lags_consider[-1],
+        window_features=RollingFeatures(
+            stats=["mean"], window_sizes=config.window_size
+        ),
+        weight_func=weight_func,
+    )
+
+
+_FACTORY_BY_MODEL = {"lgbm": entsoe_lgbm_factory, "xgb": entsoe_xgb_factory}
+
+
+def _build_entsoe_config(model: str) -> ConfigEntsoe:
+    """Build a ConfigEntsoe wired up with the ENTSO-E loader and factory."""
+    config = ConfigEntsoe()
+    config.targets = list(_DEFAULT_TARGETS)
+    config.agg_weights = list(_DEFAULT_AGG_WEIGHTS)
+    config.bounds = list(_DEFAULT_BOUNDS)
+    config.data_loader = entsoe_data_loader
+    config.forecaster_factory = _FACTORY_BY_MODEL[model]
+    return config
 
 
 # Configure logging
@@ -82,37 +154,25 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-# --- Main CLI ---
-
-
-def main():
-    parser = argparse.ArgumentParser(description="spotforecast2 unified task")
+def main() -> None:
+    """Entry point for the ``spotforecast2-entsoe`` console script."""
+    parser = argparse.ArgumentParser(description="spotforecast2 ENTSO-E pipeline")
     subparsers = parser.add_subparsers(dest="subcommand")
 
-    # Download
-    parser_dl = subparsers.add_parser("download")
-    parser_dl.add_argument("--api-key", help="ENTSO-E API Key")
+    parser_dl = subparsers.add_parser("download", help="Download raw ENTSO-E data")
+    parser_dl.add_argument("--api-key", help="ENTSO-E API key")
     parser_dl.add_argument("--force", action="store_true")
     parser_dl.add_argument("dates", nargs="*", help="Start [End]")
 
-    # Train
-    parser_tr = subparsers.add_parser("train")
+    parser_tr = subparsers.add_parser("train", help="Train a forecaster")
     parser_tr.add_argument("model", choices=["lgbm", "xgb"], default="lgbm", nargs="?")
-    parser_tr.add_argument("--force", action="store_true")
+    parser_tr.add_argument("--show", action="store_true")
 
-    # Predict
-    parser_pr = subparsers.add_parser("predict")
-    parser_pr.add_argument(
-        "model",
-        choices=["lgbm", "xgb"],
-        default="lgbm",
-        nargs="?",
-        help="Model to use for prediction (default: lgbm)",
-    )
-    parser_pr.add_argument("--plot", action="store_true")
+    parser_pr = subparsers.add_parser("predict", help="Predict with a saved forecaster")
+    parser_pr.add_argument("model", choices=["lgbm", "xgb"], default="lgbm", nargs="?")
+    parser_pr.add_argument("--show", action="store_true")
 
-    # Merge
-    subparsers.add_parser("merge")
+    subparsers.add_parser("merge", help="Merge raw CSVs into the interim file")
 
     args = parser.parse_args()
 
@@ -123,30 +183,39 @@ def main():
                 "API Key not provided. Set ENTSOE_API_KEY env var or use --api-key."
             )
             sys.exit(1)
-
         start = args.dates[0] if args.dates else None
         end = args.dates[1] if args.dates and len(args.dates) > 1 else None
         download_new_data(api_key=api_key, start=start, end=end, force=args.force)
 
     elif args.subcommand == "train":
-        # Register models dynamically if needed, or pass classes
-        model_map = {"lgbm": ForecasterRecursiveLGBM, "xgb": ForecasterRecursiveXGB}
-        handle_training_safe(
-            model_class=model_map[args.model],
-            model_name=args.model,
-            force=args.force,
-            data_filename=config.data_filename,
+        config = _build_entsoe_config(args.model)
+        run(
+            task="defaults",
+            config_cls=ConfigEntsoe,
+            project_name=_PROJECT_BY_MODEL[args.model],
+            targets=config.targets,
+            agg_weights=config.agg_weights,
+            bounds=config.bounds,
+            data_loader=config.data_loader,
+            forecaster_factory=config.forecaster_factory,
+            index_name=config.index_name,
+            show=args.show,
         )
 
     elif args.subcommand == "predict":
-        model_name = getattr(
-            args, "model", "lgbm"
-        )  # Default to lgbm for backward compatibility
-        out = get_model_prediction_safe(model_name=model_name)
-        if out:
-            logger.info("Prediction successful.")
-            if args.plot:
-                make_plot(out)
+        config = _build_entsoe_config(args.model)
+        run(
+            task="predict",
+            config_cls=ConfigEntsoe,
+            project_name=_PROJECT_BY_MODEL[args.model],
+            targets=config.targets,
+            agg_weights=config.agg_weights,
+            bounds=config.bounds,
+            data_loader=config.data_loader,
+            forecaster_factory=config.forecaster_factory,
+            index_name=config.index_name,
+            show=args.show,
+        )
 
     elif args.subcommand == "merge":
         merge_build_manual()

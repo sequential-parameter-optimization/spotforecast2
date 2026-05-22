@@ -21,7 +21,7 @@ class TestConfigEntsoeDefaults:
         """Verify default ConfigEntsoe instance has expected values."""
         config = ConfigEntsoe()
 
-        assert config.API_COUNTRY_CODE == "DE"
+        assert config.country_code == "DE"
         assert config.predict_size == 24
         assert config.refit_size == 7
         assert config.random_state == 314159
@@ -56,11 +56,11 @@ class TestConfigEntsoeDefaults:
 class TestConfigEntsoeCustomization:
     """Test custom configuration values."""
 
-    def test_custom_api_country_code(self):
+    def test_custom_country_code(self):
         """Verify custom API country code."""
-        config = ConfigEntsoe(api_country_code="FR")
+        config = ConfigEntsoe(country_code="FR")
 
-        assert config.API_COUNTRY_CODE == "FR"
+        assert config.country_code == "FR"
 
     def test_custom_predict_size(self):
         """Verify custom predict size."""
@@ -101,14 +101,14 @@ class TestConfigEntsoeCustomization:
     def test_multiple_custom_parameters(self):
         """Verify multiple custom parameters at once."""
         config = ConfigEntsoe(
-            api_country_code="FR",
+            country_code="FR",
             predict_size=48,
             refit_size=14,
             random_state=42,
             n_hyperparameters_trials=50,
         )
 
-        assert config.API_COUNTRY_CODE == "FR"
+        assert config.country_code == "FR"
         assert config.predict_size == 48
         assert config.refit_size == 14
         assert config.random_state == 42
@@ -121,16 +121,16 @@ class TestConfigEntsoeDocstringExamples:
     def test_example_default_configuration(self):
         """Test: Use default configuration."""
         config = ConfigEntsoe()
-        assert config.API_COUNTRY_CODE == "DE"
+        assert config.country_code == "DE"
         assert config.predict_size == 24
         assert config.random_state == 314159
 
     def test_example_custom_configuration(self):
         """Test: Create custom configuration."""
         custom_config = ConfigEntsoe(
-            api_country_code="FR", predict_size=48, random_state=42
+            country_code="FR", predict_size=48, random_state=42
         )
-        assert custom_config.API_COUNTRY_CODE == "FR"
+        assert custom_config.country_code == "FR"
         assert custom_config.predict_size == 48
 
     def test_example_verify_training_window(self):
