@@ -1255,7 +1255,7 @@ class BaseTask:
         the per-target prediction package is returned directly and no extra
         "Aggregated Forecast" figure is displayed (the per-target figure is
         the aggregated figure).  The result is stored in
-        :attr:`agg_results` keyed by ``task_name``.
+        `agg_results` keyed by ``task_name``.
         """
         if len(self.config.targets) == 1:
             target = self.config.targets[0]

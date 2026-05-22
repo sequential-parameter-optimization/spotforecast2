@@ -3,16 +3,16 @@
 
 """Default hyperparameter search spaces and per-task constants.
 
-A neutral module imported by both :mod:`spotforecast2.multitask.strategies`
-and the user-facing shim modules :mod:`spotforecast2.multitask.optuna` /
-:mod:`spotforecast2.multitask.spotoptim`.  Keeping the defaults here means
+A neutral module imported by both `spotforecast2.multitask.strategies`
+and the user-facing shim modules `spotforecast2.multitask.optuna` /
+`spotforecast2.multitask.spotoptim`.  Keeping the defaults here means
 no shim has to import the strategy module back, and no strategy class has
 to import a shim — eliminating the cyclic-import warning CodeQL raised
 against the lazy-import workaround.
 
 ADR-002 Step 3 additionally relocated ``LAGS_CONSIDER`` and
 ``WINDOW_FEATURES`` (the legacy ENTSO-E trainer constants) here so that
-:mod:`spotforecast2.trainer.trainer_full` can be removed in Step 5 without
+`spotforecast2.trainer.trainer_full` can be removed in Step 5 without
 breaking anything that still imports those names.
 """
 

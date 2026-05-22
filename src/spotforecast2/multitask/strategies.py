@@ -16,14 +16,13 @@ rewire ``execute_*`` to delegate to these classes.
 The four concrete strategies map onto the ENTSO-E publication's "Approach
 1-4":
 
-- :class:`LazyStrategy` — Approach 1.  Optionally applies cached tuning
+- `LazyStrategy` — Approach 1.  Optionally applies cached tuning
   results; otherwise leaves the forecaster at default parameters.
-- :class:`DefaultsStrategy` — Approach 2.  Explicit "train with defaults,
-  no tuning, no cached params."  Stub: raises ``NotImplementedError`` until
-  the ENTSO-E integration wires it in.
-- :class:`OptunaStrategy` — Approach 3.  Runs Optuna Bayesian search and
+- `DefaultsStrategy` — Approach 2.  Explicit "train with defaults,
+  no tuning, no cached params."  Returns the forecaster unchanged.
+- `OptunaStrategy` — Approach 3.  Runs Optuna Bayesian search and
   applies best parameters.
-- :class:`SpotOptimStrategy` — Approach 4.  Runs SpotOptim surrogate search
+- `SpotOptimStrategy` — Approach 4.  Runs SpotOptim surrogate search
   and applies best parameters.
 """
 

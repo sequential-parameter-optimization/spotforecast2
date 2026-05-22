@@ -4,7 +4,7 @@
 """Defaults task — Task 2.
 
 Fits each target with the factory's default hyperparameters.  Distinct from
-:class:`spotforecast2.multitask.lazy.LazyTask` in one respect only:
+`LazyTask` (from `spotforecast2.multitask.lazy`) in one respect only:
 ``DefaultsTask`` never consults the tuning-result cache.  Use it when you
 want a deterministic baseline that is guaranteed not to inherit any prior
 Optuna or SpotOptim run.
@@ -75,9 +75,12 @@ class DefaultsTask(BaseTask):
 
         Args:
             show: If ``True``, display prediction figures.
+            **kwargs: Forwarded for compatibility with ``BaseTask.run``;
+                ``DefaultsTask`` does not consume any extra parameters.
 
         Returns:
             Aggregated prediction package.  Per-target packages are stored
             on ``self.results["defaults"]``.
         """
+        del kwargs  # DefaultsTask has no tuning- or cache-related parameters
         return execute_defaults(self, show=show)

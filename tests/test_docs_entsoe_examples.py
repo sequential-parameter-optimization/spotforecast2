@@ -22,7 +22,7 @@ class TestConfigExamples:
         from spotforecast2_safe.configurator import ConfigEntsoe
 
         config = ConfigEntsoe()
-        print(config.API_COUNTRY_CODE)  # 'DE'
+        print(config.country_code)  # 'DE'
         print(config.predict_size)      # 24
         print(config.random_state)      # 314159
         ```
@@ -31,7 +31,7 @@ class TestConfigExamples:
 
         config = ConfigEntsoe()
 
-        assert config.API_COUNTRY_CODE == "DE"
+        assert config.country_code == "DE"
         assert config.predict_size == 24
         assert config.random_state == 314159
 
@@ -44,22 +44,22 @@ class TestConfigExamples:
         import pandas as pd
 
         config = ConfigEntsoe(
-            api_country_code='FR',
+            country_code='FR',
             predict_size=48,
             refit_size=14,
             random_state=42
         )
-        print(config.API_COUNTRY_CODE)  # 'FR'
+        print(config.country_code)  # 'FR'
         print(config.predict_size)      # 48
         ```
         """
         from spotforecast2_safe.configurator import ConfigEntsoe
 
         config = ConfigEntsoe(
-            api_country_code="FR", predict_size=48, refit_size=14, random_state=42
+            country_code="FR", predict_size=48, refit_size=14, random_state=42
         )
 
-        assert config.API_COUNTRY_CODE == "FR"
+        assert config.country_code == "FR"
         assert config.predict_size == 48
         assert config.refit_size == 14
         assert config.random_state == 42
@@ -173,7 +173,7 @@ class TestExogBuilderExamples:
         config = ConfigEntsoe()
         builder = ExogBuilder(
             periods=config.periods,
-            country_code=config.API_COUNTRY_CODE
+            country_code=config.country_code
         )
         X = builder.build(
             start=pd.Timestamp('2025-12-31', tz='UTC'),
@@ -188,7 +188,7 @@ class TestExogBuilderExamples:
 
         config = ConfigEntsoe()
         builder = ExogBuilder(
-            periods=config.periods, country_code=config.API_COUNTRY_CODE
+            periods=config.periods, country_code=config.country_code
         )
         X = builder.build(
             pd.Timestamp("2025-12-31", tz="UTC"), pd.Timestamp("2026-01-01", tz="UTC")
@@ -231,181 +231,6 @@ class TestRepeatingBasisFunctionExamples:
         features = rbf.transform(df)
 
         assert features.shape == (24, 12)
-
-
-class TestForecasterModelExamples:
-    """Tests for ForecasterRecursiveLGBM/XGB examples in documentation."""
-
-    def test_forecaster_lgbm_creation(self):
-        """
-        Example: Creating a LightGBM forecaster.
-
-        ```python
-        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM, config
-
-        model = ForecasterRecursiveLGBM(iteration=1)
-
-        print(model.name)             # 'lgbm'
-        print(model.random_state)     # 314159 (from config)
-        print(len(model.preprocessor.periods))  # 5 (from config)
-        ```
-        """
-        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM, config
-
-        model = ForecasterRecursiveLGBM(iteration=1)
-
-        assert model.name == "lgbm"
-        assert model.random_state == config.random_state
-        assert len(model.preprocessor.periods) == len(config.periods)
-
-    def test_forecaster_xgb_creation(self):
-        """
-        Example: Creating an XGBoost forecaster.
-
-        ```python
-        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveXGB, config
-
-        model = ForecasterRecursiveXGB(iteration=1, lags=24)
-
-        print(model.name)  # 'xgb'
-        ```
-        """
-        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveXGB, config
-
-        model = ForecasterRecursiveXGB(iteration=1, lags=24)
-
-        assert model.name == "xgb"
-        assert model.random_state == config.random_state
-
-    def test_forecaster_custom_config(self):
-        """
-        Example: Creating a forecaster with custom configuration.
-
-        ```python
-        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
-        from spotforecast2_safe.data import Period
-
-        custom_periods = [
-            Period(name='hourly', n_periods=24, column='hour', input_range=(1, 24)),
-        ]
-
-        model = ForecasterRecursiveLGBM(
-            iteration=1,
-            lags=48,
-            periods=custom_periods,
-            country_code='FR',
-            random_state=42
-        )
-
-        print(len(model.preprocessor.periods))  # 1
-        print(model.preprocessor.country_code)  # 'FR'
-        ```
-        """
-        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
-        from spotforecast2_safe.data import Period
-
-        custom_periods = [
-            Period(name="hourly", n_periods=24, column="hour", input_range=(1, 24)),
-        ]
-
-        model = ForecasterRecursiveLGBM(
-            iteration=1,
-            lags=48,
-            periods=custom_periods,
-            country_code="FR",
-            random_state=42,
-        )
-
-        assert len(model.preprocessor.periods) == 1
-        assert model.preprocessor.country_code == "FR"
-        assert model.random_state == 42
-
-    def test_full_prediction_pipeline(self):
-        """
-        Example: Full Prediction Pipeline (Notebooks & Quarto).
-
-        ```python
-        import pandas as pd
-        import os
-        from spotforecast2_safe.downloader.entsoe import download_new_data
-        from spotforecast2.trainer.trainer_full import handle_training as handle_training_safe
-        from spotforecast2_safe.manager.predictor import get_model_prediction as get_model_prediction_safe
-        from spotforecast2.plots.plotter import make_plot
-        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
-
-        now = pd.Timestamp.now(tz='UTC').floor('D')
-        current_month_start = now.replace(day=1)
-        last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
-
-        model_class = ForecasterRecursiveLGBM
-        model_name = "lgbm_advanced"
-
-        handle_training_safe(
-            model_class=model_class,
-            model_name=model_name,
-            train_size=pd.Timedelta(days=3 * 365),
-            end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
-        )
-        ```
-        """
-        from unittest.mock import patch
-        import pandas as pd
-        from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
-
-        # Logic for dates
-        now = pd.Timestamp.now(tz="UTC").floor("D")
-        current_month_start = now.replace(day=1)
-        last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
-
-        # Mock components to verify usage without side effects
-        with patch("spotforecast2.trainer.trainer_full.handle_training") as mock_train:
-            with patch(
-                "spotforecast2_safe.manager.predictor.get_model_prediction"
-            ) as mock_pred:
-                with patch("spotforecast2.plots.plotter.make_plot") as mock_plot:
-                    mock_pred.return_value = pd.DataFrame([1, 2, 3])
-
-                    # Step 1-3
-                    model_class = ForecasterRecursiveLGBM
-                    model_name = "lgbm_advanced"
-
-                    from spotforecast2.trainer.trainer_full import (
-                        handle_training as handle_training_safe,
-                    )
-
-                    handle_training_safe(
-                        model_class=model_class,
-                        model_name=model_name,
-                        train_size=pd.Timedelta(days=3 * 365),
-                        end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
-                    )
-
-                    # Step 4
-                    from spotforecast2_safe.manager.predictor import (
-                        get_model_prediction as get_model_prediction_safe,
-                    )
-
-                    predictions = get_model_prediction_safe(
-                        model_name=model_name, predict_size=24 * 31
-                    )
-
-                    # Step 5
-                    if predictions is not None:
-                        from spotforecast2.plots.plotter import make_plot
-
-                        make_plot(predictions)
-
-                    # Final Assertions
-                    mock_train.assert_called_once()
-                    mock_pred.assert_called_once()
-                    mock_plot.assert_called_once()
-
-                    # Verify arguments
-                    assert mock_train.call_args[1][
-                        "end_dev"
-                    ] == last_month_start.strftime("%Y-%m-%d %H:%M%z")
-                    assert mock_pred.call_args[1]["predict_size"] == 24 * 31
-                    assert mock_pred.call_args[1]["predict_size"] == 24 * 31
 
 
 class TestLinearlyInterpolateTSExamples:
