@@ -82,7 +82,7 @@ from spotforecast2_safe.configurator import ConfigEntsoe
 config = ConfigEntsoe()
 
 # Access configuration values
-print(config.API_COUNTRY_CODE)  # 'DE'
+print(config.country_code)  # 'DE'
 print(config.predict_size)      # 24
 print(config.train_size)        # Timedelta(days=1095)
 ```
@@ -95,7 +95,7 @@ import pandas as pd
 
 # Create custom configuration
 custom_config = ConfigEntsoe(
-    api_country_code='DE',
+    country_code='DE',
     predict_size=48,
     refit_size=14,
     train_size=pd.Timedelta(days=365),
@@ -103,7 +103,7 @@ custom_config = ConfigEntsoe(
 )
 
 # Use in your code
-print(custom_config.API_COUNTRY_CODE)  # 'DE'
+print(custom_config.country_code)  # 'DE'
 print(custom_config.predict_size)      # 48
 ```
 
@@ -111,7 +111,7 @@ print(custom_config.predict_size)      # 48
 
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
-| `api_country_code` | str | "DE" | ISO country code for ENTSO-E API |
+| `country_code` | str | "DE" | ISO country code for ENTSO-E API |
 | `predict_size` | int | 24 | Number of hours to predict ahead |
 | `refit_size` | int | 7 | Number of days between model refits |
 | `train_size` | Timedelta | 3 years | Training data window |
@@ -238,7 +238,7 @@ import pandas as pd
 config = ConfigEntsoe()
 builder = ExogBuilder(
     periods=config.periods,
-    country_code=config.API_COUNTRY_CODE
+    country_code=config.country_code
 )
 X = builder.build(
     pd.Timestamp('2025-12-31', tz='UTC'),

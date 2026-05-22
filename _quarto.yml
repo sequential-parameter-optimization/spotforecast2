@@ -68,10 +68,6 @@ website:
                 file: docs/reference/models.forecaster_recursive_lgbm_full.qmd
               - text: "forecaster_recursive_xgb_full"
                 file: docs/reference/models.forecaster_recursive_xgb_full.qmd
-          - section: "Trainer"
-            contents:
-              - text: "trainer_full"
-                file: docs/reference/trainer.trainer_full.qmd
           - section: "Multitask"
             contents:
               - text: "agg_predictor"
@@ -145,8 +141,6 @@ website:
 
       - section: "Model Selection Guides"
         contents:
-          - text: "Intro to Model Training"
-            file: docs/model_selection/model_training_intro.qmd
           - text: "Intro to SpotOptim"
             file: docs/model_selection/spotoptim_intro.qmd
           - text: "SpotOptim Lag Handling"
@@ -156,8 +150,15 @@ website:
         contents:
           - text: "Overview"
             file: docs/tasks/tasks.qmd
-          - text: "ENTSO-E Guide"
+          - text: "Multitask Tutorial"
+            file: docs/tasks/multitask.qmd
+          - text: "ENTSO-E CLI"
             file: docs/tasks/entsoe.qmd
+
+      - section: "Multitask"
+        contents:
+          - text: "ENTSO-E via run()"
+            file: docs/multitask/entsoe.qmd
 
   page-footer:
     center: |
@@ -214,11 +215,6 @@ quartodoc:
         - models.forecaster_recursive_model_full
         - models.forecaster_recursive_lgbm_full
         - models.forecaster_recursive_xgb_full
-
-    - title: "Trainer"
-      desc: "Training driver with tuning hooks."
-      contents:
-        - trainer.trainer_full
 
     - title: "Multitask"
       desc: "Multi-target forecasting pipeline tasks and dispatcher."

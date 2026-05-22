@@ -28,7 +28,7 @@ import shap
 from spotforecast2.model_selection import bayesian_search_forecaster
 from spotforecast2_safe.data.fetch_data import OnMissing, load_timeseries
 from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveModel
-from spotforecast2.trainer.trainer_full import SEARCH_SPACES
+from spotforecast2.multitask.search_spaces import SEARCH_SPACES
 from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
 
 logger = logging.getLogger(__name__)

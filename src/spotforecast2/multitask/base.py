@@ -437,10 +437,8 @@ class BaseTask:
         """
         if demo_data is None:
             demo_data = self._dataframe
-        if demo_data is None:
-            data_loader = getattr(self.config, "data_loader", None)
-            if data_loader is not None:
-                demo_data = data_loader(self.config)
+        if demo_data is None and self.config.data_loader is not None:
+            demo_data = self.config.data_loader(self.config)
         if demo_data is None:
             raise ValueError(
                 "No data source provided. Pass a DataFrame via the "
@@ -819,9 +817,7 @@ class BaseTask:
             print(f"Lags: {forecaster.lags}")
             ```
         """
-        factory = getattr(self.config, "forecaster_factory", None)
-        if factory is None:
-            factory = default_lgbm_forecaster_factory
+        factory = self.config.forecaster_factory or default_lgbm_forecaster_factory
         return factory(self.config, weight_func=self.weight_func, target=target)
 
     # ------------------------------------------------------------------
@@ -978,6 +974,7 @@ class BaseTask:
     # Maps each task key to the task_name string used in filenames.
     _TASK_MODEL_NAMES: Dict[str, str] = {
         "lazy": "task 1: Lazy Fitting",
+        "defaults": "task 2: Defaults",
         "optuna": "task 3: Optuna Tuned",
         "spotoptim": "task 4: SpotOptim Tuned",
     }

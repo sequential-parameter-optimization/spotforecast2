@@ -1,3 +1,17 @@
+## [1.2.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.1.2...v1.2.0-rc.1) (2026-05-22)
+
+### Features
+
+* **multitask:** ENTSO-E integration test and tutorial under run() ([51eece0](https://github.com/sequential-parameter-optimization/spotforecast2/commit/51eece048ef794c9c7641deea0b32844bbd1e998))
+
+### Bug Fixes
+
+* errors step 5 ([91db0dc](https://github.com/sequential-parameter-optimization/spotforecast2/commit/91db0dc5301b9b06146fd5f8aac08721b982aa85))
+
+### Code Refactoring
+
+* step 4 ([ae55e3a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/ae55e3a5d6d3bb17a67c99572bd45539bd3106cf))
+
 ## [1.1.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.1.1...v1.1.2) (2026-05-22)
 
 ### Code Refactoring

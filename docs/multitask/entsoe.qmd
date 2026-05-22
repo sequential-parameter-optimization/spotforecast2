@@ -1,0 +1,172 @@
+---
+title: "ENTSO-E single-target forecasting via `run()`"
+---
+
+This page walks through driving the ENTSO-E single-target pipeline through
+the unified `spotforecast2.multitask.runner.run` entry point.  The
+publication-style "Approach 1-4" variants from the
+`bart26b_spotforecast2` paper map onto the four `task` values that
+`run` accepts:
+
+| Publication approach | `task=` value |
+|---|---|
+| Approach 1 — Lazy fitting | `"lazy"` |
+| Approach 2 — Training without tuning | `"defaults"` |
+| Approach 3 — Optuna tuning | `"optuna"` |
+| Approach 4 — SpotOptim tuning | `"spotoptim"` |
+
+The same `ConfigEntsoe` instance plus two hook callables
+(`config.data_loader` and `config.forecaster_factory`) drive every
+variant.  No per-approach wrapper classes are needed.
+
+## Setup
+
+```{python}
+import warnings
+
+import numpy as np
+import pandas as pd
+
+warnings.filterwarnings("ignore")
+
+from spotforecast2_safe.configurator import ConfigEntsoe
+
+from spotforecast2.multitask.runner import run
+from spotforecast2.tasks.task_entsoe import entsoe_lgbm_factory
+```
+
+## Synthetic ENTSO-E load curve
+
+For this tutorial we synthesise a 30-day hourly load series with a daily
+sine bump and a weekly amplitude variation.  In production, the
+`download_new_data` + `merge_build_manual` helpers from
+`spotforecast2_safe.downloader.entsoe` write the merged interim CSV that
+the real `entsoe_data_loader` reads.
+
+```{python}
+def synthetic_entsoe_df(n_days: int = 30) -> pd.DataFrame:
+    n = n_days * 24
+    idx = pd.date_range("2024-01-01", periods=n, freq="h", tz="UTC")
+    idx.name = "Time (UTC)"
+    rng = np.random.default_rng(0)
+    hours = np.arange(n) % 24
+    days = np.arange(n) // 24
+    load = (
+        50_000
+        + 10_000 * np.sin(hours * 2 * np.pi / 24)
+        + 5_000 * np.sin(days * 2 * np.pi / 7)
+        + rng.normal(0, 500, n)
+    )
+    return pd.DataFrame({"Actual Load": load}, index=idx)
+
+
+load_df = synthetic_entsoe_df()
+load_df.head()
+```
+
+## Wiring the data loader
+
+`BaseTask.prepare_data` calls `config.data_loader(config)` whenever no
+DataFrame is supplied to `run`.  Here we wrap the synthetic DataFrame as
+a tiny stub loader so the tutorial is self-contained.
+
+```{python}
+def stub_loader(_config):
+    return load_df.copy()
+```
+
+## Shared run kwargs
+
+Every approach below uses the same `ConfigEntsoe`-driven configuration —
+only the `task=` value changes.  Outlier detection and exogenous
+features (weather / calendar / holidays) are disabled here so the
+tutorial does not depend on network access.
+
+```{python}
+common_kwargs = dict(
+    config_cls=ConfigEntsoe,
+    project_name="entsoe-tutorial",
+    targets=["Actual Load"],
+    agg_weights=[1.0],
+    bounds=[(-1e9, 1e9)],
+    data_loader=stub_loader,
+    forecaster_factory=entsoe_lgbm_factory,
+    index_name="Time (UTC)",
+    use_exogenous_features=False,
+    use_outlier_detection=False,
+    predict_size=12,
+    show=False,
+)
+```
+
+## Approach 1 — Lazy fitting
+
+`task="lazy"` fits with the factory's defaults and, if a cached tuning
+result is available, applies it before fitting.
+
+```{python}
+forecast_lazy = run(task="lazy", **common_kwargs)
+forecast_lazy.head()
+```
+
+## Approach 2 — Training without tuning
+
+`task="defaults"` is the deterministic baseline: always trains with the
+factory defaults, never reads the tuning cache.
+
+```{python}
+forecast_defaults = run(task="defaults", **common_kwargs)
+forecast_defaults.head()
+```
+
+## Approach 3 — Optuna tuning
+
+`task="optuna"` performs Bayesian hyperparameter search via Optuna and
+trains with the best parameters.  `n_trials_optuna` controls the search
+budget; we use a tiny value here so the tutorial renders fast.
+
+```{python}
+forecast_optuna = run(task="optuna", n_trials_optuna=2, **common_kwargs)
+forecast_optuna.head()
+```
+
+## Approach 4 — SpotOptim tuning
+
+`task="spotoptim"` runs surrogate-model-based tuning via `spotoptim`.
+
+```{python}
+forecast_spotoptim = run(
+    task="spotoptim",
+    n_trials_spotoptim=3,
+    n_initial_spotoptim=2,
+    **common_kwargs,
+)
+forecast_spotoptim.head()
+```
+
+## Predicting from a saved model
+
+After any training task, the fitted model is auto-saved to the project's
+cache directory.  `task="predict"` skips fitting and loads the latest
+saved model for each target.
+
+```{python}
+forecast_predict = run(task="predict", **common_kwargs)
+forecast_predict.head()
+```
+
+## Putting it together
+
+A production CLI such as `spotforecast2-entsoe` typically:
+
+1. Downloads the latest ENTSO-E data
+   (`spotforecast2_safe.downloader.entsoe.download_new_data`).
+2. Merges the raw CSVs into the interim file
+   (`merge_build_manual`).
+3. Runs `run(task="defaults", config_cls=ConfigEntsoe, ...)` to fit and
+   save the model.
+4. Runs `run(task="predict", config_cls=ConfigEntsoe, ...)` on a
+   schedule to generate the next forecast.
+
+The same four task values are available to notebook callers — pick the
+one that matches the level of tuning the operational policy allows.
