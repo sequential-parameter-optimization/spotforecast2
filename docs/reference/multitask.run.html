@@ -735,23 +735,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>multitask.run(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">'lazy'</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    bounds<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    agg_weights<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span><span class="st">'test_project'</span>,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    train_days<span class="op">=</span><span class="dv">3</span> <span class="op">*</span> <span class="dv">365</span>,</span>
-<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    val_days<span class="op">=</span><span class="dv">31</span>,</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">'weighted'</span>,</span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    plot_with_outliers<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span><span class="dv">40</span>,</span>
-<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
-<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    config<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">'lazy'</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span><span class="st">'test_project'</span>,</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    plot_with_outliers<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span><span class="dv">40</span>,</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>overrides,</span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Run the MultiTask forecasting pipeline and return predictions.</p>
 <p>Wraps the standard pipeline sequence into a single call. For the <code>"clean"</code> task only the cache directory is wiped and an empty DataFrame is returned. For all other tasks the full sequence</p>
 <pre><code>prepare_data → detect_outliers → impute →
@@ -770,93 +766,69 @@ build_exogenous_features → run</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td>dataframe</td>
-<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>Input time-series data. Must contain a datetime column matching the configured <code>index_name</code> and at least one numeric target column. Optional for the <code>"clean"</code> task, but required for all other tasks. Defaults to <code>None</code>.</td>
+<td>config</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<code>PipelineConfig</code>]</td>
+<td>A <code>PipelineConfig</code>-conforming object (typically <code>ConfigMulti</code> or <code>ConfigEntsoe</code>). When <code>None</code>, a fresh <code>ConfigMulti()</code> is constructed with default fields. Use <code>make_demo10_config()</code> to opt in to the 11-target demo10 <code>bounds</code> / <code>agg_weights</code> presets.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>task</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>Pipeline mode — one of <code>"lazy"</code>, <code>"defaults"</code>, <code>"optuna"</code>, <code>"spotoptim"</code>, <code>"predict"</code>, or <code>"clean"</code>. <code>"defaults"</code> fits with the factory defaults and never reads the tuning-result cache; <code>"lazy"</code> applies cached tuning results when available. Defaults to <code>"lazy"</code>.</td>
+<td>Pipeline mode — one of <code>"lazy"</code>, <code>"defaults"</code>, <code>"optuna"</code>, <code>"spotoptim"</code>, <code>"predict"</code>, or <code>"clean"</code>. Defaults to <code>"lazy"</code>.</td>
 <td><code>'lazy'</code></td>
 </tr>
 <tr class="odd">
-<td>cache_home</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
-<td>Optional path to the cache directory. Defaults to <code>None</code>, which uses the package default cache location that is defined via spotforecast2_safe’s <code>get_cache_home()</code>.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="even">
-<td>bounds</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Tuple">Tuple</a>[<a href="https://docs.python.org/3/library/functions.html#float">float</a>, <a href="https://docs.python.org/3/library/functions.html#float">float</a>]]]</td>
-<td>Per-column hard outlier bounds as a list of <code>(lower, upper)</code> tuples, one per target column. <code>None</code> uses the package defaults.</td>
-<td><code>None</code></td>
-</tr>
-<tr class="odd">
-<td>agg_weights</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/functions.html#float">float</a>]]</td>
-<td>Per-column weights for the final aggregation step as a list of floats, one per target column. <code>None</code> uses the package defaults.</td>
+<td>dataframe</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a>]</td>
+<td>Input time-series data. Must contain a datetime column matching <code>config.index_name</code> and at least one numeric target column. Optional for <code>"clean"</code>, required otherwise.</td>
 <td><code>None</code></td>
 </tr>
 <tr class="even">
 <td>project_name</td>
 <td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>Identifier used for cache-directory and model-file naming. Defaults to <code>"test_project"</code>.</td>
+<td>Active-dataset identifier. Sets <code>config.data_frame_name</code>, which drives cache-subdirectory and model-file naming.</td>
 <td><code>'test_project'</code></td>
 </tr>
 <tr class="odd">
-<td>train_days</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
-<td>Optional number of days in the training window. Defaults to 3 years (1095 days).</td>
-<td><code>3 * 365</code></td>
+<td>cache_home</td>
+<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
+<td>Cache directory override. When <code>None</code>, the package default from <code>get_cache_home()</code> is used; the value is then written onto <code>config.cache_home</code>.</td>
+<td><code>None</code></td>
 </tr>
 <tr class="even">
-<td>val_days</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
-<td>Optional number of days in the validation window. If <code>None</code>, the default of 31 days is used.</td>
-<td><code>31</code></td>
+<td>plot_with_outliers</td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
+<td>Whether to render the optional outlier-visualisation step.</td>
+<td><code>False</code></td>
 </tr>
 <tr class="odd">
-<td>imputation_method</td>
-<td><a href="https://docs.python.org/3/library/stdtypes.html#str">str</a></td>
-<td>Method used for imputation of detected outliers. Passed to the <code>imputation_method</code> argument of MultiTask. Options are <code>"weighted"</code> or <code>"linear"</code>. Defaults to <code>"weighted"</code>. Prefer <code>"weighted"</code> (Gap Weighting) for data with leading or trailing gaps: it forward/back-fills the frame and emits a weight series that zero-weights samples within <code>window_size</code> of any original gap, so the forecaster never trains on the fill values. <code>"linear"</code> only fills internal gaps and lets endpoint NaN survive, so the downstream fit raises <code>ValueError</code> if leading or trailing NaN remain.</td>
-<td><code>'weighted'</code></td>
+<td>show</td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
+<td>Whether to display prediction figures after the task runs.</td>
+<td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>show_progress</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Whether to print progress messages during pipeline execution. Defaults to False.</td>
+<td>Whether to print progress messages during pipeline execution.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
-<td>plot_with_outliers</td>
+<td>dry_run</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Whether to generate a visualization of the data with outliers highlighted. Defaults to False.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="even">
-<td>show</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Whether to display prediction figures after running each task. Defaults to False.</td>
-<td><code>False</code></td>
-</tr>
-<tr class="odd">
-<td>verbose</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>Default is False.</td>
+<td>Forwarded to <code>MultiTask</code>; only meaningful for the <code>"clean"</code> task.</td>
 <td><code>False</code></td>
 </tr>
 <tr class="even">
 <td>log_level</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Logging level. Default is 40 (ERROR). Other common values include 0 (NOTSET), 10 (DEBUG), 20 (INFO), 30 (WARNING), 50 (CRITICAL).</td>
+<td>Logging level. Defaults to 40 (ERROR).</td>
 <td><code>40</code></td>
 </tr>
 <tr class="odd">
-<td>**kwargs</td>
+<td>**overrides</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
-<td>Additional keyword arguments forwarded verbatim to MultiTask.</td>
+<td>Forwarded to <code>config.set_params(**overrides)</code>. Mutates the caller’s config object.</td>
 <td><code>{}</code></td>
 </tr>
 </tbody>
@@ -874,9 +846,24 @@ build_exogenous_features → run</code></pre>
 </thead>
 <tbody>
 <tr class="odd">
-<td>DataFrame</td>
+<td></td>
 <td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
-<td>DataFrame whose index is the forecast horizon timestamps and whose single column <code>"forecast"</code> contains the aggregated predicted values. For the <code>"clean"</code> task an empty DataFrame is returned.</td>
+<td>DataFrame whose index is the forecast horizon timestamps and</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
+<td>whose single column <code>"forecast"</code> contains the aggregated</td>
+</tr>
+<tr class="odd">
+<td></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
+<td>predicted values. For the <code>"clean"</code> task an empty DataFrame is</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
+<td>returned.</td>
 </tr>
 </tbody>
 </table>
@@ -903,232 +890,109 @@ build_exogenous_features → run</code></pre>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
 <p>Run the pipeline using cached or default model parameters (<code>"lazy"</code> task):</p>
-<div id="fb96d4cf" class="cell" data-execution_count="1">
+<div id="61247680" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.runner <span class="im">import</span> run</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo02.csv"</span>))</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(df, task<span class="op">=</span><span class="st">"lazy"</span>, project_name<span class="op">=</span><span class="st">"demo02"</span>, train_days <span class="op">=</span> <span class="dv">365</span>, predict_size<span class="op">=</span><span class="dv">24</span>, imputation_method<span class="op">=</span><span class="st">"weighted"</span>)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(forecast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
-</div>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo02.csv"</span>))</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>cfg <span class="op">=</span> ConfigMulti(</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>pd.Timedelta(days<span class="op">=</span><span class="dv">365</span>),</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">"weighted"</span>,</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(cfg, task<span class="op">=</span><span class="st">"lazy"</span>, dataframe<span class="op">=</span>df, project_name<span class="op">=</span><span class="st">"demo02"</span>)</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(forecast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                             forecast
-1975-06-18 19:00:00+00:00 -111.440887
-1975-06-18 20:00:00+00:00   25.984569
-1975-06-18 21:00:00+00:00  -45.674672
-1975-06-18 22:00:00+00:00   33.965587
-1975-06-18 23:00:00+00:00  171.503273
-1975-06-19 00:00:00+00:00  118.253563
-1975-06-19 01:00:00+00:00   91.917397
-1975-06-19 02:00:00+00:00   56.067265
-1975-06-19 03:00:00+00:00    0.392011
-1975-06-19 04:00:00+00:00  -70.641445
-1975-06-19 05:00:00+00:00 -109.984629
-1975-06-19 06:00:00+00:00 -106.987940
-1975-06-19 07:00:00+00:00  -95.128490
-1975-06-19 08:00:00+00:00  -83.148436
-1975-06-19 09:00:00+00:00 -102.156701
-1975-06-19 10:00:00+00:00  -80.464212
-1975-06-19 11:00:00+00:00 -111.926806
-1975-06-19 12:00:00+00:00 -123.424511
-1975-06-19 13:00:00+00:00  -92.054340
-1975-06-19 14:00:00+00:00  -70.155662
-1975-06-19 15:00:00+00:00 -112.164955
-1975-06-19 16:00:00+00:00 -108.203508
-1975-06-19 17:00:00+00:00 -105.346184
-1975-06-19 18:00:00+00:00  -78.530332</code></pre>
+1975-06-18 19:00:00+00:00  257.156070
+1975-06-18 20:00:00+00:00  260.514415
+1975-06-18 21:00:00+00:00  252.231531
+1975-06-18 22:00:00+00:00  236.053322
+1975-06-18 23:00:00+00:00  218.720506
+1975-06-19 00:00:00+00:00  202.678296
+1975-06-19 01:00:00+00:00  203.727121
+1975-06-19 02:00:00+00:00  209.192987
+1975-06-19 03:00:00+00:00  229.816369
+1975-06-19 04:00:00+00:00  239.978587
+1975-06-19 05:00:00+00:00  238.354498
+1975-06-19 06:00:00+00:00  249.300717
+1975-06-19 07:00:00+00:00  246.308851
+1975-06-19 08:00:00+00:00  232.155814
+1975-06-19 09:00:00+00:00  231.625450
+1975-06-19 10:00:00+00:00  241.429918
+1975-06-19 11:00:00+00:00  242.437420
+1975-06-19 12:00:00+00:00  241.005952
+1975-06-19 13:00:00+00:00  245.711331
+1975-06-19 14:00:00+00:00  246.732151
+1975-06-19 15:00:00+00:00  258.889494
+1975-06-19 16:00:00+00:00  267.417546
+1975-06-19 17:00:00+00:00  274.056499
+1975-06-19 18:00:00+00:00  280.208008</code></pre>
 </div>
 </div>
 <p>Tune hyperparameters via Optuna Bayesian search (<code>"optuna"</code> task):</p>
-<div id="3d9fdec4" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.runner <span class="im">import</span> run</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo02.csv"</span>))</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    df,</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"optuna"</span>,</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span><span class="st">"demo02"</span>,</span>
-<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">5</span>,</span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    train_days<span class="op">=</span><span class="dv">365</span>,</span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    val_days<span class="op">=</span><span class="dv">7</span>,</span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">"weighted"</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(forecast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
-WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
-</div>
+<div id="f503be6b" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.runner <span class="im">import</span> run</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo02.csv"</span>))</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>cfg <span class="op">=</span> ConfigMulti(</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>pd.Timedelta(days<span class="op">=</span><span class="dv">365</span>),</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    delta_val<span class="op">=</span>pd.Timedelta(days<span class="op">=</span><span class="dv">7</span> <span class="op">*</span> <span class="dv">10</span>),</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    imputation_method<span class="op">=</span><span class="st">"weighted"</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(cfg, task<span class="op">=</span><span class="st">"optuna"</span>, dataframe<span class="op">=</span>df, project_name<span class="op">=</span><span class="st">"demo02"</span>)</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(forecast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                             forecast
-1975-06-18 19:00:00+00:00  -50.249274
-1975-06-18 20:00:00+00:00   94.919682
-1975-06-18 21:00:00+00:00   34.158562
-1975-06-18 22:00:00+00:00  -85.819358
-1975-06-18 23:00:00+00:00  -56.212889
-1975-06-19 00:00:00+00:00  142.544519
-1975-06-19 01:00:00+00:00  128.809284
-1975-06-19 02:00:00+00:00   94.377853
-1975-06-19 03:00:00+00:00   10.486095
-1975-06-19 04:00:00+00:00  -20.784942
-1975-06-19 05:00:00+00:00  -46.127539
-1975-06-19 06:00:00+00:00  -79.824495
-1975-06-19 07:00:00+00:00 -116.801473
-1975-06-19 08:00:00+00:00 -103.449925
-1975-06-19 09:00:00+00:00  -62.778142
-1975-06-19 10:00:00+00:00  -38.637466
-1975-06-19 11:00:00+00:00  -97.416968
-1975-06-19 12:00:00+00:00 -108.393945
-1975-06-19 13:00:00+00:00  -79.918142
-1975-06-19 14:00:00+00:00  -73.579668
-1975-06-19 15:00:00+00:00 -110.497369
-1975-06-19 16:00:00+00:00 -119.831727
-1975-06-19 17:00:00+00:00  -90.260173
-1975-06-19 18:00:00+00:00  -91.861492</code></pre>
-</div>
-</div>
-<p>Load previously saved models and predict without retraining (<code>"predict"</code> task). A prior training run (<code>"lazy"</code> or <code>"optuna"</code>) must have saved models to the cache first:</p>
-<div id="3b2bd2a6" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.runner <span class="im">import</span> run</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo02.csv"</span>))</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(df, task<span class="op">=</span><span class="st">"predict"</span>, project_name<span class="op">=</span><span class="st">"demo02"</span>, predict_size<span class="op">=</span><span class="dv">24</span>, imputation_method<span class="op">=</span><span class="st">"weighted"</span>)</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(forecast)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>                             forecast
-1975-06-18 19:00:00+00:00  -50.249274
-1975-06-18 20:00:00+00:00   94.919682
-1975-06-18 21:00:00+00:00   34.158562
-1975-06-18 22:00:00+00:00  -85.819358
-1975-06-18 23:00:00+00:00  -56.212889
-1975-06-19 00:00:00+00:00  142.544519
-1975-06-19 01:00:00+00:00  128.809284
-1975-06-19 02:00:00+00:00   94.377853
-1975-06-19 03:00:00+00:00   10.486095
-1975-06-19 04:00:00+00:00  -20.784942
-1975-06-19 05:00:00+00:00  -46.127539
-1975-06-19 06:00:00+00:00  -79.824495
-1975-06-19 07:00:00+00:00 -116.801473
-1975-06-19 08:00:00+00:00 -103.449925
-1975-06-19 09:00:00+00:00  -62.778142
-1975-06-19 10:00:00+00:00  -38.637466
-1975-06-19 11:00:00+00:00  -97.416968
-1975-06-19 12:00:00+00:00 -108.393945
-1975-06-19 13:00:00+00:00  -79.918142
-1975-06-19 14:00:00+00:00  -73.579668
-1975-06-19 15:00:00+00:00 -110.497369
-1975-06-19 16:00:00+00:00 -119.831727
-1975-06-19 17:00:00+00:00  -90.260173
-1975-06-19 18:00:00+00:00  -91.861492</code></pre>
+1975-06-18 19:00:00+00:00  254.547502
+1975-06-18 20:00:00+00:00  257.950993
+1975-06-18 21:00:00+00:00  249.567137
+1975-06-18 22:00:00+00:00  229.610154
+1975-06-18 23:00:00+00:00  211.460234
+1975-06-19 00:00:00+00:00  195.023158
+1975-06-19 01:00:00+00:00  191.479578
+1975-06-19 02:00:00+00:00  202.487586
+1975-06-19 03:00:00+00:00  215.902081
+1975-06-19 04:00:00+00:00  231.185068
+1975-06-19 05:00:00+00:00  245.020394
+1975-06-19 06:00:00+00:00  248.354205
+1975-06-19 07:00:00+00:00  242.776081
+1975-06-19 08:00:00+00:00  235.790037
+1975-06-19 09:00:00+00:00  230.304334
+1975-06-19 10:00:00+00:00  230.028791
+1975-06-19 11:00:00+00:00  231.332655
+1975-06-19 12:00:00+00:00  233.498377
+1975-06-19 13:00:00+00:00  238.396587
+1975-06-19 14:00:00+00:00  244.242604
+1975-06-19 15:00:00+00:00  243.748676
+1975-06-19 16:00:00+00:00  254.094178
+1975-06-19 17:00:00+00:00  258.950772
+1975-06-19 18:00:00+00:00  262.159363</code></pre>
 </div>
 </div>
 <p>Remove all cached models and artefacts for a project (<code>"clean"</code> task). Returns an empty DataFrame:</p>
-<div id="a4ac08df" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.runner <span class="im">import</span> run</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> run(task<span class="op">=</span><span class="st">"clean"</span>, project_name<span class="op">=</span><span class="st">"demo02"</span>)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result.empty)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="23293c61" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.runner <span class="im">import</span> run</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> run(task<span class="op">=</span><span class="st">"clean"</span>, project_name<span class="op">=</span><span class="st">"demo02"</span>)</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(result.empty)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[clean] Cache removed successfully: /home/runner/.spotforecast2_cache
 True</code></pre>
