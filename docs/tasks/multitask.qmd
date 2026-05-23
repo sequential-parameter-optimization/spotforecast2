@@ -7,9 +7,7 @@ Bereitstellen des DataFrames `df`:
 ```{python}
 from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
-# df = fetch_data(filename=str(get_package_data_home() / "demo10.csv"))
-
-df = fetch_data(filename="/Users/bartz/spotforecast2_data/demo10.csv")
+df = fetch_data(filename=str(get_package_data_home() / "demo10.csv"))
 ```
 
 
