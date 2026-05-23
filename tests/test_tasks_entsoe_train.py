@@ -4,9 +4,10 @@
 """Tests for the ``spotforecast2-entsoe train`` CLI subcommand.
 
 Mocks ``spotforecast2.multitask.runner.run`` so the tests run offline and
-without needing the merged ENTSO-E CSV.  They verify only that the CLI
-dispatches to ``run(...)`` with the correct kwargs for each model choice
-(LightGBM / XGBoost).
+without needing the merged ENTSO-E CSV.  After the config-object refactor
+the CLI invokes ``run(config, task="defaults", project_name=..., show=...)``
+— the config is positional and carries every pipeline parameter (targets,
+agg_weights, bounds, data_loader, forecaster_factory, index_name, …).
 """
 
 from unittest.mock import patch
@@ -21,34 +22,39 @@ from spotforecast2.tasks.task_entsoe import (
 )
 
 
-def _train_call_kwargs(model: str) -> dict:
-    """Invoke ``main()`` with ``train <model>`` while mocking ``run``."""
+def _train_call(model: str):
+    """Invoke ``main()`` with ``train <model>`` while mocking ``run``.
+
+    Returns ``(positional_args, keyword_args)`` of the single ``run`` call.
+    """
     with patch("spotforecast2.tasks.task_entsoe.run") as mock_run:
         with patch("sys.argv", ["spotforecast2-entsoe", "train", model]):
             main()
     assert mock_run.call_count == 1
-    return mock_run.call_args.kwargs
+    return mock_run.call_args.args, mock_run.call_args.kwargs
 
 
 def test_train_lgbm_dispatches_to_run_with_defaults_task():
-    kwargs = _train_call_kwargs("lgbm")
+    args, kwargs = _train_call("lgbm")
+    config = args[0]
+    assert isinstance(config, ConfigEntsoe)
     assert kwargs["task"] == "defaults"
-    assert kwargs["config_cls"] is ConfigEntsoe
     assert kwargs["project_name"] == "entsoe-lgbm"
-    assert kwargs["targets"] == ["Actual Load"]
-    assert kwargs["agg_weights"] == [1.0]
-    assert kwargs["bounds"] == [(-1e9, 1e9)]
-    assert kwargs["data_loader"] is entsoe_data_loader
-    assert kwargs["forecaster_factory"] is entsoe_lgbm_factory
-    assert kwargs["index_name"] == "Time (UTC)"
+    assert config.targets == ["Actual Load"]
+    assert config.agg_weights == [1.0]
+    assert config.bounds == [(-1e9, 1e9)]
+    assert config.data_loader is entsoe_data_loader
+    assert config.forecaster_factory is entsoe_lgbm_factory
+    assert config.index_name == "Time (UTC)"
     assert kwargs["show"] is False
 
 
 def test_train_xgb_dispatches_to_run_with_xgb_factory():
-    kwargs = _train_call_kwargs("xgb")
+    args, kwargs = _train_call("xgb")
+    config = args[0]
     assert kwargs["task"] == "defaults"
     assert kwargs["project_name"] == "entsoe-xgb"
-    assert kwargs["forecaster_factory"] is entsoe_xgb_factory
+    assert config.forecaster_factory is entsoe_xgb_factory
 
 
 def test_train_default_model_is_lgbm():
@@ -56,8 +62,10 @@ def test_train_default_model_is_lgbm():
     with patch("spotforecast2.tasks.task_entsoe.run") as mock_run:
         with patch("sys.argv", ["spotforecast2-entsoe", "train"]):
             main()
-    assert mock_run.call_args.kwargs["project_name"] == "entsoe-lgbm"
-    assert mock_run.call_args.kwargs["forecaster_factory"] is entsoe_lgbm_factory
+    args = mock_run.call_args.args
+    kwargs = mock_run.call_args.kwargs
+    assert kwargs["project_name"] == "entsoe-lgbm"
+    assert args[0].forecaster_factory is entsoe_lgbm_factory
 
 
 def test_train_show_flag_forwards_to_run():

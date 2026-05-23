@@ -31,7 +31,7 @@ from spotforecast2.multitask.optuna import OptunaTask
 from spotforecast2.multitask.predict import PredictTask
 from spotforecast2.multitask.spotoptim import SpotOptimTask
 from spotforecast2.multitask.multi import MultiTask
-from spotforecast2.multitask.runner import run
+from spotforecast2.multitask.runner import make_demo10_config, run
 
 __all__ = [
     "BaseTask",
@@ -43,5 +43,6 @@ __all__ = [
     "PredictTask",
     "SpotOptimTask",
     "agg_predictor",
+    "make_demo10_config",
     "run",
 ]

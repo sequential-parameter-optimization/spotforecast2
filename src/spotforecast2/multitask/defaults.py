@@ -34,7 +34,7 @@ def execute_defaults(
         Aggregated prediction package (weighted combination of all targets,
         or the single-target package when ``len(config.targets) == 1``).
         Per-target packages are stored on ``task.results["defaults"]``.
-        When ``task.auto_save_models`` is ``True`` (the default), fitted
+        When ``task.config.auto_save_models`` is ``True`` (the default), fitted
         models are saved to disk so ``PredictTask(task_name="defaults")`` can
         load them directly.
     """

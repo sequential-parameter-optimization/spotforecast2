@@ -116,7 +116,7 @@ class TestClassAttributes:
         assert predict_task.TASK == "predict"
 
     def test_instance_data_frame_name(self, predict_task):
-        assert predict_task.data_frame_name == "test_data"
+        assert predict_task.config.data_frame_name == "test_data"
 
     def test_has_run_method(self):
         assert hasattr(PredictTask, "run")
@@ -513,7 +513,7 @@ class TestConstructorArgs:
 
     def test_default_data_frame_name(self):
         task = PredictTask()
-        assert task.data_frame_name == "default"
+        assert task.config.data_frame_name == "default"
 
     def test_custom_predict_size(self, tmp_path):
         task = PredictTask(predict_size=48, cache_home=tmp_path)
@@ -525,7 +525,7 @@ class TestConstructorArgs:
 
     def test_custom_data_frame_name(self, tmp_path):
         task = PredictTask(data_frame_name="my_dataset", cache_home=tmp_path)
-        assert task.data_frame_name == "my_dataset"
+        assert task.config.data_frame_name == "my_dataset"
 
 
 # ---------------------------------------------------------------------------

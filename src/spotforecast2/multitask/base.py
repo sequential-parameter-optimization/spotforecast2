@@ -15,13 +15,13 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Optional, Protocol
 
 import pandas as pd
 from astral import LocationInfo
 
 from spotforecast2_safe.data.fetch_data import get_cache_home
-from spotforecast2_safe.configurator.config_multi import ConfigMulti
+from spotforecast2_safe.configurator.config_multi import ConfigMulti  # noqa: F401  (re-exported for subclasses)
 from spotforecast2_safe.calendar import (
     get_calendar_features,
     get_day_night_features,
@@ -63,10 +63,11 @@ logger = logging.getLogger(__name__)
 class PipelineConfig(Protocol):
     """Structural protocol describing the config surface ``BaseTask`` reads.
 
-    ``ConfigMulti`` already satisfies this protocol; ``ConfigEntsoe`` (and any
-    future config class) only needs to expose the same field names with
-    compatible types.  Documented here so that subclasses can swap config
-    implementations via ``BaseTask(config_cls=...)`` without inheritance.
+    ``ConfigMulti`` and ``ConfigEntsoe`` both satisfy this protocol; any
+    future config class only needs to expose the same field names with
+    compatible types.  The protocol is the contract that lets a caller pass
+    ``MultiTask(config=ConfigEntsoe(...))`` (or any other ``PipelineConfig``)
+    without subclassing or rebuilding kwargs.
     """
 
     # Targets and aggregation
@@ -103,9 +104,29 @@ class PipelineConfig(Protocol):
     cov_end: Optional[pd.Timestamp]
     start_download: Optional[str]
     end_download: Optional[str]
+    # Tuning trial budgets
+    n_trials_optuna: int
+    n_trials_spotoptim: int
+    n_initial_spotoptim: int
+    # Cross-validation
+    number_folds: int
+    # Persistence policy and active-dataset identifier
+    auto_save_models: bool
+    data_frame_name: str
     # Misc
     random_state: int
+    verbose: bool
     cache_home: Optional[Any]
+    # Optional callables
+    forecaster_factory: Optional[Any]
+    data_loader: Optional[Any]
+
+    def set_params(
+        self,
+        params: Optional[Dict[str, object]] = None,
+        **kwargs: object,
+    ) -> "PipelineConfig":
+        """Update one or more config fields in place and return ``self``."""
 
 
 def agg_predictor(
@@ -178,66 +199,34 @@ class BaseTask:
     optuna, spotoptim, predict, clean).  Subclasses implement the run method with
     task-specific training, tuning, or prediction logic.
 
+    The constructor takes a single ``config`` object satisfying the
+    ``PipelineConfig`` protocol — typically a ``ConfigMulti`` or
+    ``ConfigEntsoe``.  All pipeline parameters (forecast horizon, training
+    window, outlier policy, tuning budgets, weather/holiday hooks,
+    cross-validation fold count, persistence policy, …) live on that
+    object.  Only genuinely call-time state (the dataframes, the cache
+    directory override, the logging level) is passed as separate kwargs.
+    Extra ``**overrides`` are forwarded to ``config.set_params`` and
+    mutate the passed-in config in place.
+
     Args:
-        dataframe:
-            Pre-loaded input DataFrame with training data.
-            The DataFrame must contain a datetime column matching
-            ``index_name`` plus at least one numeric target column.
-        data_test:
-            Pre-loaded input DataFrame with test data (ground truth
-            for the forecast horizon).  The DataFrame must contain a
-            datetime column matching ``index_name`` plus at least one
-            numeric target column.  Optional.
-        data_frame_name:
-            Identifier for the active dataset, used for
-            cache-directory naming and model file naming.
-        cache_home:
-            Cache directory path. String or Path.
-        agg_weights:
-            Per-target aggregation weights.
-        index_name:
-            Datetime column name in the raw CSV.
-        number_folds:
-            Number of validation folds for hyperparameter tuning.
-        predict_size:
-            Forecast horizon in hours.
-        bounds:
-            Per-column hard outlier bounds ``(lower, upper)``.
-        contamination:
-            IsolationForest contamination fraction.
-        imputation_method:
-            Gap-filling strategy — ``"weighted"`` or ``"linear"``.
-        use_exogenous_features:
-            Whether to build exogenous features.
-        train_days:
-            Number of days in the training window.
-        val_days:
-            Number of days in each validation fold.
-            Note that the total validation window is ``val_days * number_folds``.
-            Each fold is a contiguous block of ``val_days`` days, and folds are
-            non-overlapping and sequential immediately after the training window.
-        n_trials_optuna:
-            Number of Optuna Bayesian-search trials.
-        n_trials_spotoptim:
-            Number of SpotOptim surrogate-search trials.
-        n_initial_spotoptim:
-            Initial random evaluations for SpotOptim.
-        auto_save_models:
-            Whether to automatically save fitted models to
-            disk after each training run.  Defaults to ``True`` so that
-            saved models are immediately available for PredictTask without
-            any manual call to save_models().
-        log_level:
-            Logging level for the pipeline logger.
-        verbose:
-            Whether to print verbose messages during data preparation and outlier detection.
-            Defaults to ``False``.
-        config_overrides:
-            Extra keyword arguments forwarded to
-            ConfigMulti.
+        config: A ``PipelineConfig``-conforming object owning every pipeline
+            parameter.  ``ConfigMulti`` and ``ConfigEntsoe`` both satisfy
+            the protocol.
+        dataframe: Pre-loaded input DataFrame with training data.  Must
+            contain a datetime column matching ``config.index_name`` plus
+            at least one numeric target column.
+        data_test: Pre-loaded test DataFrame (ground truth for the
+            forecast horizon).  Optional.
+        cache_home: Cache directory override.  When not ``None``, replaces
+            ``config.cache_home`` for this task instance.
+        log_level: Logging level for the pipeline logger.
+        **overrides: Forwarded to ``config.set_params(**overrides)`` — a
+            convenience for one-line tweaks without building a fresh config.
+            Mutates the caller's config object.
 
     Attributes:
-        config (ConfigMulti): Centralised pipeline configuration.
+        config (PipelineConfig): Centralised pipeline configuration.
         df_pipeline (pd.DataFrame): Pipeline DataFrame after preparation.
         df_test (pd.DataFrame): Test DataFrame (ground truth).
         weight_func: Sample-weight function from imputation.
@@ -255,65 +244,39 @@ class BaseTask:
 
     def __init__(
         self,
+        config: Optional[PipelineConfig] = None,
         *,
         dataframe: Optional[pd.DataFrame] = None,
         data_test: Optional[pd.DataFrame] = None,
-        data_frame_name: str = "default",
         cache_home: Optional[Path] = None,
-        agg_weights: Optional[List[float]] = None,
-        index_name: str = "DateTime",
-        number_folds: int = 10,
-        predict_size: int = 24,
-        bounds: Optional[List[tuple]] = None,
-        contamination: float = 0.03,
-        imputation_method: str = "weighted",
-        use_exogenous_features: bool = True,
-        n_trials_optuna: int = 15,
-        n_trials_spotoptim: int = 10,
-        n_initial_spotoptim: int = 5,
-        auto_save_models: bool = True,
-        train_days: int = 365 * 2,
-        val_days: int = 7 * 2,
         log_level: int = logging.INFO,
-        verbose: bool = False,
-        config_cls: Callable[..., PipelineConfig] = ConfigMulti,
-        **config_overrides: Any,
+        **overrides: Any,
     ) -> None:
         # Task identifier (overridden by subclasses via _task_name)
         self.TASK = self._task_name
 
-        # Store constructor arguments as instance attributes
+        if config is None:
+            config = ConfigMulti()
+        # Apply caller-supplied overrides in place on the config object.
+        if overrides:
+            config.set_params(**overrides)
+        # ``cache_home`` is the one call-time override that wins over the
+        # config value when explicitly supplied.
+        if cache_home is not None:
+            config.cache_home = cache_home
+        # Propagate the task identifier so config-aware helpers know the mode.
+        config.task = self.TASK
+        self.config = config
+
+        # Call-time data and per-instance state
         self._dataframe = dataframe
-        self.data_frame_name = data_frame_name
         self.data_test = data_test
-        self.cache_home = cache_home
-        self.agg_weights = agg_weights
-        self.index_name = index_name
-        self.number_folds = number_folds
-        self.predict_size = predict_size
-        self.bounds = bounds
-        self.contamination = contamination
-        self.imputation_method = imputation_method
-        self.use_exogenous_features = use_exogenous_features
-        self.n_trials_optuna = n_trials_optuna
-        self.n_trials_spotoptim = n_trials_spotoptim
-        self.n_initial_spotoptim = n_initial_spotoptim
-        self.auto_save_models = auto_save_models
-        self.train_days = train_days
-        self.val_days = val_days
-        self.verbose = verbose
-        # Config class to instantiate in ``_build_config`` — defaults to
-        # ``ConfigMulti`` so existing callers are unaffected.  Subclasses can
-        # pass ``config_cls=ConfigEntsoe`` (or any class satisfying the
-        # ``PipelineConfig`` protocol) to swap the configuration surface.
-        self._config_cls = config_cls
+        # Cached resolved cache directory; helpers read ``self.config.cache_home``.
+        self.cache_home = config.cache_home
+
         # Logger
         self.logger = logging.getLogger(f"{__name__}.{self.__class__.__name__}")
         self.logger.setLevel(log_level)
-
-        # Derived constants
-        self.TRAIN_SIZE = pd.Timedelta(days=self.train_days)
-        self.DELTA_VAL = pd.Timedelta(days=self.val_days * self.number_folds)
 
         # Pipeline state (populated by methods)
         self.df_pipeline: Optional[pd.DataFrame] = None
@@ -328,9 +291,6 @@ class BaseTask:
         self.results: Dict[str, Dict[str, Any]] = {}
         self.agg_results: Dict[str, Any] = {}
 
-        # Build the config instance (defaults to ConfigMulti) — merge explicit
-        # arguments with overrides.
-        self.config = self._build_config(**config_overrides)
         self._attach_file_handler()
 
     # ------------------------------------------------------------------
@@ -339,9 +299,9 @@ class BaseTask:
 
     def _attach_file_handler(self) -> None:
         """Attach a FileHandler to self.logger writing to get_cache_home()/logging/."""
-        log_dir = get_cache_home(self.cache_home) / "logging"
+        log_dir = get_cache_home(self.config.cache_home) / "logging"
         log_dir.mkdir(parents=True, exist_ok=True)
-        log_file = log_dir / f"{self.data_frame_name}.log"
+        log_file = log_dir / f"{self.config.data_frame_name}.log"
         # Loggers are singletons — avoid adding duplicate FileHandlers
         for h in self.logger.handlers:
             if isinstance(h, logging.FileHandler) and Path(h.baseFilename) == log_file:
@@ -354,35 +314,6 @@ class BaseTask:
             )
         )
         self.logger.addHandler(handler)
-
-    def _build_config(self, **overrides: Any) -> PipelineConfig:
-        """Create a config instance from the stored pipeline arguments.
-
-        Uses ``self._config_cls`` (defaults to ``ConfigMulti``) so subclasses
-        and ENTSO-E-style callers can substitute their own config class
-        without overriding this method.  The instantiated config must satisfy
-        the ``PipelineConfig`` protocol.
-        """
-        kwargs: Dict[str, Any] = {
-            "predict_size": self.predict_size,
-            "contamination": self.contamination,
-            "imputation_method": self.imputation_method,
-            "use_exogenous_features": self.use_exogenous_features,
-            "index_name": self.index_name,
-            "cache_home": get_cache_home(self.cache_home),
-            "n_trials_optuna": self.n_trials_optuna,
-            "n_trials_spotoptim": self.n_trials_spotoptim,
-            "n_initial_spotoptim": self.n_initial_spotoptim,
-            "task": self.TASK,
-            "train_size": self.TRAIN_SIZE,
-            "delta_val": self.DELTA_VAL,
-        }
-        if self.bounds is not None:
-            kwargs["bounds"] = self.bounds
-        if self.agg_weights is not None:
-            kwargs["agg_weights"] = self.agg_weights
-        kwargs.update(overrides)
-        return self._config_cls(**kwargs)
 
     # ------------------------------------------------------------------
     # Step 1 — Data Preparation
@@ -450,24 +381,24 @@ class BaseTask:
         if df_test is None:
             df_test = self.data_test
 
-        demo_data = reset_index(demo_data, index_name=self.index_name)
+        demo_data = reset_index(demo_data, index_name=self.config.index_name)
         if df_test is not None:
-            df_test = reset_index(df_test, index_name=self.index_name)
+            df_test = reset_index(df_test, index_name=self.config.index_name)
         self.df_test = df_test
 
-        first_ts = pd.Timestamp(demo_data[self.index_name].iloc[0])
-        last_ts = pd.Timestamp(demo_data[self.index_name].iloc[-1])
+        first_ts = pd.Timestamp(demo_data[self.config.index_name].iloc[0])
+        last_ts = pd.Timestamp(demo_data[self.config.index_name].iloc[-1])
         self.config.start_download = first_ts.strftime("%Y%m%d%H%M")
         self.config.end_download = last_ts.strftime("%Y%m%d%H%M")
         self.config.end_train_default = last_ts.isoformat()
 
-        all_targets = [c for c in demo_data.columns if c != self.index_name]
+        all_targets = [c for c in demo_data.columns if c != self.config.index_name]
         if self.config.targets is None:
             self.config.targets = all_targets
 
-        df_pipeline = demo_data.set_index(self.index_name)
-        df_pipeline = agg_and_resample_data(df_pipeline, verbose=self.verbose)
-        basic_ts_checks(df_pipeline, verbose=self.verbose)
+        df_pipeline = demo_data.set_index(self.config.index_name)
+        df_pipeline = agg_and_resample_data(df_pipeline, verbose=self.config.verbose)
+        basic_ts_checks(df_pipeline, verbose=self.config.verbose)
 
         self.config.targets = [
             c for c in self.config.targets if c in df_pipeline.columns
@@ -481,7 +412,7 @@ class BaseTask:
         ) = get_start_end(
             data=df_pipeline,
             forecast_horizon=self.config.predict_size,
-            verbose=self.verbose,
+            verbose=self.config.verbose,
         )
 
         self.df_pipeline = df_pipeline
@@ -514,7 +445,7 @@ class BaseTask:
                     column=col,
                     lower_threshold=lower,
                     upper_threshold=upper,
-                    verbose=self.verbose,
+                    verbose=self.config.verbose,
                 )
 
         if self.config.use_outlier_detection:
@@ -608,7 +539,7 @@ class BaseTask:
             timezone=self.config.timezone,
             freq="h",
             cache_home=self.config.cache_home,
-            verbose=self.verbose,
+            verbose=self.config.verbose,
         )
         self.logger.info("  Weather features: %s", weather_features.shape)
 
@@ -771,7 +702,7 @@ class BaseTask:
         )
 
         skl_cv = _SklearnTimeSeriesSplit(
-            n_splits=self.number_folds,
+            n_splits=self.config.number_folds,
             max_train_size=max_train_size,
             test_size=self.config.predict_size,
             gap=0,
@@ -868,7 +799,7 @@ class BaseTask:
         tuning_dir.mkdir(parents=True, exist_ok=True)
 
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-        filename = f"{self.data_frame_name}_{target}_{task_name}_{timestamp}.json"
+        filename = f"{self.config.data_frame_name}_{target}_{task_name}_{timestamp}.json"
         filepath = tuning_dir / filename
 
         # Convert lags to a JSON-safe type
@@ -877,13 +808,14 @@ class BaseTask:
             lags_serializable = best_lags.tolist()
 
         payload = {
-            "data_frame_name": self.data_frame_name,
+            "data_frame_name": self.config.data_frame_name,
             "target": target,
             "task_name": task_name,
             "timestamp": timestamp,
             "best_params": best_params,
             "best_lags": lags_serializable,
         }
+
 
         with open(filepath, "w") as fh:
             json.dump(payload, fh, indent=2, default=str)
@@ -936,7 +868,7 @@ class BaseTask:
         if not tuning_dir.exists():
             return None
 
-        prefix = f"{self.data_frame_name}_{target}_"
+        prefix = f"{self.config.data_frame_name}_{target}_"
         candidates: List[Path] = sorted(
             (
                 p
@@ -1039,7 +971,7 @@ class BaseTask:
                 forecasters[target] = pkg["forecaster"]
 
         model_dir = (
-            get_cache_home(self.config.cache_home) / "models" / self.data_frame_name
+            get_cache_home(self.config.cache_home) / "models" / self.config.data_frame_name
         )
         model_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1047,7 +979,7 @@ class BaseTask:
         saved: Dict[str, Path] = {}
 
         for target, forecaster in forecasters.items():
-            filename = f"{self.data_frame_name}_{target}_{task_name}_{timestamp}.joblib"
+            filename = f"{self.config.data_frame_name}_{target}_{task_name}_{timestamp}.joblib"
             filepath = model_dir / filename
             _joblib_dump(forecaster, filepath, compress=3)
             saved[target] = filepath
@@ -1083,12 +1015,12 @@ class BaseTask:
 
         """
         model_dir = (
-            get_cache_home(self.config.cache_home) / "models" / self.data_frame_name
+            get_cache_home(self.config.cache_home) / "models" / self.config.data_frame_name
         )
         if not model_dir.exists():
             return {}
 
-        prefix = f"{self.data_frame_name}_"
+        prefix = f"{self.config.data_frame_name}_"
         candidates: List[Path] = sorted(
             model_dir.glob(f"{prefix}*.joblib"),
             reverse=True,
@@ -1349,7 +1281,7 @@ class BaseTask:
                 self._show_prediction_figure(results[target], target, task_name)
 
         self.results[results_key] = results
-        if getattr(self, "auto_save_models", True):
+        if getattr(self.config, "auto_save_models", True):
             self.save_models(task_name=results_key)
         return self._aggregate_and_show(results, task_name, show=show)
 

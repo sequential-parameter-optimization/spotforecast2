@@ -39,15 +39,18 @@ _FREQ = "h"
 _N = 2000  # two-thousand hourly observations
 
 
-def _make_task(tmp_path: Path, **kwargs) -> LazyTask:
-    """Return a LazyTask whose config.end_train_ts is set without loading data.
+def _make_task(tmp_path: Path, *, val_days: int = 7, **kwargs) -> LazyTask:
+    """Return a LazyTask whose ``config.end_train_ts`` is set without loading data.
 
-    val_days is pinned to 7 so that DELTA_VAL = 7 * number_folds days, keeping
-    the test series length requirements manageable.  The val_days parameter
-    itself is exercised in test_train_val_days.py.
+    ``val_days`` is pinned to 7 so that ``delta_val = 7 * number_folds`` days,
+    keeping the test series length requirements manageable.  After the
+    config-object refactor ``delta_val`` is no longer auto-derived inside
+    ``BaseTask`` — the helper computes it explicitly here.
     """
-    kwargs.setdefault("val_days", 7)
-    t = LazyTask(data_frame_name="test_data", cache_home=tmp_path, **kwargs)
+    number_folds = kwargs.get("number_folds", 10)
+    overrides = dict(kwargs, delta_val=pd.Timedelta(days=val_days * number_folds))
+    overrides.setdefault("data_frame_name", "test_data")
+    t = LazyTask(cache_home=tmp_path, **overrides)
     t.config.end_train_ts = _END_TRAIN
     return t
 

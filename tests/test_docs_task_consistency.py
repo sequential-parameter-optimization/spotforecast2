@@ -289,14 +289,14 @@ class TestAutoSaveModels:
 
         task = BaseTask(predict_size=24)
         assert (
-            task.auto_save_models is True
+            task.config.auto_save_models is True
         ), "BaseTask.auto_save_models should default to True"
 
     def test_base_task_auto_save_can_be_disabled(self):
         from spotforecast2.multitask.base import BaseTask
 
         task = BaseTask(predict_size=24, auto_save_models=False)
-        assert task.auto_save_models is False
+        assert task.config.auto_save_models is False
 
     @pytest.mark.parametrize("cls_name", ["LazyTask", "OptunaTask", "SpotOptimTask"])
     def test_training_task_inherits_auto_save_true(self, cls_name):
@@ -304,7 +304,7 @@ class TestAutoSaveModels:
         cls = getattr(mod, cls_name)
         task = cls(predict_size=24)
         assert (
-            task.auto_save_models is True
+            task.config.auto_save_models is True
         ), f"{cls_name}.auto_save_models should default to True"
 
     @pytest.mark.parametrize("cls_name", ["LazyTask", "OptunaTask", "SpotOptimTask"])
@@ -312,15 +312,15 @@ class TestAutoSaveModels:
         mod = importlib.import_module(MULTITASK_PKG)
         cls = getattr(mod, cls_name)
         task = cls(predict_size=24, auto_save_models=False)
-        assert task.auto_save_models is False
+        assert task.config.auto_save_models is False
 
     def test_predict_task_auto_save_attribute(self):
         from spotforecast2.multitask import PredictTask
 
         task = PredictTask(predict_size=24)
         assert hasattr(
-            task, "auto_save_models"
-        ), "PredictTask should have auto_save_models attribute via BaseTask"
+            task.config, "auto_save_models"
+        ), "PredictTask.config should carry the auto_save_models policy"
 
     def test_execute_lazy_delegates_to_run_strategy_with_lazy_key(self):
         """``execute_lazy`` delegates to ``BaseTask._run_strategy`` with

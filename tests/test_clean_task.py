@@ -273,13 +273,13 @@ class TestCleanTaskClass:
         from spotforecast2.multitask.clean import CleanTask
 
         task = CleanTask(cache_home=tmp_path)
-        assert task.auto_save_models is True
+        assert task.config.auto_save_models is True
 
     def test_auto_save_models_can_be_disabled(self, tmp_path):
         from spotforecast2.multitask.clean import CleanTask
 
         task = CleanTask(cache_home=tmp_path, auto_save_models=False)
-        assert task.auto_save_models is False
+        assert task.config.auto_save_models is False
 
 
 # ===========================================================================
