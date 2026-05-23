@@ -711,6 +711,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <ul class="collapse">
   <li><a href="#spotforecast2.tasks.task_entsoe.entsoe_data_loader" id="toc-spotforecast2.tasks.task_entsoe.entsoe_data_loader" class="nav-link" data-scroll-target="#spotforecast2.tasks.task_entsoe.entsoe_data_loader">entsoe_data_loader</a></li>
   <li><a href="#spotforecast2.tasks.task_entsoe.entsoe_lgbm_factory" id="toc-spotforecast2.tasks.task_entsoe.entsoe_lgbm_factory" class="nav-link" data-scroll-target="#spotforecast2.tasks.task_entsoe.entsoe_lgbm_factory">entsoe_lgbm_factory</a></li>
+  <li><a href="#spotforecast2.tasks.task_entsoe.entsoe_test_data_loader" id="toc-spotforecast2.tasks.task_entsoe.entsoe_test_data_loader" class="nav-link" data-scroll-target="#spotforecast2.tasks.task_entsoe.entsoe_test_data_loader">entsoe_test_data_loader</a></li>
   <li><a href="#spotforecast2.tasks.task_entsoe.entsoe_xgb_factory" id="toc-spotforecast2.tasks.task_entsoe.entsoe_xgb_factory" class="nav-link" data-scroll-target="#spotforecast2.tasks.task_entsoe.entsoe_xgb_factory">entsoe_xgb_factory</a></li>
   <li><a href="#spotforecast2.tasks.task_entsoe.main" id="toc-spotforecast2.tasks.task_entsoe.main" class="nav-link" data-scroll-target="#spotforecast2.tasks.task_entsoe.main">main</a></li>
   </ul></li>
@@ -763,10 +764,14 @@ spotforecast2-entsoe predict lgbm --plot</code></pre>
 <td>LightGBM ForecasterRecursive for the ENTSO-E pipeline.</td>
 </tr>
 <tr class="odd">
+<td><a href="#spotforecast2.tasks.task_entsoe.entsoe_test_data_loader">entsoe_test_data_loader</a></td>
+<td>Return the merged ENTSO-E CSV sliced to “yesterday in UTC”.</td>
+</tr>
+<tr class="even">
 <td><a href="#spotforecast2.tasks.task_entsoe.entsoe_xgb_factory">entsoe_xgb_factory</a></td>
 <td>XGBoost ForecasterRecursive for the ENTSO-E pipeline.</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><a href="#spotforecast2.tasks.task_entsoe.main">main</a></td>
 <td>Entry point for the <code>spotforecast2-entsoe</code> console script.</td>
 </tr>
@@ -886,14 +891,71 @@ spotforecast2-entsoe predict lgbm --plot</code></pre>
 </table>
 </section>
 </section>
+<section id="spotforecast2.tasks.task_entsoe.entsoe_test_data_loader" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.tasks.task_entsoe.entsoe_test_data_loader">entsoe_test_data_loader</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>tasks.task_entsoe.entsoe_test_data_loader(config)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Return the merged ENTSO-E CSV sliced to “yesterday in UTC”.</p>
+<p>Mirrors <code>entsoe_data_loader</code> but returns only the 24 hourly rows for the UTC day immediately preceding today. Plug into <code>config.test_data_loader</code> so <code>BaseTask.prepare_data</code> consumes the slice as ground truth, populating <code>test_actual</code> and <code>metrics_future</code> in the prediction package.</p>
+<section id="parameters-2" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 3%">
+<col style="width: 25%">
+<col style="width: 65%">
+<col style="width: 4%">
+</colgroup>
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>config</td>
+<td><code>ConfigEntsoe</code></td>
+<td>A <code>ConfigEntsoe</code> with <code>data_filename</code> set; the merged interim CSV must already contain data covering yesterday (run <code>spotforecast2-entsoe download</code> first).</td>
+<td><em>required</em></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-1" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
+<td>DataFrame indexed by <code>Time (UTC)</code> with the rows spanning</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
+<td><code>[yesterday 00:00 UTC, today 00:00 UTC)</code>.</td>
+</tr>
+</tbody>
+</table>
+</section>
+</section>
 <section id="spotforecast2.tasks.task_entsoe.entsoe_xgb_factory" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.tasks.task_entsoe.entsoe_xgb_factory">entsoe_xgb_factory</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>tasks.task_entsoe.entsoe_xgb_factory(config, <span class="op">*</span>, weight_func<span class="op">=</span><span class="va">None</span>, target<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tasks.task_entsoe.entsoe_xgb_factory(config, <span class="op">*</span>, weight_func<span class="op">=</span><span class="va">None</span>, target<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>XGBoost ForecasterRecursive for the ENTSO-E pipeline.</p>
 </section>
 <section id="spotforecast2.tasks.task_entsoe.main" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.tasks.task_entsoe.main">main</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>tasks.task_entsoe.main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>tasks.task_entsoe.main()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Entry point for the <code>spotforecast2-entsoe</code> console script.</p>
 
 
