@@ -83,6 +83,7 @@ def execute_predict(
             exog_train=exog_train,
             exog_future=exog_future,
             df_test=task.df_test,
+            index_name=task.config.index_name,
         )
         if show:
             task._show_prediction_figure(
