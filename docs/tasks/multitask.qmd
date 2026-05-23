@@ -42,6 +42,29 @@ config = make_demo10_config(
 )
 ```
 
+### Fail-safe Verhalten bei Open-Meteo-Ausfällen
+
+`config.on_weather_failure` steuert, wie `BaseTask.build_exogenous_features`
+auf Open-Meteo-Ausfälle reagiert (z. B. Rate-Limit, 5xx-Antworten,
+nicht erreichbares Archiv):
+
+- `"raise"` (Default): Eine `WeatherFetchError`-Exception bricht den Lauf ab.
+  Das ist das sichere Standardverhalten — Pipeline und Modellartefakte
+  bleiben konsistent.
+- `"skip"`: Der Fehler wird gefangen, eine WARNING wird im Per-Run-Log
+  vermerkt, und die Pipeline läuft *ohne* Wetterfeatures weiter
+  (`config.use_exogenous_features=True` reicht weiter mit Kalender-, Tag-
+  Nacht-, und Feiertagsmerkmalen). Modelle werden nur auf den verbleibenden
+  Kovariaten trainiert.
+
+```{python}
+config_skip = make_demo10_config(
+    train_size=pd.Timedelta(days=365),
+    on_weather_failure="skip",
+)
+print(config_skip.on_weather_failure)
+```
+
 
 ## Production
 
