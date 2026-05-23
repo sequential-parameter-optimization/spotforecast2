@@ -94,6 +94,7 @@ def run(
     *,
     task: str = "lazy",
     dataframe: Optional[pd.DataFrame] = None,
+    data_test: Optional[pd.DataFrame] = None,
     project_name: str = "test_project",
     cache_home: Optional[str] = None,
     plot_with_outliers: bool = False,
@@ -127,6 +128,11 @@ def run(
         dataframe: Input time-series data.  Must contain a datetime
             column matching ``config.index_name`` and at least one numeric
             target column.  Optional for ``"clean"``, required otherwise.
+        data_test: Ground-truth DataFrame covering the prediction horizon.
+            When supplied, populates ``test_actual`` and ``metrics_future``
+            in the prediction package.  Takes precedence over
+            ``config.test_data_loader``.  Optional; ``None`` leaves the
+            test-actuals series empty (today's behaviour).
         project_name: Active-dataset identifier.  Sets
             ``config.data_frame_name``, which drives cache-subdirectory
             and model-file naming.
@@ -241,6 +247,7 @@ def run(
         config,
         task=task,
         dataframe=dataframe,
+        data_test=data_test,
         cache_home=cache_home,
         dry_run=dry_run,
         show_progress=show_progress,

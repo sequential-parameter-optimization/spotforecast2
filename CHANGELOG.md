@@ -1,3 +1,9 @@
+## [2.1.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.0.0...v2.1.0-rc.1) (2026-05-23)
+
+### Features
+
+* **multitask:** plumb config.test_data_loader through prepare_data and runner ([610fbfb](https://github.com/sequential-parameter-optimization/spotforecast2/commit/610fbfb59d14ac3ca7ea5bab1a5e6cfd6957f8bd))
+
 ## [2.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.2.0...v2.0.0) (2026-05-23)
 
 ### ⚠ BREAKING CHANGES

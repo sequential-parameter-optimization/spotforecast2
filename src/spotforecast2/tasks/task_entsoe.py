@@ -84,6 +84,33 @@ def entsoe_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
     return pd.read_csv(path, index_col=0, parse_dates=True)
 
 
+def entsoe_test_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
+    """Return the merged ENTSO-E CSV sliced to "yesterday in UTC".
+
+    Mirrors ``entsoe_data_loader`` but returns only the 24 hourly rows for the
+    UTC day immediately preceding today.  Plug into
+    ``config.test_data_loader`` so ``BaseTask.prepare_data`` consumes the slice
+    as ground truth, populating ``test_actual`` and ``metrics_future`` in the
+    prediction package.
+
+    Args:
+        config: A ``ConfigEntsoe`` with ``data_filename`` set; the merged
+            interim CSV must already contain data covering yesterday (run
+            ``spotforecast2-entsoe download`` first).
+
+    Returns:
+        DataFrame indexed by ``Time (UTC)`` with the rows spanning
+        ``[yesterday 00:00 UTC, today 00:00 UTC)``.
+    """
+    df = entsoe_data_loader(config)
+    end = pd.Timestamp.now(tz="UTC").floor("D")
+    start = end - pd.Timedelta(days=1)
+    if df.index.tz is None:
+        start = start.tz_localize(None)
+        end = end.tz_localize(None)
+    return df.loc[(df.index >= start) & (df.index < end)]
+
+
 def entsoe_lgbm_factory(
     config: ConfigEntsoe,
     *,
