@@ -121,7 +121,12 @@ class PipelineConfig(Protocol):
     forecaster_factory: Optional[Any]
     data_loader: Optional[Any]
 
-    def set_params(self, params: Optional[Dict[str, object]] = None, **kwargs: object) -> "PipelineConfig": ...
+    def set_params(
+        self,
+        params: Optional[Dict[str, object]] = None,
+        **kwargs: object,
+    ) -> "PipelineConfig":
+        """Update one or more config fields in place and return ``self``."""
 
 
 def agg_predictor(
