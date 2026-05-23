@@ -1,3 +1,28 @@
+## [2.0.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.0.0-rc.1...v2.0.0-rc.2) (2026-05-23)
+
+### Bug Fixes
+
+* **docs:** load demo10.csv from the bundled package data, not a local path ([370f37b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/370f37bd6bc7ff86faed2e74c2bfb3f566193244))
+
+### Documentation
+
+* **multitask:** warn about feature-schema mismatch with on_weather_failure=skip ([44c9eee](https://github.com/sequential-parameter-optimization/spotforecast2/commit/44c9eee1f0b518cc9ba790c13f2658803405d150))
+
+## [2.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.2.0...v2.0.0-rc.1) (2026-05-23)
+
+### ⚠ BREAKING CHANGES
+
+* **multitask:** pass config object to MultiTask/BaseTask/run instead of unpacking ~20 kwargs
+
+### Features
+
+* **multitask:** pass config object to MultiTask/BaseTask/run instead of unpacking ~20 kwargs ([be869d2](https://github.com/sequential-parameter-optimization/spotforecast2/commit/be869d2d25054b7772ced167ff82bd37f033e7b7))
+* **multitask:** respect config.on_weather_failure when Open-Meteo fetch fails ([d97a491](https://github.com/sequential-parameter-optimization/spotforecast2/commit/d97a491a1904126acb0ba51b891e9b09f4987cbc))
+
+### Documentation
+
+* **multitask:** document task="defaults" in multitask.qmd ([366d593](https://github.com/sequential-parameter-optimization/spotforecast2/commit/366d5935b561cfd30b7111afd763c75b38011a15))
+
 ## [1.2.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.1.2...v1.2.0) (2026-05-22)
 
 ### Features
