@@ -15,7 +15,7 @@ import json
 import logging
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Protocol
+from typing import Any, Dict, List, Literal, Optional, Protocol
 
 import pandas as pd
 from astral import LocationInfo
@@ -27,7 +27,7 @@ from spotforecast2_safe.calendar import (
     get_day_night_features,
     get_holiday_features,
 )
-from spotforecast2_safe.weather import get_weather_features
+from spotforecast2_safe.weather import WeatherFetchError, get_weather_features
 from spotforecast2_safe.manager.features import (
     apply_cyclical_encoding,
     create_interaction_features,
@@ -113,6 +113,8 @@ class PipelineConfig(Protocol):
     # Persistence policy and active-dataset identifier
     auto_save_models: bool
     data_frame_name: str
+    # Weather-fetch failure policy
+    on_weather_failure: Literal["raise", "skip"]
     # Misc
     random_state: int
     verbose: bool
@@ -528,19 +530,30 @@ class BaseTask:
 
         self.logger.info("Building exogenous features...")
 
-        # 4a. Weather
-        weather_features, self.weather_aligned = get_weather_features(
-            data=self.df_pipeline,
-            start=self.config.data_start,
-            cov_end=self.config.cov_end,
-            forecast_horizon=self.config.predict_size,
-            latitude=self.config.latitude,
-            longitude=self.config.longitude,
-            timezone=self.config.timezone,
-            freq="h",
-            cache_home=self.config.cache_home,
-            verbose=self.config.verbose,
-        )
+        # 4a. Weather (with opt-in fail-safe handling for Open-Meteo failures)
+        try:
+            weather_features, self.weather_aligned = get_weather_features(
+                data=self.df_pipeline,
+                start=self.config.data_start,
+                cov_end=self.config.cov_end,
+                forecast_horizon=self.config.predict_size,
+                latitude=self.config.latitude,
+                longitude=self.config.longitude,
+                timezone=self.config.timezone,
+                freq="h",
+                cache_home=self.config.cache_home,
+                verbose=self.config.verbose,
+            )
+        except WeatherFetchError as exc:
+            if self.config.on_weather_failure == "raise":
+                raise
+            self.logger.warning(
+                "Open-Meteo fetch failed (%s); continuing without weather features "
+                "because config.on_weather_failure='skip'.",
+                exc,
+            )
+            weather_features = pd.DataFrame(index=self.df_pipeline.index)
+            self.weather_aligned = pd.DataFrame(index=self.df_pipeline.index)
         self.logger.info("  Weather features: %s", weather_features.shape)
 
         # 4b. Calendar
