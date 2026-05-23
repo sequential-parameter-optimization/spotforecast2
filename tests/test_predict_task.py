@@ -200,7 +200,7 @@ class TestRunSuccess:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
@@ -214,7 +214,7 @@ class TestRunSuccess:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
@@ -235,7 +235,7 @@ class TestRunSuccess:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
@@ -248,7 +248,7 @@ class TestRunSuccess:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
@@ -266,7 +266,7 @@ class TestRunSuccess:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
@@ -279,7 +279,7 @@ class TestRunSuccess:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
@@ -304,7 +304,7 @@ class TestRunTaskNameFilter:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
@@ -317,7 +317,7 @@ class TestRunTaskNameFilter:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
@@ -332,7 +332,7 @@ class TestRunTaskNameFilter:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
@@ -345,7 +345,7 @@ class TestRunTaskNameFilter:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
@@ -369,7 +369,7 @@ class TestRunMaxAgeFilter:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
@@ -382,7 +382,7 @@ class TestRunMaxAgeFilter:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
@@ -403,7 +403,7 @@ class TestRunMaxAgeFilter:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
@@ -481,7 +481,7 @@ class TestMultiTaskDispatcher:
             dataframe=demo_df,
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         mt.prepare_data()
         mt.detect_outliers()
@@ -556,7 +556,7 @@ class TestPredictionPackage:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
@@ -569,7 +569,7 @@ class TestPredictionPackage:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
@@ -590,7 +590,7 @@ class TestPredictionPackage:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         lazy.prepare_data(demo_data=demo_df)
         lazy.detect_outliers()
@@ -603,7 +603,7 @@ class TestPredictionPackage:
             data_frame_name="demo10",
             cache_home=tmp_path,
             predict_size=24,
-            on_weather_failure="skip",
+            use_exogenous_features=False,
         )
         pred.prepare_data(demo_data=demo_df)
         pred.detect_outliers()
