@@ -39,7 +39,7 @@ def execute_lazy(
     Returns:
         Aggregated prediction package (weighted combination of all targets).
         Per-target packages are stored on ``task.results["lazy"]``.
-        When ``task.auto_save_models`` is ``True`` (the default), fitted
+        When ``task.config.auto_save_models`` is ``True`` (the default), fitted
         models are saved to disk so PredictTask can load them directly.
     """
     strategy = LazyStrategy(

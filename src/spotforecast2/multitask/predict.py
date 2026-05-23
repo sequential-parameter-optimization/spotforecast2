@@ -55,7 +55,7 @@ def execute_predict(
     if not loaded_models:
         raise RuntimeError(
             "No saved models found in the cache directory "
-            f"'{task.data_frame_name}'. "
+            f"'{task.config.data_frame_name}'. "
             "Run LazyTask, OptunaTask, or SpotOptimTask first to train "
             "and save models before using PredictTask."
         )

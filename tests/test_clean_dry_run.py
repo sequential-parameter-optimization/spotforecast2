@@ -66,13 +66,13 @@ class TestRunnerDryRun:
         assert kwargs["dry_run"] is False
 
     @patch("spotforecast2.multitask.runner.MultiTask")
-    def test_dry_run_absent_not_forwarded(self, MockMT):
-        """dry_run must not appear when the caller omits it."""
+    def test_dry_run_default_false_when_omitted(self, MockMT):
+        """When the caller omits ``dry_run`` it is forwarded as ``False``."""
         mt = MagicMock()
         MockMT.return_value = mt
         run(task="clean", project_name="demo10")
         _, kwargs = MockMT.call_args
-        assert "dry_run" not in kwargs
+        assert kwargs["dry_run"] is False
 
     @patch("spotforecast2.multitask.runner.MultiTask")
     def test_run_called_once_with_dry_run(self, MockMT):

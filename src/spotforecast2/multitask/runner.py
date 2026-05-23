@@ -10,7 +10,9 @@ run) behind a one-call interface.
 
 from typing import Any, List, Optional, Tuple
 import pandas as pd
+from spotforecast2.multitask.base import PipelineConfig
 from spotforecast2.multitask.multi import MultiTask
+from spotforecast2_safe.configurator.config_multi import ConfigMulti
 from spotforecast2_safe.data.fetch_data import get_cache_home
 
 # Demo-dataset presets for ``run()``.
@@ -53,23 +55,53 @@ _PIPELINE_TASKS = frozenset({"lazy", "defaults", "optuna", "spotoptim", "predict
 _ALL_TASKS = _PIPELINE_TASKS | {"clean"}
 
 
+def make_demo10_config(**overrides: Any) -> ConfigMulti:
+    """Build a ``ConfigMulti`` pre-loaded with the 11-target demo10 presets.
+
+    The 11-target ENTSO-E demo dataset (``demo10.csv``) ships with the
+    package and is the canonical example dataset for the Quarto docs and
+    tutorial notebooks.  Its outlier ``bounds`` and aggregation
+    ``agg_weights`` are dataset-specific and should not be inherited by
+    arbitrary callers — this helper makes the opt-in explicit.
+
+    Args:
+        **overrides: Forwarded to ``ConfigMulti.set_params`` to tweak any
+            other field on the returned config.
+
+    Returns:
+        ConfigMulti: A new ``ConfigMulti`` with ``bounds`` and
+        ``agg_weights`` set to the demo10 presets, plus any caller-supplied
+        overrides applied.
+
+    Examples:
+        ```{python}
+        from spotforecast2.multitask.runner import make_demo10_config
+
+        cfg = make_demo10_config(predict_size=48)
+        print(cfg.predict_size)
+        print(len(cfg.bounds))
+        print(len(cfg.agg_weights))
+        ```
+    """
+    cfg = ConfigMulti(bounds=_DEMO10_BOUNDS, agg_weights=_DEMO10_AGG_WEIGHTS)
+    if overrides:
+        cfg.set_params(**overrides)
+    return cfg
+
+
 def run(
-    dataframe: pd.DataFrame = None,
+    config: Optional[PipelineConfig] = None,
+    *,
     task: str = "lazy",
-    cache_home: Optional[str] = None,
-    bounds: Optional[List[Tuple[float, float]]] = None,
-    agg_weights: Optional[List[float]] = None,
+    dataframe: Optional[pd.DataFrame] = None,
     project_name: str = "test_project",
-    n_trials_optuna: Optional[int] = 10,
-    train_days: Optional[int] = 3 * 365,
-    val_days: Optional[int] = 31,
-    imputation_method: str = "weighted",
-    show_progress: bool = False,
+    cache_home: Optional[str] = None,
     plot_with_outliers: bool = False,
     show: bool = False,
-    verbose: bool = False,
+    show_progress: bool = False,
+    dry_run: bool = False,
     log_level: int = 40,
-    **kwargs: Any,
+    **overrides: Any,
 ) -> pd.DataFrame:
     """Run the MultiTask forecasting pipeline and return predictions.
 
@@ -84,63 +116,42 @@ def run(
     DataFrame.
 
     Args:
-        dataframe: Input time-series data.  Must contain a datetime
-            column matching the configured ``index_name`` and at least one
-            numeric target column. Optional for the ``"clean"`` task, but required for all other tasks. Defaults to ``None``.
+        config: A ``PipelineConfig``-conforming object (typically
+            ``ConfigMulti`` or ``ConfigEntsoe``).  When ``None``, a fresh
+            ``ConfigMulti()`` is constructed with default fields.  Use
+            ``make_demo10_config()`` to opt in to the 11-target demo10
+            ``bounds`` / ``agg_weights`` presets.
         task: Pipeline mode — one of ``"lazy"``, ``"defaults"``,
             ``"optuna"``, ``"spotoptim"``, ``"predict"``, or ``"clean"``.
-            ``"defaults"`` fits with the factory defaults and never reads
-            the tuning-result cache; ``"lazy"`` applies cached tuning
-            results when available.  Defaults to ``"lazy"``.
-        cache_home: Optional path to the cache directory.  Defaults to
-            ``None``, which uses the package default cache location that
-            is defined via spotforecast2_safe's `get_cache_home()`.
-        bounds: Per-column hard outlier bounds as a list of
-            ``(lower, upper)`` tuples, one per target column.  ``None``
-            uses the package defaults.
-        agg_weights: Per-column weights for the final aggregation step as
-            a list of floats, one per target column.  ``None`` uses the
-            package defaults.
-        project_name: Identifier used for cache-directory and
-            model-file naming.  Defaults to ``"test_project"``.
-        train_days: Optional number of days in the training window. Defaults to 3 years (1095 days).
-        val_days: Optional number of days in the validation window.  If
-            ``None``, the default of 31 days is used.
-        imputation_method: Method used for imputation of detected
-            outliers.  Passed to the ``imputation_method`` argument of
-            MultiTask. Options are ``"weighted"`` or ``"linear"``. Defaults
-            to ``"weighted"``.  Prefer ``"weighted"`` (Gap Weighting) for
-            data with leading or trailing gaps: it forward/back-fills the
-            frame and emits a weight series that zero-weights samples
-            within ``window_size`` of any original gap, so the forecaster
-            never trains on the fill values.  ``"linear"`` only fills
-            internal gaps and lets endpoint NaN survive, so the
-            downstream fit raises ``ValueError`` if leading or trailing
-            NaN remain.
-        show_progress:
-            Whether to print progress messages during pipeline execution.
-            Defaults to False.
-        plot_with_outliers:
-            Whether to generate a visualization of the data with outliers highlighted.  Defaults to False.
-        show:
-            Whether to display prediction figures after running each task.  Defaults to False.
-        verbose:
-            Default is False.
-        log_level:
-            Logging level. Default is 40 (ERROR). Other common values include 0 (NOTSET), 10 (DEBUG), 20 (INFO), 30 (WARNING), 50 (CRITICAL).
-        **kwargs: Additional keyword arguments forwarded verbatim to
-            MultiTask.
+            Defaults to ``"lazy"``.
+        dataframe: Input time-series data.  Must contain a datetime
+            column matching ``config.index_name`` and at least one numeric
+            target column.  Optional for ``"clean"``, required otherwise.
+        project_name: Active-dataset identifier.  Sets
+            ``config.data_frame_name``, which drives cache-subdirectory
+            and model-file naming.
+        cache_home: Cache directory override.  When ``None``, the package
+            default from ``get_cache_home()`` is used; the value is then
+            written onto ``config.cache_home``.
+        plot_with_outliers: Whether to render the optional
+            outlier-visualisation step.
+        show: Whether to display prediction figures after the task runs.
+        show_progress: Whether to print progress messages during pipeline
+            execution.
+        dry_run: Forwarded to ``MultiTask``; only meaningful for the
+            ``"clean"`` task.
+        log_level: Logging level.  Defaults to 40 (ERROR).
+        **overrides: Forwarded to ``config.set_params(**overrides)``.
+            Mutates the caller's config object.
 
     Returns:
-        DataFrame:
-            DataFrame whose index is the forecast horizon timestamps and
-            whose single column ``"forecast"`` contains the aggregated
-            predicted values.  For the ``"clean"`` task an empty DataFrame
-            is returned.
+        DataFrame whose index is the forecast horizon timestamps and
+        whose single column ``"forecast"`` contains the aggregated
+        predicted values.  For the ``"clean"`` task an empty DataFrame is
+        returned.
 
     Raises:
-        ValueError:
-            If ``task`` is not one of the supported task names.
+        ValueError: If ``task`` is not one of the supported task names.
 
     Examples:
         Run the pipeline using cached or default model parameters
@@ -148,14 +159,22 @@ def run(
 
         ```{python}
         from spotforecast2.multitask.runner import run
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+        import pandas as pd
         import warnings
         warnings.filterwarnings("ignore")
 
         data_home = get_package_data_home()
         df = fetch_data(filename=str(data_home / "demo02.csv"))
 
-        forecast = run(df, task="lazy", project_name="demo02", train_days = 365, predict_size=24, imputation_method="weighted")
+        cfg = ConfigMulti(
+            train_size=pd.Timedelta(days=365),
+            predict_size=24,
+            imputation_method="weighted",
+            use_exogenous_features=False,
+        )
+        forecast = run(cfg, task="lazy", dataframe=df, project_name="demo02")
         print(forecast)
         ```
 
@@ -163,40 +182,24 @@ def run(
 
         ```{python}
         from spotforecast2.multitask.runner import run
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+        import pandas as pd
         import warnings
         warnings.filterwarnings("ignore")
 
         data_home = get_package_data_home()
         df = fetch_data(filename=str(data_home / "demo02.csv"))
 
-        forecast = run(
-            df,
-            task="optuna",
-            project_name="demo02",
+        cfg = ConfigMulti(
             n_trials_optuna=5,
             predict_size=24,
-            train_days=365,
-            val_days=7,
-            imputation_method="weighted"
+            train_size=pd.Timedelta(days=365),
+            delta_val=pd.Timedelta(days=7 * 10),
+            imputation_method="weighted",
+            use_exogenous_features=False,
         )
-        print(forecast)
-        ```
-
-        Load previously saved models and predict without retraining
-        (``"predict"`` task).  A prior training run (``"lazy"`` or
-        ``"optuna"``) must have saved models to the cache first:
-
-        ```{python}
-        from spotforecast2.multitask.runner import run
-        from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
-        import warnings
-        warnings.filterwarnings("ignore")
-
-        data_home = get_package_data_home()
-        df = fetch_data(filename=str(data_home / "demo02.csv"))
-
-        forecast = run(df, task="predict", project_name="demo02", predict_size=24, imputation_method="weighted")
+        forecast = run(cfg, task="optuna", dataframe=df, project_name="demo02")
         print(forecast)
         ```
 
@@ -216,41 +219,38 @@ def run(
     if cache_home is None:
         cache_home = get_cache_home()
 
+    if config is None:
+        config = ConfigMulti()
+    # ``project_name`` is the public name for what lives on the config as
+    # ``data_frame_name``; keep the runner argument for ergonomic reasons.
+    config.data_frame_name = project_name
+
     if task == "clean":
         mt = MultiTask(
+            config,
             task="clean",
-            data_frame_name=project_name,
             cache_home=cache_home,
-            **kwargs,
+            dry_run=dry_run,
+            log_level=log_level,
+            **overrides,
         )
         mt.run()
         return pd.DataFrame()
 
-    effective_bounds = bounds if bounds is not None else _DEMO10_BOUNDS
-    effective_agg_weights = (
-        agg_weights if agg_weights is not None else _DEMO10_AGG_WEIGHTS
-    )
-
     mt = MultiTask(
-        dataframe=dataframe,
+        config,
         task=task,
-        data_frame_name=project_name,
-        agg_weights=effective_agg_weights,
-        bounds=effective_bounds,
+        dataframe=dataframe,
         cache_home=cache_home,
-        n_trials_optuna=n_trials_optuna,
-        train_days=train_days,
-        val_days=val_days,
-        imputation_method=imputation_method,
+        dry_run=dry_run,
         show_progress=show_progress,
-        verbose=verbose,
         log_level=log_level,
-        **kwargs,
+        **overrides,
     )
     mt.prepare_data()
     mt.detect_outliers()
     if plot_with_outliers:
-        mt.plot_with_outliers()  # optional visualization step; can be removed if not desired
+        mt.plot_with_outliers()
     mt.impute()
     mt.build_exogenous_features()
     result = mt.run(show=show)

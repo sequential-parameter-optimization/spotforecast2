@@ -54,24 +54,22 @@ def _make_loader(df: pd.DataFrame):
 
 
 @pytest.fixture
-def entsoe_config_kwargs(tmp_path: Path) -> dict:
-    """Common kwargs threaded into every ``run(...)`` call in this module."""
+def entsoe_config(tmp_path: Path) -> ConfigEntsoe:
+    """Pre-wired ``ConfigEntsoe`` used by every ``run(...)`` call in this module."""
     df = _synthetic_entsoe_df(n_days=30)
-    return {
-        "config_cls": ConfigEntsoe,
-        "project_name": "test-entsoe",
-        "cache_home": str(tmp_path),
-        "targets": ["Actual Load"],
-        "agg_weights": [1.0],
-        "bounds": [(-1e9, 1e9)],
-        "data_loader": _make_loader(df),
-        "forecaster_factory": entsoe_lgbm_factory,
-        "index_name": "Time (UTC)",
-        "use_exogenous_features": False,
-        "use_outlier_detection": False,
-        "predict_size": 12,
-        "show": False,
-    }
+    cfg = ConfigEntsoe(
+        targets=["Actual Load"],
+        agg_weights=[1.0],
+        bounds=[(-1e9, 1e9)],
+        index_name="Time (UTC)",
+        use_exogenous_features=False,
+        use_outlier_detection=False,
+        predict_size=12,
+    )
+    cfg.data_loader = _make_loader(df)
+    cfg.forecaster_factory = entsoe_lgbm_factory
+    cfg.cache_home = str(tmp_path)
+    return cfg
 
 
 def _assert_forecast_shape(forecast: pd.DataFrame, predict_size: int) -> None:
@@ -82,41 +80,45 @@ def _assert_forecast_shape(forecast: pd.DataFrame, predict_size: int) -> None:
     assert forecast["forecast"].notna().all()
 
 
-def test_run_entsoe_defaults_round_trip(entsoe_config_kwargs):
-    """`task="defaults"` fits with factory defaults and returns a forecast."""
-    forecast = run(task="defaults", **entsoe_config_kwargs)
-    _assert_forecast_shape(forecast, entsoe_config_kwargs["predict_size"])
+def test_run_entsoe_defaults_round_trip(entsoe_config):
+    """``task="defaults"`` fits with factory defaults and returns a forecast."""
+    forecast = run(entsoe_config, task="defaults", project_name="test-entsoe", show=False)
+    _assert_forecast_shape(forecast, entsoe_config.predict_size)
 
 
-def test_run_entsoe_lazy_round_trip(entsoe_config_kwargs):
-    """`task="lazy"` works for ENTSO-E with no prior tuning in cache."""
-    forecast = run(task="lazy", **entsoe_config_kwargs)
-    _assert_forecast_shape(forecast, entsoe_config_kwargs["predict_size"])
+def test_run_entsoe_lazy_round_trip(entsoe_config):
+    """``task="lazy"`` works for ENTSO-E with no prior tuning in cache."""
+    forecast = run(entsoe_config, task="lazy", project_name="test-entsoe", show=False)
+    _assert_forecast_shape(forecast, entsoe_config.predict_size)
 
 
-def test_run_entsoe_optuna_round_trip(entsoe_config_kwargs):
-    """`task="optuna"` runs Bayesian tuning then trains."""
+def test_run_entsoe_optuna_round_trip(entsoe_config):
+    """``task="optuna"`` runs Bayesian tuning then trains."""
     forecast = run(
+        entsoe_config,
         task="optuna",
+        project_name="test-entsoe",
+        show=False,
         n_trials_optuna=2,
-        **entsoe_config_kwargs,
     )
-    _assert_forecast_shape(forecast, entsoe_config_kwargs["predict_size"])
+    _assert_forecast_shape(forecast, entsoe_config.predict_size)
 
 
-def test_run_entsoe_spotoptim_round_trip(entsoe_config_kwargs):
-    """`task="spotoptim"` runs surrogate-model tuning then trains."""
+def test_run_entsoe_spotoptim_round_trip(entsoe_config):
+    """``task="spotoptim"`` runs surrogate-model tuning then trains."""
     forecast = run(
+        entsoe_config,
         task="spotoptim",
+        project_name="test-entsoe",
+        show=False,
         n_trials_spotoptim=3,
         n_initial_spotoptim=2,
-        **entsoe_config_kwargs,
     )
-    _assert_forecast_shape(forecast, entsoe_config_kwargs["predict_size"])
+    _assert_forecast_shape(forecast, entsoe_config.predict_size)
 
 
-def test_run_entsoe_predict_after_defaults(entsoe_config_kwargs):
-    """`task="predict"` reads models saved by a prior `task="defaults"` run."""
-    run(task="defaults", **entsoe_config_kwargs)
-    forecast = run(task="predict", **entsoe_config_kwargs)
-    _assert_forecast_shape(forecast, entsoe_config_kwargs["predict_size"])
+def test_run_entsoe_predict_after_defaults(entsoe_config):
+    """``task="predict"`` reads models saved by a prior ``task="defaults"`` run."""
+    run(entsoe_config, task="defaults", project_name="test-entsoe", show=False)
+    forecast = run(entsoe_config, task="predict", project_name="test-entsoe", show=False)
+    _assert_forecast_shape(forecast, entsoe_config.predict_size)

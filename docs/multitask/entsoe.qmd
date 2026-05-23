@@ -75,28 +75,25 @@ def stub_loader(_config):
     return load_df.copy()
 ```
 
-## Shared run kwargs
+## Shared config
 
-Every approach below uses the same `ConfigEntsoe`-driven configuration —
-only the `task=` value changes.  Outlier detection and exogenous
-features (weather / calendar / holidays) are disabled here so the
-tutorial does not depend on network access.
+Every approach below shares the same `ConfigEntsoe` instance — only the
+`task=` value changes.  Outlier detection and exogenous features
+(weather / calendar / holidays) are disabled here so the tutorial does
+not depend on network access.
 
 ```{python}
-common_kwargs = dict(
-    config_cls=ConfigEntsoe,
-    project_name="entsoe-tutorial",
+config = ConfigEntsoe(
     targets=["Actual Load"],
     agg_weights=[1.0],
     bounds=[(-1e9, 1e9)],
-    data_loader=stub_loader,
-    forecaster_factory=entsoe_lgbm_factory,
     index_name="Time (UTC)",
     use_exogenous_features=False,
     use_outlier_detection=False,
     predict_size=12,
-    show=False,
 )
+config.data_loader = stub_loader
+config.forecaster_factory = entsoe_lgbm_factory
 ```
 
 ## Approach 1 — Lazy fitting
@@ -105,7 +102,7 @@ common_kwargs = dict(
 result is available, applies it before fitting.
 
 ```{python}
-forecast_lazy = run(task="lazy", **common_kwargs)
+forecast_lazy = run(config, task="lazy", project_name="entsoe-tutorial", show=False)
 forecast_lazy.head()
 ```
 
@@ -115,7 +112,7 @@ forecast_lazy.head()
 factory defaults, never reads the tuning cache.
 
 ```{python}
-forecast_defaults = run(task="defaults", **common_kwargs)
+forecast_defaults = run(config, task="defaults", project_name="entsoe-tutorial", show=False)
 forecast_defaults.head()
 ```
 
@@ -126,7 +123,13 @@ trains with the best parameters.  `n_trials_optuna` controls the search
 budget; we use a tiny value here so the tutorial renders fast.
 
 ```{python}
-forecast_optuna = run(task="optuna", n_trials_optuna=2, **common_kwargs)
+forecast_optuna = run(
+    config,
+    task="optuna",
+    project_name="entsoe-tutorial",
+    show=False,
+    n_trials_optuna=2,
+)
 forecast_optuna.head()
 ```
 
@@ -136,10 +139,12 @@ forecast_optuna.head()
 
 ```{python}
 forecast_spotoptim = run(
+    config,
     task="spotoptim",
+    project_name="entsoe-tutorial",
+    show=False,
     n_trials_spotoptim=3,
     n_initial_spotoptim=2,
-    **common_kwargs,
 )
 forecast_spotoptim.head()
 ```
@@ -151,7 +156,7 @@ cache directory.  `task="predict"` skips fitting and loads the latest
 saved model for each target.
 
 ```{python}
-forecast_predict = run(task="predict", **common_kwargs)
+forecast_predict = run(config, task="predict", project_name="entsoe-tutorial", show=False)
 forecast_predict.head()
 ```
 
@@ -163,9 +168,9 @@ A production CLI such as `spotforecast2-entsoe` typically:
    (`spotforecast2_safe.downloader.entsoe.download_new_data`).
 2. Merges the raw CSVs into the interim file
    (`merge_build_manual`).
-3. Runs `run(task="defaults", config_cls=ConfigEntsoe, ...)` to fit and
+3. Runs `run(config, task="defaults", project_name=...)` to fit and
    save the model.
-4. Runs `run(task="predict", config_cls=ConfigEntsoe, ...)` on a
+4. Runs `run(config, task="predict", project_name=...)` on a
    schedule to generate the next forecast.
 
 The same four task values are available to notebook callers — pick the

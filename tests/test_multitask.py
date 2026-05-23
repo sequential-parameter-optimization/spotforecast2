@@ -191,33 +191,32 @@ class TestCustomArgs:
 
     def test_custom_predict_size(self):
         task = LazyTask(predict_size=48)
-        assert task.predict_size == 48
+        assert task.config.predict_size == 48
 
     def test_custom_contamination(self):
         task = LazyTask(contamination=0.05)
-        assert task.contamination == 0.05
+        assert task.config.contamination == 0.05
 
     def test_custom_agg_weights(self):
         weights = [1.0, -1.0, 0.5]
         task = OptunaTask(agg_weights=weights)
-        assert task.agg_weights == weights
+        assert task.config.agg_weights == weights
 
     def test_custom_n_trials_optuna(self):
         task = OptunaTask(n_trials_optuna=5)
-        assert task.n_trials_optuna == 5
+        assert task.config.n_trials_optuna == 5
 
     def test_custom_n_trials_spotoptim(self):
         task = SpotOptimTask(n_trials_spotoptim=20)
-        assert task.n_trials_spotoptim == 20
+        assert task.config.n_trials_spotoptim == 20
 
     def test_custom_number_folds(self):
         task = LazyTask(number_folds=5)
-        assert task.number_folds == 5
-        assert task.DELTA_VAL == pd.Timedelta(days=task.val_days * 5)
+        assert task.config.number_folds == 5
 
     def test_custom_imputation_method(self):
         task = LazyTask(imputation_method="linear")
-        assert task.imputation_method == "linear"
+        assert task.config.imputation_method == "linear"
 
     def test_multitask_custom_task(self):
         mt = MultiTask(task="training")

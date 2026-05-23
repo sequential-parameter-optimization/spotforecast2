@@ -160,7 +160,7 @@ class OptunaStrategy:
             n_trials=task.config.n_trials_optuna,
             random_state=task.config.random_state,
             return_best=True,
-            verbose=task.verbose,
+            verbose=task.config.verbose,
             show_progress=getattr(task, "_show_progress", False),
         )
         best_params = tuning_results.iloc[0].params

@@ -33,15 +33,17 @@ _FREQ = "h"
 _N = 3000  # three-thousand hourly observations — comfortably more than any fold
 
 
-def _make_task(tmp_path, **kwargs) -> LazyTask:
+def _make_task(tmp_path, *, val_days: int = 7, **kwargs) -> LazyTask:
     """Return a LazyTask with ``end_train_ts`` set to ``_END_TRAIN``.
 
-    val_days is pinned to 7 so that DELTA_VAL = 7 * number_folds days, keeping
-    the test series length requirements manageable.  The val_days parameter
-    itself is exercised in test_train_val_days.py.
+    After the config-object refactor ``delta_val`` is no longer derived from
+    ``val_days * number_folds`` inside ``BaseTask``; the helper computes it
+    explicitly so tests can keep the original ``val_days``-based pattern.
     """
-    kwargs.setdefault("val_days", 7)
-    t = LazyTask(data_frame_name="test_data", cache_home=tmp_path, **kwargs)
+    number_folds = kwargs.get("number_folds", 10)
+    overrides = dict(kwargs, delta_val=pd.Timedelta(days=val_days * number_folds))
+    overrides.setdefault("data_frame_name", "test_data")
+    t = LazyTask(cache_home=tmp_path, **overrides)
     t.config.end_train_ts = _END_TRAIN
     return t
 
@@ -58,7 +60,7 @@ def _skl_cv(task: LazyTask, y_train: pd.Series) -> SklearnTimeSeriesSplit:
     n_train_cv = len(y_train.loc[:end_cv])
     max_train_size = n_train_cv if task.config.train_size is not None else None
     return SklearnTimeSeriesSplit(
-        n_splits=task.number_folds,
+        n_splits=task.config.number_folds,
         max_train_size=max_train_size,
         test_size=task.config.predict_size,
         gap=0,
@@ -120,7 +122,7 @@ class TestTemporalOrdering:
 class TestNumberOfSplits:
     def test_split_count_equals_number_folds_default(self, task, y_train):
         splits = list(_skl_cv(task, y_train).split(y_train))
-        assert len(splits) == task.number_folds
+        assert len(splits) == task.config.number_folds
 
     @pytest.mark.parametrize("n_folds", [3, 5, 7, 10, 15])
     def test_split_count_with_various_number_folds(self, tmp_path, n_folds):
@@ -203,7 +205,7 @@ class TestSlidingVsExpandingWindow:
         task.config.train_size = None  # force expanding window
 
         skl = SklearnTimeSeriesSplit(
-            n_splits=task.number_folds,
+            n_splits=task.config.number_folds,
             max_train_size=None,
             test_size=task.config.predict_size,
             gap=0,

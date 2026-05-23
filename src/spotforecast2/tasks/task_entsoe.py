@@ -190,30 +190,18 @@ def main() -> None:
     elif args.subcommand == "train":
         config = _build_entsoe_config(args.model)
         run(
+            config,
             task="defaults",
-            config_cls=ConfigEntsoe,
             project_name=_PROJECT_BY_MODEL[args.model],
-            targets=config.targets,
-            agg_weights=config.agg_weights,
-            bounds=config.bounds,
-            data_loader=config.data_loader,
-            forecaster_factory=config.forecaster_factory,
-            index_name=config.index_name,
             show=args.show,
         )
 
     elif args.subcommand == "predict":
         config = _build_entsoe_config(args.model)
         run(
+            config,
             task="predict",
-            config_cls=ConfigEntsoe,
             project_name=_PROJECT_BY_MODEL[args.model],
-            targets=config.targets,
-            agg_weights=config.agg_weights,
-            bounds=config.bounds,
-            data_loader=config.data_loader,
-            forecaster_factory=config.forecaster_factory,
-            index_name=config.index_name,
             show=args.show,
         )
 

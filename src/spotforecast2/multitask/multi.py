@@ -10,11 +10,11 @@ BaseTask and delegates run() to the appropriate task-specific function.
 
 import logging
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, Optional
 
 import pandas as pd
 
-from spotforecast2.multitask.base import BaseTask
+from spotforecast2.multitask.base import BaseTask, PipelineConfig
 from spotforecast2.multitask.clean import execute_clean
 from spotforecast2.multitask.defaults import execute_defaults
 from spotforecast2.multitask.lazy import execute_lazy
@@ -27,6 +27,7 @@ from spotforecast2.multitask.spotoptim import (
     SpotOptimTask,
     execute_spotoptim,
 )
+from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 
 class MultiTask(BaseTask):
@@ -37,7 +38,7 @@ class MultiTask(BaseTask):
 
     The typical usage flow is:
 
-    1. Instantiate with configuration arguments.
+    1. Instantiate with ``config`` (or omit to auto-construct ``ConfigMulti()``).
     2. Call method ``prepare_data`` to load, resample, and validate data.
     3. Call method ``detect_outliers`` to apply hard bounds and IsolationForest.
     4. Call method ``impute`` to fill gaps.
@@ -47,53 +48,38 @@ class MultiTask(BaseTask):
        predict, and aggregate.
 
     Args:
-        task: Pipeline task mode — ``"lazy"``, ``"optuna"``,
-            ``"spotoptim"``, ``"predict"``, or ``"clean"``.
-            Defaults to ``"lazy"``.
-        dataframe: Pre-loaded input DataFrame with Train data. The DataFrame must contain a
-            datetime column matching ``index_name`` plus at least one
-            numeric target column. Optional for the "clean" task, but required for all other tasks.
-        data_test: Pre-loaded input DataFrame with Test data. The DataFrame must contain a
-            datetime column matching ``index_name`` plus at least one
-            numeric target column. Optional.
-        cache_home: Cache directory path.
-        agg_weights: Per-target aggregation weights.
-        index_name: Datetime column name in the raw CSV / DataFrame.
-        number_folds: Number of validation folds.
-        predict_size: Forecast horizon in hours.
-        bounds: Per-column hard outlier bounds ``(lower, upper)``.
-        contamination: IsolationForest contamination fraction.
-        imputation_method: Gap-filling strategy.
-        use_exogenous_features: Whether to build exogenous features.
-        n_trials_optuna: Number of Optuna Bayesian-search trials.
-        n_trials_spotoptim: Number of SpotOptim surrogate-search trials.
-        n_initial_spotoptim: Initial random evaluations for SpotOptim.
-        auto_save_models: Whether to automatically save fitted models to
-            disk after each training run.  Defaults to ``True`` so that
-            saved models are immediately available for the predict task
-            without any manual call to ``save_models``.
-        train_days: Length of the training window in days.  Controls
-            ``TRAIN_SIZE`` and ``config.train_size``.  Defaults to
-            ``365 * 2`` (two years).
-        val_days: Length of each validation fold in days.  The total
-            validation span is ``val_days * number_folds``.  Controls
-            ``DELTA_VAL`` and ``config.delta_val``.  Defaults to
-            ``7 * 10`` (ten weeks).
+        config: A ``PipelineConfig``-conforming object (e.g. ``ConfigMulti``
+            or ``ConfigEntsoe``).  When ``None``, a fresh ``ConfigMulti()``
+            is constructed with default fields.
+        task: Pipeline task mode — ``"lazy"``, ``"defaults"``, ``"optuna"``,
+            ``"spotoptim"``, ``"predict"``, or ``"clean"``.  Defaults to
+            ``"lazy"``.
+        dataframe: Pre-loaded input DataFrame with training data.  The
+            DataFrame must contain a datetime column matching
+            ``config.index_name`` plus at least one numeric target column.
+            Optional for the ``"clean"`` task, required for all others.
+        data_test: Pre-loaded input DataFrame with test data.  Optional.
+        cache_home: Cache directory override.  When not ``None``, replaces
+            ``config.cache_home`` for this task instance.
+        dry_run: If ``True``, do not clean cache or save models.
+        show_progress: Whether to print progress messages during pipeline
+            execution.
         log_level: Logging level for the pipeline logger.
-        dry_run: If ``True``, do not clean cache or save models.  Useful for testing and debugging.
-        config_overrides: Extra keyword arguments forwarded to
-            ConfigMulti.
+        **overrides: Forwarded to ``config.set_params(**overrides)`` — a
+            convenience for one-line tweaks without building a fresh config.
+            Mutates the caller's config object.
 
     Examples:
         ```{python}
         import pandas as pd
         from spotforecast2.multitask import MultiTask
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
         from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
         data_home = get_package_data_home()
         df = fetch_data(filename=str(data_home / "demo10.csv"))
 
-        mt = MultiTask(dataframe=df, predict_size=24)
+        mt = MultiTask(ConfigMulti(predict_size=24), dataframe=df)
         print(f"DataFrame stored: {mt._dataframe is not None}")
         print(f"Task: {mt.TASK}")
         ```
@@ -102,58 +88,30 @@ class MultiTask(BaseTask):
 
     def __init__(
         self,
+        config: Optional[PipelineConfig] = None,
         *,
         task: str = "lazy",
         dataframe: Optional[pd.DataFrame] = None,
         data_test: Optional[pd.DataFrame] = None,
-        data_frame_name: str = "default",
         cache_home: Optional[Path] = None,
-        agg_weights: Optional[List[float]] = None,
-        index_name: str = "DateTime",
-        number_folds: int = 10,
-        predict_size: int = 24,
-        bounds: Optional[List[tuple]] = None,
-        contamination: float = 0.03,
-        imputation_method: str = "weighted",
-        use_exogenous_features: bool = True,
-        n_trials_optuna: int = 15,
-        n_trials_spotoptim: int = 10,
-        n_initial_spotoptim: int = 5,
-        auto_save_models: bool = True,
-        train_days: int = 365 * 2,
-        val_days: int = 7 * 2,
-        log_level: int = logging.INFO,
-        verbose: bool = False,
         dry_run: bool = False,
         show_progress: bool = False,
-        **config_overrides: Any,
+        log_level: int = logging.INFO,
+        **overrides: Any,
     ) -> None:
         # Set _task_name before super().__init__ so self.TASK is correct
         self._task_name = task
         self._dry_run = dry_run
         self._show_progress = show_progress
+        if config is None:
+            config = ConfigMulti()
         super().__init__(
+            config,
             dataframe=dataframe,
             data_test=data_test,
-            data_frame_name=data_frame_name,
             cache_home=cache_home,
-            agg_weights=agg_weights,
-            index_name=index_name,
-            number_folds=number_folds,
-            predict_size=predict_size,
-            bounds=bounds,
-            contamination=contamination,
-            imputation_method=imputation_method,
-            use_exogenous_features=use_exogenous_features,
-            n_trials_optuna=n_trials_optuna,
-            n_trials_spotoptim=n_trials_spotoptim,
-            n_initial_spotoptim=n_initial_spotoptim,
-            auto_save_models=auto_save_models,
-            train_days=train_days,
-            val_days=val_days,
             log_level=log_level,
-            verbose=verbose,
-            **config_overrides,
+            **overrides,
         )
 
     # ------------------------------------------------------------------
