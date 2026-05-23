@@ -122,6 +122,7 @@ class PipelineConfig(Protocol):
     # Optional callables
     forecaster_factory: Optional[Any]
     data_loader: Optional[Any]
+    test_data_loader: Optional[Any]
 
     def set_params(
         self,
@@ -337,12 +338,14 @@ class BaseTask:
 
         1. ``df_test`` argument (if provided).
         2. ``self.data_test`` set via the constructor.
+        3. ``self.config.test_data_loader(self.config)`` if set.
 
         Args:
             demo_data: Pre-loaded input DataFrame.  When ``None``, the
                 constructor ``dataframe`` is used.
             df_test: Pre-loaded test DataFrame.  When ``None``, the
-                constructor ``data_test`` is used.
+                constructor ``data_test`` is used, then
+                ``config.test_data_loader``.
 
         Returns:
             ``self`` (for method chaining).
@@ -382,6 +385,8 @@ class BaseTask:
 
         if df_test is None:
             df_test = self.data_test
+        if df_test is None and getattr(self.config, "test_data_loader", None) is not None:
+            df_test = self.config.test_data_loader(self.config)
 
         demo_data = reset_index(demo_data, index_name=self.config.index_name)
         if df_test is not None:
