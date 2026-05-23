@@ -1,3 +1,13 @@
+## [2.0.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.0.0-rc.1...v2.0.0-rc.2) (2026-05-23)
+
+### Bug Fixes
+
+* **docs:** load demo10.csv from the bundled package data, not a local path ([370f37b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/370f37bd6bc7ff86faed2e74c2bfb3f566193244))
+
+### Documentation
+
+* **multitask:** warn about feature-schema mismatch with on_weather_failure=skip ([44c9eee](https://github.com/sequential-parameter-optimization/spotforecast2/commit/44c9eee1f0b518cc9ba790c13f2658803405d150))
+
 ## [2.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v1.2.0...v2.0.0-rc.1) (2026-05-23)
 
 ### ⚠ BREAKING CHANGES
