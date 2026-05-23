@@ -695,7 +695,7 @@ class TestExogenousFeatures:
         assert task.exog_feature_names == []
 
     def test_exog_enabled(self, demo_df):
-        task = LazyTask(use_exogenous_features=True)
+        task = LazyTask(use_exogenous_features=True, on_weather_failure="skip")
         task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
@@ -731,7 +731,7 @@ class TestLogSummary:
         task.log_summary()
 
     def test_log_summary_with_exog(self, demo_df):
-        task = LazyTask(use_exogenous_features=True)
+        task = LazyTask(use_exogenous_features=True, on_weather_failure="skip")
         task.prepare_data(demo_data=demo_df)
         task.detect_outliers()
         task.impute()
