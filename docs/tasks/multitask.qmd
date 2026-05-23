@@ -63,6 +63,32 @@ config_skip = make_demo10_config(
 print(config_skip.on_weather_failure)
 ```
 
+:::{.callout-warning}
+## Feature-Schema-Konsistenz zwischen Training und Vorhersage
+
+`on_weather_failure="skip"` mit `use_exogenous_features=True` kann zu einer
+**Form-Inkonsistenz zwischen Trainings- und Vorhersagezeitpunkt** führen:
+wenn Open-Meteo beim Training erreichbar ist, aber bei der Vorhersage nicht
+(oder umgekehrt), trainiert das Modell mit Wetter-Spalten und sieht bei
+`predict` plötzlich weniger Spalten — `LightGBM` (und andere Regressor-Backends)
+verweigern den Aufruf mit `The number of features in data (51) is not the
+same as it was in training data (36).`
+
+Für Produktivpfade gibt es zwei sichere Optionen:
+
+- **Strikt** (`on_weather_failure="raise"`, Default): Ausfälle stoppen die
+  Pipeline; trainierte Modelle und Vorhersageläufe sehen immer dieselben
+  Spalten. Empfohlen, wenn der Datenanbieter zuverlässig ist und ein
+  unterbrochener Lauf akzeptabel ist.
+- **Vollständig wetterfrei** (`use_exogenous_features=False` oder
+  `on_weather_failure="skip"` mit *beiden* Schritten unter derselben Policy):
+  Modell und Vorhersage werden konsistent ohne Wetter trainiert.
+
+`on_weather_failure="skip"` ist ideal für *isolierte, einmalige* Vorhersagen
+(z. B. ein interaktives Notebook), in denen kein zuvor trainiertes Modell
+geladen wird.
+:::
+
 
 ## Production
 
