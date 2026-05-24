@@ -1,3 +1,14 @@
+## [2.2.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.1.1...v2.2.0-rc.1) (2026-05-24)
+
+### Features
+
+* **plots,tasks:** port chag25a visualization layer + ENTSO-E cadence gate (requires sf2-safe>=13.4.0) ([9094b30](https://github.com/sequential-parameter-optimization/spotforecast2/commit/9094b30c6bf60e9780e14bebe5636e8de516f749)), closes [sequential-parameter-optimization/spotforecast2-safe#233](https://github.com/sequential-parameter-optimization/spotforecast2-safe/issues/233)
+
+### Bug Fixes
+
+* **reuse:** add SPDX headers to prediction_report.html.j2 ([7da3954](https://github.com/sequential-parameter-optimization/spotforecast2/commit/7da3954d861d5f2e0d98d548c01f5815f581ff12))
+* **tests:** restore numpy/pandas imports CodeQL auto-fix over-removed ([c350948](https://github.com/sequential-parameter-optimization/spotforecast2/commit/c3509482ce7f5e5d9b2ad068bc89b168091f2cac))
+
 ## [2.1.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.1.0...v2.1.1) (2026-05-24)
 
 ### Bug Fixes
