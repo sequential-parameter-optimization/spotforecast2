@@ -397,7 +397,15 @@ class BaseTask:
         last_ts = pd.Timestamp(demo_data[self.config.index_name].iloc[-1])
         self.config.start_download = first_ts.strftime("%Y%m%d%H%M")
         self.config.end_download = last_ts.strftime("%Y%m%d%H%M")
-        self.config.end_train_default = last_ts.isoformat()
+        # Honour an explicit user-set ``end_train_default`` when it is earlier
+        # than the last data row; only overwrite when the requested cutoff
+        # exceeds the data extent (e.g. demo flows that have no anchor).
+        user_end_train = pd.to_datetime(
+            getattr(self.config, "end_train_default", None), utc=True, errors="coerce"
+        )
+        last_ts_utc = last_ts.tz_convert("UTC") if last_ts.tzinfo else last_ts.tz_localize("UTC")
+        if user_end_train is pd.NaT or user_end_train > last_ts_utc:
+            self.config.end_train_default = last_ts.isoformat()
 
         all_targets = [c for c in demo_data.columns if c != self.config.index_name]
         if self.config.targets is None:
