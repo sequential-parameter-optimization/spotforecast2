@@ -1,0 +1,22 @@
+<!--
+SPDX-FileCopyrightText: 2026 bartzbeielstein
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>{{ title }}</title>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; margin: 1.5rem; }
+    h1 { margin-top: 0; font-weight: 600; }
+    .figure-wrapper { margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>{{ title }}</h1>
+  <div class="figure-wrapper">
+    {{ fig | safe }}
+  </div>
+</body>
+</html>

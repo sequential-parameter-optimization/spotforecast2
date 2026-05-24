@@ -34,9 +34,10 @@ from lightgbm import LGBMRegressor
 from xgboost import XGBRegressor
 
 from spotforecast2_safe.configurator import ConfigEntsoe
-from spotforecast2_safe.data.fetch_data import get_data_home
+from spotforecast2_safe.data.fetch_data import get_cache_home, get_data_home
 from spotforecast2_safe.downloader.entsoe import download_new_data, merge_build_manual
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from spotforecast2_safe.manager.trainer import should_retrain
 from spotforecast2_safe.preprocessing import RollingFeatures
 
 from spotforecast2.multitask.runner import run
@@ -172,6 +173,36 @@ def _build_entsoe_config(model: str) -> ConfigEntsoe:
     return config
 
 
+def _latest_saved_model_timestamp(
+    config: ConfigEntsoe, project_name: str
+) -> Optional[pd.Timestamp]:
+    """Return the mtime of the most recent saved forecaster for the project.
+
+    Forecasters are persisted by ``BaseTask._run_strategy`` into
+    ``<cache_home>/models/<project_name>/``.  Their mtime is the most
+    reliable "last trained at" signal available without changing the
+    persistence scheme.
+
+    Args:
+        config: A ``ConfigEntsoe`` (its ``cache_home`` resolves the model
+            directory).
+        project_name: Project / dataset identifier — same value the
+            runner passes for ``data_frame_name``.
+
+    Returns:
+        UTC ``pd.Timestamp`` of the newest ``.joblib`` file, or ``None``
+        if the directory is empty / missing.
+    """
+    model_dir = Path(get_cache_home(config.cache_home)) / "models" / project_name
+    if not model_dir.exists():
+        return None
+    candidates = list(model_dir.glob("*.joblib"))
+    if not candidates:
+        return None
+    latest_mtime = max(c.stat().st_mtime for c in candidates)
+    return pd.Timestamp(latest_mtime, unit="s", tz="UTC")
+
+
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -194,6 +225,11 @@ def main() -> None:
     parser_tr = subparsers.add_parser("train", help="Train a forecaster")
     parser_tr.add_argument("model", choices=["lgbm", "xgb"], default="lgbm", nargs="?")
     parser_tr.add_argument("--show", action="store_true")
+    parser_tr.add_argument(
+        "--force",
+        action="store_true",
+        help="Bypass the retraining cadence gate (config.retrain_max_age).",
+    )
 
     parser_pr = subparsers.add_parser("predict", help="Predict with a saved forecaster")
     parser_pr.add_argument("model", choices=["lgbm", "xgb"], default="lgbm", nargs="?")
@@ -216,10 +252,18 @@ def main() -> None:
 
     elif args.subcommand == "train":
         config = _build_entsoe_config(args.model)
+        project_name = _PROJECT_BY_MODEL[args.model]
+        last_trained_at = _latest_saved_model_timestamp(config, project_name)
+        if not should_retrain(
+            last_trained_at,
+            max_age=config.retrain_max_age,
+            force=args.force,
+        ):
+            return
         run(
             config,
             task="defaults",
-            project_name=_PROJECT_BY_MODEL[args.model],
+            project_name=project_name,
             show=args.show,
         )
 
