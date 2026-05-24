@@ -7,7 +7,6 @@ import sys
 from unittest.mock import patch
 
 import pandas as pd
-import pytest
 
 import spotforecast2.tasks.task_entsoe as task_entsoe
 
