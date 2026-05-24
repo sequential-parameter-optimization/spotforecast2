@@ -368,7 +368,7 @@ class PredictionFigure:
         """
         from importlib import resources
 
-        from jinja2 import Template
+        from jinja2 import Environment, select_autoescape
 
         path = Path(path)
         if not path.parent.exists():
@@ -391,7 +391,10 @@ class PredictionFigure:
             )
 
         fig_html = self.fig.to_html(full_html=False, include_plotlyjs="cdn")
-        rendered = Template(template_source).render(fig=fig_html, title=self.title)
+        env = Environment(autoescape=select_autoescape(default=True))
+        rendered = env.from_string(template_source).render(
+            fig=fig_html, title=self.title
+        )
         path.write_text(rendered, encoding="utf-8")
         return path
 
