@@ -3,8 +3,6 @@
 
 """Tests for PredictionFigure.save_to_file and PredictionFigure.write_to_file."""
 
-from pathlib import Path
-
 import numpy as np
 import pandas as pd
 import pytest
