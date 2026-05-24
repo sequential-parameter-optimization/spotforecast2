@@ -540,15 +540,18 @@ class TestSearchSpaces:
 
     def test_spotoptim_search_space_keys(self):
         space = SpotOptimTask._default_spotoptim_search_space()
+        # Estimator hyperparameters use the ``estimator__`` prefix so
+        # ``ForecasterRecursive.set_params(**sample)`` forwards them to the
+        # wrapped regressor. ``lags`` stays bare (consumed via ``set_lags``).
         expected = {
-            "num_leaves",
-            "max_depth",
-            "learning_rate",
-            "n_estimators",
-            "bagging_fraction",
-            "feature_fraction",
-            "reg_alpha",
-            "reg_lambda",
+            "estimator__num_leaves",
+            "estimator__max_depth",
+            "estimator__learning_rate",
+            "estimator__n_estimators",
+            "estimator__bagging_fraction",
+            "estimator__feature_fraction",
+            "estimator__reg_alpha",
+            "estimator__reg_lambda",
             "lags",
         }
         assert expected == set(space.keys())
