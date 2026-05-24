@@ -1,3 +1,9 @@
+## [2.2.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.0...v2.2.1) (2026-05-24)
+
+### Bug Fixes
+
+* **multitask:** prefix estimator hparams + honour user end_train_default ([aa1ea04](https://github.com/sequential-parameter-optimization/spotforecast2/commit/aa1ea04f070a909c81a05d4b19d3d11ca15ef178))
+
 ## [2.2.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.1.1...v2.2.0) (2026-05-24)
 
 ### Features
