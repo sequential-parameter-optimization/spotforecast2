@@ -11,10 +11,7 @@ from typing import Mapping, Optional, Union
 
 import plotly.graph_objects as go
 
-from spotforecast2_safe.stats.spectral import (
-    PeriodogramResult,
-    compute_periodogram,
-)
+from spotforecast2_safe.stats.spectral import PeriodogramResult
 import pandas as pd
 
 
