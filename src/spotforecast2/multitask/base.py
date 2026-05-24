@@ -1125,6 +1125,7 @@ class BaseTask:
             exog_train=exog_train,
             exog_future=exog_future,
             df_test=self.df_test,
+            index_name=self.config.index_name,
         )
         pkg["forecaster"] = forecaster
         return pkg
