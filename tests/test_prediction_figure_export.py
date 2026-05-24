@@ -3,8 +3,6 @@
 
 """Tests for PredictionFigure.save_to_file and PredictionFigure.write_to_file."""
 
-import numpy as np
-import pandas as pd
 import pytest
 
 from spotforecast2.plots.plotter import PredictionFigure
