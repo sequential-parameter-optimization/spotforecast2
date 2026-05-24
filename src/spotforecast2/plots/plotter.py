@@ -248,6 +248,153 @@ class PredictionFigure:
 
         return self.fig
 
+    def save_to_file(
+        self,
+        path: Union[str, Path],
+        **kwargs: Any,
+    ) -> Path:
+        """Write the figure to a static image file (PNG, SVG, PDF, …).
+
+        Thin wrapper around `plotly.graph_objects.Figure.write_image()`.
+        Requires the ``kaleido`` package (declared in
+        ``pyproject.toml``).
+
+        Args:
+            path: Destination file path.  The format is inferred from the
+                extension (``.png``, ``.svg``, ``.pdf``, …).
+            **kwargs: Forwarded to ``fig.write_image`` (e.g. ``width``,
+                ``height``, ``scale``).
+
+        Returns:
+            The resolved `pathlib.Path` of the written file.
+
+        Raises:
+            FileNotFoundError: If the parent directory does not exist.
+
+        Examples:
+            ```{python}
+            import tempfile
+            from pathlib import Path
+
+            import numpy as np
+            import pandas as pd
+
+            from spotforecast2.plots.plotter import PredictionFigure
+
+            rng = np.random.default_rng(0)
+            train_idx = pd.date_range("2026-01-01", periods=48, freq="h", tz="UTC")
+            future_idx = pd.date_range("2026-01-03", periods=24, freq="h", tz="UTC")
+            pkg = {
+                "train_actual": pd.Series(rng.standard_normal(48), index=train_idx),
+                "train_pred": pd.Series(rng.standard_normal(48), index=train_idx),
+                "future_actual": pd.Series(rng.standard_normal(24), index=future_idx),
+                "future_pred": pd.Series(rng.standard_normal(24), index=future_idx),
+                "metrics_train": {"mae": 1.0, "mape": 0.1},
+                "metrics_future": {"mae": 1.0, "mape": 0.1},
+                "metrics_future_one_day": {"mae": 1.0, "mape": 0.1},
+            }
+            fig = PredictionFigure(pkg)
+            fig.make_plot()
+            with tempfile.TemporaryDirectory() as tmp:
+                out = fig.save_to_file(Path(tmp) / "out.png")
+                print(out.exists())
+            ```
+        """
+        path = Path(path)
+        if not path.parent.exists():
+            raise FileNotFoundError(
+                f"Parent directory does not exist: {path.parent}"
+            )
+        # kaleido v1 cannot serialise pandas Timestamp axis values directly
+        # (orjson rejects them).  Round-trip through Plotly's own JSON
+        # encoder, which coerces Timestamps to ISO strings.
+        import plotly.io as pio
+
+        pio.from_json(self.fig.to_json()).write_image(str(path), **kwargs)
+        return path
+
+    def write_to_file(
+        self,
+        path: Union[str, Path],
+        *,
+        template_path: Optional[Union[str, Path]] = None,
+    ) -> Path:
+        """Render the figure into a standalone HTML page via a Jinja2 template.
+
+        The default template wraps the Plotly figure in a minimal HTML
+        skeleton with the figure title as ``<title>``.  Provide
+        ``template_path`` to substitute a custom Jinja2 template that
+        receives the variable ``fig`` (an HTML fragment) and ``title``.
+
+        Args:
+            path: Destination HTML file path.
+            template_path: Optional path to a custom Jinja2 template.
+
+        Returns:
+            The resolved `pathlib.Path` of the written file.
+
+        Raises:
+            FileNotFoundError: If the parent directory or
+                ``template_path`` does not exist.
+
+        Examples:
+            ```{python}
+            import tempfile
+            from pathlib import Path
+
+            import numpy as np
+            import pandas as pd
+
+            from spotforecast2.plots.plotter import PredictionFigure
+
+            rng = np.random.default_rng(0)
+            train_idx = pd.date_range("2026-01-01", periods=48, freq="h", tz="UTC")
+            future_idx = pd.date_range("2026-01-03", periods=24, freq="h", tz="UTC")
+            pkg = {
+                "train_actual": pd.Series(rng.standard_normal(48), index=train_idx),
+                "train_pred": pd.Series(rng.standard_normal(48), index=train_idx),
+                "future_actual": pd.Series(rng.standard_normal(24), index=future_idx),
+                "future_pred": pd.Series(rng.standard_normal(24), index=future_idx),
+                "metrics_train": {"mae": 1.0, "mape": 0.1},
+                "metrics_future": {"mae": 1.0, "mape": 0.1},
+                "metrics_future_one_day": {"mae": 1.0, "mape": 0.1},
+            }
+            fig = PredictionFigure(pkg, title="Demo")
+            fig.make_plot()
+            with tempfile.TemporaryDirectory() as tmp:
+                out = fig.write_to_file(Path(tmp) / "report.html")
+                print(out.suffix)
+            ```
+        """
+        from importlib import resources
+
+        from jinja2 import Template
+
+        path = Path(path)
+        if not path.parent.exists():
+            raise FileNotFoundError(
+                f"Parent directory does not exist: {path.parent}"
+            )
+
+        if template_path is not None:
+            tpl_path = Path(template_path)
+            if not tpl_path.exists():
+                raise FileNotFoundError(
+                    f"Template file does not exist: {tpl_path}"
+                )
+            template_source = tpl_path.read_text(encoding="utf-8")
+        else:
+            template_source = (
+                resources.files("spotforecast2.plots.assets")
+                .joinpath("prediction_report.html.j2")
+                .read_text(encoding="utf-8")
+            )
+
+        fig_html = self.fig.to_html(full_html=False, include_plotlyjs="cdn")
+        rendered = Template(template_source).render(fig=fig_html, title=self.title)
+        path.write_text(rendered, encoding="utf-8")
+        return path
+
 
 def make_plot(
     prediction_package: Dict[str, Any],

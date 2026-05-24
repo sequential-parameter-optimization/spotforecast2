@@ -1,0 +1,4 @@
+# SPDX-FileCopyrightText: 2026 bartzbeielstein
+# SPDX-License-Identifier: AGPL-3.0-or-later
+
+"""Bundled template assets for :mod:`spotforecast2.plots`."""
