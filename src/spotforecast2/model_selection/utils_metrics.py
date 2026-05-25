@@ -38,34 +38,40 @@ def _calculate_metrics_one_step_ahead(
         rolling features.
 
     Examples:
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> from sklearn.linear_model import LinearRegression
-        >>> from sklearn.metrics import mean_squared_error
-        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-        >>> from spotforecast2.model_selection.utils_metrics import _calculate_metrics_one_step_ahead
-        >>>
-        >>> forecaster = ForecasterRecursive(LinearRegression(), lags=2)
-        >>>
-        >>> # Mock training data (already transformed into predictors/target)
-        >>> X_train = pd.DataFrame(np.array([[1, 2], [2, 3], [3, 4]]), columns=['lag_2', 'lag_1'])
-        >>> y_train = pd.Series(np.array([3, 4, 5]), name='y')
-        >>>
-        >>> # Mock test data
-        >>> X_test = pd.DataFrame(np.array([[4, 5]]), columns=['lag_2', 'lag_1'])
-        >>> y_test = pd.Series(np.array([6]), name='y')
-        >>>
-        >>> metrics = [mean_squared_error]
-        >>> result = _calculate_metrics_one_step_ahead(
-        ...     forecaster=forecaster,
-        ...     metrics=metrics,
-        ...     X_train=X_train,
-        ...     y_train=y_train,
-        ...     X_test=X_test,
-        ...     y_test=y_test
-        ... )
-        >>> print(result)
-        [0.0]
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from sklearn.linear_model import LinearRegression
+        from sklearn.metrics import mean_absolute_error
+        from spotforecast2_safe.forecaster.metrics import add_y_train_argument
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from spotforecast2.model_selection.utils_metrics import (
+            _calculate_metrics_one_step_ahead,
+        )
+
+        # Predictors are already extracted lag features; y = x+1 (linear).
+        X_train = pd.DataFrame(
+            {"lag_2": [1.0, 2.0, 3.0, 4.0, 5.0], "lag_1": [2.0, 3.0, 4.0, 5.0, 6.0]}
+        )
+        y_train = pd.Series([3.0, 4.0, 5.0, 6.0, 7.0], name="y")
+        X_test = pd.DataFrame({"lag_2": [5.0], "lag_1": [6.0]})
+        # Deliberately set y_test=9.0 (model predicts 7.0) to get MAE=2.0.
+        y_test = pd.Series([9.0], name="y")
+
+        forecaster = ForecasterRecursive(LinearRegression(), lags=2)
+        # Metrics must accept y_train; use add_y_train_argument to wrap sklearn metrics.
+        metrics = [add_y_train_argument(mean_absolute_error)]
+        result = _calculate_metrics_one_step_ahead(
+            forecaster=forecaster,
+            metrics=metrics,
+            X_train=X_train,
+            y_train=y_train,
+            X_test=X_test,
+            y_test=y_test,
+        )
+        print(f"MAE: {result[0]:.4f}")
+        assert result[0] == 2.0
+        ```
     """
 
     if type(forecaster).__name__ == "ForecasterDirect":

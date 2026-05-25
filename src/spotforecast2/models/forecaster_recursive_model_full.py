@@ -3,17 +3,19 @@
 
 """Full-featured base forecasting model with Bayesian tuning and SHAP.
 
-This module extends :class:`~spotforecast2_safe.forecaster.wrappers.model.ForecasterRecursiveModel`
+This module extends `ForecasterRecursiveModel`
 from ``spotforecast2-safe`` with real Bayesian hyperparameter search (Optuna)
 and SHAP-based feature importance (``shap.TreeExplainer``).
 
 Examples:
-    >>> from spotforecast2.models import ForecasterRecursiveModelFull
-    >>> model = ForecasterRecursiveModelFull(iteration=0)
-    >>> hasattr(model, 'tune')
-    True
-    >>> hasattr(model, 'get_global_shap_feature_importance')
-    True
+    ```{python}
+    from spotforecast2.models import ForecasterRecursiveModelFull
+
+    model = ForecasterRecursiveModelFull(iteration=0)
+    assert hasattr(model, "tune")
+    assert hasattr(model, "get_global_shap_feature_importance")
+    print(f"n_trials={model.n_trials}, iteration={model.iteration}")
+    ```
 """
 
 from __future__ import annotations
@@ -42,31 +44,32 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
 
     This class overrides the two stubs in ``spotforecast2-safe``:
 
-    * :meth:`tune` — performs a full Bayesian hyperparameter search
+    * `tune()` — performs a full Bayesian hyperparameter search
       using ``bayesian_search_forecaster`` (Optuna).
-    * :meth:`get_global_shap_feature_importance` — computes global
+    * `get_global_shap_feature_importance()` — computes global
       SHAP values using ``shap.TreeExplainer``.
 
     Args:
         iteration: Training iteration index (0-based).
         n_trials: Number of Optuna trials for Bayesian search.
-        on_missing: How :meth:`tune` should treat NaN rows when calling
-            :func:`~spotforecast2_safe.data.fetch_data.load_timeseries`.
+        on_missing: How `tune()` should treat NaN rows when calling
+            `load_timeseries()`.
             Defaults to ``"passthrough"`` since the next step
             (``LinearlyInterpolateTS``) imputes the gaps.
-        **kwargs: Forwarded to :class:`ForecasterRecursiveModel`.
+        **kwargs: Forwarded to `ForecasterRecursiveModel`.
 
     Examples:
-        >>> from spotforecast2.models import ForecasterRecursiveModelFull
-        >>> model = ForecasterRecursiveModelFull(iteration=0)
-        >>> model.n_trials
-        10
-        >>> model.iteration
-        0
-        >>> hasattr(model, 'tune')
-        True
-        >>> hasattr(model, 'get_global_shap_feature_importance')
-        True
+        ```{python}
+        from spotforecast2.models import ForecasterRecursiveModelFull
+
+        model = ForecasterRecursiveModelFull(iteration=0)
+        assert model.n_trials == 10
+        assert model.iteration == 0
+        assert hasattr(model, "tune")
+        assert hasattr(model, "get_global_shap_feature_importance")
+        print(f"n_trials={model.n_trials}, iteration={model.iteration}")
+        print(f"on_missing={model.on_missing}")
+        ```
     """
 
     def __init__(
@@ -98,10 +101,14 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
             KeyError: If ``self.name`` is not in ``SEARCH_SPACES``.
 
         Examples:
-            >>> from spotforecast2.models import ForecasterRecursiveLGBMFull
-            >>> model = ForecasterRecursiveLGBMFull(iteration=0)
-            >>> callable(model.tune)
-            True
+            ```{python}
+            from spotforecast2.models import ForecasterRecursiveLGBMFull
+
+            model = ForecasterRecursiveLGBMFull(iteration=0)
+            assert callable(model.tune)
+            print(f"tune is callable: {callable(model.tune)}")
+            print(f"n_trials={model.n_trials}, name={model.name}")
+            ```
         """
         logger.info("Tuning %s Forecaster %d", self.name.upper(), self.iteration)
 
@@ -182,13 +189,59 @@ class ForecasterRecursiveModelFull(ForecasterRecursiveModel):
             ValueError: If the forecaster has not been initialized.
 
         Examples:
-            >>> from spotforecast2.models import ForecasterRecursiveLGBMFull
-            >>> model = ForecasterRecursiveLGBMFull(iteration=0)
-            >>> # Returns empty Series when model is not tuned
-            >>> result = model.get_global_shap_feature_importance()
-            >>> import pandas as pd
-            >>> isinstance(result, pd.Series)
-            True
+            ```{python}
+            import numpy as np
+            import pandas as pd
+            from spotforecast2.models import ForecasterRecursiveLGBMFull
+
+            rng = np.random.default_rng(0)
+            y = pd.Series(
+                rng.random(30),
+                index=pd.date_range("2023-01-01", periods=30, freq="h", tz="UTC"),
+                name="load",
+            )
+
+            # Untuned: best_params is None so an empty Series is returned.
+            model_untuned = ForecasterRecursiveLGBMFull(iteration=0, lags=3)
+            model_untuned.forecaster.fit(y=y)
+            X_train_u, y_train_u = model_untuned.forecaster.create_train_X_y(y=y)
+            model_untuned._get_training_data = lambda: (X_train_u, y_train_u)
+
+            result_empty = model_untuned.get_global_shap_feature_importance()
+            assert isinstance(result_empty, pd.Series)
+            assert len(result_empty) == 0
+            print(f"Untuned result dtype: {result_empty.dtype}")
+            ```
+
+            ```{python}
+            import numpy as np
+            import pandas as pd
+            from spotforecast2.models import ForecasterRecursiveLGBMFull
+
+            rng = np.random.default_rng(0)
+            y = pd.Series(
+                rng.random(30),
+                index=pd.date_range("2023-01-01", periods=30, freq="h", tz="UTC"),
+                name="load",
+            )
+
+            model = ForecasterRecursiveLGBMFull(iteration=0, lags=3)
+            model.forecaster.fit(y=y)
+
+            # Set best_params and best_lags to bypass the early-return guard.
+            model.best_params = {}
+            model.best_lags = [1, 2, 3]
+
+            # Supply pre-computed training matrices to avoid live data loading.
+            X_train, y_train = model.forecaster.create_train_X_y(y=y)
+            model._get_training_data = lambda: (X_train, y_train)
+
+            importance = model.get_global_shap_feature_importance(frac=1.0)
+            assert isinstance(importance, pd.Series)
+            assert set(importance.index) == {"lag_1", "lag_2", "lag_3"}
+            print(f"Feature importance index: {list(importance.index)}")
+            print(importance)
+            ```
         """
         X_train, y_train = self._get_training_data()
         X_train_sample = X_train.sample(frac=frac, random_state=self.random_state)

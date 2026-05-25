@@ -47,32 +47,33 @@ def visualize_outliers_hist(
         ImportError: If matplotlib is not installed.
 
     Examples:
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> from spotforecast2.plots.outlier_plots import visualize_outliers_hist
-        >>>
-        >>> # Create sample data
-        >>> np.random.seed(42)
-        >>> data_original = pd.DataFrame({
-        ...     'temperature': np.concatenate([
-        ...         np.random.normal(20, 5, 100),
-        ...         [50, 60, 70]  # outliers
-        ...     ]),
-        ...     'humidity': np.concatenate([
-        ...         np.random.normal(60, 10, 100),
-        ...         [95, 98, 99]  # outliers
-        ...     ])
-        ... })
-        >>> data_cleaned = data_original.copy()
-        >>>
-        >>> # Visualize outliers
-        >>> visualize_outliers_hist(
-        ...     data_cleaned,
-        ...     data_original,
-        ...     contamination=0.03,
-        ...     figsize=(12, 5),
-        ...     alpha=0.7
-        ... )
+        ```{python}
+        import matplotlib
+        matplotlib.use("Agg")  # non-interactive backend for doc rendering
+        import numpy as np
+        import pandas as pd
+        from spotforecast2.plots.outlier_plots import visualize_outliers_hist
+
+        rng = np.random.default_rng(0)
+        normal_vals = rng.normal(loc=20.0, scale=2.0, size=28)
+        outlier_vals = [60.0, 65.0]  # two obvious outliers
+        data_original = pd.DataFrame(
+            {"temperature": np.concatenate([normal_vals, outlier_vals])}
+        )
+        data_cleaned = data_original.copy()
+
+        # Renders a stacked histogram; outliers shown in red
+        visualize_outliers_hist(
+            data_cleaned,
+            data_original,
+            columns=["temperature"],
+            contamination=0.07,
+            figsize=(6, 3),
+            bins=15,
+            alpha=0.7,
+        )
+        print("visualize_outliers_hist completed without error")
+        ```
     """
     if data.empty or data_original.empty:
         raise ValueError("Input data is empty")
@@ -155,32 +156,38 @@ def visualize_outliers_plotly_scatter(
         ImportError: If plotly is not installed.
 
     Examples:
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> from spotforecast2.plots.outlier_plots import visualize_outliers_plotly_scatter
-        >>>
-        >>> # Create sample time series data
-        >>> np.random.seed(42)
-        >>> dates = pd.date_range('2024-01-01', periods=103, freq='h')
-        >>> data_original = pd.DataFrame({
-        ...     'temperature': np.concatenate([
-        ...         np.random.normal(20, 5, 100),
-        ...         [50, 60, 70]  # outliers
-        ...     ]),
-        ...     'humidity': np.concatenate([
-        ...         np.random.normal(60, 10, 100),
-        ...         [95, 98, 99]  # outliers
-        ...     ])
-        ... }, index=dates)
-        >>> data_cleaned = data_original.copy()
-        >>>
-        >>> # Visualize outliers
-        >>> visualize_outliers_plotly_scatter(
-        ...     data_cleaned,
-        ...     data_original,
-        ...     contamination=0.03,
-        ...     template='plotly_white'
-        ... )
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        import plotly.graph_objects as go
+        from spotforecast2_safe.preprocessing.outlier import get_outliers
+        from spotforecast2.plots.outlier_plots import visualize_outliers_plotly_scatter
+
+        rng = np.random.default_rng(0)
+        dates = pd.date_range("2024-01-01", periods=30, freq="h")
+        normal_vals = rng.normal(loc=20.0, scale=2.0, size=28)
+        outlier_vals_arr = [60.0, 65.0]  # two obvious outliers
+        data_original = pd.DataFrame(
+            {"temperature": np.concatenate([normal_vals, outlier_vals_arr])},
+            index=dates,
+        )
+        data_cleaned = data_original.copy()
+
+        # Verify that get_outliers detects the planted outliers before plotting
+        detected = get_outliers(
+            data_original, data_original=data_original, contamination=0.07
+        )
+        assert len(detected["temperature"]) >= 1, "Expected at least one outlier"
+
+        # Renders an interactive Plotly time series with outliers marked in red
+        visualize_outliers_plotly_scatter(
+            data_cleaned,
+            data_original,
+            columns=["temperature"],
+            contamination=0.07,
+        )
+        print(f"Detected {len(detected['temperature'])} outlier(s) in 'temperature'")
+        ```
     """
     if go is None:
         raise ImportError(

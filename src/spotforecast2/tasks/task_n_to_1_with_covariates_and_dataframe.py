@@ -23,41 +23,48 @@ Key Features:
     - Detailed logging and progress tracking
 
 Examples:
-    Basic usage with default parameters:
+    ```{python}
+    import tempfile
 
-    >>> from spotforecast2.scripts.n_to_1_with_covariates import main
-    >>> main()
+    import numpy as np
+    import pandas as pd
+    from lightgbm import LGBMRegressor
 
-    With custom forecast horizon and weights:
+    from spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe import (
+        n_to_1_with_covariates,
+    )
 
-    >>> predictions = main(
-    ...     forecast_horizon=48,
-    ...     weights=[1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0]
-    ... )
+    rng = np.random.default_rng(0)
+    n = 200
+    idx = pd.date_range("2023-01-01", periods=n, freq="h", tz="UTC")
+    data = pd.DataFrame(
+        {
+            "A": rng.normal(50, 5, n),
+            "B": rng.normal(30, 3, n),
+        },
+        index=idx,
+    )
 
-    With custom location (latitude, longitude):
-
-    >>> predictions = main(
-    ...     forecast_horizon=24,
-    ...     latitude=48.1351,
-    ...     longitude=11.5820,
-    ...     verbose=True
-    ... )
-
-    With feature engineering options:
-
-    >>> predictions = main(
-    ...     forecast_horizon=24,
-    ...     include_weather_windows=True,
-    ...     include_holiday_features=True,
-    ...     include_poly_features=True,
-    ... )
-
-    Passing custom estimator object:
-
-    >>> from lightgbm import LGBMRegressor
-    >>> estimator = LGBMRegressor(n_estimators=200, learning_rate=0.01)
-    >>> predictions = main(forecast_horizon=24, estimator=estimator)
+    estimator = LGBMRegressor(n_estimators=50, verbose=-1)
+    predictions, combined, metrics, feature_info = n_to_1_with_covariates(
+        data=data,
+        forecast_horizon=2,
+        lags=3,
+        window_size=6,
+        train_ratio=0.8,
+        estimator=estimator,
+        weights=[1.0, -1.0],
+        verbose=False,
+        show_progress=False,
+        on_weather_failure="skip",
+        force_train=True,
+        model_dir=tempfile.mkdtemp(),
+    )
+    print(f"Predictions shape: {predictions.shape}")
+    print(f"Combined forecast length: {len(combined)}")
+    assert predictions.shape[0] == 2
+    assert len(combined) == 2
+    ```
 
 Available Parameters:
 
@@ -248,71 +255,58 @@ def n_to_1_with_covariates(
         RuntimeError: If model training fails or data processing errors occur.
 
     Examples:
-        Basic usage (uses all defaults):
+        ```{python}
+        import tempfile
 
-        >>> predictions, combined, metrics, features = n_to_1_with_covariates()
-        >>> print(f"Predictions shape: {predictions.shape}")
-        >>> print(f"Combined forecast head:\\n{combined.head()}")
+        import numpy as np
+        import pandas as pd
+        from lightgbm import LGBMRegressor
 
-        Custom location and forecast horizon:
+        from spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe import (
+            n_to_1_with_covariates,
+        )
 
-        >>> predictions, combined, metrics, features = n_to_1_with_covariates(
-        ...     forecast_horizon=48,
-        ...     latitude=48.1351,
-        ...     longitude=11.5820,
-        ...     country_code="DE",
-        ...     state="BY",
-        ...     verbose=True
-        ... )
+        rng = np.random.default_rng(42)
+        n = 200
+        idx = pd.date_range("2023-01-01", periods=n, freq="h", tz="UTC")
+        data = pd.DataFrame(
+            {
+                "target_a": rng.normal(100, 10, n),
+                "target_b": rng.normal(60, 6, n),
+            },
+            index=idx,
+        )
 
-        With feature engineering enabled:
+        custom_estimator = LGBMRegressor(
+            n_estimators=50,
+            learning_rate=0.05,
+            max_depth=4,
+            verbose=-1,
+        )
+        custom_weights = [1.0, -1.0]
 
-        >>> predictions, combined, metrics, features = n_to_1_with_covariates(
-        ...     forecast_horizon=24,
-        ...     include_weather_windows=True,
-        ...     include_holiday_features=True,
-        ...     include_poly_features=True,
-        ...     verbose=True
-        ... )
-
-        Custom estimator and weights:
-
-        >>> from lightgbm import LGBMRegressor
-        >>> custom_estimator = LGBMRegressor(
-        ...     n_estimators=200,
-        ...     learning_rate=0.01,
-        ...     max_depth=7
-        ... )
-        >>> custom_weights = [1.0, 1.0, -0.5, -0.5]
-        >>> predictions, combined, metrics, features = n_to_1_with_covariates(
-        ...     forecast_horizon=24,
-        ...     estimator=custom_estimator,
-        ...     weights=custom_weights,
-        ...     verbose=True
-        ... )
-
-        With all advanced options:
-
-        >>> predictions, combined, metrics, features = n_to_1_with_covariates(
-        ...     forecast_horizon=72,
-        ...     contamination=0.02,
-        ...     window_size=168,
-        ...     lags=48,
-        ...     train_ratio=0.75,
-        ...     latitude=50.1109,
-        ...     longitude=8.6821,
-        ...     timezone="Europe/Berlin",
-        ...     country_code="DE",
-        ...     state="HE",
-        ...     include_weather_windows=True,
-        ...     include_holiday_features=True,
-        ...     include_poly_features=True,
-        ...     weights={"power": 1.0, "demand": 0.8},
-        ...     verbose=True,
-        ...     freq="h",
-        ... )
-        >>> print(f"Model Metrics: {metrics}")
-        >>> print(f"Feature Info: {features}")
+        predictions, combined, metrics, feature_info = n_to_1_with_covariates(
+            data=data,
+            forecast_horizon=2,
+            lags=3,
+            window_size=6,
+            train_ratio=0.8,
+            estimator=custom_estimator,
+            weights=custom_weights,
+            verbose=False,
+            show_progress=False,
+            on_weather_failure="skip",
+            force_train=True,
+            model_dir=tempfile.mkdtemp(),
+        )
+        print(f"Predictions shape: {predictions.shape}")
+        print("Combined forecast head:")
+        print(combined.head())
+        print(f"Feature info keys: {sorted(feature_info.keys())[:4]}")
+        assert predictions.shape[0] == 2
+        assert len(combined) == 2
+        assert isinstance(metrics, dict)
+        ```
     """
     # Default weights if not provided
     if weights is None:
@@ -415,14 +409,13 @@ def main() -> None:
         None. Results are printed to stdout.
 
     Examples:
-        Run the script directly:
+        ```{python}
+        #| eval: false
+        # main() reads data_in.csv from the user's data home directory; not reproducible without that file.
+        from spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe import main
 
-        >>> python n_to_1_with_covariates.py
-
-        Or call main() programmatically:
-
-        >>> from spotforecast2.scripts.n_to_1_with_covariates import main
-        >>> main()
+        main()
+        ```
     """
     data = fetch_data(filename=get_data_home() / "data_in.csv")
 
