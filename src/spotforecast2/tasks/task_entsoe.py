@@ -86,26 +86,38 @@ def entsoe_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
 
 
 def entsoe_test_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
-    """Return the merged ENTSO-E CSV sliced to "yesterday in UTC".
+    """Return the merged ENTSO-E CSV sliced to the forecast horizon.
 
-    Mirrors ``entsoe_data_loader`` but returns only the 24 hourly rows for the
-    UTC day immediately preceding today.  Plug into
-    ``config.test_data_loader`` so ``BaseTask.prepare_data`` consumes the slice
-    as ground truth, populating ``test_actual`` and ``metrics_future`` in the
-    prediction package.
+    The slice spans ``(end_train, end_train + predict_size * 1 h]`` so that
+    ``build_prediction_package``'s ``test_actual = ts.reindex(future_pred.index)``
+    matches the hourly forecast row-for-row.  ``end_train`` is taken from
+    ``config.end_train_default`` (treated as the *inclusive* last training
+    timestamp, the same convention the forecaster uses), and the step is
+    assumed to be 1 h after the pipeline's hourly resampling.
+
+    For the live ENTSO-E exemplar with ``end_train_default = D-2 23:00 UTC``
+    and ``predict_size = 24``, this returns the rows for
+    ``[D-1 00:00, D 00:00)`` — i.e., ``y_{-1}``.  For backtests at an arbitrary
+    ``end_train_default``, it returns the post-cutoff window the model is
+    actually predicting, rather than always "yesterday in wall-clock UTC".
 
     Args:
-        config: A ``ConfigEntsoe`` with ``data_filename`` set; the merged
-            interim CSV must already contain data covering yesterday (run
+        config: A ``ConfigEntsoe`` with ``data_filename``, ``end_train_default``,
+            and ``predict_size`` set; the merged interim CSV must already
+            contain data covering the forecast horizon (run
             ``spotforecast2-entsoe download`` first).
 
     Returns:
-        DataFrame indexed by ``Time (UTC)`` with the rows spanning
-        ``[yesterday 00:00 UTC, today 00:00 UTC)``.
+        DataFrame indexed by ``Time (UTC)`` with the rows the forecast will be
+        scored against.
     """
     df = entsoe_data_loader(config)
-    end = pd.Timestamp.now(tz="UTC").floor("D")
-    start = end - pd.Timedelta(days=1)
+    end_train = pd.Timestamp(config.end_train_default)
+    if end_train.tzinfo is None:
+        end_train = end_train.tz_localize("UTC")
+    step = pd.Timedelta(hours=1)                            # post-resample assumption
+    start = end_train + step                                # first forecast step
+    end = start + config.predict_size * step                # exclusive upper bound
     if df.index.tz is None:
         start = start.tz_localize(None)
         end = end.tz_localize(None)
