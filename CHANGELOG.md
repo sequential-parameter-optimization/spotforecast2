@@ -1,3 +1,9 @@
+## [2.2.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.1...v2.2.2) (2026-05-25)
+
+### Bug Fixes
+
+* **tasks:** derive entsoe_test_data_loader window from config.end_train_default ([c1ddf75](https://github.com/sequential-parameter-optimization/spotforecast2/commit/c1ddf750d8ba0dfa12cbbe674a3e87975bab19df))
+
 ## [2.2.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.0...v2.2.1) (2026-05-24)
 
 ### Bug Fixes
