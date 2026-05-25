@@ -51,59 +51,74 @@ def calculate_lag_autocorrelation(
     Examples:
         Calculate autocorrelation for a simple Series:
 
-        >>> import pandas as pd
-        >>> from spotforecast.stats.autocorrelation import calculate_lag_autocorrelation
-        >>>
-        >>> data = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-        >>> result = calculate_lag_autocorrelation(data=data, n_lags=4)
-        >>> result.head()
-           lag  partial_autocorrelation_abs  partial_autocorrelation  autocorrelation_abs  autocorrelation
-        0    1                     0.999998                 0.999998             1.000000         1.000000
-        1    2                     0.000002                -0.000002             0.645497         0.645497
-        2    3                     0.000002                 0.000002             0.298549         0.298549
-        3    4                     0.000001                -0.000001             0.068719         0.068719
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from spotforecast2.stats.autocorrelation import calculate_lag_autocorrelation
 
-        Calculate autocorrelation using only the last 8 samples:
+        rng = np.random.default_rng(0)
+        data = pd.Series(rng.standard_normal(40).cumsum())
+        result = calculate_lag_autocorrelation(data=data, n_lags=4)
+        print(result)
+        assert result.shape == (4, 5)
+        assert list(result.columns) == [
+            "lag",
+            "partial_autocorrelation_abs",
+            "partial_autocorrelation",
+            "autocorrelation_abs",
+            "autocorrelation",
+        ]
+        ```
 
-        >>> import pandas as pd
-        >>> from spotforecast2.stats.autocorrelation import calculate_lag_autocorrelation
-        >>>
-        >>> data = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-        >>> result = calculate_lag_autocorrelation(
-        ...     data=data,
-        ...     n_lags=3,
-        ...     last_n_samples=8
-        ... )
-        >>> result.shape
-        (3, 5)
+        Calculate autocorrelation using only the last 20 samples:
+
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from spotforecast2.stats.autocorrelation import calculate_lag_autocorrelation
+
+        rng = np.random.default_rng(0)
+        data = pd.Series(rng.standard_normal(40).cumsum())
+        result = calculate_lag_autocorrelation(
+            data=data,
+            n_lags=3,
+            last_n_samples=20,
+        )
+        print(result)
+        assert result.shape == (3, 5)
+        ```
 
         Calculate autocorrelation from a DataFrame with a single column:
 
-        >>> import pandas as pd
-        >>> from spotforecast.stats.autocorrelation import calculate_lag_autocorrelation
-        >>>
-        >>> data = pd.DataFrame({'value': [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]})
-        >>> result = calculate_lag_autocorrelation(data=data, n_lags=4)
-        >>> result.shape
-        (4, 5)
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from spotforecast2.stats.autocorrelation import calculate_lag_autocorrelation
+
+        rng = np.random.default_rng(0)
+        data = pd.DataFrame({"value": rng.standard_normal(40).cumsum()})
+        result = calculate_lag_autocorrelation(data=data, n_lags=4)
+        print(result)
+        assert result.shape == (4, 5)
+        ```
 
         Sort results by autocorrelation in descending order:
 
-        >>> import pandas as pd
-        >>> from spotforecast.stats.autocorrelation import calculate_lag_autocorrelation
-        >>>
-        >>> data = pd.Series([1, 2, 3, 4, 5, 6, 7, 8, 9, 10])
-        >>> result = calculate_lag_autocorrelation(
-        ...     data=data,
-        ...     n_lags=4,
-        ...     sort_by='autocorrelation'
-        ... )
-        >>> result[['lag', 'autocorrelation']].head()
-           lag  autocorrelation
-        0    1         1.000000
-        1    2         0.645497
-        2    3         0.298549
-        3    4         0.068719
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from spotforecast2.stats.autocorrelation import calculate_lag_autocorrelation
+
+        rng = np.random.default_rng(0)
+        data = pd.Series(rng.standard_normal(40).cumsum())
+        result = calculate_lag_autocorrelation(
+            data=data,
+            n_lags=4,
+            sort_by="autocorrelation",
+        )
+        print(result[["lag", "autocorrelation"]])
+        assert result["autocorrelation"].iloc[0] >= result["autocorrelation"].iloc[-1]
+        ```
 
     """
     if find_spec("statsmodels") is None:

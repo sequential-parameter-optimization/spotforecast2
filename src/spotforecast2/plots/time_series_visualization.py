@@ -56,54 +56,53 @@ def visualize_ts_plotly(
         TypeError: If dataframes parameter is not a dictionary.
 
     Examples:
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> from spotforecast2.plots.time_series_visualization import visualize_ts_plotly
-        >>>
-        >>> # Create sample time series data
-        >>> np.random.seed(42)
-        >>> dates_train = pd.date_range('2024-01-01', periods=100, freq='h')
-        >>> dates_val = pd.date_range('2024-05-11', periods=50, freq='h')
-        >>> dates_test = pd.date_range('2024-07-01', periods=30, freq='h')
-        >>>
-        >>> data_train = pd.DataFrame({
-        ...     'temperature': np.random.normal(20, 5, 100),
-        ...     'humidity': np.random.normal(60, 10, 100)
-        ... }, index=dates_train)
-        >>>
-        >>> data_val = pd.DataFrame({
-        ...     'temperature': np.random.normal(22, 5, 50),
-        ...     'humidity': np.random.normal(55, 10, 50)
-        ... }, index=dates_val)
-        >>>
-        >>> data_test = pd.DataFrame({
-        ...     'temperature': np.random.normal(25, 5, 30),
-        ...     'humidity': np.random.normal(50, 10, 30)
-        ... }, index=dates_test)
-        >>>
-        >>> # Visualize all datasets
-        >>> dataframes = {
-        ...     'Train': data_train,
-        ...     'Validation': data_val,
-        ...     'Test': data_test
-        ... }
-        >>> visualize_ts_plotly(dataframes)
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        import plotly.io as pio
 
-        Single dataset example:
+        from spotforecast2.plots.time_series_visualization import visualize_ts_plotly
 
-        >>> # Visualize single dataset
-        >>> dataframes = {'Data': data_train}
-        >>> visualize_ts_plotly(dataframes, columns=['temperature'])
+        pio.renderers.default = "json"
 
-        Custom styling:
+        rng = np.random.default_rng(42)
+        dates_train = pd.date_range("2024-01-01", periods=20, freq="h")
+        dates_val = pd.date_range("2024-01-02", periods=10, freq="h")
 
-        >>> visualize_ts_plotly(
-        ...     dataframes,
-        ...     columns=['temperature'],
-        ...     template='plotly_dark',
-        ...     colors={'Train': 'blue', 'Validation': 'green', 'Test': 'red'},
-        ...     mode='lines+markers'
-        ... )
+        data_train = pd.DataFrame(
+            {"temperature": rng.normal(20, 5, 20)}, index=dates_train
+        )
+        data_val = pd.DataFrame(
+            {"temperature": rng.normal(22, 5, 10)}, index=dates_val
+        )
+
+        dataframes = {"Train": data_train, "Validation": data_val}
+        visualize_ts_plotly(dataframes, columns=["temperature"])
+        print("visualize_ts_plotly: rendered", len(dataframes), "datasets")
+        ```
+
+        Custom styling with colors:
+
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        import plotly.io as pio
+
+        from spotforecast2.plots.time_series_visualization import visualize_ts_plotly
+
+        pio.renderers.default = "json"
+
+        rng = np.random.default_rng(0)
+        dates = pd.date_range("2024-01-01", periods=10, freq="h")
+        df = pd.DataFrame({"value": rng.normal(0, 1, 10)}, index=dates)
+        visualize_ts_plotly(
+            {"Data": df},
+            columns=["value"],
+            template="plotly_dark",
+            colors={"Data": "blue"},
+        )
+        print("visualize_ts_plotly: custom styling applied")
+        ```
     """
     if go is None:
         raise ImportError(
@@ -243,28 +242,30 @@ def visualize_ts_comparison(
         ImportError: If plotly is not installed.
 
     Examples:
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> from spotforecast2.plots.time_series_visualization import visualize_ts_comparison
-        >>>
-        >>> # Create sample data
-        >>> np.random.seed(42)
-        >>> dates1 = pd.date_range('2024-01-01', periods=100, freq='h')
-        >>> dates2 = pd.date_range('2024-05-11', periods=100, freq='h')
-        >>>
-        >>> df1 = pd.DataFrame({
-        ...     'temperature': np.random.normal(20, 5, 100)
-        ... }, index=dates1)
-        >>>
-        >>> df2 = pd.DataFrame({
-        ...     'temperature': np.random.normal(22, 5, 100)
-        ... }, index=dates2)
-        >>>
-        >>> # Compare with mean overlay
-        >>> visualize_ts_comparison(
-        ...     {'Dataset1': df1, 'Dataset2': df2},
-        ...     show_mean=True
-        ... )
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        import plotly.io as pio
+
+        from spotforecast2.plots.time_series_visualization import visualize_ts_comparison
+
+        pio.renderers.default = "json"
+
+        rng = np.random.default_rng(42)
+        dates1 = pd.date_range("2024-01-01", periods=15, freq="h")
+        dates2 = pd.date_range("2024-01-02", periods=15, freq="h")
+
+        df1 = pd.DataFrame({"temperature": rng.normal(20, 5, 15)}, index=dates1)
+        df2 = pd.DataFrame({"temperature": rng.normal(22, 5, 15)}, index=dates2)
+
+        # Compare two datasets with mean overlay
+        visualize_ts_comparison(
+            {"Dataset1": df1, "Dataset2": df2},
+            columns=["temperature"],
+            show_mean=True,
+        )
+        print("visualize_ts_comparison: rendered with mean overlay")
+        ```
     """
     if go is None:
         raise ImportError(
@@ -401,20 +402,26 @@ def plot_zoomed_timeseries(
         plt.Figure: The matplotlib Figure object.
 
     Examples:
-        >>> import pandas as pd
-        >>> import matplotlib.pyplot as plt
-        >>> from spotforecast2.plots.time_series_visualization import plot_zoomed_timeseries
-        >>> # Create sample data
-        >>> dates = pd.date_range("2023-01-01", periods=100, freq="h")
-        >>> df = pd.DataFrame({"value": range(100)}, index=dates)
-        >>> # Plot with zoom
-        >>> fig = plot_zoomed_timeseries(
-        ...     data=df,
-        ...     target="value",
-        ...     zoom=("2023-01-02 00:00", "2023-01-03 00:00"),
-        ...     show=False
-        ... )
-        >>> plt.close(fig)
+        ```{python}
+        import matplotlib.pyplot as plt
+        import pandas as pd
+
+        from spotforecast2.plots.time_series_visualization import plot_zoomed_timeseries
+
+        dates = pd.date_range("2023-01-01", periods=100, freq="h")
+        df = pd.DataFrame({"value": range(100)}, index=dates)
+
+        fig = plot_zoomed_timeseries(
+            data=df,
+            target="value",
+            zoom=("2023-01-02 00:00", "2023-01-03 00:00"),
+            show=False,
+        )
+        assert isinstance(fig, plt.Figure)
+        assert len(fig.axes) == 2
+        print(f"plot_zoomed_timeseries: figure with {len(fig.axes)} axes")
+        plt.close(fig)
+        ```
     """
     if title is None:
         title = target
@@ -472,23 +479,44 @@ def plot_seasonality(
         plt.Figure: The matplotlib Figure object.
 
     Examples:
-        >>> import pandas as pd
-        >>> import matplotlib.pyplot as plt
-        >>> from spotforecast2.plots.time_series_visualization import plot_seasonality
-        >>> # Create sample data
-        >>> dates = pd.date_range("2023-01-01", periods=1000, freq="h")
-        >>> df = pd.DataFrame({"value": range(1, 1001)}, index=dates)
-        >>> # Plot seasonality with log scale for all plots
-        >>> fig = plot_seasonality(data=df, target="value", logscale=True, show=False)
-        >>> plt.close(fig)
-        >>> # Plot seasonality with log scale for the first plot only
-        >>> fig = plot_seasonality(
-        ...     data=df,
-        ...     target="value",
-        ...     logscale=[True, False, False, False],
-        ...     show=False
-        ... )
-        >>> plt.close(fig)
+        ```{python}
+        import matplotlib.pyplot as plt
+        import pandas as pd
+
+        from spotforecast2.plots.time_series_visualization import plot_seasonality
+
+        dates = pd.date_range("2023-01-01", periods=1000, freq="h")
+        df = pd.DataFrame({"value": range(1, 1001)}, index=dates)
+
+        # Uniform log scale across all four panels
+        fig = plot_seasonality(data=df, target="value", logscale=True, show=False)
+        assert isinstance(fig, plt.Figure)
+        assert len(fig.axes) == 4
+        print(f"plot_seasonality: figure with {len(fig.axes)} axes (log scale)")
+        plt.close(fig)
+        ```
+
+        Per-panel log scale:
+
+        ```{python}
+        import matplotlib.pyplot as plt
+        import pandas as pd
+
+        from spotforecast2.plots.time_series_visualization import plot_seasonality
+
+        dates = pd.date_range("2023-01-01", periods=1000, freq="h")
+        df = pd.DataFrame({"value": range(1, 1001)}, index=dates)
+
+        fig = plot_seasonality(
+            data=df,
+            target="value",
+            logscale=[True, False, False, False],
+            show=False,
+        )
+        assert isinstance(fig, plt.Figure)
+        print("plot_seasonality: per-panel log scale applied")
+        plt.close(fig)
+        ```
     """
     # Work on a copy to avoid modifying the original dataframe with localized features
     df = data.copy()
@@ -608,17 +636,23 @@ def plot_predictions(
         plt.Figure: The matplotlib Figure object containing the plot.
 
     Examples:
-        >>> import matplotlib.pyplot as plt
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> from spotforecast2.plots.time_series_visualization import plot_predictions
-        >>> # Create sample data
-        >>> dates = pd.date_range("2023-01-01", periods=10, freq="D")
-        >>> y_true = pd.Series(np.arange(10), index=dates, name="Target")
-        >>> predictions = {"Model A": y_true + 0.5}
-        >>> # Plot predictions
-        >>> fig = plot_predictions(y_true, predictions, show=False)
-        >>> plt.close(fig)
+        ```{python}
+        import matplotlib.pyplot as plt
+        import numpy as np
+        import pandas as pd
+
+        from spotforecast2.plots.time_series_visualization import plot_predictions
+
+        dates = pd.date_range("2023-01-01", periods=10, freq="D")
+        y_true = pd.Series(np.arange(10, dtype=float), index=dates, name="Target")
+        predictions = {"Model A": y_true + 0.5, "Model B": y_true - 0.3}
+
+        fig = plot_predictions(y_true, predictions, show=False)
+        assert isinstance(fig, plt.Figure)
+        assert len(fig.axes) >= 1
+        print(f"plot_predictions: figure with {len(fig.axes)} subplot(s)")
+        plt.close(fig)
+        ```
     """
     if slice_seq is None:
         slice_seq = slice(None)
@@ -786,19 +820,25 @@ def plot_forecast(
         plt.Figure: The matplotlib Figure object.
 
     Examples:
-        >>> import matplotlib.pyplot as plt
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> from sklearn.linear_model import LinearRegression
-        >>> from spotforecast2.plots.time_series_visualization import plot_forecast
-        >>> # Create sample data
-        >>> dates = pd.date_range("2023-01-01", periods=10, freq="D")
-        >>> X = pd.DataFrame({"feat": np.arange(10)}, index=dates)
-        >>> y = pd.Series(np.arange(10), index=dates)
-        >>> model = LinearRegression().fit(X, y)
-        >>> # Plot forecast
-        >>> fig = plot_forecast(model, X, y, show=False)
-        >>> plt.close(fig)
+        ```{python}
+        import matplotlib.pyplot as plt
+        import numpy as np
+        import pandas as pd
+        from sklearn.linear_model import LinearRegression
+
+        from spotforecast2.plots.time_series_visualization import plot_forecast
+
+        dates = pd.date_range("2023-01-01", periods=10, freq="D")
+        X = pd.DataFrame({"feat": np.arange(10, dtype=float)}, index=dates)
+        y = pd.Series(np.arange(10, dtype=float), index=dates, name="target")
+        model = LinearRegression().fit(X, y)
+
+        fig = plot_forecast(model, X, y, show=False)
+        assert isinstance(fig, plt.Figure)
+        assert len(fig.axes) >= 1
+        print(f"plot_forecast: figure with {len(fig.axes)} subplot(s)")
+        plt.close(fig)
+        ```
     """
     # 1. Generate predictions/forecast
     # Assume model is already fitted

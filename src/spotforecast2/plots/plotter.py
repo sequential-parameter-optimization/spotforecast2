@@ -42,6 +42,33 @@ class PredictionFigure:
             - 'metrics_forecast': Dict[str, float]
             - 'metrics_forecast_one_day': Dict[str, float]
         title: Figure title shown at the top of the plot.
+
+    Examples:
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        import plotly.graph_objects as go
+
+        from spotforecast2.plots.plotter import PredictionFigure
+
+        rng = np.random.default_rng(0)
+        train_idx = pd.date_range("2026-01-01", periods=48, freq="h", tz="UTC")
+        future_idx = pd.date_range("2026-01-03", periods=24, freq="h", tz="UTC")
+        pkg = {
+            "train_actual": pd.Series(rng.uniform(80, 120, 48), index=train_idx),
+            "train_pred": pd.Series(rng.uniform(80, 120, 48), index=train_idx),
+            "future_actual": pd.Series(rng.uniform(80, 120, 24), index=future_idx),
+            "future_pred": pd.Series(rng.uniform(80, 120, 24), index=future_idx),
+            "metrics_train": {"mae": 2.5, "mape": 0.02},
+            "metrics_future": {"mae": 3.0, "mape": 0.03},
+            "metrics_future_one_day": {"mae": 2.8, "mape": 0.025},
+        }
+        pf = PredictionFigure(pkg, title="Demo Forecast")
+        fig = pf.make_plot()
+        assert isinstance(fig, go.Figure)
+        assert len(fig.data) >= 3  # at least actual, prediction, last-week traces
+        print(f"Figure has {len(fig.data)} traces, title: '{pf.title}'")
+        ```
     """
 
     def __init__(
@@ -72,25 +99,31 @@ class PredictionFigure:
         that window is serialised into the Plotly JSON, keeping HTML output small.
 
         Examples:
-            >>> import pandas as pd
-            >>> import numpy as np
-            >>> from spotforecast2.plots.plotter import PredictionFigure
-            >>> dates = pd.date_range("2023-01-01", periods=100, freq="h", tz="UTC")
-            >>> train_end = dates[70]
-            >>> y = pd.Series(np.random.rand(100) * 100, index=dates, name="load")
-            >>> p = y + np.random.normal(0, 5, 100)
-            >>> pkg = {
-            ...     "train_actual": y.loc[:train_end],
-            ...     "future_actual": y.loc[train_end:],
-            ...     "train_pred": p.loc[:train_end],
-            ...     "future_pred": p.loc[train_end:],
-            ...     "metrics_train": {"mae": 5.0, "mape": 0.1},
-            ...     "metrics_future": {"mae": 6.0, "mape": 0.12},
-            ...     "metrics_future_one_day": {"mae": 4.5, "mape": 0.08},
-            ... }
-            >>> fig = PredictionFigure(pkg).make_plot()
-            >>> isinstance(fig.data, tuple)
-            True
+            ```{python}
+            import numpy as np
+            import pandas as pd
+            import plotly.graph_objects as go
+
+            from spotforecast2.plots.plotter import PredictionFigure
+
+            rng = np.random.default_rng(0)
+            dates = pd.date_range("2023-01-01", periods=100, freq="h", tz="UTC")
+            train_end = dates[70]
+            y = pd.Series(rng.uniform(0, 100, 100), index=dates, name="load")
+            p = y + rng.normal(0, 5, 100)
+            pkg = {
+                "train_actual": y.loc[:train_end],
+                "future_actual": y.loc[train_end:],
+                "train_pred": p.loc[:train_end],
+                "future_pred": p.loc[train_end:],
+                "metrics_train": {"mae": 5.0, "mape": 0.1},
+                "metrics_future": {"mae": 6.0, "mape": 0.12},
+                "metrics_future_one_day": {"mae": 4.5, "mape": 0.08},
+            }
+            fig = PredictionFigure(pkg).make_plot()
+            assert isinstance(fig, go.Figure)
+            print(f"Traces: {len(fig.data)}, type: {type(fig).__name__}")
+            ```
         """
         end_training = self.prediction_package["train_actual"].index.max()
         future_pred = self.prediction_package["future_pred"]
@@ -423,8 +456,29 @@ def make_plot(
         The generated Plotly Figure object.
 
     Examples:
-        >>> from spotforecast2.plots.plotter import make_plot
-        >>> # fig = make_plot(results)
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        import plotly.graph_objects as go
+
+        from spotforecast2.plots.plotter import make_plot
+
+        rng = np.random.default_rng(1)
+        train_idx = pd.date_range("2026-01-01", periods=48, freq="h", tz="UTC")
+        future_idx = pd.date_range("2026-01-03", periods=24, freq="h", tz="UTC")
+        pkg = {
+            "train_actual": pd.Series(rng.uniform(80, 120, 48), index=train_idx),
+            "train_pred": pd.Series(rng.uniform(80, 120, 48), index=train_idx),
+            "future_actual": pd.Series(rng.uniform(80, 120, 24), index=future_idx),
+            "future_pred": pd.Series(rng.uniform(80, 120, 24), index=future_idx),
+            "metrics_train": {"mae": 2.5, "mape": 0.02},
+            "metrics_future": {"mae": 3.0, "mape": 0.03},
+            "metrics_future_one_day": {"mae": 2.8, "mape": 0.025},
+        }
+        fig = make_plot(pkg, save=False)
+        assert isinstance(fig, go.Figure)
+        print(f"Figure type: {type(fig).__name__}, traces: {len(fig.data)}")
+        ```
     """
     predictor_fig = PredictionFigure(prediction_package, title=title)
     fig = predictor_fig.make_plot()
@@ -487,107 +541,28 @@ def plot_actual_vs_predicted(
         ValueError: If series indices don't align or are empty.
 
     Examples:
-        >>> import pandas as pd
-        >>> import tempfile
-        >>> from pathlib import Path
-        >>> from spotforecast2.plots.plotter import plot_actual_vs_predicted
-        >>>
-        >>> # Example 1: Create synthetic data for testing
-        >>> index = pd.date_range('2020-01-01', periods=24, freq='h')
-        >>> actual = pd.Series(range(100, 124), index=index, name='actual')
-        >>> baseline = pd.Series(range(101, 125), index=index, name='baseline')
-        >>> covariates = pd.Series(range(99, 123), index=index, name='covariates')
-        >>> custom = pd.Series(range(100, 124), index=index, name='custom')
-        >>>
-        >>> # Verify data properties
-        >>> print(f"Data length: {len(actual)}")
-        Data length: 24
-        >>> print(f"Index type: {type(actual.index).__name__}")
-        Index type: DatetimeIndex
-        >>>
-        >>> # Example 2: Comparing models with different accuracies
-        >>> import numpy as np
-        >>> np.random.seed(42)
-        >>> index = pd.date_range('2020-01-01 00:00:00', periods=48, freq='h')
-        >>> actual = pd.Series(
-        ...     100 + 10 * np.sin(np.arange(48) * 2 * np.pi / 24),
-        ...     index=index
-        ... )
-        >>> baseline = actual + np.random.normal(0, 2, 48)
-        >>> covariates = actual + np.random.normal(0, 1, 48)
-        >>> custom = actual + np.random.normal(0, 0.5, 48)
-        >>>
-        >>> # Verify series properties before plotting
-        >>> print(f"Actual range: [{actual.min():.1f}, {actual.max():.1f}]")
-        Actual range: [90.0, 110.0]
-        >>> print(f"All indices aligned: {(actual.index == baseline.index).all()}")
-        All indices aligned: True
-        >>>
-        >>> # Example 3: Production workflow with actual forecast data
-        >>> index = pd.date_range('2020-01-01', periods=24, freq='h')
-        >>> ground_truth = pd.Series([100 + i for i in range(24)], index=index)
-        >>> model1_pred = pd.Series([101 + i for i in range(24)], index=index)
-        >>> model2_pred = pd.Series([99 + i for i in range(24)], index=index)
-        >>> model3_pred = pd.Series([100 + i for i in range(24)], index=index)
-        >>>
-        >>> # Calculate errors
-        >>> mae_baseline = abs(ground_truth - model1_pred).mean()
-        >>> mae_covariates = abs(ground_truth - model2_pred).mean()
-        >>> mae_custom = abs(ground_truth - model3_pred).mean()
-        >>> print(f"Baseline MAE: {mae_baseline:.2f}")
-        Baseline MAE: 1.00
-        >>> print(f"Covariates MAE: {mae_covariates:.2f}")
-        Covariates MAE: 1.00
-        >>> print(f"Custom MAE: {mae_custom:.2f}")
-        Custom MAE: 0.00
-        >>>
-        >>> # Example 4: Verify data alignment before plotting
-        >>> index1 = pd.date_range('2020-01-01', periods=24, freq='h')
-        >>> index2 = pd.date_range('2020-01-02', periods=24, freq='h')
-        >>> series1 = pd.Series(range(24), index=index1)
-        >>> series2 = pd.Series(range(24), index=index2)
-        >>>
-        >>> # Check alignment
-        >>> indices_match = (series1.index == series2.index).all()
-        >>> print(f"Indices aligned: {indices_match}")
-        Indices aligned: False
-        >>>
-        >>> # Reindex to align
-        >>> series2_aligned = series2.reindex(series1.index)
-        >>> print(f"After reindex: {(series1.index == series2_aligned.index).all()}")
-        After reindex: True
-        >>>
-        >>> # Example 5: Verify all series have correct properties
-        >>> index = pd.date_range('2020-01-01', periods=10, freq='h')
-        >>> actual = pd.Series(range(10), index=index)
-        >>> pred1 = pd.Series(range(1, 11), index=index)
-        >>> pred2 = pd.Series(range(10), index=index)
-        >>> pred3 = pd.Series(range(10), index=index)
-        >>>
-        >>> # Safety checks
-        >>> assert isinstance(actual.index, pd.DatetimeIndex), "Index must be DatetimeIndex"
-        >>> assert len(actual) == len(pred1) == len(pred2) == len(pred3), "All series must have same length"
-        >>> assert (actual.index == pred1.index).all(), "Indices must align"
-        >>> print("All safety checks passed")
-        All safety checks passed
-        >>>
-        >>> # Example 6: Calculate metrics for model comparison
-        >>> index = pd.date_range('2020-01-01', periods=100, freq='h')
-        >>> actual = pd.Series(100 + np.random.randn(100) * 5, index=index)
-        >>> pred1 = actual + np.random.randn(100) * 2
-        >>> pred2 = actual + np.random.randn(100) * 1.5
-        >>> pred3 = actual + np.random.randn(100) * 1
-        >>>
-        >>> # Calculate MAE for each model
-        >>> mae1 = abs(actual - pred1).mean()
-        >>> mae2 = abs(actual - pred2).mean()
-        >>> mae3 = abs(actual - pred3).mean()
-        >>> print(f"Model 1 MAE: {mae1:.2f}")  # doctest: +ELLIPSIS
-        Model 1 MAE: ...
-        >>> print(f"Model 2 MAE: {mae2:.2f}")  # doctest: +ELLIPSIS
-        Model 2 MAE: ...
-        >>> print(f"Model 3 MAE: {mae3:.2f}")  # doctest: +ELLIPSIS
-        Model 3 MAE: ...
+        ```{python}
+        import numpy as np
+        import pandas as pd
+
+        from spotforecast2.plots.plotter import plot_actual_vs_predicted
+
+        rng = np.random.default_rng(42)
+        index = pd.date_range("2020-01-01", periods=24, freq="h")
+        actual = pd.Series(
+            100 + 10 * np.sin(np.arange(24) * 2 * np.pi / 24), index=index
+        )
+        baseline = actual + rng.normal(0, 2, 24)
+        covariates = actual + rng.normal(0, 1, 24)
+        custom = actual + rng.normal(0, 0.5, 24)
+
+        assert isinstance(actual.index, pd.DatetimeIndex)
+        assert (actual.index == baseline.index).all()
+        mae_baseline = abs(actual - baseline).mean()
+        mae_custom = abs(actual - custom).mean()
+        print(f"Baseline MAE: {mae_baseline:.2f}, Custom MAE: {mae_custom:.2f}")
+        assert mae_custom < mae_baseline  # tighter noise → lower error
+        ```
     """
     fig = go.Figure()
 

@@ -23,21 +23,21 @@ Safety-Critical Features:
     - Comprehensive error handling with file existence checks
 
 Examples:
-    Run the demo:
-
-    >>> python tasks/task_demo.py
-
-    Force training (case-insensitive boolean):
-
-    >>> python tasks/task_demo.py --force_train false
-
-    Save the plot as a single HTML file (default: task_demo_plot.html):
-
-    >>> python tasks/task_demo.py --html
-
-    Save to a specific path:
-
-    >>> python tasks/task_demo.py --html results/plot.html
+    ```{python}
+    #| eval: false
+    # requires ~/spotforecast2_data/data_test.csv and a pre-trained model cache
+    # Run the demo (baseline, covariates, and custom LightGBM):
+    #   python tasks/task_demo.py
+    #
+    # Force training (case-insensitive boolean):
+    #   python tasks/task_demo.py --force_train false
+    #
+    # Save the plot as a single HTML file (default: task_demo_plot.html):
+    #   python tasks/task_demo.py --html
+    #
+    # Save to a specific path:
+    #   python tasks/task_demo.py --html results/plot.html
+    ```
 """
 
 from __future__ import annotations
@@ -66,7 +66,25 @@ def main(
     force_train: bool = True,
     html_path: Optional[str] = None,
 ) -> None:
-    """Run the demo, compute predictions for three models, and plot actual vs predicted."""
+    """Run the demo, compute predictions for three models, and plot actual vs predicted.
+
+    Args:
+        force_train (bool, optional): When True, retrain all models even if a cached
+            version already exists. Defaults to True.
+        html_path (str, optional): File path at which to save the interactive plot as a
+            self-contained HTML file. When None the plot is rendered inline / shown
+            interactively. Defaults to None.
+
+    Examples:
+        ```{python}
+        #| eval: false
+        # requires ~/spotforecast2_data/data_test.csv and spotforecast2_models cache
+        from spotforecast2.tasks.task_demo import main
+
+        # Run with force_train=False to reuse cached models when available.
+        main(force_train=False, html_path=None)
+        ```
+    """
     DATA_PATH = "~/spotforecast2_data/data_test.csv"
     FORECAST_HORIZON = 24
     CONTAMINATION = 0.01

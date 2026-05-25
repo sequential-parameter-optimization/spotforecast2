@@ -85,50 +85,44 @@ def random_search_forecaster(
         param=value pairs.
 
     Examples:
-        Basic random search with continuous parameter distributions:
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from sklearn.linear_model import Ridge
+        from scipy.stats import uniform
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from spotforecast2_safe.splitter import TimeSeriesFold
+        from spotforecast2.model_selection.random_search import random_search_forecaster
 
-        >>> import pandas as pd
-        >>> import numpy as np
-        >>> from sklearn.linear_model import Ridge
-        >>> from scipy.stats import uniform
-        >>> from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-        >>> from spotforecast2_safe.splitter import TimeSeriesFold
-        >>> from spotforecast2.model_selection.random_search import random_search_forecaster
-        >>>
-        >>> # Create sample data
-        >>> np.random.seed(123)
-        >>> y = pd.Series(np.random.randn(50), name='y')
-        >>>
-        >>> # Set up forecaster and cross-validation
-        >>> forecaster = ForecasterRecursive(estimator=Ridge(), lags=3)
-        >>> cv = TimeSeriesFold(steps=3, initial_train_size=20, refit=False)
-        >>>
-        >>> # Define parameter distributions with scipy.stats
-        >>> param_distributions = {
-        ...     'estimator__alpha': uniform(0.1, 10.0)  # Uniform between 0.1 and 10.1
-        ... }
-        >>>
-        >>> # Run random search
-        >>> results = random_search_forecaster(
-        ...     forecaster=forecaster,
-        ...     y=y,
-        ...     cv=cv,
-        ...     param_distributions=param_distributions,
-        ...     metric='mean_squared_error',
-        ...     n_iter=5,
-        ...     random_state=42,
-        ...     return_best=False,
-        ...     verbose=False,
-        ...     show_progress=False
-        ... )
-        >>>
-        >>> # Check results
-        >>> print(results.shape[0])
-        5
-        >>> print('estimator__alpha' in results.columns)
-        True
-        >>> print('mean_squared_error' in results.columns)
-        True
+        rng = np.random.default_rng(1234)
+        y = pd.Series(rng.standard_normal(30), name="y")
+
+        forecaster = ForecasterRecursive(estimator=Ridge(), lags=2)
+        cv = TimeSeriesFold(steps=2, initial_train_size=20, refit=False)
+
+        param_distributions = {
+            "estimator__alpha": uniform(0.1, 10.0),
+        }
+
+        results = random_search_forecaster(
+            forecaster=forecaster,
+            y=y,
+            cv=cv,
+            param_distributions=param_distributions,
+            metric="mean_squared_error",
+            n_iter=2,
+            random_state=1234,
+            return_best=False,
+            verbose=False,
+            show_progress=False,
+        )
+
+        print(results.shape)
+        print(results.columns.tolist())
+        assert results.shape[0] == 2
+        assert "estimator__alpha" in results.columns
+        assert "mean_squared_error" in results.columns
+        ```
     """
 
     param_grid = list(
