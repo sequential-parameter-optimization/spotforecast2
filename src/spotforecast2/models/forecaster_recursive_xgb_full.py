@@ -3,20 +3,41 @@
 
 """XGBoost forecaster with real Bayesian tuning and SHAP.
 
-This module provides :class:`ForecasterRecursiveXGBFull`, which combines
+This module provides `ForecasterRecursiveXGBFull`, which combines
 the XGBoost forecaster from ``spotforecast2-safe`` with Bayesian
 hyperparameter optimisation (Optuna) and SHAP-based feature importance
-from :class:`~spotforecast2.models.ForecasterRecursiveModelFull`.
+from `ForecasterRecursiveModelFull`.
 
 Examples:
-    >>> from spotforecast2.models import ForecasterRecursiveXGBFull
-    >>> model = ForecasterRecursiveXGBFull(iteration=0)
-    >>> model.name
-    'xgb'
-    >>> model.forecaster is not None
-    True
-    >>> model.n_trials
-    10
+    ```{python}
+    import numpy as np
+    import pandas as pd
+    from xgboost import XGBRegressor
+
+    from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+    from spotforecast2.models import ForecasterRecursiveXGBFull
+
+    model = ForecasterRecursiveXGBFull(iteration=0, lags=3)
+    # Swap in a tiny estimator so the example renders quickly.
+    model.forecaster = ForecasterRecursive(
+        estimator=XGBRegressor(n_estimators=5, max_depth=2, random_state=1234),
+        lags=3,
+    )
+    assert model.name == "xgb"
+    assert model.n_trials == 10
+
+    rng = np.random.default_rng(0)
+    y = pd.Series(
+        rng.random(30),
+        index=pd.date_range("2023-01-01", periods=30, freq="h"),
+    )
+    model.fit(y=y)
+    pred = model.forecaster.predict(steps=2)
+    assert len(pred) == 2
+    print(f"name: {model.name}")
+    print(f"n_trials: {model.n_trials}")
+    print(f"forecast horizon: {len(pred)} steps")
+    ```
 """
 
 from __future__ import annotations
@@ -33,12 +54,12 @@ class ForecasterRecursiveXGBFull(ForecasterRecursiveModelFull, ForecasterRecursi
     """XGBoost forecaster with real Bayesian tuning and SHAP.
 
     Inherits the XGBoost forecaster initialisation from
-    :class:`~spotforecast2_safe.forecaster.wrappers.xgb.ForecasterRecursiveXGB`
-    (``spotforecast2-safe``) and adds the real :meth:`tune` and
-    :meth:`get_global_shap_feature_importance` from
-    :class:`~spotforecast2.models.ForecasterRecursiveModelFull`.
+    `ForecasterRecursiveXGB`
+    (``spotforecast2-safe``) and adds the real `tune()` and
+    `get_global_shap_feature_importance()` from
+    `ForecasterRecursiveModelFull`.
 
-    The MRO ensures that :meth:`tune` and SHAP methods resolve from
+    The MRO ensures that `tune()` and SHAP methods resolve from
     ``ForecasterRecursiveModelFull``, while the XGBoost-specific
     ``__init__`` (estimator wiring) comes from ``ForecasterRecursiveXGB``.
 
@@ -49,25 +70,41 @@ class ForecasterRecursiveXGBFull(ForecasterRecursiveModelFull, ForecasterRecursi
             ``predict_size``, ``train_size``).
 
     Examples:
-        >>> from spotforecast2.models import ForecasterRecursiveXGBFull
-        >>> model = ForecasterRecursiveXGBFull(iteration=0)
-        >>> model.name
-        'xgb'
-        >>> model.forecaster is not None
-        True
-        >>> model.n_trials
-        10
-        >>> model.iteration
-        0
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from xgboost import XGBRegressor
 
-    ```{python}
-    from spotforecast2.models import ForecasterRecursiveXGBFull
-    model = ForecasterRecursiveXGBFull(iteration=0)
-    print(f"Model name: {model.name}")
-    print(f"Trials: {model.n_trials}")
-    print(f"Has tune: {callable(model.tune)}")
-    print(f"Has SHAP: {callable(model.get_global_shap_feature_importance)}")
-    ```
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from spotforecast2.models import ForecasterRecursiveXGBFull
+
+        model = ForecasterRecursiveXGBFull(iteration=0, lags=3)
+        # Swap in a tiny estimator so the example renders quickly.
+        model.forecaster = ForecasterRecursive(
+            estimator=XGBRegressor(n_estimators=5, max_depth=2, random_state=1234),
+            lags=3,
+        )
+        assert model.name == "xgb"
+        assert model.iteration == 0
+        assert model.n_trials == 10
+        assert callable(model.tune)
+        assert callable(model.get_global_shap_feature_importance)
+
+        rng = np.random.default_rng(0)
+        y = pd.Series(
+            rng.random(30),
+            index=pd.date_range("2023-01-01", periods=30, freq="h"),
+        )
+        model.fit(y=y)
+        pred = model.forecaster.predict(steps=2)
+        assert len(pred) == 2
+        print(f"name: {model.name}")
+        print(f"iteration: {model.iteration}")
+        print(f"n_trials: {model.n_trials}")
+        print(f"has tune: {callable(model.tune)}")
+        print(f"has SHAP: {callable(model.get_global_shap_feature_importance)}")
+        print(f"forecast horizon: {len(pred)} steps")
+        ```
     """
 
     def __init__(self, iteration: int, lags: int = 12, **kwargs: Any):

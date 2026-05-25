@@ -3,20 +3,21 @@
 
 """LGBM forecaster with real Bayesian tuning and SHAP.
 
-This module provides :class:`ForecasterRecursiveLGBMFull`, which combines
+This module provides `ForecasterRecursiveLGBMFull`, which combines
 the LightGBM forecaster from ``spotforecast2-safe`` with Bayesian
 hyperparameter optimisation (Optuna) and SHAP-based feature importance
-from :class:`~spotforecast2.models.ForecasterRecursiveModelFull`.
+from `ForecasterRecursiveModelFull`.
 
 Examples:
-    >>> from spotforecast2.models import ForecasterRecursiveLGBMFull
-    >>> model = ForecasterRecursiveLGBMFull(iteration=0)
-    >>> model.name
-    'lgbm'
-    >>> model.forecaster is not None
-    True
-    >>> model.n_trials
-    10
+    ```{python}
+    from spotforecast2.models import ForecasterRecursiveLGBMFull
+
+    model = ForecasterRecursiveLGBMFull(iteration=0)
+    assert model.name == "lgbm"
+    assert model.forecaster is not None
+    assert model.n_trials == 10
+    print(f"name={model.name}, n_trials={model.n_trials}, iteration={model.iteration}")
+    ```
 """
 
 from __future__ import annotations
@@ -35,12 +36,12 @@ class ForecasterRecursiveLGBMFull(
     """LGBM forecaster with real Bayesian tuning and SHAP.
 
     Inherits the LightGBM forecaster initialisation from
-    :class:`~spotforecast2_safe.forecaster.wrappers.lgbm.ForecasterRecursiveLGBM`
-    (``spotforecast2-safe``) and adds the real :meth:`tune` and
-    :meth:`get_global_shap_feature_importance` from
-    :class:`~spotforecast2.models.ForecasterRecursiveModelFull`.
+    `ForecasterRecursiveLGBM`
+    (``spotforecast2-safe``) and adds the real `tune()` and
+    `get_global_shap_feature_importance()` from
+    `ForecasterRecursiveModelFull`.
 
-    The MRO ensures that :meth:`tune` and SHAP methods resolve from
+    The MRO ensures that `tune()` and SHAP methods resolve from
     ``ForecasterRecursiveModelFull``, while the LightGBM-specific
     ``__init__`` (estimator wiring) comes from ``ForecasterRecursiveLGBM``.
 
@@ -51,25 +52,18 @@ class ForecasterRecursiveLGBMFull(
             ``predict_size``, ``train_size``).
 
     Examples:
-        >>> from spotforecast2.models import ForecasterRecursiveLGBMFull
-        >>> model = ForecasterRecursiveLGBMFull(iteration=0)
-        >>> model.name
-        'lgbm'
-        >>> model.forecaster is not None
-        True
-        >>> model.n_trials
-        10
-        >>> model.iteration
-        0
+        ```{python}
+        from spotforecast2.models import ForecasterRecursiveLGBMFull
 
-    ```{python}
-    from spotforecast2.models import ForecasterRecursiveLGBMFull
-    model = ForecasterRecursiveLGBMFull(iteration=0)
-    print(f"Model name: {model.name}")
-    print(f"Trials: {model.n_trials}")
-    print(f"Has tune: {callable(model.tune)}")
-    print(f"Has SHAP: {callable(model.get_global_shap_feature_importance)}")
-    ```
+        model = ForecasterRecursiveLGBMFull(iteration=0)
+        assert model.name == "lgbm"
+        assert model.forecaster is not None
+        assert model.n_trials == 10
+        assert model.iteration == 0
+        print(f"name={model.name}, n_trials={model.n_trials}, iteration={model.iteration}")
+        print(f"tune callable: {callable(model.tune)}")
+        print(f"shap callable: {callable(model.get_global_shap_feature_importance)}")
+        ```
     """
 
     def __init__(self, iteration: int, lags: int = 12, **kwargs: Any):

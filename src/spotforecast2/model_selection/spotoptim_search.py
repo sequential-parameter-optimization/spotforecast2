@@ -7,7 +7,7 @@ Hyperparameter search functions for forecasters using SpotOptim.
 This module provides an alternative to Bayesian (Optuna-based) search
 by leveraging the SpotOptim surrogate-model-based optimizer.  It
 follows the same interface as
-:func:`spotforecast2.model_selection.bayesian_search_forecaster`, so the
+`spotforecast2.model_selection.bayesian_search_forecaster()`, so the
 two can be used interchangeably.
 """
 
@@ -66,33 +66,22 @@ def parse_lags_from_strings(lags_str: str | int | list) -> int | list:
         Either an integer or a list of integers representing lags.
 
     Examples:
-        Basic parsing:
-
-        >>> from spotforecast2.model_selection.spotoptim_search import (
-        ...     parse_lags_from_strings,
-        ... )
-        >>> parse_lags_from_strings(24)
-        24
-        >>> parse_lags_from_strings("[1, 2, 3]")
-        [1, 2, 3]
-
-        Visualizing the safety threshold (Example of dynamic documentation):
-
         ```{python}
-        import matplotlib.pyplot as plt
-        import numpy as np
+        from spotforecast2.model_selection.spotoptim_search import (
+            parse_lags_from_strings,
+        )
 
-        def check_safety_threshold(val, threshold):
-            return 1 if val >= threshold else 0
+        result_int = parse_lags_from_strings(24)
+        print(result_int)
+        assert result_int == 24
 
-        threshold = 0.95
-        x = np.linspace(0.8, 1.0, 50)
-        y = [check_safety_threshold(val, threshold) for val in x]
+        result_list = parse_lags_from_strings("[1, 2, 3]")
+        print(result_list)
+        assert result_list == [1, 2, 3]
 
-        plt.step(x, y, where='post')
-        plt.axvline(threshold, color='red', linestyle='--')
-        plt.title("Safety Status Transition")
-        # plt.show()  # Commented for non-interactive environments
+        result_passthrough = parse_lags_from_strings([4, 8, 12])
+        print(result_passthrough)
+        assert result_passthrough == [4, 8, 12]
         ```
     """
     if isinstance(lags_str, (int, list)):
@@ -129,7 +118,7 @@ def spotoptim_search_forecaster(
     """Hyperparameter optimisation for a Forecaster using SpotOptim.
 
     Drop-in alternative to
-    :func:`~spotforecast2.model_selection.bayesian_search_forecaster`
+    `bayesian_search_forecaster()`
     that uses the SpotOptim surrogate-model-based optimizer instead of
     Optuna's TPE sampler.
 
@@ -139,7 +128,7 @@ def spotoptim_search_forecaster(
         cv: Cross-validation strategy — ``TimeSeriesFold`` or
             ``OneStepAheadFold``.
         search_space: Hyperparameter search space.  Either a
-            :class:`~spotoptim.hyperparameters.ParameterSet` or a plain
+            `ParameterSet` or a plain
             ``dict`` (see examples below).
         metric: Metric name, callable, or list thereof.
         exog: Optional exogenous variable(s).
@@ -165,9 +154,8 @@ def spotoptim_search_forecaster(
             ``OneStepAheadFold``.
 
     Examples:
-        **1 — Dict-based search space (no ParameterSet needed):**
-
         ```{python}
+        # 1 — Dict-based search space (no ParameterSet needed):
         import numpy as np
         import pandas as pd
         from sklearn.linear_model import Ridge
@@ -209,10 +197,23 @@ def spotoptim_search_forecaster(
         print(f"Contains 'alpha': {'alpha' in results.columns}")
         ```
 
-        **2 — ParameterSet-based search space:**
-
         ```{python}
+        # 2 — ParameterSet-based search space:
+        import numpy as np
+        import pandas as pd
+        from sklearn.linear_model import Ridge
         from spotoptim.hyperparameters import ParameterSet
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from spotforecast2_safe.splitter import TimeSeriesFold
+        from spotforecast2.model_selection import spotoptim_search_forecaster
+
+        np.random.seed(42)
+        y = pd.Series(
+            np.random.randn(200).cumsum(),
+            index=pd.date_range("2022-01-01", periods=200, freq="h"),
+            name="load",
+        )
+        cv = TimeSeriesFold(steps=5, initial_train_size=150, refit=False)
 
         ps = ParameterSet()
         _ = ps.add_float("alpha", low=0.01, high=10.0)
@@ -309,9 +310,8 @@ def spotoptim_objective(
         np.ndarray: 1D array of results for the primary metric.
 
     Examples:
-        Generating textual output of parameter evaluation:
-
         ```{python}
+        # Demonstrate the call structure of spotoptim_objective.
         import numpy as np
         import pandas as pd
         from spotforecast2_safe.splitter import TimeSeriesFold
@@ -652,21 +652,20 @@ def convert_search_space(
         - var_trans: List of transformation functions (e.g., log10) or None.
 
     Examples:
-        Basic usage:
+        ```{python}
+        from spotoptim.hyperparameters import ParameterSet
+        from spotforecast2.model_selection.spotoptim_search import (
+            convert_search_space,
+        )
 
-        >>> from spotoptim.hyperparameters import ParameterSet
-        >>> from spotforecast2.model_selection.spotoptim_search import (
-        ...     convert_search_space,
-        ... )
-        >>> ps = ParameterSet()
-        >>> _ = ps.add_float("alpha", 0.01, 10.0)
-        >>> b, t, n, tr = convert_search_space(ps)
-        >>> b
-        [(0.01, 10.0)]
-        >>> t
-        ['float']
-
-        Converting a complex dictionary search space:
+        ps = ParameterSet()
+        _ = ps.add_float("alpha", 0.01, 10.0)
+        b, t, n, tr = convert_search_space(ps)
+        print(b)
+        assert b == [(0.01, 10.0)]
+        print(t)
+        assert t == ["float"]
+        ```
 
         ```{python}
         from spotforecast2.model_selection.spotoptim_search import convert_search_space
@@ -674,7 +673,7 @@ def convert_search_space(
         search_space = {
             "learning_rate": (0.001, 0.1, "log10"),
             "max_depth": (2, 10),
-            "model_type": ["RandomForest", "XGBoost"]
+            "model_type": ["RandomForest", "XGBoost"],
         }
 
         bounds, vt, vn, vtr = convert_search_space(search_space)
@@ -764,21 +763,21 @@ def array_to_params(
         Dictionary mapping parameter names to typed values.
 
     Examples:
-        Basic usage:
+        ```{python}
+        import numpy as np
+        from spotforecast2.model_selection.spotoptim_search import (
+            array_to_params,
+        )
 
-        >>> import numpy as np
-        >>> from spotforecast2.model_selection.spotoptim_search import (
-        ...     array_to_params,
-        ... )
-        >>> array_to_params(
-        ...     np.array([100.0, 0.05]),
-        ...     var_name=["n_estimators", "lr"],
-        ...     var_type=["int", "float"],
-        ...     bounds=[(50, 200), (0.01, 0.3)],
-        ... )
-        {'n_estimators': 100, 'lr': 0.05}
-
-        Generating textual output of parameter mapping:
+        result = array_to_params(
+            np.array([100.0, 0.05]),
+            var_name=["n_estimators", "lr"],
+            var_type=["int", "float"],
+            bounds=[(50, 200), (0.01, 0.3)],
+        )
+        print(result)
+        assert result == {"n_estimators": 100, "lr": 0.05}
+        ```
 
         ```{python}
         import numpy as np
