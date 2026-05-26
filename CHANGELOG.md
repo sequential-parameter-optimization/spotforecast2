@@ -1,3 +1,13 @@
+## [2.2.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.2...v2.2.3) (2026-05-26)
+
+### Bug Fixes
+
+* **spotoptim:** single trial-level progress bar, suppress inner fold spam ([f5ed242](https://github.com/sequential-parameter-optimization/spotforecast2/commit/f5ed242365042f602f958ec1ac27e5387bf79cc4))
+
+### Documentation
+
+* convert doctest Examples to live `{python}` cells across 13 modules ([6050b6f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/6050b6f582f49620c3651420b4f075071b2c9fa0))
+
 ## [2.2.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.1...v2.2.2) (2026-05-25)
 
 ### Bug Fixes
