@@ -21,6 +21,7 @@ from typing import Any, Callable, Dict
 
 import numpy as np
 import pandas as pd
+from tqdm.auto import tqdm
 
 try:
     from spotoptim import SpotOptim
@@ -550,9 +551,23 @@ def spotoptim_search(
     all_lags: list = []
     all_params: list[dict] = []
 
+    # Single trial-level progress bar. Each entry in ``X`` is one trial
+    # (initial design point or sequential proposal), so we advance by
+    # ``len(X)`` per objective call. ``n_trials`` (== SpotOptim's
+    # ``max_iter``) is the total budget — it already includes the
+    # ``n_initial`` design points, so the total bar length is ``n_trials``.
+    # The inner backtesting fold loop is forced silent below to avoid the
+    # per-trial bar spam that used to stack dozens of fast "100% 35/35"
+    # bars in notebook output.
+    trial_bar = (
+        tqdm(total=n_trials, desc="SpotOptim trials", leave=True)
+        if show_progress
+        else None
+    )
+
     # --- Objective function -----------------------------------------------
     def _objective_wrapper(X: np.ndarray) -> np.ndarray:
-        return spotoptim_objective(
+        result = spotoptim_objective(
             X=X,
             forecaster_search=forecaster_search,
             cv_name=cv_name,
@@ -562,7 +577,7 @@ def spotoptim_search(
             exog=exog,
             n_jobs=n_jobs,
             verbose=verbose,
-            show_progress=show_progress,
+            show_progress=False,
             suppress_warnings=suppress_warnings,
             var_name=var_name,
             var_type=var_type,
@@ -571,6 +586,9 @@ def spotoptim_search(
             all_lags=all_lags,
             all_params=all_params,
         )
+        if trial_bar is not None:
+            trial_bar.update(len(X))
+        return result
 
     # --- Run SpotOptim ----------------------------------------------------
     optimizer = SpotOptim(
@@ -586,7 +604,11 @@ def spotoptim_search(
         **kwargs_spotoptim_,
     )
 
-    optimizer.optimize()
+    try:
+        optimizer.optimize()
+    finally:
+        if trial_bar is not None:
+            trial_bar.close()
 
     # --- Build results DataFrame ------------------------------------------
     lags_list = [
