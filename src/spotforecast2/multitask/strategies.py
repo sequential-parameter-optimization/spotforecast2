@@ -212,6 +212,7 @@ class SpotOptimStrategy:
             verbose=False,
             n_trials=task.config.n_trials_spotoptim,
             n_initial=task.config.n_initial_spotoptim,
+            show_progress=getattr(task, "_show_progress", False),
         )
         best_params = tuning_results.iloc[0].params
         best_lags = tuning_results.iloc[0].lags
