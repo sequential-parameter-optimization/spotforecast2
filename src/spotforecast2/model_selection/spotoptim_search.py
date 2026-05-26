@@ -577,7 +577,7 @@ def spotoptim_search(
             exog=exog,
             n_jobs=n_jobs,
             verbose=verbose,
-            show_progress=False,
+            show_progress=True,
             suppress_warnings=suppress_warnings,
             var_name=var_name,
             var_type=var_type,
