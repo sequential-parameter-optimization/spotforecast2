@@ -1,3 +1,9 @@
+## [2.2.4-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.3...v2.2.4-rc.1) (2026-05-28)
+
+### Bug Fixes
+
+* import initialize_lags from preprocessing.forecaster_config ([781f492](https://github.com/sequential-parameter-optimization/spotforecast2/commit/781f4924d816bedc32b8623dffbee701b49e1eea))
+
 ## [2.2.3](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.2...v2.2.3) (2026-05-26)
 
 ### Bug Fixes
