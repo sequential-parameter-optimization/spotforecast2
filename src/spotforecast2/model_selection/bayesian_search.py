@@ -33,7 +33,8 @@ from spotforecast2_safe.splitter.utils_common import (
 from spotforecast2.model_selection.utils_metrics import (
     _calculate_metrics_one_step_ahead,
 )
-from spotforecast2_safe.forecaster.utils import initialize_lags, date_to_index_position
+from spotforecast2_safe.forecaster.utils import date_to_index_position
+from spotforecast2_safe.preprocessing.forecaster_config import initialize_lags
 from spotforecast2_safe.exceptions import IgnoredArgumentWarning
 from spotforecast2_safe.exceptions import set_skforecast_warnings
 
