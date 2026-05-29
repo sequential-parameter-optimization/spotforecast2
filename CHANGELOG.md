@@ -1,3 +1,17 @@
+## [3.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.4...v3.0.0-rc.1) (2026-05-29)
+
+### ⚠ BREAKING CHANGES
+
+* The `include_poly_features` config field is replaced by
+`poly_features_degree` (>= 2 to enable interactions) and `max_poly_features`.
+Requires spotforecast2-safe >= 15.0.0.
+
+Co-Authored-By: Claude Opus 4.7 (1M context) <noreply@anthropic.com>
+
+### Features
+
+* thread poly_features_degree through the pipeline and MI-cap interactions ([35b4f2b](https://github.com/sequential-parameter-optimization/spotforecast2/commit/35b4f2b571e513c65fb12154321143118c6e543c))
+
 ## [2.2.4](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.3...v2.2.4) (2026-05-28)
 
 ### Bug Fixes
