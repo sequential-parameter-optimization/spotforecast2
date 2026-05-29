@@ -28,6 +28,7 @@ The four concrete strategies map onto the ENTSO-E publication's "Approach
 
 from __future__ import annotations
 
+from copy import deepcopy
 from typing import Any, Callable, Dict, Optional, Protocol
 
 import pandas as pd
@@ -196,10 +197,35 @@ class SpotOptimStrategy:
         y_train: pd.Series,
         exog_train: Optional[pd.DataFrame] = None,
     ) -> Any:
-        from spotforecast2.model_selection import spotoptim_search_forecaster
+        from spotforecast2.model_selection import (
+            build_warm_start_x0,
+            spotoptim_search_forecaster,
+        )
 
         search_space = self.search_space or _default_spotoptim_search_space()
         cv = task.cv_ts(y_train)
+
+        # Warm start: inject ``lags_consider`` as a candidate lag set and seed
+        # the optimizer's first evaluation with it.  Only dict search spaces
+        # with a ``"lags"`` list are eligible; anything else falls through to a
+        # normal cold-start run.
+        kwargs_spotoptim: Optional[Dict[str, Any]] = None
+        lags_seed = getattr(task.config, "lags_consider", None)
+        if (
+            getattr(task.config, "warm_start_lags", False)
+            and lags_seed
+            and isinstance(search_space, dict)
+            and isinstance(search_space.get("lags"), list)
+        ):
+            seed_str = str(list(lags_seed))
+            search_space = deepcopy(search_space)
+            if seed_str not in search_space["lags"]:
+                search_space["lags"] = [seed_str, *search_space["lags"]]
+            x0 = build_warm_start_x0(search_space, forecaster, lags_seed)
+            if x0 is not None:
+                kwargs_spotoptim = {"x0": x0}
+                task.logger.info("  Warm-start lags seeded: %s", seed_str)
+
         tuning_results, _ = spotoptim_search_forecaster(
             forecaster=forecaster,
             y=y_train,
@@ -213,6 +239,7 @@ class SpotOptimStrategy:
             n_trials=task.config.n_trials_spotoptim,
             n_initial=task.config.n_initial_spotoptim,
             show_progress=getattr(task, "_show_progress", False),
+            kwargs_spotoptim=kwargs_spotoptim,
         )
         best_params = tuning_results.iloc[0].params
         best_lags = tuning_results.iloc[0].lags
