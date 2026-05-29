@@ -32,7 +32,7 @@ dependencies = [
     "ruff>=0.15.6",
     "scikit-learn>=1.8.0",
     "shap>=0.49.1",
-    "spotforecast2-safe>=15.0.0,<16",
+    "spotforecast2-safe>=15.0.0rc1,<16",
     "spotoptim>=0.0.160",
     "tqdm>=4.67.2",
 ]
@@ -68,6 +68,13 @@ spotforecast-n2o1 = "spotforecast2.tasks.task_n_to_1:main"
 spotforecast-n2o1-df = "spotforecast2.tasks.task_n_to_1_dataframe:main"
 spotforecast-n2o1-cov = "spotforecast2.tasks.task_n_to_1_with_covariates:main"
 spotforecast-n2o1-cov-df = "spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe:main"
+
+[tool.uv]
+# Accept pre-releases ONLY for dependencies whose specifier carries an explicit
+# pre-release marker (here, spotforecast2-safe>=15.0.0rc1). This lets sf2's CI
+# integrate against sf2-safe release candidates without waiting for the
+# develop→main promotion, while keeping every other dependency on stable.
+prerelease = "explicit"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
