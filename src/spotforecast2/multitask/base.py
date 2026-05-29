@@ -34,6 +34,7 @@ from spotforecast2_safe.manager.features import (
     get_target_data,
     merge_data_and_covariates,
     select_exogenous_features,
+    select_top_poly_features,
 )
 from joblib import dump as _joblib_dump
 from joblib import load as _joblib_load
@@ -90,7 +91,8 @@ class PipelineConfig(Protocol):
     use_exogenous_features: bool
     include_weather_windows: bool
     include_holiday_features: bool
-    include_poly_features: bool
+    poly_features_degree: int
+    max_poly_features: int
     latitude: float
     longitude: float
     timezone: str
@@ -627,7 +629,32 @@ class BaseTask:
         self.exogenous_features = create_interaction_features(
             exogenous_features=self.exogenous_features,
             weather_aligned=self.weather_aligned,
+            degree=self.config.poly_features_degree,
         )
+
+        # Cap polynomial interactions to the top max_poly_features ranked by
+        # mutual information with the primary target, then drop the rest.
+        if self.config.poly_features_degree >= 2:
+            poly_cols = [
+                c for c in self.exogenous_features.columns if c.startswith("poly_")
+            ]
+            max_poly = self.config.max_poly_features
+            if poly_cols and max_poly and 0 < max_poly < len(poly_cols):
+                keep = select_top_poly_features(
+                    self.exogenous_features[poly_cols],
+                    self.df_pipeline[self.config.targets[0]],
+                    max_poly_features=max_poly,
+                    random_state=self.config.random_state,
+                )
+                drop = [c for c in poly_cols if c not in keep]
+                self.exogenous_features = self.exogenous_features.drop(columns=drop)
+                self.logger.info(
+                    "Capped polynomial features: kept %d of %d (dropped %d).",
+                    len(keep),
+                    len(poly_cols),
+                    len(drop),
+                )
+
         self.logger.info(
             "Combined exogenous features shape: %s", self.exogenous_features.shape
         )
@@ -638,7 +665,7 @@ class BaseTask:
             weather_aligned=self.weather_aligned,
             include_weather_windows=self.config.include_weather_windows,
             include_holiday_features=self.config.include_holiday_features,
-            include_poly_features=self.config.include_poly_features,
+            poly_features_degree=self.config.poly_features_degree,
         )
         self.logger.info(
             "Selected %d exogenous features for training.", len(self.exog_feature_names)
