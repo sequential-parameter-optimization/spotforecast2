@@ -835,3 +835,78 @@ def array_to_params(
         else:
             params_dict[name] = float(str(value))
     return params_dict
+
+
+def build_warm_start_x0(
+    search_space: ParameterSet | dict[str, Any],
+    forecaster: object,
+    lags_seed: Any,
+) -> np.ndarray | None:
+    """Build a single warm-start point ``x0`` for :class:`SpotOptim`.
+
+    The returned point seeds the optimizer's first evaluation at the lag
+    configuration *lags_seed* combined with the current estimator
+    hyperparameters of *forecaster*. It is expressed in *natural* scale —
+    SpotOptim applies any ``var_trans`` (e.g. ``log10``) itself when it
+    validates ``x0`` — and inserted as the first point of the initial design,
+    so the seeded configuration is always evaluated.
+
+    Args:
+        search_space: Search space that already contains ``str(list(lags_seed))``
+            as a candidate in its ``"lags"`` factor (see
+            ``SpotOptimStrategy.prepare_forecaster``).
+        forecaster: The pre-tuning forecaster; its ``estimator`` supplies the
+            starting values for the numeric hyperparameter dimensions.
+        lags_seed: The lag configuration to seed (e.g. ``config.lags_consider``).
+
+    Returns:
+        A 1-D float array of length ``len(var_name)``, or ``None`` when the
+        search space has no ``"lags"`` factor or the seed is not a candidate.
+
+    Examples:
+        ```{python}
+        import numpy as np
+        from sklearn.linear_model import Ridge
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from spotforecast2.model_selection.spotoptim_search import (
+            build_warm_start_x0,
+        )
+
+        forecaster = ForecasterRecursive(estimator=Ridge(alpha=2.0), lags=3)
+        search_space = {"alpha": (0.1, 10.0), "lags": ["[1, 2, 24]", "24"]}
+        x0 = build_warm_start_x0(search_space, forecaster, [1, 2, 24])
+        print(x0)
+        assert x0[0] == 2.0      # Ridge alpha, clipped into (0.1, 10.0)
+        assert x0[1] == 0.0      # index of "[1, 2, 24]" in the lags candidates
+        ```
+    """
+    bounds, var_type, var_name, _ = convert_search_space(search_space)
+    if "lags" not in var_name:
+        return None
+
+    seed_str = str(list(lags_seed))
+    lags_candidates = bounds[var_name.index("lags")]
+    if seed_str not in lags_candidates:
+        return None
+
+    # Estimator params provide natural-scale starting values for numeric dims.
+    estimator = getattr(forecaster, "estimator", None)
+    est_params = estimator.get_params() if hasattr(estimator, "get_params") else {}
+
+    x0: list[float] = []
+    for name, vtype, bound in zip(var_name, var_type, bounds):
+        if vtype == "factor":
+            # Seed the chosen lag set; default other factors to their first level.
+            x0.append(float(bound.index(seed_str)) if name == "lags" else 0.0)
+            continue
+
+        low, high = float(bound[0]), float(bound[1])
+        key = name.split("estimator__", 1)[-1]
+        value = est_params.get(key)
+        if not isinstance(value, (int, float)) or isinstance(value, bool):
+            value = (low + high) / 2.0
+        # Clip into bounds — estimator defaults (e.g. LightGBM max_depth=-1,
+        # reg_alpha=0.0) often fall outside the configured search range.
+        x0.append(min(max(float(value), low), high))
+
+    return np.array(x0, dtype=float)
