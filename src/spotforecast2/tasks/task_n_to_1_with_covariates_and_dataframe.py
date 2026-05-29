@@ -86,7 +86,8 @@ Location & Time Parameters:
 Feature Engineering Parameters:
     include_weather_windows (bool): Include rolling weather statistics. Default: False.
     include_holiday_features (bool): Include holiday indicator features. Default: False.
-    include_poly_features (bool): Include polynomial interaction features. Default: False.
+    poly_features_degree (int): Polynomial-interaction degree (1 = off, 2 = pairwise). Default: 1.
+    max_poly_features (int): Cap on kept polynomial columns (top-K by mutual information). Default: 10.
 
 Model Parameters:
     estimator (Optional[Union[str, object]]): Forecaster estimator. Can be:
@@ -134,7 +135,8 @@ def n_to_1_with_covariates(
     estimator: Optional[Union[str, object]] = None,
     include_weather_windows: bool = False,
     include_holiday_features: bool = False,
-    include_poly_features: bool = False,
+    poly_features_degree: int = 1,
+    max_poly_features: int = 10,
     weights: Optional[Union[Dict[str, float], List[float], np.ndarray]] = None,
     verbose: bool = True,
     show_progress: bool = True,
@@ -208,10 +210,11 @@ def n_to_1_with_covariates(
             Useful for capturing demand patterns around holidays.
             Default: False.
 
-        include_poly_features (bool): Add polynomial interactions.
-            Creates 2nd-order interaction terms between selected features.
-            Useful for capturing non-linear relationships.
-            Default: False.
+        poly_features_degree (int): Polynomial-interaction degree. 1 (default)
+            adds no interactions; 2 adds pairwise bilinear terms; 3+ higher order.
+        max_poly_features (int): Cap on kept polynomial interaction columns; only
+            the top-K ranked by mutual information with the target survive
+            (<= 0 disables). Default: 10.
 
         weights (Optional[Union[Dict[str, float], List[float], np.ndarray]]):
             Weights for combining multi-output predictions.
@@ -329,7 +332,8 @@ def n_to_1_with_covariates(
         print("  Feature Engineering:")
         print(f"    - Weather Windows: {include_weather_windows}")
         print(f"    - Holiday Features: {include_holiday_features}")
-        print(f"    - Polynomial Features: {include_poly_features}")
+        print(f"    - Polynomial Degree: {poly_features_degree}")
+        print(f"    - Max Polynomial Features: {max_poly_features}")
         print(f"  Weights Type: {type(weights).__name__}")
         print(f"\n{'=' * 80}\n")
 
@@ -353,7 +357,8 @@ def n_to_1_with_covariates(
         "estimator": estimator,
         "include_weather_windows": include_weather_windows,
         "include_holiday_features": include_holiday_features,
-        "include_poly_features": include_poly_features,
+        "poly_features_degree": poly_features_degree,
+        "max_poly_features": max_poly_features,
         "verbose": verbose,
         "show_progress": show_progress,
     }
@@ -431,7 +436,8 @@ def main() -> None:
     STATE = "NW"
     INCLUDE_WEATHER_WINDOWS = False
     INCLUDE_HOLIDAY_FEATURES = False
-    INCLUDE_POLY_FEATURES = False
+    POLY_FEATURES_DEGREE = 1
+    MAX_POLY_FEATURES = 10
     VERBOSE = False
     WEIGHTS = [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0]
 
@@ -454,7 +460,8 @@ def main() -> None:
             estimator=None,
             include_weather_windows=INCLUDE_WEATHER_WINDOWS,
             include_holiday_features=INCLUDE_HOLIDAY_FEATURES,
-            include_poly_features=INCLUDE_POLY_FEATURES,
+            poly_features_degree=POLY_FEATURES_DEGREE,
+            max_poly_features=MAX_POLY_FEATURES,
             weights=WEIGHTS,
             verbose=VERBOSE,
         )
