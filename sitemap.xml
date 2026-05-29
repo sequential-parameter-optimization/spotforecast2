@@ -2,158 +2,158 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/tasks/tasks.html</loc>
-    <lastmod>2026-05-29T13:33:03.650Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.122Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/tasks/entsoe.html</loc>
-    <lastmod>2026-05-29T13:33:03.649Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.121Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.html</loc>
-    <lastmod>2026-05-29T13:39:27.134Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.588Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/tasks.task_n_to_1_dataframe.html</loc>
-    <lastmod>2026-05-29T13:39:27.099Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.541Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/tasks.task_entsoe.html</loc>
-    <lastmod>2026-05-29T13:39:27.097Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.540Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/stats.autocorrelation.html</loc>
-    <lastmod>2026-05-29T13:39:27.078Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.516Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/plots.plotter.html</loc>
-    <lastmod>2026-05-29T13:39:26.805Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.154Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/multitask.run.html</loc>
-    <lastmod>2026-05-29T13:39:27.071Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.505Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/multitask.SpotOptimTask.html</loc>
-    <lastmod>2026-05-29T13:39:27.015Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.432Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/multitask.OptunaTask.html</loc>
-    <lastmod>2026-05-29T13:39:27.008Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.423Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/multitask.LazyTask.html</loc>
-    <lastmod>2026-05-29T13:39:27.001Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.414Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/multitask.BaseTask.html</loc>
-    <lastmod>2026-05-29T13:39:26.993Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.405Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/models.forecaster_recursive_model_full.html</loc>
-    <lastmod>2026-05-29T13:39:26.925Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.315Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/model_selection.utils_metrics.html</loc>
-    <lastmod>2026-05-29T13:39:26.914Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.300Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/model_selection.random_search.html</loc>
-    <lastmod>2026-05-29T13:39:26.870Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.242Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/model_selection.bayesian_search.html</loc>
-    <lastmod>2026-05-29T13:39:26.854Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.220Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/processing/model_persistence.html</loc>
-    <lastmod>2026-05-29T13:33:03.649Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.121Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/plots/outliers.html</loc>
-    <lastmod>2026-05-29T13:33:03.649Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.120Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/model_selection/spotoptim_lags.html</loc>
-    <lastmod>2026-05-29T13:33:03.649Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.120Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/index.html</loc>
-    <lastmod>2026-05-29T13:33:03.650Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.122Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/model_selection/spotoptim_intro.html</loc>
-    <lastmod>2026-05-29T13:33:03.644Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.114Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/multitask/entsoe.html</loc>
-    <lastmod>2026-05-29T13:33:03.649Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.120Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/plots/time_series_visualization.html</loc>
-    <lastmod>2026-05-29T13:33:03.649Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.121Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/index.html</loc>
-    <lastmod>2026-05-29T13:39:26.748Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.075Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/model_selection.grid_search.html</loc>
-    <lastmod>2026-05-29T13:39:26.859Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.226Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/model_selection.spotoptim_search.html</loc>
-    <lastmod>2026-05-29T13:39:26.913Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.298Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/models.forecaster_recursive_lgbm_full.html</loc>
-    <lastmod>2026-05-29T13:39:26.930Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.322Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/models.forecaster_recursive_xgb_full.html</loc>
-    <lastmod>2026-05-29T13:39:26.936Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.329Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/multitask.CleanTask.html</loc>
-    <lastmod>2026-05-29T13:39:27.030Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.453Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/multitask.MultiTask.html</loc>
-    <lastmod>2026-05-29T13:39:27.062Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.493Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/multitask.PredictTask.html</loc>
-    <lastmod>2026-05-29T13:39:27.023Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.442Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/multitask.agg_predictor.html</loc>
-    <lastmod>2026-05-29T13:39:26.940Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.335Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/plots.outlier_plots.html</loc>
-    <lastmod>2026-05-29T13:39:26.777Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.116Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/plots.time_series_visualization.html</loc>
-    <lastmod>2026-05-29T13:39:26.843Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.205Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/tasks.task_demo.html</loc>
-    <lastmod>2026-05-29T13:39:27.083Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.521Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/tasks.task_n_to_1.html</loc>
-    <lastmod>2026-05-29T13:39:27.098Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.541Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/tasks.task_n_to_1_with_covariates.html</loc>
-    <lastmod>2026-05-29T13:39:27.115Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.564Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/warnings.exceptions.html</loc>
-    <lastmod>2026-05-29T13:39:27.135Z</lastmod>
+    <lastmod>2026-05-29T13:39:45.590Z</lastmod>
   </url>
   <url>
     <loc>https://sequential-parameter-optimization.github.io/spotforecast2/docs/tasks/multitask.html</loc>
-    <lastmod>2026-05-29T13:33:03.650Z</lastmod>
+    <lastmod>2026-05-29T13:32:24.122Z</lastmod>
   </url>
 </urlset>
