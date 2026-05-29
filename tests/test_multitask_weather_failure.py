@@ -76,7 +76,7 @@ def _mock_sibling_features(stack: ExitStack, index: pd.DatetimeIndex) -> None:
     stack.enter_context(
         patch(
             "spotforecast2.multitask.base.create_interaction_features",
-            side_effect=lambda exogenous_features, weather_aligned: exogenous_features,
+            side_effect=lambda exogenous_features, weather_aligned, **_: exogenous_features,
         )
     )
     stack.enter_context(
