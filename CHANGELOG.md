@@ -1,3 +1,13 @@
+## [3.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.0.0...v3.1.0) (2026-05-29)
+
+### Features
+
+* **spotoptim:** warm-start lag search from lags_consider ([5f8a71f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5f8a71fb8f8f9fac3920e4ae91027268b3e59421))
+
+### Bug Fixes
+
+* **test:** repair warm-start strategy monkeypatch ([2812229](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2812229bc00b99693b98e19ce472d79de3a7e3c8)), closes [#140](https://github.com/sequential-parameter-optimization/spotforecast2/issues/140)
+
 ## [3.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v2.2.4...v3.0.0) (2026-05-29)
 
 ### ⚠ BREAKING CHANGES

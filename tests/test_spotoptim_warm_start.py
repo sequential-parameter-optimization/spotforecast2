@@ -142,7 +142,6 @@ class _MockTask:
 
 def test_strategy_injects_seed_and_forwards_x0(monkeypatch):
     """The strategy injects lags_consider as a candidate and forwards x0."""
-    import spotforecast2.model_selection as ms
     from spotforecast2.multitask.strategies import SpotOptimStrategy
 
     captured = {}
@@ -158,11 +157,13 @@ def test_strategy_injects_seed_and_forwards_x0(monkeypatch):
         )
         return df, None
 
-    # ``SpotOptimStrategy.prepare_forecaster`` rebinds the name via
-    # ``from spotforecast2.model_selection import spotoptim_search_forecaster``
-    # at call time, so the patch must target the package attribute, not the
-    # ``spotoptim_search`` submodule where the function is defined.
-    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search)
+    # Patch the package attribute the strategy's lazy import reads. The dotted
+    # string form resolves the same sys.modules object that
+    # `from spotforecast2.model_selection import spotoptim_search_forecaster`
+    # binds inside prepare_forecaster.
+    monkeypatch.setattr(
+        "spotforecast2.model_selection.spotoptim_search_forecaster", fake_search
+    )
 
     y = pd.Series(
         np.sin(np.arange(400) * 2 * np.pi / 24),
@@ -184,7 +185,6 @@ def test_strategy_injects_seed_and_forwards_x0(monkeypatch):
 
 def test_strategy_no_x0_when_flag_disabled(monkeypatch):
     """With warm_start_lags False, no x0 is passed and lags is untouched."""
-    import spotforecast2.model_selection as ms
     from spotforecast2.multitask.strategies import SpotOptimStrategy
 
     captured = {}
@@ -196,7 +196,9 @@ def test_strategy_no_x0_when_flag_disabled(monkeypatch):
         )
         return df, None
 
-    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search)
+    monkeypatch.setattr(
+        "spotforecast2.model_selection.spotoptim_search_forecaster", fake_search
+    )
 
     task = _MockTask()
     task.config.warm_start_lags = False
