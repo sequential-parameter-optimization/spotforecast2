@@ -1,3 +1,9 @@
+## [3.2.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.1.0...v3.2.0-rc.1) (2026-05-31)
+
+### Features
+
+* **config:** add imputation_window_size to PipelineConfig protocol ([9ece1a1](https://github.com/sequential-parameter-optimization/spotforecast2/commit/9ece1a1212d380a531ab2ca928cb6d24877ec771))
+
 ## [3.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.0.0...v3.1.0) (2026-05-29)
 
 ### Features
