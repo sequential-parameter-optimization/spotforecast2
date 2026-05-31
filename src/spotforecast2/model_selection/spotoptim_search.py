@@ -614,6 +614,49 @@ def spotoptim_search(
         if trial_bar is not None:
             trial_bar.close()
 
+    # --- Parallel-safe result recovery ------------------------------------
+    # With ``n_jobs > 1`` SpotOptim evaluates the objective in worker
+    # processes (ProcessPoolExecutor on a GIL build), so the side-effect
+    # accumulators above are populated only in the workers and stay empty in
+    # this (parent) process. Rebuild them from the optimizer's own evaluation
+    # history, which *is* retained parent-side (``optimizer.X_`` / ``y_``).
+    # Decoding mirrors the objective: ``array_to_params`` handles both the
+    # string-label and integer-code factor encodings, and ``X_`` is stored in
+    # natural scale. Only the primary metric is recoverable this way -- the
+    # optimizer minimises a single scalar -- so any secondary metrics are
+    # filled with NaN.
+    if (
+        not all_lags
+        and getattr(optimizer, "X_", None) is not None
+        and len(optimizer.X_) > 0
+    ):
+        if len(metric) > 1:
+            warnings.warn(
+                "Parallel SpotOptim (n_jobs > 1) records only the primary "
+                f"metric ('{metric[0] if isinstance(metric[0], str) else metric[0].__name__}'); "
+                "secondary metrics are reported as NaN.",
+                IgnoredArgumentWarning,
+            )
+        y_hist = np.asarray(optimizer.y_, dtype=float).ravel()
+        for row, y_val in zip(np.asarray(optimizer.X_, dtype=object), y_hist):
+            params_dict = array_to_params(
+                np.asarray(row), var_name, var_type, bounds
+            )
+            sample_params = {k: v for k, v in params_dict.items() if k != "lags"}
+            lags_val = params_dict.get(
+                "lags",
+                forecaster_search.lags
+                if hasattr(forecaster_search, "lags")
+                else None,
+            )
+            if isinstance(lags_val, str):
+                lags_val = parse_lags_from_strings(lags_val)
+            all_lags.append(lags_val)
+            all_params.append(sample_params)
+            all_metric_values.append(
+                [float(y_val)] + [float("nan")] * (len(metric) - 1)
+            )
+
     # --- Build results DataFrame ------------------------------------------
     lags_list = [
         initialize_lags(forecaster_name=forecaster_name, lags=lag)[0]
