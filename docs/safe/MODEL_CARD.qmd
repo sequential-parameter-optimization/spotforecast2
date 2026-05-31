@@ -1,0 +1,5 @@
+---
+title: "Model/Method Card: spotforecast2"
+---
+
+{{< include ../../MODEL_CARD.md >}}
