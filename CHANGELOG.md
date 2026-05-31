@@ -1,3 +1,13 @@
+## [3.3.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.2.0...v3.3.0) (2026-05-31)
+
+### Features
+
+* **multitask:** cv_ts honours cv_block_size, decoupling the CV block from predict_size ([2c112e8](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2c112e875fb9fa8bcd04a0fc5d340f18163e73d7))
+
+### Documentation
+
+* model-card ([1b9aeb3](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1b9aeb398e4505a73e7d29db5110a5a23b54fa2d))
+
 ## [3.3.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.2.0...v3.3.0-rc.1) (2026-05-31)
 
 ### Features
