@@ -60,9 +60,7 @@ def test_aggregate_and_show_skips_extra_figure_in_single_target(
 
     def _recording_make_plot(*args, **kwargs):  # pragma: no cover — should not run
         calls["made_plot"] += 1
-        raise AssertionError(
-            "single-target aggregation must not draw an extra figure"
-        )
+        raise AssertionError("single-target aggregation must not draw an extra figure")
 
     monkeypatch.setattr(base_mod, "make_plot", _recording_make_plot)
     pkg = {"future_pred": pd.Series([1.0])}

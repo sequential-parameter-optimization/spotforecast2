@@ -7,12 +7,11 @@ and demonstrate rapid validation for safety-critical systems.
 
 import numpy as np
 import pandas as pd
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.ensemble import GradientBoostingRegressor, RandomForestRegressor
 from sklearn.linear_model import Ridge
-
+from spotforecast2_safe.backtesting import backtesting_forecaster
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.splitter import OneStepAheadFold
-from spotforecast2_safe.backtesting import backtesting_forecaster
 
 
 class TestRapidModelScreening:

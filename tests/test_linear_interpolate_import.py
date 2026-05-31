@@ -1,8 +1,8 @@
+from spotforecast2_safe import LinearlyInterpolateTS as LinearTop
+from spotforecast2_safe.preprocessing import LinearlyInterpolateTS as LinearPre
 from spotforecast2_safe.preprocessing.linearly_interpolate_ts import (
     LinearlyInterpolateTS as LinearFull,
 )
-from spotforecast2_safe.preprocessing import LinearlyInterpolateTS as LinearPre
-from spotforecast2_safe import LinearlyInterpolateTS as LinearTop
 
 
 def test_import_linear_full():

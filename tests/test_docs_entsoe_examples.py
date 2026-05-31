@@ -142,9 +142,9 @@ class TestExogBuilderExamples:
         print(X.shape)  # (24, 21) - 12 + 7 + 2 (holiday, weekend)
         ```
         """
-        from spotforecast2_safe.preprocessing import ExogBuilder
-        from spotforecast2_safe.data import Period
         import pandas as pd
+        from spotforecast2_safe.data import Period
+        from spotforecast2_safe.preprocessing import ExogBuilder
 
         periods = [
             Period(name="daily", n_periods=12, column="hour", input_range=(1, 24)),
@@ -182,14 +182,12 @@ class TestExogBuilderExamples:
         print(f"Generated {X.shape[1]} features for {X.shape[0]} hours")
         ```
         """
+        import pandas as pd
         from spotforecast2_safe.configurator import ConfigEntsoe
         from spotforecast2_safe.preprocessing import ExogBuilder
-        import pandas as pd
 
         config = ConfigEntsoe()
-        builder = ExogBuilder(
-            periods=config.periods, country_code=config.country_code
-        )
+        builder = ExogBuilder(periods=config.periods, country_code=config.country_code)
         X = builder.build(
             pd.Timestamp("2025-12-31", tz="UTC"), pd.Timestamp("2026-01-01", tz="UTC")
         )
@@ -222,8 +220,8 @@ class TestRepeatingBasisFunctionExamples:
         print(features.shape)  # (24, 12)
         ```
         """
-        from spotforecast2_safe.preprocessing import RepeatingBasisFunction
         import pandas as pd
+        from spotforecast2_safe.preprocessing import RepeatingBasisFunction
 
         rbf = RepeatingBasisFunction(n_periods=12, column="hour", input_range=(1, 24))
 
@@ -256,9 +254,9 @@ class TestLinearlyInterpolateTSExamples:
         print(ts_clean.values)  # [1.0, 2.0, 3.0, 4.0, 5.0]
         ```
         """
-        from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
-        import pandas as pd
         import numpy as np
+        import pandas as pd
+        from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
 
         ts = pd.Series(
             [1.0, np.nan, 3.0, np.nan, 5.0],

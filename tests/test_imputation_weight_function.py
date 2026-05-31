@@ -19,7 +19,6 @@ import pickle
 import numpy as np
 import pandas as pd
 import pytest
-
 from spotforecast2_safe.preprocessing.imputation import (
     WeightFunction,
     custom_weights,

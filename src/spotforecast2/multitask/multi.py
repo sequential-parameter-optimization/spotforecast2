@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any, Callable, Dict, Optional
 
 import pandas as pd
+from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 from spotforecast2.multitask.base import BaseTask, PipelineConfig
 from spotforecast2.multitask.clean import execute_clean
@@ -27,7 +28,6 @@ from spotforecast2.multitask.spotoptim import (
     SpotOptimTask,
     execute_spotoptim,
 )
-from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 
 class MultiTask(BaseTask):

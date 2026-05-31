@@ -12,22 +12,21 @@ Safety-critical validation scope:
 - Programmatic configuration
 """
 
+import os
+import pickle
 import tempfile
 from pathlib import Path
-import pickle
-import os
 
 import numpy as np
 import pandas as pd
 import pytest
-
-from spotforecast2_safe.preprocessing.imputation import WeightFunction
+from spotforecast2_safe.data.fetch_data import get_cache_home
 from spotforecast2_safe.manager.persistence import (
     ensure_model_dir,
     get_model_filepath,
     model_directory_exists,
 )
-from spotforecast2_safe.data.fetch_data import get_cache_home
+from spotforecast2_safe.preprocessing.imputation import WeightFunction
 
 # ============================================================================
 # Fixtures

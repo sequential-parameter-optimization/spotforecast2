@@ -32,11 +32,10 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 import pytest
-
-from spotforecast2.multitask import MultiTask
 from spotforecast2_safe.configurator.config_multi import ConfigMulti
 from spotforecast2_safe.weather import WeatherFetchError
 
+from spotforecast2.multitask import MultiTask
 
 # ---------------------------------------------------------------------------
 # Helpers — minimal MultiTask shared with the orchestration test module.
@@ -239,6 +238,4 @@ class TestS6PipelineSchemaAsymmetry:
         # point of the graceful-degradation policy.
         for col in calendar_cols + day_night_cols + holiday_cols:
             assert col in predict_cols
-        assert any(
-            "Open-Meteo fetch failed" in rec.message for rec in caplog.records
-        )
+        assert any("Open-Meteo fetch failed" in rec.message for rec in caplog.records)

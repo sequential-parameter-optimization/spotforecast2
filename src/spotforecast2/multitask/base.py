@@ -19,15 +19,18 @@ from typing import Any, Dict, List, Literal, Optional, Protocol
 
 import pandas as pd
 from astral import LocationInfo
-
-from spotforecast2_safe.data.fetch_data import get_cache_home
-from spotforecast2_safe.configurator.config_multi import ConfigMulti  # noqa: F401  (re-exported for subclasses)
+from joblib import dump as _joblib_dump
+from joblib import load as _joblib_load
+from sklearn.model_selection import TimeSeriesSplit as _SklearnTimeSeriesSplit
 from spotforecast2_safe.calendar import (
     get_calendar_features,
     get_day_night_features,
     get_holiday_features,
 )
-from spotforecast2_safe.weather import WeatherFetchError, get_weather_features
+from spotforecast2_safe.configurator.config_multi import (  # noqa: F401  (re-exported for subclasses)
+    ConfigMulti,
+)
+from spotforecast2_safe.data.fetch_data import get_cache_home
 from spotforecast2_safe.manager.features import (
     apply_cyclical_encoding,
     create_interaction_features,
@@ -36,8 +39,6 @@ from spotforecast2_safe.manager.features import (
     select_exogenous_features,
     select_top_poly_features,
 )
-from joblib import dump as _joblib_dump
-from joblib import load as _joblib_load
 from spotforecast2_safe.manager.predictor import build_prediction_package
 from spotforecast2_safe.preprocessing.curate_data import (
     agg_and_resample_data,
@@ -45,18 +46,17 @@ from spotforecast2_safe.preprocessing.curate_data import (
     get_start_end,
     reset_index,
 )
+from spotforecast2_safe.preprocessing.imputation import apply_imputation
 from spotforecast2_safe.preprocessing.outlier import (
     get_outliers,
     manual_outlier_removal,
 )
 from spotforecast2_safe.processing.agg_predict import agg_predict
-
-from sklearn.model_selection import TimeSeriesSplit as _SklearnTimeSeriesSplit
+from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
+from spotforecast2_safe.weather import WeatherFetchError, get_weather_features
 
 from spotforecast2.multitask.factories import default_lgbm_forecaster_factory
 from spotforecast2.plots.plotter import make_plot, plot_with_outliers
-from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
-from spotforecast2_safe.preprocessing.imputation import apply_imputation
 
 logger = logging.getLogger(__name__)
 
@@ -388,7 +388,10 @@ class BaseTask:
 
         if df_test is None:
             df_test = self.data_test
-        if df_test is None and getattr(self.config, "test_data_loader", None) is not None:
+        if (
+            df_test is None
+            and getattr(self.config, "test_data_loader", None) is not None
+        ):
             df_test = self.config.test_data_loader(self.config)
 
         demo_data = reset_index(demo_data, index_name=self.config.index_name)
@@ -406,7 +409,9 @@ class BaseTask:
         user_end_train = pd.to_datetime(
             getattr(self.config, "end_train_default", None), utc=True, errors="coerce"
         )
-        last_ts_utc = last_ts.tz_convert("UTC") if last_ts.tzinfo else last_ts.tz_localize("UTC")
+        last_ts_utc = (
+            last_ts.tz_convert("UTC") if last_ts.tzinfo else last_ts.tz_localize("UTC")
+        )
         if user_end_train is pd.NaT or user_end_train > last_ts_utc:
             self.config.end_train_default = last_ts.isoformat()
 
@@ -853,7 +858,9 @@ class BaseTask:
         tuning_dir.mkdir(parents=True, exist_ok=True)
 
         timestamp = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S")
-        filename = f"{self.config.data_frame_name}_{target}_{task_name}_{timestamp}.json"
+        filename = (
+            f"{self.config.data_frame_name}_{target}_{task_name}_{timestamp}.json"
+        )
         filepath = tuning_dir / filename
 
         # Convert lags to a JSON-safe type
@@ -869,7 +876,6 @@ class BaseTask:
             "best_params": best_params,
             "best_lags": lags_serializable,
         }
-
 
         with open(filepath, "w") as fh:
             json.dump(payload, fh, indent=2, default=str)
@@ -1025,7 +1031,9 @@ class BaseTask:
                 forecasters[target] = pkg["forecaster"]
 
         model_dir = (
-            get_cache_home(self.config.cache_home) / "models" / self.config.data_frame_name
+            get_cache_home(self.config.cache_home)
+            / "models"
+            / self.config.data_frame_name
         )
         model_dir.mkdir(parents=True, exist_ok=True)
 
@@ -1033,7 +1041,9 @@ class BaseTask:
         saved: Dict[str, Path] = {}
 
         for target, forecaster in forecasters.items():
-            filename = f"{self.config.data_frame_name}_{target}_{task_name}_{timestamp}.joblib"
+            filename = (
+                f"{self.config.data_frame_name}_{target}_{task_name}_{timestamp}.joblib"
+            )
             filepath = model_dir / filename
             _joblib_dump(forecaster, filepath, compress=3)
             saved[target] = filepath
@@ -1069,7 +1079,9 @@ class BaseTask:
 
         """
         model_dir = (
-            get_cache_home(self.config.cache_home) / "models" / self.config.data_frame_name
+            get_cache_home(self.config.cache_home)
+            / "models"
+            / self.config.data_frame_name
         )
         if not model_dir.exists():
             return {}

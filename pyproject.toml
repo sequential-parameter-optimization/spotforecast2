@@ -58,7 +58,7 @@ dev = [
     "ruff>=0.3.0",
     "quartodoc>=0.7.2",
     "safety>=3.0.0",
-    "bandit>=1.8.0",
+    "bandit[sarif]>=1.8.0",
 ]
 
 [project.scripts]
@@ -81,6 +81,17 @@ testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+
+[tool.black]
+line-length = 88
+target-version = ["py313"]
+
+[tool.isort]
+profile = "black"
+
+[tool.ruff]
+line-length = 88
+target-version = "py313"
 
 # [tool.uv.sources]
 # Local editable install — uses ../spotforecast2-safe instead of PyPI:

@@ -8,8 +8,8 @@ from .outlier_plots import (
 )
 from .spectral import plot_periodogram
 from .time_series_visualization import (
-    visualize_ts_plotly,
     visualize_ts_comparison,
+    visualize_ts_plotly,
 )
 
 __all__ = [

@@ -15,7 +15,6 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 import pytest
-
 from spotforecast2_safe.configurator import ConfigEntsoe
 
 from spotforecast2.multitask.runner import run
@@ -82,7 +81,9 @@ def _assert_forecast_shape(forecast: pd.DataFrame, predict_size: int) -> None:
 
 def test_run_entsoe_defaults_round_trip(entsoe_config):
     """``task="defaults"`` fits with factory defaults and returns a forecast."""
-    forecast = run(entsoe_config, task="defaults", project_name="test-entsoe", show=False)
+    forecast = run(
+        entsoe_config, task="defaults", project_name="test-entsoe", show=False
+    )
     _assert_forecast_shape(forecast, entsoe_config.predict_size)
 
 
@@ -120,5 +121,7 @@ def test_run_entsoe_spotoptim_round_trip(entsoe_config):
 def test_run_entsoe_predict_after_defaults(entsoe_config):
     """``task="predict"`` reads models saved by a prior ``task="defaults"`` run."""
     run(entsoe_config, task="defaults", project_name="test-entsoe", show=False)
-    forecast = run(entsoe_config, task="predict", project_name="test-entsoe", show=False)
+    forecast = run(
+        entsoe_config, task="predict", project_name="test-entsoe", show=False
+    )
     _assert_forecast_shape(forecast, entsoe_config.predict_size)

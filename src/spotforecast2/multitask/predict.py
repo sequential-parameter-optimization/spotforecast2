@@ -12,8 +12,9 @@ with an informative error.
 
 from typing import Any, Dict, Optional
 
-from spotforecast2.multitask.base import BaseTask
 from spotforecast2_safe.manager.predictor import build_prediction_package
+
+from spotforecast2.multitask.base import BaseTask
 
 
 def execute_predict(

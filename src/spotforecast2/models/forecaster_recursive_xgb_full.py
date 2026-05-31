@@ -45,6 +45,7 @@ from __future__ import annotations
 from typing import Any
 
 from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveXGB
+
 from spotforecast2.models.forecaster_recursive_model_full import (
     ForecasterRecursiveModelFull,
 )

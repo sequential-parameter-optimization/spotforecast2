@@ -20,6 +20,7 @@ import logging
 
 import pandas as pd
 import pytest
+from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
 from spotforecast2.multitask import (
     BaseTask,
@@ -28,7 +29,6 @@ from spotforecast2.multitask import (
     OptunaTask,
     SpotOptimTask,
 )
-from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
 # ---------------------------------------------------------------------------
 # Fixtures

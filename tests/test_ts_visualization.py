@@ -1,13 +1,14 @@
 """Tests for time series visualization functions."""
 
-import pandas as pd
+from unittest.mock import MagicMock, patch
+
 import numpy as np
+import pandas as pd
 import pytest
-from unittest.mock import patch, MagicMock
 
 from spotforecast2.plots.time_series_visualization import (
-    visualize_ts_plotly,
     visualize_ts_comparison,
+    visualize_ts_plotly,
 )
 
 

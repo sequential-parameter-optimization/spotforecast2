@@ -1,6 +1,7 @@
-import pytest
 import numpy as np
+import pytest
 from spotoptim.hyperparameters import ParameterSet
+
 from spotforecast2.model_selection.spotoptim_search import convert_search_space
 
 

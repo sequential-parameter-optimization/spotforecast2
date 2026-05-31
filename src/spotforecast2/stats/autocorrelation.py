@@ -2,7 +2,9 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 from __future__ import annotations
+
 from importlib.util import find_spec
+
 import numpy as np
 import pandas as pd
 

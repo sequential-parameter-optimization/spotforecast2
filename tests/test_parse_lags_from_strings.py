@@ -1,4 +1,5 @@
 import pytest
+
 from spotforecast2.model_selection.spotoptim_search import parse_lags_from_strings
 
 

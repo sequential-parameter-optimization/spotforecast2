@@ -63,18 +63,21 @@ def test_defaults_does_not_read_tuning_cache():
     task.config.targets = ["t1"]
     strategy = DefaultsStrategy()
 
-    with patch.object(task, "_ensure_pipeline_ready"), patch.object(
-        task,
-        "_get_target_data",
-        return_value=(MagicMock(), MagicMock(), MagicMock()),
-    ), patch.object(task, "create_forecaster"), patch.object(
-        task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
-    ), patch.object(task, "_aggregate_and_show", return_value={}), patch.object(
-        task, "load_tuning_results"
-    ) as load_tuning_results:
-        task._run_strategy(
-            strategy, task_name="t", results_key="defaults", show=False
-        )
+    with (
+        patch.object(task, "_ensure_pipeline_ready"),
+        patch.object(
+            task,
+            "_get_target_data",
+            return_value=(MagicMock(), MagicMock(), MagicMock()),
+        ),
+        patch.object(task, "create_forecaster"),
+        patch.object(
+            task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
+        ),
+        patch.object(task, "_aggregate_and_show", return_value={}),
+        patch.object(task, "load_tuning_results") as load_tuning_results,
+    ):
+        task._run_strategy(strategy, task_name="t", results_key="defaults", show=False)
 
     load_tuning_results.assert_not_called()
 
@@ -86,18 +89,21 @@ def test_defaults_does_not_write_tuning_results():
     task.config.targets = ["t1"]
     strategy = DefaultsStrategy()
 
-    with patch.object(task, "_ensure_pipeline_ready"), patch.object(
-        task,
-        "_get_target_data",
-        return_value=(MagicMock(), MagicMock(), MagicMock()),
-    ), patch.object(task, "create_forecaster"), patch.object(
-        task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
-    ), patch.object(task, "_aggregate_and_show", return_value={}), patch.object(
-        task, "save_tuning_results"
-    ) as save_tuning_results:
-        task._run_strategy(
-            strategy, task_name="t", results_key="defaults", show=False
-        )
+    with (
+        patch.object(task, "_ensure_pipeline_ready"),
+        patch.object(
+            task,
+            "_get_target_data",
+            return_value=(MagicMock(), MagicMock(), MagicMock()),
+        ),
+        patch.object(task, "create_forecaster"),
+        patch.object(
+            task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
+        ),
+        patch.object(task, "_aggregate_and_show", return_value={}),
+        patch.object(task, "save_tuning_results") as save_tuning_results,
+    ):
+        task._run_strategy(strategy, task_name="t", results_key="defaults", show=False)
 
     save_tuning_results.assert_not_called()
 
@@ -109,18 +115,21 @@ def test_defaults_saves_models_under_defaults_key_when_auto_save():
     task.config.targets = ["t1"]
     strategy = DefaultsStrategy()
 
-    with patch.object(task, "_ensure_pipeline_ready"), patch.object(
-        task,
-        "_get_target_data",
-        return_value=(MagicMock(), MagicMock(), MagicMock()),
-    ), patch.object(task, "create_forecaster"), patch.object(
-        task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
-    ), patch.object(task, "_aggregate_and_show", return_value={}), patch.object(
-        task, "save_models"
-    ) as save_models:
-        task._run_strategy(
-            strategy, task_name="t", results_key="defaults", show=False
-        )
+    with (
+        patch.object(task, "_ensure_pipeline_ready"),
+        patch.object(
+            task,
+            "_get_target_data",
+            return_value=(MagicMock(), MagicMock(), MagicMock()),
+        ),
+        patch.object(task, "create_forecaster"),
+        patch.object(
+            task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
+        ),
+        patch.object(task, "_aggregate_and_show", return_value={}),
+        patch.object(task, "save_models") as save_models,
+    ):
+        task._run_strategy(strategy, task_name="t", results_key="defaults", show=False)
 
     save_models.assert_called_once_with(task_name="defaults")
 

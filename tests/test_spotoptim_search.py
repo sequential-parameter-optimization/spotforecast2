@@ -10,9 +10,10 @@ import numpy as np
 import pandas as pd
 import pytest
 from sklearn.linear_model import Ridge
-
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.splitter import TimeSeriesFold
+from spotoptim.hyperparameters import ParameterSet
+
 from spotforecast2.model_selection import spotoptim_search_forecaster
 from spotforecast2.model_selection.spotoptim_search import (
     array_to_params,
@@ -20,7 +21,6 @@ from spotforecast2.model_selection.spotoptim_search import (
     parse_lags_from_strings,
     spotoptim_search,
 )
-from spotoptim.hyperparameters import ParameterSet
 
 # ------------------------------------------------------------------
 # Fixtures
@@ -418,6 +418,7 @@ class TestDocstringExamples:
 
     def test_doctest(self):
         import doctest
+
         from spotforecast2.model_selection import spotoptim_search
 
         results = doctest.testmod(

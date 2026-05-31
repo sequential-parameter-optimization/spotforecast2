@@ -21,6 +21,7 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 
 from spotforecast2.multitask import (
     BaseTask,
@@ -28,7 +29,6 @@ from spotforecast2.multitask import (
     OptunaTask,
     SpotOptimTask,
 )
-from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 
 # ---------------------------------------------------------------------------
 # Helpers

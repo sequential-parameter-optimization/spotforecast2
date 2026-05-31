@@ -9,11 +9,9 @@ Consumes the output of `compute_periodogram()` from
 
 from typing import Mapping, Optional, Union
 
-import plotly.graph_objects as go
-
-from spotforecast2_safe.stats.spectral import PeriodogramResult
 import pandas as pd
-
+import plotly.graph_objects as go
+from spotforecast2_safe.stats.spectral import PeriodogramResult
 
 # Default named period ticks, in samples (matches chag25a's hourly convention).
 _DEFAULT_PERIOD_TICKS: Mapping[str, float] = {

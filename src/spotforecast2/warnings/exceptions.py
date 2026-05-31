@@ -25,16 +25,17 @@ Examples:
         warnings.simplefilter('ignore', category=MissingValuesWarning)
 """
 
-import warnings
 import textwrap
+import warnings
+
 from spotforecast2_safe.exceptions import set_warnings_style
 
 __all__: list[str] = []
 
 
 from spotforecast2_safe.exceptions import (
-    DataTypeWarning,
     DataTransformationWarning,
+    DataTypeWarning,
     ExogenousInterpretationWarning,
     FeatureOutOfRangeWarning,
     IgnoredArgumentWarning,
@@ -44,9 +45,9 @@ from spotforecast2_safe.exceptions import (
     MissingValuesWarning,
     OneStepAheadValidationWarning,
     ResidualsUsageWarning,
-    UnknownLevelWarning,
     SaveLoadSkforecastWarning,
     SpotforecastVersionWarning,
+    UnknownLevelWarning,
 )
 
 try:

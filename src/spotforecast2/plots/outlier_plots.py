@@ -1,10 +1,10 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-from typing import Optional, Any
+from typing import Any, Optional
 
-import pandas as pd
 import matplotlib.pyplot as plt
+import pandas as pd
 import plotly.graph_objects as go
 from spotforecast2_safe.preprocessing.outlier import get_outliers
 

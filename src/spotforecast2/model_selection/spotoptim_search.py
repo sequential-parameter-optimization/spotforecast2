@@ -33,22 +33,25 @@ except ImportError:
         ImportWarning,
     )
 
-from spotforecast2_safe.exceptions import IgnoredArgumentWarning
+from spotforecast2_safe.backtesting import _backtesting_forecaster
+from spotforecast2_safe.exceptions import (
+    IgnoredArgumentWarning,
+    set_skforecast_warnings,
+)
 from spotforecast2_safe.forecaster.metrics import _get_metric, add_y_train_argument
 from spotforecast2_safe.forecaster.utils import date_to_index_position
 from spotforecast2_safe.preprocessing.forecaster_config import initialize_lags
+from spotforecast2_safe.splitter import OneStepAheadFold
 from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.splitter.utils_common import (
     check_backtesting_input,
     check_one_step_ahead_input,
     select_n_jobs_backtesting,
 )
+
 from spotforecast2.model_selection.utils_metrics import (
     _calculate_metrics_one_step_ahead,
 )
-from spotforecast2_safe.exceptions import set_skforecast_warnings
-from spotforecast2_safe.splitter import OneStepAheadFold
-from spotforecast2_safe.backtesting import _backtesting_forecaster
 
 logger = logging.getLogger(__name__)
 

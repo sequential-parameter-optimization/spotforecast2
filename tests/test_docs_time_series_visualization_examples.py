@@ -19,8 +19,8 @@ import pandas as pd
 import pytest
 
 from spotforecast2.plots.time_series_visualization import (
-    visualize_ts_plotly,
     visualize_ts_comparison,
+    visualize_ts_plotly,
 )
 
 # ============================================================================
@@ -783,8 +783,9 @@ class TestMatplotlibAPIExamples:
     @patch("matplotlib.pyplot.show")
     def test_api_example_plot_zoomed_timeseries(self, mock_show):
         """Test API example for plot_zoomed_timeseries."""
-        import pandas as pd
         import matplotlib.pyplot as plt
+        import pandas as pd
+
         from spotforecast2.plots.time_series_visualization import (
             plot_zoomed_timeseries,
         )
@@ -804,9 +805,10 @@ class TestMatplotlibAPIExamples:
     @patch("matplotlib.pyplot.show")
     def test_api_example_plot_seasonality(self, mock_show):
         """Test API example for plot_seasonality."""
-        import pandas as pd
-        import numpy as np
         import matplotlib.pyplot as plt
+        import numpy as np
+        import pandas as pd
+
         from spotforecast2.plots.time_series_visualization import (
             plot_seasonality,
         )

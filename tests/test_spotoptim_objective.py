@@ -1,9 +1,10 @@
-import numpy as np
-import pandas as pd
 from unittest.mock import patch
 
+import numpy as np
+import pandas as pd
+from spotforecast2_safe.splitter import OneStepAheadFold, TimeSeriesFold
+
 from spotforecast2.model_selection.spotoptim_search import spotoptim_objective
-from spotforecast2_safe.splitter import TimeSeriesFold, OneStepAheadFold
 
 
 class MockForecaster:

@@ -1,10 +1,10 @@
 """Tests for outlier detection and visualization functions."""
 
-import pandas as pd
-import numpy as np
-import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
+import numpy as np
+import pandas as pd
+import pytest
 from spotforecast2_safe.preprocessing.outlier import get_outliers
 
 from spotforecast2.plots.outlier_plots import (

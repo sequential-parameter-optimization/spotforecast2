@@ -3,11 +3,11 @@
 
 """Time series visualization."""
 
-from typing import Dict, List, Optional, Any, Union
+from typing import Any, Dict, List, Optional, Union
 
-import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd
 
 try:
     import plotly.graph_objects as go
