@@ -9,6 +9,7 @@
 [![PyPI Downloads](https://img.shields.io/pypi/dm/spotforecast2)](https://pypi.org/project/spotforecast2/)
 [![Total Downloads](https://static.pepy.tech/badge/spotforecast2)](https://pepy.tech/project/spotforecast2)
 [![License](https://img.shields.io/github/license/sequential-parameter-optimization/spotforecast2)](LICENSE)
+[![Model Card](https://img.shields.io/badge/model%20card-available-blue)](MODEL_CARD.md)
 
 **Testing & Quality**
 
@@ -27,6 +28,8 @@
 ## About spotforecast2
 
 `spotforecast2` is an extension of the `spotforecast-safe` Python library for time series forecasting in safety-critical applications.
+
+See the [Model Card](MODEL_CARD.md) for intended use, limitations, and how `spotforecast2` relates to the safety-critical `spotforecast2-safe`.
 
 
 ## Documentation

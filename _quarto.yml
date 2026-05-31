@@ -160,6 +160,11 @@ website:
           - text: "ENTSO-E via run()"
             file: docs/multitask/entsoe.qmd
 
+      - section: "Model Card"
+        contents:
+          - text: "Model/Method Card"
+            file: docs/safe/MODEL_CARD.qmd
+
   page-footer:
     center: |
       Copyright © 2024-2026 bartzbeielstein |
