@@ -38,6 +38,14 @@ on:
 # ---------------------------------------------------------------------------
 permissions: read-all
 
+# Shared by name with release.yml: serialize all gh-pages deploys so concurrent
+# runs can't race on the branch ref ("cannot lock ref 'refs/heads/gh-pages'").
+# cancel-in-progress is false so this docs deploy never cancels an in-flight
+# release that holds the same group — concurrent runs queue instead.
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
+
 # ---------------------------------------------------------------------------
 # Pinned versions — change these deliberately, never via Dependabot auto-merge.
 # ---------------------------------------------------------------------------
