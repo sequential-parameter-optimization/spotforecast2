@@ -113,6 +113,8 @@ class PipelineConfig(Protocol):
     n_initial_spotoptim: int
     # Cross-validation
     number_folds: int
+    # Optional CV block width; ``None`` ⇒ fall back to ``predict_size``.
+    cv_block_size: Optional[int]
     # Persistence policy and active-dataset identifier
     auto_save_models: bool
     data_frame_name: str
@@ -754,6 +756,12 @@ class BaseTask:
         end_cv = self.config.end_train_ts - self.config.delta_val
         n_train_cv = len(y_train.loc[:end_cv])
 
+        # CV block width: decoupled from the live forecast horizon.  Defaults to
+        # ``predict_size`` so existing configs are unaffected; an optional
+        # ``cv_block_size`` field (None ⇒ fall back) widens or narrows the
+        # validation fold without changing what gets forecast in production.
+        cv_block = getattr(self.config, "cv_block_size", None) or self.config.predict_size
+
         # Fixed sliding window when a training-size limit is configured;
         # expanding window otherwise (sklearn default).
         max_train_size: Optional[int] = (
@@ -763,7 +771,7 @@ class BaseTask:
         skl_cv = _SklearnTimeSeriesSplit(
             n_splits=self.config.number_folds,
             max_train_size=max_train_size,
-            test_size=self.config.predict_size,
+            test_size=cv_block,
             gap=0,
         )
 
@@ -774,7 +782,7 @@ class BaseTask:
         initial_train_size = len(splits[0][0]) if splits else n_train_cv
 
         return TimeSeriesFold(
-            steps=self.config.predict_size,
+            steps=cv_block,
             refit=False,
             initial_train_size=initial_train_size,
             fixed_train_size=(self.config.train_size is not None),
