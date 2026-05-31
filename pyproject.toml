@@ -58,7 +58,7 @@ dev = [
     "ruff>=0.3.0",
     "quartodoc>=0.7.2",
     "safety>=3.0.0",
-    "bandit>=1.8.0",
+    "bandit[sarif]>=1.8.0",
 ]
 
 [project.scripts]
