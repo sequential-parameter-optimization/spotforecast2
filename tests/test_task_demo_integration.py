@@ -13,7 +13,6 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
-
 from spotforecast2_safe.configurator import ConfigDemo
 from spotforecast2_safe.data import load_actual_combined
 

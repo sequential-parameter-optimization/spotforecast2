@@ -20,9 +20,9 @@ from pathlib import Path
 
 import pandas as pd
 import pytest
+from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
 from spotforecast2.multitask import BaseTask, LazyTask, MultiTask
-from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
 # ---------------------------------------------------------------------------
 # Fixtures

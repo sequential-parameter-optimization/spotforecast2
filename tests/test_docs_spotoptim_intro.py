@@ -1,11 +1,12 @@
 import numpy as np
 import pandas as pd
-from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor
+from sklearn.linear_model import Ridge
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2_safe.splitter import TimeSeriesFold, OneStepAheadFold
-from spotforecast2.model_selection import spotoptim_search_forecaster
+from spotforecast2_safe.splitter import OneStepAheadFold, TimeSeriesFold
 from spotoptim.hyperparameters import ParameterSet
+
+from spotforecast2.model_selection import spotoptim_search_forecaster
 
 
 def test_spotoptim_intro_simple_tuning():

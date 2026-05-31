@@ -5,20 +5,20 @@
 
 import tempfile
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 import numpy as np
 import pandas as pd
 import pytest
 from lightgbm import LGBMRegressor
-
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveModel
-from spotforecast2.models.forecaster_recursive_model_full import (
-    ForecasterRecursiveModelFull,
-)
+
 from spotforecast2.models.forecaster_recursive_lgbm_full import (
     ForecasterRecursiveLGBMFull,
+)
+from spotforecast2.models.forecaster_recursive_model_full import (
+    ForecasterRecursiveModelFull,
 )
 from spotforecast2.models.forecaster_recursive_xgb_full import (
     ForecasterRecursiveXGBFull,
@@ -86,12 +86,8 @@ class TestTune:
         src = inspect.getsource(ForecasterRecursiveModelFull.tune)
         assert "simulated" not in src.lower()
 
-    @patch(
-        "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
-    )
-    @patch(
-        "spotforecast2.models.forecaster_recursive_model_full.load_timeseries"
-    )
+    @patch("spotforecast2_safe.forecaster.wrappers.model.load_timeseries")
+    @patch("spotforecast2.models.forecaster_recursive_model_full.load_timeseries")
     @patch(
         "spotforecast2.models.forecaster_recursive_model_full.bayesian_search_forecaster"
     )
@@ -132,12 +128,8 @@ class TestTune:
         assert model.results_tuning is not None
         mock_bsf.assert_called_once()
 
-    @patch(
-        "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
-    )
-    @patch(
-        "spotforecast2.models.forecaster_recursive_model_full.load_timeseries"
-    )
+    @patch("spotforecast2_safe.forecaster.wrappers.model.load_timeseries")
+    @patch("spotforecast2.models.forecaster_recursive_model_full.load_timeseries")
     @patch(
         "spotforecast2.models.forecaster_recursive_model_full.bayesian_search_forecaster"
     )
@@ -268,12 +260,8 @@ class TestOnMissing:
         model = ForecasterRecursiveLGBMFull(iteration=0, on_missing="ffill_bfill")
         assert model.on_missing == "ffill_bfill"
 
-    @patch(
-        "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
-    )
-    @patch(
-        "spotforecast2.models.forecaster_recursive_model_full.load_timeseries"
-    )
+    @patch("spotforecast2_safe.forecaster.wrappers.model.load_timeseries")
+    @patch("spotforecast2.models.forecaster_recursive_model_full.load_timeseries")
     @patch(
         "spotforecast2.models.forecaster_recursive_model_full.bayesian_search_forecaster"
     )
@@ -309,12 +297,8 @@ class TestOnMissing:
 
         mock_load_models.assert_called_once_with(on_missing="ffill_bfill")
 
-    @patch(
-        "spotforecast2_safe.forecaster.wrappers.model.load_timeseries"
-    )
-    @patch(
-        "spotforecast2.models.forecaster_recursive_model_full.load_timeseries"
-    )
+    @patch("spotforecast2_safe.forecaster.wrappers.model.load_timeseries")
+    @patch("spotforecast2.models.forecaster_recursive_model_full.load_timeseries")
     @patch(
         "spotforecast2.models.forecaster_recursive_model_full.bayesian_search_forecaster"
     )

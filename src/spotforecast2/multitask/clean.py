@@ -14,8 +14,9 @@ import shutil
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
-from spotforecast2.multitask.base import BaseTask
 from spotforecast2_safe.data.fetch_data import get_cache_home
+
+from spotforecast2.multitask.base import BaseTask
 
 
 def execute_clean(

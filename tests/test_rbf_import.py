@@ -1,12 +1,11 @@
+from spotforecast2_safe import Period as PeriodTop
+from spotforecast2_safe import RepeatingBasisFunction as RBFTop
+from spotforecast2_safe.data import Period as PeriodData
+from spotforecast2_safe.data.data_classes import Period as PeriodFull
+from spotforecast2_safe.preprocessing import RepeatingBasisFunction as RBFPre
 from spotforecast2_safe.preprocessing.repeating_basis_function import (
     RepeatingBasisFunction as RBFFull,
 )
-from spotforecast2_safe.preprocessing import RepeatingBasisFunction as RBFPre
-from spotforecast2_safe import RepeatingBasisFunction as RBFTop
-
-from spotforecast2_safe.data.data_classes import Period as PeriodFull
-from spotforecast2_safe.data import Period as PeriodData
-from spotforecast2_safe import Period as PeriodTop
 
 
 def test_import_rbf_full():

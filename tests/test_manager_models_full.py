@@ -13,27 +13,24 @@ Covers:
 """
 
 import pandas as pd
-
-from spotforecast2.models.forecaster_recursive_model_full import (
-    ForecasterRecursiveModelFull,
-)
-from spotforecast2.models.forecaster_recursive_lgbm_full import (
-    ForecasterRecursiveLGBMFull,
-)
-from spotforecast2.models.forecaster_recursive_xgb_full import (
-    ForecasterRecursiveXGBFull,
+from spotforecast2_safe.forecaster.wrappers import (
+    ForecasterRecursiveLGBM,
+    ForecasterRecursiveModel,
+    ForecasterRecursiveXGB,
 )
 
 # Package-level aliases — used by TestImports to verify re-export paths
-from spotforecast2.models import (
-    ForecasterRecursiveModelFull as _MFull,
-    ForecasterRecursiveLGBMFull as _LFull,
-    ForecasterRecursiveXGBFull as _XFull,
+from spotforecast2.models import ForecasterRecursiveLGBMFull as _LFull
+from spotforecast2.models import ForecasterRecursiveModelFull as _MFull
+from spotforecast2.models import ForecasterRecursiveXGBFull as _XFull
+from spotforecast2.models.forecaster_recursive_lgbm_full import (
+    ForecasterRecursiveLGBMFull,
 )
-from spotforecast2_safe.forecaster.wrappers import (
-    ForecasterRecursiveModel,
-    ForecasterRecursiveLGBM,
-    ForecasterRecursiveXGB,
+from spotforecast2.models.forecaster_recursive_model_full import (
+    ForecasterRecursiveModelFull,
+)
+from spotforecast2.models.forecaster_recursive_xgb_full import (
+    ForecasterRecursiveXGBFull,
 )
 
 # ---------------------------------------------------------------------------

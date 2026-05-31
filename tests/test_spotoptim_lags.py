@@ -3,10 +3,11 @@ import pandas as pd
 from sklearn.linear_model import Ridge
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.splitter import TimeSeriesFold
+
 from spotforecast2.model_selection import spotoptim_search_forecaster
 from spotforecast2.model_selection.spotoptim_search import (
-    parse_lags_from_strings,
     convert_search_space,
+    parse_lags_from_strings,
 )
 
 

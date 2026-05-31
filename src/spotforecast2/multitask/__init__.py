@@ -27,11 +27,11 @@ from spotforecast2.multitask.base import BaseTask, agg_predictor
 from spotforecast2.multitask.clean import CleanTask
 from spotforecast2.multitask.defaults import DefaultsTask
 from spotforecast2.multitask.lazy import LazyTask
+from spotforecast2.multitask.multi import MultiTask
 from spotforecast2.multitask.optuna import OptunaTask
 from spotforecast2.multitask.predict import PredictTask
-from spotforecast2.multitask.spotoptim import SpotOptimTask
-from spotforecast2.multitask.multi import MultiTask
 from spotforecast2.multitask.runner import make_demo10_config, run
+from spotforecast2.multitask.spotoptim import SpotOptimTask
 
 __all__ = [
     "BaseTask",

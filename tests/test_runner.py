@@ -20,6 +20,7 @@ from unittest.mock import MagicMock, patch
 
 import pandas as pd
 import pytest
+from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 from spotforecast2.multitask.runner import (
     _ALL_TASKS,
@@ -28,7 +29,6 @@ from spotforecast2.multitask.runner import (
     make_demo10_config,
     run,
 )
-from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 _FUTURE_PRED = pd.Series(
     [1.0, 2.0, 3.0],

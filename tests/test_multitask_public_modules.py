@@ -22,10 +22,6 @@ import sys
 
 import pytest
 
-# ---------------------------------------------------------------------------
-# Classes from the package __init__ (canonical public API)
-# ---------------------------------------------------------------------------
-
 from spotforecast2.multitask import (
     BaseTask,
     LazyTask,
@@ -33,6 +29,11 @@ from spotforecast2.multitask import (
     OptunaTask,
     SpotOptimTask,
 )
+
+# ---------------------------------------------------------------------------
+# Classes from the package __init__ (canonical public API)
+# ---------------------------------------------------------------------------
+
 
 # ===========================================================================
 # Public module importability
@@ -92,9 +93,7 @@ class TestPublicModulesExportSameObjects:
         assert _OptunaTask is OptunaTask
 
     def test_spotoptim_task_is_same_object(self):
-        from spotforecast2.multitask.spotoptim import (
-            SpotOptimTask as _SpotOptimTask,
-        )
+        from spotforecast2.multitask.spotoptim import SpotOptimTask as _SpotOptimTask
 
         assert _SpotOptimTask is SpotOptimTask
 

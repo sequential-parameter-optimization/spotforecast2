@@ -9,7 +9,6 @@ including default values, custom initialization, and docstring examples.
 
 import pandas as pd
 import pytest
-
 from spotforecast2_safe.configurator import ConfigEntsoe
 from spotforecast2_safe.data import Period
 

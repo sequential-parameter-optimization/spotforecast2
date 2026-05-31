@@ -31,17 +31,15 @@ from typing import Any, Optional
 
 import pandas as pd
 from lightgbm import LGBMRegressor
-from xgboost import XGBRegressor
-
 from spotforecast2_safe.configurator import ConfigEntsoe
 from spotforecast2_safe.data.fetch_data import get_cache_home, get_data_home
 from spotforecast2_safe.downloader.entsoe import download_new_data, merge_build_manual
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.manager.trainer import should_retrain
 from spotforecast2_safe.preprocessing import RollingFeatures
+from xgboost import XGBRegressor
 
 from spotforecast2.multitask.runner import run
-
 
 _PROJECT_BY_MODEL = {"lgbm": "entsoe-lgbm", "xgb": "entsoe-xgb"}
 
@@ -115,9 +113,9 @@ def entsoe_test_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
     end_train = pd.Timestamp(config.end_train_default)
     if end_train.tzinfo is None:
         end_train = end_train.tz_localize("UTC")
-    step = pd.Timedelta(hours=1)                            # post-resample assumption
-    start = end_train + step                                # first forecast step
-    end = start + config.predict_size * step                # exclusive upper bound
+    step = pd.Timedelta(hours=1)  # post-resample assumption
+    start = end_train + step  # first forecast step
+    end = start + config.predict_size * step  # exclusive upper bound
     if df.index.tz is None:
         start = start.tz_localize(None)
         end = end.tz_localize(None)

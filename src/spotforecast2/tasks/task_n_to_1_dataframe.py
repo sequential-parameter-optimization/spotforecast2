@@ -2,9 +2,10 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 import warnings
-from spotforecast2_safe.processing.n2n_predict import n2n_predict
-from spotforecast2_safe.processing.agg_predict import agg_predict
+
 from spotforecast2_safe.data.fetch_data import fetch_data, get_data_home
+from spotforecast2_safe.processing.agg_predict import agg_predict
+from spotforecast2_safe.processing.n2n_predict import n2n_predict
 
 warnings.simplefilter("ignore")
 

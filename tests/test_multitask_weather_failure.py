@@ -24,10 +24,10 @@ from unittest.mock import patch
 
 import pandas as pd
 import pytest
-
-from spotforecast2.multitask import MultiTask
 from spotforecast2_safe.configurator.config_multi import ConfigMulti
 from spotforecast2_safe.weather import WeatherFetchError
+
+from spotforecast2.multitask import MultiTask
 
 
 def _make_task_ready(on_weather_failure: str = "raise") -> MultiTask:

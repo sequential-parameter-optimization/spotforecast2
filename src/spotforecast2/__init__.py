@@ -10,11 +10,7 @@ Additional utilities and convenience classes are provided here.
 """
 
 from . import warnings  # noqa: F401  imported for warnings-style side effect
-from . import model_selection
-from . import models
-from . import multitask
-from . import plots
-from . import stats
+from . import model_selection, models, multitask, plots, stats
 
 __all__ = [
     "model_selection",
@@ -24,4 +20,3 @@ __all__ = [
     "stats",
     "warnings",
 ]
-

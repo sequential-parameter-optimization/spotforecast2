@@ -13,11 +13,11 @@ Classes:
     ForecasterRecursiveXGBFull: XGBoost model with tuning and SHAP.
 """
 
-from spotforecast2.models.forecaster_recursive_model_full import (
-    ForecasterRecursiveModelFull,
-)
 from spotforecast2.models.forecaster_recursive_lgbm_full import (
     ForecasterRecursiveLGBMFull,
+)
+from spotforecast2.models.forecaster_recursive_model_full import (
+    ForecasterRecursiveModelFull,
 )
 from spotforecast2.models.forecaster_recursive_xgb_full import (
     ForecasterRecursiveXGBFull,

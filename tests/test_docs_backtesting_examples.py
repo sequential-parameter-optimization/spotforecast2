@@ -7,12 +7,10 @@ reasonable results for safety-critical forecasting validation.
 
 import numpy as np
 import pandas as pd
-
 from sklearn.ensemble import GradientBoostingRegressor
-from sklearn.linear_model import Ridge, LinearRegression
-
-from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+from sklearn.linear_model import LinearRegression, Ridge
 from spotforecast2_safe.backtesting import backtesting_forecaster
+from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.splitter import TimeSeriesFold
 
 

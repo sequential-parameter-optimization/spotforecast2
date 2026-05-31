@@ -8,9 +8,9 @@ from unittest.mock import patch
 from spotforecast2_safe.configurator import ConfigEntsoe
 
 from spotforecast2.tasks.task_entsoe import (
+    entsoe_data_loader,
     entsoe_lgbm_factory,
     entsoe_xgb_factory,
-    entsoe_data_loader,
     main,
 )
 

@@ -23,10 +23,10 @@ outcome, not a structural limitation:
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import Ridge
-
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.preprocessing.forecaster_config import initialize_lags
 from spotforecast2_safe.splitter import TimeSeriesFold
+
 from spotforecast2.model_selection import (
     build_warm_start_x0,
     spotoptim_search_forecaster,
