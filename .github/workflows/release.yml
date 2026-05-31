@@ -9,6 +9,15 @@ on:
 # Principle of Least Privilege: Base permissions are read-only
 permissions: read-all
 
+# Serialize every run that pushes to the gh-pages branch. This group is shared
+# by name with docs.yml so the Release deploy and the Documentation deploy can
+# never run at the same time and race on the branch ref (the cause of
+# "cannot lock ref 'refs/heads/gh-pages'"). cancel-in-progress is false so a
+# release is never aborted mid-publish — concurrent runs queue instead.
+concurrency:
+  group: gh-pages-deploy
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Create Release
