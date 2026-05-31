@@ -1,8 +1,7 @@
-import pytest
 import numpy as np
 import pandas as pd
-from spotforecast2_safe.splitter import TimeSeriesFold
-from spotforecast2_safe.splitter import OneStepAheadFold
+import pytest
+from spotforecast2_safe.splitter import OneStepAheadFold, TimeSeriesFold
 
 
 class TestTimeSeriesFold:

@@ -4,12 +4,15 @@
 """Random search hyperparameter optimization for forecasters."""
 
 from __future__ import annotations
+
 from typing import Callable
+
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import ParameterSampler
-from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
 from spotforecast2_safe.splitter import OneStepAheadFold
+from spotforecast2_safe.splitter.split_ts_cv import TimeSeriesFold
+
 from spotforecast2.model_selection.grid_search import (
     _evaluate_grid_hyperparameters,
 )

@@ -9,11 +9,13 @@ run) behind a one-call interface.
 """
 
 from typing import Any, List, Optional, Tuple
+
 import pandas as pd
-from spotforecast2.multitask.base import PipelineConfig
-from spotforecast2.multitask.multi import MultiTask
 from spotforecast2_safe.configurator.config_multi import ConfigMulti
 from spotforecast2_safe.data.fetch_data import get_cache_home
+
+from spotforecast2.multitask.base import PipelineConfig
+from spotforecast2.multitask.multi import MultiTask
 
 # Demo-dataset presets for ``run()``.
 #

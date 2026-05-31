@@ -64,11 +64,7 @@ def test_prediction_figure_legend_contains_benchmark_metrics(package):
 
 def test_prediction_figure_does_not_crash_when_metrics_missing(package):
     """Missing metric dicts should not crash the figure builder."""
-    minimal = {
-        k: v
-        for k, v in package.items()
-        if not k.startswith("metrics_")
-    }
+    minimal = {k: v for k, v in package.items() if not k.startswith("metrics_")}
     minimal["future_forecast"] = package["future_forecast"]
     fig = PredictionFigure(minimal).make_plot()
     assert len(fig.data) >= 1

@@ -26,12 +26,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import shap
-
-from spotforecast2.model_selection import bayesian_search_forecaster
 from spotforecast2_safe.data.fetch_data import OnMissing, load_timeseries
 from spotforecast2_safe.forecaster.wrappers import ForecasterRecursiveModel
-from spotforecast2.multitask.search_spaces import SEARCH_SPACES
 from spotforecast2_safe.preprocessing import LinearlyInterpolateTS
+
+from spotforecast2.model_selection import bayesian_search_forecaster
+from spotforecast2.multitask.search_spaces import SEARCH_SPACES
 
 logger = logging.getLogger(__name__)
 

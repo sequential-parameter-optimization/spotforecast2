@@ -25,7 +25,6 @@ from typing import Any, Dict, List
 
 from spotforecast2_safe.preprocessing import RollingFeatures
 
-
 #: Candidate lag values used by ``search_space_lgbm`` / ``search_space_xgb``
 #: (consumed by ``ForecasterRecursiveModelFull.tune``).
 LAGS_CONSIDER: List[int] = list(range(1, 24))
@@ -54,12 +53,22 @@ def _default_optuna_search_space(trial: Any) -> Dict[str, Any]:
     return {
         "estimator__num_leaves": trial.suggest_int("estimator__num_leaves", 8, 256),
         "estimator__max_depth": trial.suggest_int("estimator__max_depth", 3, 16),
-        "estimator__learning_rate": trial.suggest_float("estimator__learning_rate", 0.001, 0.2, log=True),
-        "estimator__n_estimators": trial.suggest_int("estimator__n_estimators", 50, 1000, log=True),
-        "estimator__bagging_fraction": trial.suggest_float("estimator__bagging_fraction", 0.5, 1),
-        "estimator__feature_fraction": trial.suggest_float("estimator__feature_fraction", 0.5, 1),
+        "estimator__learning_rate": trial.suggest_float(
+            "estimator__learning_rate", 0.001, 0.2, log=True
+        ),
+        "estimator__n_estimators": trial.suggest_int(
+            "estimator__n_estimators", 50, 1000, log=True
+        ),
+        "estimator__bagging_fraction": trial.suggest_float(
+            "estimator__bagging_fraction", 0.5, 1
+        ),
+        "estimator__feature_fraction": trial.suggest_float(
+            "estimator__feature_fraction", 0.5, 1
+        ),
         "estimator__reg_alpha": trial.suggest_float("estimator__reg_alpha", 0.01, 100),
-        "estimator__reg_lambda": trial.suggest_float("estimator__reg_lambda", 0.01, 100),
+        "estimator__reg_lambda": trial.suggest_float(
+            "estimator__reg_lambda", 0.01, 100
+        ),
         "lags": trial.suggest_categorical(
             "lags",
             [24, 48, [1, 2, 24], [1, 2, 24, 48], [1, 2, 23, 24, 47, 48]],
@@ -110,12 +119,22 @@ def search_space_lgbm(trial: Any) -> Dict[str, Any]:
     return {
         "estimator__num_leaves": trial.suggest_int("estimator__num_leaves", 8, 256),
         "estimator__max_depth": trial.suggest_int("estimator__max_depth", 3, 16),
-        "estimator__learning_rate": trial.suggest_float("estimator__learning_rate", 0.001, 0.2, log=True),
-        "estimator__n_estimators": trial.suggest_int("estimator__n_estimators", 50, 1000, log=True),
-        "estimator__bagging_fraction": trial.suggest_float("estimator__bagging_fraction", 0.5, 1),
-        "estimator__feature_fraction": trial.suggest_float("estimator__feature_fraction", 0.5, 1),
+        "estimator__learning_rate": trial.suggest_float(
+            "estimator__learning_rate", 0.001, 0.2, log=True
+        ),
+        "estimator__n_estimators": trial.suggest_int(
+            "estimator__n_estimators", 50, 1000, log=True
+        ),
+        "estimator__bagging_fraction": trial.suggest_float(
+            "estimator__bagging_fraction", 0.5, 1
+        ),
+        "estimator__feature_fraction": trial.suggest_float(
+            "estimator__feature_fraction", 0.5, 1
+        ),
         "estimator__reg_alpha": trial.suggest_float("estimator__reg_alpha", 0.01, 100),
-        "estimator__reg_lambda": trial.suggest_float("estimator__reg_lambda", 0.01, 100),
+        "estimator__reg_lambda": trial.suggest_float(
+            "estimator__reg_lambda", 0.01, 100
+        ),
         "lags": trial.suggest_categorical("lags", LAGS_CONSIDER),
     }
 
@@ -136,11 +155,19 @@ def search_space_xgb(trial: Any) -> Dict[str, Any]:
     """
     return {
         "estimator__max_depth": trial.suggest_int("estimator__max_depth", 2, 10),
-        "estimator__learning_rate": trial.suggest_float("estimator__learning_rate", 0.001, 0.2, log=True),
+        "estimator__learning_rate": trial.suggest_float(
+            "estimator__learning_rate", 0.001, 0.2, log=True
+        ),
         "estimator__subsample": trial.suggest_float("estimator__subsample", 0.6, 1),
-        "estimator__colsample_bytree": trial.suggest_float("estimator__colsample_bytree", 0.6, 1),
-        "estimator__min_child_weight": trial.suggest_int("estimator__min_child_weight", 1, 8),
-        "estimator__n_estimators": trial.suggest_int("estimator__n_estimators", 50, 600, step=50),
+        "estimator__colsample_bytree": trial.suggest_float(
+            "estimator__colsample_bytree", 0.6, 1
+        ),
+        "estimator__min_child_weight": trial.suggest_int(
+            "estimator__min_child_weight", 1, 8
+        ),
+        "estimator__n_estimators": trial.suggest_int(
+            "estimator__n_estimators", 50, 600, step=50
+        ),
         "estimator__alpha": trial.suggest_float("estimator__alpha", 0.0, 0.5),
         "estimator__lambda": trial.suggest_float("estimator__lambda", 0.0, 0.5),
         "lags": trial.suggest_categorical("lags", LAGS_CONSIDER),

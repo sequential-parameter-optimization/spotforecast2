@@ -11,7 +11,6 @@ appropriate for daily (hourly) patterns.
 
 import numpy as np
 import pandas as pd
-
 from spotforecast2_safe.configurator import ConfigEntsoe
 from spotforecast2_safe.data import Period
 from spotforecast2_safe.preprocessing import RepeatingBasisFunction

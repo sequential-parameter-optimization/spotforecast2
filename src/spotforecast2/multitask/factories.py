@@ -13,11 +13,8 @@ without subclassing ``BaseTask``.
 from typing import Any, Optional
 
 from lightgbm import LGBMRegressor
-
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
-from spotforecast2_safe.preprocessing import (
-    RollingFeatures as RollingFeaturesUnified,
-)
+from spotforecast2_safe.preprocessing import RollingFeatures as RollingFeaturesUnified
 
 
 def default_lgbm_forecaster_factory(

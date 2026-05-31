@@ -1,6 +1,6 @@
-from spotforecast2_safe.data.data_classes import Period as PeriodFull
-from spotforecast2_safe.data import Period as PeriodData
 from spotforecast2_safe import Period as PeriodTop
+from spotforecast2_safe.data import Period as PeriodData
+from spotforecast2_safe.data.data_classes import Period as PeriodFull
 
 
 def test_import_period_full():

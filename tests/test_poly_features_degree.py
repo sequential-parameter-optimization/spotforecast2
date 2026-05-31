@@ -23,9 +23,9 @@ from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
+from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 from spotforecast2.multitask import MultiTask
-from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 
 def _make_task(poly_features_degree: int, max_poly_features: int) -> MultiTask:
@@ -50,7 +50,10 @@ def _patch_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
     stack.enter_context(
         patch(
             "spotforecast2.multitask.base.get_weather_features",
-            return_value=(_frame(idx, ["temperature_2m"]), _frame(idx, ["temperature_2m"])),
+            return_value=(
+                _frame(idx, ["temperature_2m"]),
+                _frame(idx, ["temperature_2m"]),
+            ),
         )
     )
     stack.enter_context(
@@ -80,7 +83,9 @@ def _patch_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
     stack.enter_context(
         patch(
             "spotforecast2.multitask.base.select_exogenous_features",
-            side_effect=lambda exogenous_features, **_: list(exogenous_features.columns),
+            side_effect=lambda exogenous_features, **_: list(
+                exogenous_features.columns
+            ),
         )
     )
     stack.enter_context(

@@ -5,8 +5,8 @@
 
 import numpy as np
 import pandas as pd
-
 from spotforecast2_safe.stats.spectral import compute_periodogram
+
 from spotforecast2.plots.spectral import plot_periodogram
 
 

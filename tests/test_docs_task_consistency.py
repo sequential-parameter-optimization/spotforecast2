@@ -356,16 +356,23 @@ class TestAutoSaveModels:
         strategy = MagicMock(name="strategy")
         strategy.prepare_forecaster.return_value = MagicMock(name="prepared")
 
-        with patch.object(task, "_ensure_pipeline_ready"), patch.object(
-            task, "_get_target_data", return_value=(MagicMock(), MagicMock(), MagicMock())
-        ), patch.object(task, "create_forecaster"), patch.object(
-            task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
-        ), patch.object(task, "save_models") as save_models, patch.object(
-            task, "_aggregate_and_show", return_value={}
+        with (
+            patch.object(task, "_ensure_pipeline_ready"),
+            patch.object(
+                task,
+                "_get_target_data",
+                return_value=(MagicMock(), MagicMock(), MagicMock()),
+            ),
+            patch.object(task, "create_forecaster"),
+            patch.object(
+                task,
+                "_train_and_predict_target",
+                return_value={"future_pred": MagicMock()},
+            ),
+            patch.object(task, "save_models") as save_models,
+            patch.object(task, "_aggregate_and_show", return_value={}),
         ):
-            task._run_strategy(
-                strategy, task_name="t", results_key="lazy", show=False
-            )
+            task._run_strategy(strategy, task_name="t", results_key="lazy", show=False)
 
         save_models.assert_called_once_with(task_name="lazy")
 
@@ -379,16 +386,23 @@ class TestAutoSaveModels:
         strategy = MagicMock(name="strategy")
         strategy.prepare_forecaster.return_value = MagicMock(name="prepared")
 
-        with patch.object(task, "_ensure_pipeline_ready"), patch.object(
-            task, "_get_target_data", return_value=(MagicMock(), MagicMock(), MagicMock())
-        ), patch.object(task, "create_forecaster"), patch.object(
-            task, "_train_and_predict_target", return_value={"future_pred": MagicMock()}
-        ), patch.object(task, "save_models") as save_models, patch.object(
-            task, "_aggregate_and_show", return_value={}
+        with (
+            patch.object(task, "_ensure_pipeline_ready"),
+            patch.object(
+                task,
+                "_get_target_data",
+                return_value=(MagicMock(), MagicMock(), MagicMock()),
+            ),
+            patch.object(task, "create_forecaster"),
+            patch.object(
+                task,
+                "_train_and_predict_target",
+                return_value={"future_pred": MagicMock()},
+            ),
+            patch.object(task, "save_models") as save_models,
+            patch.object(task, "_aggregate_and_show", return_value={}),
         ):
-            task._run_strategy(
-                strategy, task_name="t", results_key="lazy", show=False
-            )
+            task._run_strategy(strategy, task_name="t", results_key="lazy", show=False)
 
         save_models.assert_not_called()
 

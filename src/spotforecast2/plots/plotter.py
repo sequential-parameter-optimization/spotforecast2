@@ -15,7 +15,6 @@ from typing import Any, Dict, Optional, Union
 
 import pandas as pd
 import plotly.graph_objects as go
-
 from spotforecast2_safe.data.fetch_data import get_data_home
 
 logger = logging.getLogger(__name__)
@@ -335,9 +334,7 @@ class PredictionFigure:
         """
         path = Path(path)
         if not path.parent.exists():
-            raise FileNotFoundError(
-                f"Parent directory does not exist: {path.parent}"
-            )
+            raise FileNotFoundError(f"Parent directory does not exist: {path.parent}")
         # kaleido v1 cannot serialise pandas Timestamp axis values directly
         # (orjson rejects them).  Round-trip through Plotly's own JSON
         # encoder, which coerces Timestamps to ISO strings.
@@ -405,16 +402,12 @@ class PredictionFigure:
 
         path = Path(path)
         if not path.parent.exists():
-            raise FileNotFoundError(
-                f"Parent directory does not exist: {path.parent}"
-            )
+            raise FileNotFoundError(f"Parent directory does not exist: {path.parent}")
 
         if template_path is not None:
             tpl_path = Path(template_path)
             if not tpl_path.exists():
-                raise FileNotFoundError(
-                    f"Template file does not exist: {tpl_path}"
-                )
+                raise FileNotFoundError(f"Template file does not exist: {tpl_path}")
             template_source = tpl_path.read_text(encoding="utf-8")
         else:
             template_source = (

@@ -1,14 +1,16 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-import unittest
-from unittest.mock import patch
-from pathlib import Path
-import tempfile
 import shutil
+import tempfile
+import unittest
+from pathlib import Path
+from unittest.mock import patch
+
 import pandas as pd
 import plotly.graph_objects as go
-from spotforecast2.plots.plotter import make_plot, PredictionFigure
+
+from spotforecast2.plots.plotter import PredictionFigure, make_plot
 
 
 def _make_pkg(

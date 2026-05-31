@@ -24,6 +24,7 @@ import numpy as np
 import pandas as pd
 import pytest
 from sklearn.linear_model import LinearRegression
+from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
 from spotforecast2.multitask import (
     BaseTask,
@@ -32,7 +33,6 @@ from spotforecast2.multitask import (
     PredictTask,
 )
 from spotforecast2.multitask.predict import execute_predict
-from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
 
 _DEMO_CSV = str(get_package_data_home() / "demo10.csv")
 
@@ -91,9 +91,9 @@ class TestImports:
         assert PredictTask is not None
 
     def test_import_execute_predict(self):
-        from spotforecast2.multitask.predict import (
+        from spotforecast2.multitask.predict import (  # noqa: F811
             execute_predict,
-        )  # noqa: F811
+        )
 
         assert callable(execute_predict)
 

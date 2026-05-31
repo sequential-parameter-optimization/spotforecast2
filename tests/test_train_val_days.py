@@ -13,6 +13,7 @@ Covers, on ``ConfigMulti`` directly and on the task wrappers:
 
 import pandas as pd
 import pytest
+from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 from spotforecast2.multitask import (
     LazyTask,
@@ -20,7 +21,6 @@ from spotforecast2.multitask import (
     OptunaTask,
     SpotOptimTask,
 )
-from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 _ALL_CLASSES = [LazyTask, OptunaTask, SpotOptimTask, MultiTask]
 _ALL_IDS = ["LazyTask", "OptunaTask", "SpotOptimTask", "MultiTask"]

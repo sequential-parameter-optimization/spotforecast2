@@ -11,9 +11,9 @@ configuration becomes a real, evaluated candidate.
 import numpy as np
 import pandas as pd
 from sklearn.linear_model import Ridge
-
 from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
 from spotforecast2_safe.splitter import TimeSeriesFold
+
 from spotforecast2.model_selection import (
     build_warm_start_x0,
     spotoptim_search_forecaster,
@@ -171,7 +171,9 @@ def test_strategy_injects_seed_and_forwards_x0(monkeypatch):
         name="load",
     )
     task = _MockTask()
-    strat = SpotOptimStrategy(search_space={"alpha": (0.01, 10.0), "lags": ["24", "12"]})
+    strat = SpotOptimStrategy(
+        search_space={"alpha": (0.01, 10.0), "lags": ["24", "12"]}
+    )
     forecaster = ForecasterRecursive(estimator=Ridge(), lags=24)
 
     tuned = strat.prepare_forecaster(task, "load", forecaster, y, None)
@@ -192,7 +194,11 @@ def test_strategy_no_x0_when_flag_disabled(monkeypatch):
     def fake_search(**kwargs):
         captured.update(kwargs)
         df = pd.DataFrame(
-            {"lags": [np.array([24])], "params": [{"alpha": 1.0}], "mean_absolute_error": [0.1]}
+            {
+                "lags": [np.array([24])],
+                "params": [{"alpha": 1.0}],
+                "mean_absolute_error": [0.1],
+            }
         )
         return df, None
 
@@ -207,8 +213,12 @@ def test_strategy_no_x0_when_flag_disabled(monkeypatch):
         index=pd.date_range("2022-01-01", periods=400, freq="h"),
         name="load",
     )
-    strat = SpotOptimStrategy(search_space={"alpha": (0.01, 10.0), "lags": ["24", "12"]})
-    strat.prepare_forecaster(task, "load", ForecasterRecursive(estimator=Ridge(), lags=24), y, None)
+    strat = SpotOptimStrategy(
+        search_space={"alpha": (0.01, 10.0), "lags": ["24", "12"]}
+    )
+    strat.prepare_forecaster(
+        task, "load", ForecasterRecursive(estimator=Ridge(), lags=24), y, None
+    )
 
     assert captured["kwargs_spotoptim"] is None
     assert captured["search_space"]["lags"] == ["24", "12"]

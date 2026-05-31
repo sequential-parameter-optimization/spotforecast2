@@ -1,7 +1,9 @@
-import pandas as pd
-import numpy as np
 from unittest.mock import patch
-from spotforecast2.tasks import task_n_to_1_dataframe, task_demo
+
+import numpy as np
+import pandas as pd
+
+from spotforecast2.tasks import task_demo, task_n_to_1_dataframe
 
 
 def mock_fetch_data(*args, **kwargs):
