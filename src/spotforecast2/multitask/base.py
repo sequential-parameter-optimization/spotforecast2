@@ -87,6 +87,7 @@ class PipelineConfig(Protocol):
     contamination: float
     imputation_method: str
     window_size: int
+    imputation_window_size: Optional[int]
     # Exogenous features
     use_exogenous_features: bool
     include_weather_windows: bool
