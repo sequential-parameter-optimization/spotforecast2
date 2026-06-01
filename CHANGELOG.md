@@ -1,3 +1,13 @@
+## [3.4.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.3.0...v3.4.0) (2026-06-01)
+
+### Features
+
+* **spotoptim:** support parallel SpotOptim tuning (n_jobs) ([1c8ccef](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1c8ccef90b043569d1004a995c7317a46a4ba2c3))
+
+### Documentation
+
+* **model-card:** restructure to mirror sf2-safe's 14-section layout and sync to 3.3.0 ([dac0600](https://github.com/sequential-parameter-optimization/spotforecast2/commit/dac060035a290a2db7dc786213a3820328421c7a))
+
 ## [3.3.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.2.0...v3.3.0) (2026-05-31)
 
 ### Features

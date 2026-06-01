@@ -209,7 +209,7 @@ class SpotOptimStrategy:
         # the optimizer's first evaluation with it.  Only dict search spaces
         # with a ``"lags"`` list are eligible; anything else falls through to a
         # normal cold-start run.
-        kwargs_spotoptim: Optional[Dict[str, Any]] = None
+        kwargs_spotoptim: Dict[str, Any] = {}
         lags_seed = getattr(task.config, "lags_consider", None)
         if (
             getattr(task.config, "warm_start_lags", False)
@@ -223,8 +223,18 @@ class SpotOptimStrategy:
                 search_space["lags"] = [seed_str, *search_space["lags"]]
             x0 = build_warm_start_x0(search_space, forecaster, lags_seed)
             if x0 is not None:
-                kwargs_spotoptim = {"x0": x0}
+                kwargs_spotoptim["x0"] = x0
                 task.logger.info("  Warm-start lags seeded: %s", seed_str)
+
+        # Parallel evaluation: forward the configured worker count straight to
+        # SpotOptim (``kwargs_spotoptim`` is spread into its constructor). ``None``
+        # leaves the optimizer sequential (``n_jobs=1``); ``-1`` uses all cores.
+        # Steady-state parallel tuning changes the search trajectory, so it is
+        # opt-in per config and not bit-reproducible against a sequential run.
+        n_jobs_spotoptim = getattr(task.config, "n_jobs_spotoptim", None)
+        if n_jobs_spotoptim is not None:
+            kwargs_spotoptim["n_jobs"] = n_jobs_spotoptim
+            task.logger.info("  SpotOptim n_jobs: %s", n_jobs_spotoptim)
 
         tuning_results, _ = spotoptim_search_forecaster(
             forecaster=forecaster,
@@ -239,7 +249,7 @@ class SpotOptimStrategy:
             n_trials=task.config.n_trials_spotoptim,
             n_initial=task.config.n_initial_spotoptim,
             show_progress=getattr(task, "_show_progress", False),
-            kwargs_spotoptim=kwargs_spotoptim,
+            kwargs_spotoptim=kwargs_spotoptim or None,
         )
         best_params = tuning_results.iloc[0].params
         best_lags = tuning_results.iloc[0].lags
