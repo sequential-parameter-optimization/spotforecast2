@@ -32,7 +32,7 @@ dependencies = [
     "ruff>=0.15.6",
     "scikit-learn>=1.8.0",
     "shap>=0.49.1",
-    "spotforecast2-safe>=15.0.0rc1,<16",
+    "spotforecast2-safe>=15.6.0,<16",
     "spotoptim>=0.12.3",
     "tqdm>=4.67.2",
 ]
@@ -71,9 +71,11 @@ spotforecast-n2o1-cov-df = "spotforecast2.tasks.task_n_to_1_with_covariates_and_
 
 [tool.uv]
 # Accept pre-releases ONLY for dependencies whose specifier carries an explicit
-# pre-release marker (here, spotforecast2-safe>=15.0.0rc1). This lets sf2's CI
-# integrate against sf2-safe release candidates without waiting for the
-# develop→main promotion, while keeping every other dependency on stable.
+# pre-release marker. Re-add an rc marker to the spotforecast2-safe specifier
+# (e.g. >=15.7.0rc1) to let sf2's CI integrate against an sf2-safe release
+# candidate without waiting for the develop→main promotion; every other
+# dependency stays on stable. The current floor tracks the stable release that
+# introduced the progress_desc fold-bar label (spotforecast2-safe>=15.6.0).
 prerelease = "explicit"
 
 [tool.pytest.ini_options]

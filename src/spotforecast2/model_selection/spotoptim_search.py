@@ -286,6 +286,7 @@ def spotoptim_objective(
     all_metric_values: list[list[float]],
     all_lags: list,
     all_params: list[dict],
+    n_trials: int | None = None,
 ) -> np.ndarray:
     """SpotOptim objective function to evaluate hyperparameter sets.
 
@@ -310,6 +311,11 @@ def spotoptim_objective(
         all_metric_values: List to record all metric results.
         all_lags: List to record all evaluated lag configurations.
         all_params: List to record all evaluated parameters.
+        n_trials: Total number of candidate configurations in the SpotOptim
+            budget. Used only to build the coarse-grained "config k/N" label
+            shown as a prefix on each per-fold progress bar (when
+            ``show_progress`` is ``True``). When ``None``, the label omits the
+            total and reads "config k". Does not affect the optimisation.
 
     Returns:
         np.ndarray: 1D array of results for the primary metric.
@@ -353,6 +359,18 @@ def spotoptim_objective(
             f_search.set_lags(lags_value)
 
         if cv_name == "TimeSeriesFold":
+            # Coarse-grained progress: prefix the per-fold bar with the running
+            # count of evaluated candidate configurations. ``all_params`` has one
+            # entry per already-completed candidate, so this candidate is number
+            # ``len(all_params) + 1``. Built only when the bar is shown.
+            progress_desc = None
+            if show_progress:
+                config_idx = len(all_params) + 1
+                progress_desc = (
+                    f"config {config_idx}/{n_trials}"
+                    if n_trials is not None
+                    else f"config {config_idx}"
+                )
             metrics_df, _ = _backtesting_forecaster(
                 forecaster=f_search,
                 y=y,
@@ -363,6 +381,7 @@ def spotoptim_objective(
                 verbose=verbose,
                 show_progress=show_progress,
                 suppress_warnings=suppress_warnings,
+                progress_desc=progress_desc,
             )
             metrics_list = metrics_df.iloc[0, :].to_list()
         else:
@@ -589,6 +608,7 @@ def spotoptim_search(
             all_metric_values=all_metric_values,
             all_lags=all_lags,
             all_params=all_params,
+            n_trials=n_trials,
         )
         if trial_bar is not None:
             trial_bar.update(len(X))
