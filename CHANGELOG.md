@@ -1,3 +1,13 @@
+## [3.5.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.4.0...v3.5.0-rc.1) (2026-06-01)
+
+### Features
+
+* **model_selection:** show coarse-grained config k/N on SpotOptim fold bars ([bab6b34](https://github.com/sequential-parameter-optimization/spotforecast2/commit/bab6b342c23dae57f20e22eca7053c31a34626ea))
+
+### Bug Fixes
+
+* **deps:** require spotforecast2-safe>=15.6.0 for progress_desc ([2b400e5](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2b400e5e36e486fee92d972a526fd1214358e30c))
+
 ## [3.4.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.3.0...v3.4.0) (2026-06-01)
 
 ### Features
