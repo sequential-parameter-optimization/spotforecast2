@@ -1,4 +1,4 @@
-## [3.5.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.4.0...v3.5.0-rc.1) (2026-06-01)
+## [3.5.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.4.0...v3.5.0) (2026-06-01)
 
 ### Features
 
