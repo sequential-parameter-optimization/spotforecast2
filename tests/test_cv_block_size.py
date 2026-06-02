@@ -123,7 +123,13 @@ class TestCvBlockSizeOverride:
 class TestCvBlockSizeFallback:
     def test_steps_equal_predict_size_when_attr_absent(self, tmp_path, y_train):
         task = _make_task(tmp_path, predict_size=32)
-        # No cv_block_size assigned → getattr fallback → predict_size.
+        # Exercise the getattr-absent fallback in cv_ts: a config that does not
+        # declare cv_block_size at all must fall back to predict_size. Newer
+        # spotforecast2-safe ConfigMulti declares the field (default None), so
+        # delete it from the instance to recreate the "attribute absent" path
+        # the getattr fallback is written for.
+        if hasattr(task.config, "cv_block_size"):
+            delattr(task.config, "cv_block_size")
         assert not hasattr(task.config, "cv_block_size")
         assert task.cv_ts(y_train).steps == task.config.predict_size == 32
 
