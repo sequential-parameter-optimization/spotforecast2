@@ -163,3 +163,55 @@ def test_no_cap_below_threshold():
 
     poly_cols = [c for c in mt.exogenous_features.columns if c.startswith("poly_")]
     assert len(poly_cols) == 4
+
+
+def test_poly_mi_knobs_are_threaded_into_select_top_poly_features():
+    """The poly_mi_* config knobs must reach the sf2-safe ranking helper."""
+    mt = _make_task(poly_features_degree=2, max_poly_features=3)
+    mt.config.poly_mi_n_jobs = 2
+    mt.config.poly_mi_sample_size = 1234
+    idx = mt.df_pipeline.index
+    with ExitStack() as stack:
+        _patch_builders(stack, idx)
+        stack.enter_context(
+            patch(
+                "spotforecast2.multitask.base.create_interaction_features",
+                side_effect=_fake_interactions(8),
+            )
+        )
+        mock_select = stack.enter_context(
+            patch(
+                "spotforecast2.multitask.base.select_top_poly_features",
+                return_value=["poly_x0", "poly_x1", "poly_x2"],
+            )
+        )
+        mt.build_exogenous_features()
+
+    assert mock_select.call_args.kwargs["n_jobs"] == 2
+    assert mock_select.call_args.kwargs["mi_sample_size"] == 1234
+
+
+def test_exog_feature_names_deterministic_across_runs():
+    """Two identically-seeded builds must select the same feature list.
+
+    Guards the reproducibility contract of the (subsampled) mutual-information
+    cap at the orchestrator level: the chapter-14 pipeline prints
+    ``exog_feature_names`` and relies on a fixed ``random_state`` producing a
+    fixed selection. The real ``select_top_poly_features`` runs here.
+    """
+
+    def build_once() -> list:
+        mt = _make_task(poly_features_degree=2, max_poly_features=3)
+        idx = mt.df_pipeline.index
+        with ExitStack() as stack:
+            _patch_builders(stack, idx)
+            stack.enter_context(
+                patch(
+                    "spotforecast2.multitask.base.create_interaction_features",
+                    side_effect=_fake_interactions(8),
+                )
+            )
+            mt.build_exogenous_features()
+        return list(mt.exog_feature_names)
+
+    assert build_once() == build_once()
