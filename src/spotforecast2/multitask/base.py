@@ -630,6 +630,46 @@ class BaseTask:
             )
             self.exogenous_features = self.exogenous_features.bfill().ffill()
 
+        # Provider-based exogenous features (requires sf2-safe >= 15.7.0):
+        # append the columns produced by the ConfigEntsoe/ConfigMulti provider
+        # flags — covid_infection_rate and the ENTSO-E day-ahead
+        # forecast/renewable/net-load/price. The registry is imported lazily so
+        # older sf2-safe installs (without it) stay importable; a provider that
+        # cannot cover the full exogenous index is re-raised or skipped per
+        # config.on_exog_provider_failure (fail-safe).
+        provider_feature_names: list = []
+        try:
+            from spotforecast2_safe.preprocessing.exog_providers import (
+                ExogProviderError,
+                build_providers_from_config,
+            )
+        except ImportError:
+            build_providers_from_config = None  # type: ignore[assignment]
+        if build_providers_from_config is not None:
+            on_fail = getattr(self.config, "on_exog_provider_failure", "raise")
+            provider_frames = []
+            for provider in build_providers_from_config(self.config):
+                try:
+                    cols = provider.build(self.exogenous_features.index)
+                except ExogProviderError as exc:
+                    if on_fail == "raise":
+                        raise
+                    self.logger.warning(
+                        "Skipping exog provider %r: %s", provider.name, exc
+                    )
+                    continue
+                provider_frames.append(cols)
+                provider_feature_names.extend(cols.columns.tolist())
+            if provider_frames:
+                self.exogenous_features = pd.concat(
+                    [self.exogenous_features, *provider_frames], axis=1
+                )
+                self.logger.info(
+                    "  Provider features: +%d columns (%s)",
+                    len(provider_feature_names),
+                    ", ".join(provider_feature_names),
+                )
+
         self.exogenous_features = apply_cyclical_encoding(
             data=self.exogenous_features,
             drop_original=False,
@@ -675,6 +715,13 @@ class BaseTask:
             include_holiday_features=self.config.include_holiday_features,
             poly_features_degree=self.config.poly_features_degree,
         )
+        # ``select_exogenous_features`` matches calendar/weather/holiday/poly
+        # columns by name pattern; provider columns carry their own names, so
+        # append them to the selection here (order-preserving, de-duplicated).
+        if provider_feature_names:
+            self.exog_feature_names = list(
+                dict.fromkeys(self.exog_feature_names + provider_feature_names)
+            )
         self.logger.info(
             "Selected %d exogenous features for training.", len(self.exog_feature_names)
         )
@@ -760,7 +807,9 @@ class BaseTask:
         # ``predict_size`` so existing configs are unaffected; an optional
         # ``cv_block_size`` field (None ⇒ fall back) widens or narrows the
         # validation fold without changing what gets forecast in production.
-        cv_block = getattr(self.config, "cv_block_size", None) or self.config.predict_size
+        cv_block = (
+            getattr(self.config, "cv_block_size", None) or self.config.predict_size
+        )
 
         # Fixed sliding window when a training-size limit is configured;
         # expanding window otherwise (sklearn default).

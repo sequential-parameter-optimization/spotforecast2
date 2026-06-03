@@ -1,3 +1,9 @@
+## [3.6.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.5.0...v3.6.0-rc.1) (2026-06-02)
+
+### Features
+
+* **multitask:** wire exogenous-provider registry into the live pipeline ([b1105e9](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b1105e99e057560d996724b89c44471cc027aa74))
+
 ## [3.5.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.4.0...v3.5.0) (2026-06-01)
 
 ### Features

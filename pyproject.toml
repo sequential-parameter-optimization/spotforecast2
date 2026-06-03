@@ -1,6 +1,6 @@
 [project]
 name = "spotforecast2"
-version = "3.5.0"
+version = "3.6.0-rc.1"
 description = "Forecasting with spot"
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
@@ -32,7 +32,7 @@ dependencies = [
     "ruff>=0.15.6",
     "scikit-learn>=1.8.0",
     "shap>=0.49.1",
-    "spotforecast2-safe>=15.6.0,<16",
+    "spotforecast2-safe>=15.7.0,<16",
     "spotoptim>=0.12.3",
     "tqdm>=4.67.2",
 ]
@@ -75,7 +75,7 @@ spotforecast-n2o1-cov-df = "spotforecast2.tasks.task_n_to_1_with_covariates_and_
 # (e.g. >=15.7.0rc1) to let sf2's CI integrate against an sf2-safe release
 # candidate without waiting for the develop→main promotion; every other
 # dependency stays on stable. The current floor tracks the stable release that
-# introduced the progress_desc fold-bar label (spotforecast2-safe>=15.6.0).
+# introduced the exogenous-provider registry (spotforecast2-safe>=15.7.0).
 prerelease = "explicit"
 
 [tool.pytest.ini_options]
