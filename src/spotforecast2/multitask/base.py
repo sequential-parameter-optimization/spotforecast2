@@ -538,11 +538,112 @@ class BaseTask:
     def build_exogenous_features(self) -> "BaseTask":
         """Build, combine, encode, and merge exogenous feature covariates.
 
+        This is step 4–7 of the pipeline (run after ``prepare_data``,
+        ``detect_outliers``, and ``impute``).  It assembles the full
+        exogenous-covariate matrix that the forecaster consumes, then merges
+        it onto the target data.  The orchestration proceeds in order:
+
+        * 4a — Weather, via ``get_weather_features`` (Open-Meteo).  The
+          response is parquet-cached only when ``config.cache_home`` is set.
+          Fetch failures are handled per ``config.on_weather_failure``:
+          ``"raise"`` re-raises ``WeatherFetchError``; ``"skip"`` logs a
+          warning and continues with an empty weather frame (fail-safe).
+        * 4b — Calendar features, via ``get_calendar_features``.
+        * 4c — Day/night (solar) features, via ``get_day_night_features``
+          (computed with ``astral`` from ``config.latitude`` /
+          ``config.longitude``).
+        * 4d — Holiday features, via ``get_holiday_features`` for
+          ``config.country_code`` / ``config.state``.
+        * 5 — The four frames are concatenated along the columns and any
+          residual gaps are back- then forward-filled.  Provider-based
+          exogenous columns are then appended via
+          ``build_providers_from_config`` (requires ``spotforecast2-safe``
+          >= 15.7.0).  The active providers are governed by the config flags
+          ``include_covid_infection_rate``,
+          ``include_entsoe_forecast_load``,
+          ``include_entsoe_renewable_forecast``,
+          ``include_entsoe_net_load``, and
+          ``include_entsoe_day_ahead_price``.  A provider that cannot cover
+          the full exogenous index is re-raised or skipped per
+          ``config.on_exog_provider_failure`` (``"raise"`` vs. ``"skip"``).
+          Cyclical (sine/cosine) encoding is then applied via
+          ``apply_cyclical_encoding``, and degree-``config.poly_features_degree``
+          interaction terms are added via ``create_interaction_features``.
+          When the degree is at least 2, the polynomial columns are ranked by
+          mutual information with the primary target and capped to
+          ``config.max_poly_features`` via ``select_top_poly_features``.  Two
+          config knobs tune that ranking (new in ``spotforecast2-safe``
+          15.8.0, read via ``getattr`` so older configs fall back to ``-1`` /
+          ``4000``): ``config.poly_mi_n_jobs`` controls parallelism and is
+          selection-invariant, while ``config.poly_mi_sample_size`` scores a
+          seeded row subsample — a large speed-up that can shift borderline
+          selections, with ``None`` restoring full-data scoring.
+        * 6 — The training feature set is chosen via
+          ``select_exogenous_features``, with provider columns appended
+          (order-preserving, de-duplicated).
+        * 7 — Targets and covariates are merged via
+          ``merge_data_and_covariates`` into ``self.data_with_exog`` and the
+          forecast-horizon covariates ``self.exo_pred``.
+
+        When ``config.use_exogenous_features`` is ``False`` the method is a
+        no-op and returns ``self`` immediately, leaving the pipeline
+        target-only.
+
+        Attributes:
+            weather_aligned (pd.DataFrame): Weather frame aligned to the
+                pipeline index, reused by the interaction and selection steps.
+            exogenous_features (pd.DataFrame): Full combined, encoded, and
+                capped exogenous feature matrix.
+            exog_feature_names (List[str]): Names of the exogenous features
+                selected for training (including provider columns).
+            data_with_exog (pd.DataFrame): Target data merged with the
+                selected exogenous covariates.
+            exo_pred (pd.DataFrame): Exogenous covariates spanning the
+                forecast horizon, supplied to the forecaster at predict time.
+
         Returns:
-            ``self`` (for method chaining).
+            BaseTask: The task instance (``self``), for method chaining.
 
         Raises:
-            RuntimeError: If method `prepare_data` has not been called.
+            RuntimeError: If ``prepare_data`` has not been called.
+            WeatherFetchError: If the Open-Meteo fetch fails and
+                ``config.on_weather_failure == "raise"``.
+            ExogProviderError: If an exogenous provider cannot cover the
+                index and ``config.on_exog_provider_failure == "raise"``.
+            ValueError: Propagated from ``select_top_poly_features`` for an
+                invalid ``config.poly_mi_sample_size``.
+
+        Note:
+            The mutual-information cap of step 5 is the dominant cost of this
+            method on realistic inputs (thousands of polynomial columns over
+            years of hourly data).  The ``config.poly_mi_n_jobs`` and
+            ``config.poly_mi_sample_size`` knobs exist precisely to bound that
+            cost.
+
+        Examples:
+            With exogenous features disabled the method is a no-op, so the
+            example below runs without any network access (no Open-Meteo or
+            ENTSO-E call) and leaves the pipeline target-only.
+
+            ```{python}
+            from spotforecast2.multitask import MultiTask
+            from spotforecast2_safe.data.fetch_data import (
+                fetch_data, get_package_data_home,
+            )
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv"))
+
+            mt = MultiTask(dataframe=df, predict_size=24, use_exogenous_features=False)
+            (
+                mt.prepare_data()
+                .detect_outliers()
+                .impute()
+                .build_exogenous_features()
+            )
+            print(f"Exogenous features used: {mt.config.use_exogenous_features}")
+            print(f"Selected exog feature names: {mt.exog_feature_names}")
+            ```
         """
         if self.df_pipeline is None:
             raise RuntimeError("Call prepare_data() before build_exogenous_features().")
@@ -682,6 +783,10 @@ class BaseTask:
 
         # Cap polynomial interactions to the top max_poly_features ranked by
         # mutual information with the primary target, then drop the rest.
+        # The ranking is the dominant cost of this method on realistic inputs
+        # (thousands of poly columns over years of hourly data), so the
+        # poly_mi_* config knobs (sf2-safe >= 15.8.0) parallelize it and score
+        # a seeded row subsample; ``getattr`` keeps older configs working.
         if self.config.poly_features_degree >= 2:
             poly_cols = [
                 c for c in self.exogenous_features.columns if c.startswith("poly_")
@@ -693,6 +798,8 @@ class BaseTask:
                     self.df_pipeline[self.config.targets[0]],
                     max_poly_features=max_poly,
                     random_state=self.config.random_state,
+                    n_jobs=getattr(self.config, "poly_mi_n_jobs", -1),
+                    mi_sample_size=getattr(self.config, "poly_mi_sample_size", 4000),
                 )
                 drop = [c for c in poly_cols if c not in keep]
                 self.exogenous_features = self.exogenous_features.drop(columns=drop)

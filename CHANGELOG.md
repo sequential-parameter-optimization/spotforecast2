@@ -1,3 +1,9 @@
+## [3.7.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.6.0...v3.7.0-rc.1) (2026-06-03)
+
+### Features
+
+* **multitask:** thread the poly-MI performance knobs into the exog build ([28ef667](https://github.com/sequential-parameter-optimization/spotforecast2/commit/28ef667bad1e5ea90c05d188cf8a9e4d66cf56ef))
+
 ## [3.6.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.5.0...v3.6.0) (2026-06-03)
 
 ### Features
