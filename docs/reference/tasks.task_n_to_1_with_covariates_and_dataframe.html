@@ -784,7 +784,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="ad6977a7" class="cell" data-execution_count="1">
+<div id="f460500c" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
@@ -839,7 +839,7 @@ Combined forecast length: 2</code></pre>
 </section>
 <section id="feature-engineering-parameters" class="level2 doc-section doc-section-feature-engineering-parameters">
 <h2 class="doc-section doc-section-feature-engineering-parameters anchored" data-anchor-id="feature-engineering-parameters">Feature Engineering Parameters</h2>
-<p>include_weather_windows (bool): Include rolling weather statistics. Default: False. include_holiday_features (bool): Include holiday indicator features. Default: False. poly_features_degree (int): Polynomial-interaction degree (1 = off, 2 = pairwise). Default: 1. max_poly_features (int): Cap on kept polynomial columns (top-K by mutual information). Default: 10.</p>
+<p>include_weather_windows (bool): Include rolling weather statistics. Default: False. include_holiday_features (bool): Include holiday indicator features. Default: False. include_holiday_adjacency_features (bool): Include Brückentag and before/after-holiday indicators. Default: False. poly_features_degree (int): Polynomial-interaction degree (1 = off, 2 = pairwise). Default: 1. max_poly_features (int): Cap on kept polynomial columns (top-K by mutual information). Default: 10.</p>
 </section>
 <section id="model-parameters" class="level2 doc-section doc-section-model-parameters">
 <h2 class="doc-section doc-section-model-parameters anchored" data-anchor-id="model-parameters">Model Parameters</h2>
@@ -896,7 +896,7 @@ Combined forecast length: 2</code></pre>
 </section>
 <section id="examples-1" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
-<div id="b448c65e" class="cell" data-execution_count="2">
+<div id="dc1b2fde" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># main() reads data_in.csv from the user's data home directory; not reproducible without that file.</span></span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.tasks.task_n_to_1_with_covariates_and_dataframe <span class="im">import</span> main</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -921,13 +921,14 @@ Combined forecast length: 2</code></pre>
 <span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    estimator<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    include_weather_windows<span class="op">=</span><span class="va">False</span>,</span>
 <span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    include_holiday_features<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    poly_features_degree<span class="op">=</span><span class="dv">1</span>,</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    max_poly_features<span class="op">=</span><span class="dv">10</span>,</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    weights<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    include_holiday_adjacency_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    poly_features_degree<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    max_poly_features<span class="op">=</span><span class="dv">10</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    weights<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Execute N-to-1 forecasting pipeline with exogenous covariates.</p>
 <p>This function performs a complete time series forecasting workflow: 1. Fetches and preprocesses data 2. Engineers features (calendar, weather, holidays, cyclical, polynomial) 3. Trains recursive forecaster on multiple targets 4. Aggregates predictions using weighted combination</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
@@ -1027,36 +1028,42 @@ Combined forecast length: 2</code></pre>
 <td><code>False</code></td>
 </tr>
 <tr class="odd">
+<td>include_holiday_adjacency_features</td>
+<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
+<td>Add Brückentag and before/after-holiday binary indicators (<code>is_brueckentag</code>, <code>is_before_holiday</code>, <code>is_after_holiday</code>). Default: False.</td>
+<td><code>False</code></td>
+</tr>
+<tr class="even">
 <td>poly_features_degree</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Polynomial-interaction degree. 1 (default) adds no interactions; 2 adds pairwise bilinear terms; 3+ higher order.</td>
 <td><code>1</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>max_poly_features</td>
 <td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
 <td>Cap on kept polynomial interaction columns; only the top-K ranked by mutual information with the target survive (&lt;= 0 disables). Default: 10.</td>
 <td><code>10</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>weights</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Union">Union</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#float">float</a>], <a href="https://docs.python.org/3/library/typing.html#typing.List">List</a>[<a href="https://docs.python.org/3/library/functions.html#float">float</a>], <a href="https://numpy.org/doc/stable/reference/index.html#module-numpy">np</a>.<a href="https://numpy.org/doc/stable/reference/generated/numpy.ndarray.html#numpy.ndarray">ndarray</a>]]</td>
 <td>Weights for combining multi-output predictions. Can be: - None: Default weights [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0] - Dict: {“col_name”: weight, …} for specific columns - List: [w1, w2, …] in column order - np.ndarray: Same as list Default: None (uses default weights).</td>
 <td><code>None</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>verbose</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Enable progress logging. Prints intermediate results and timestamps. Default: True.</td>
 <td><code>True</code></td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td>show_progress</td>
 <td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
 <td>Show a progress bar for major pipeline steps. Default: True.</td>
 <td><code>True</code></td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td>**kwargs</td>
 <td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
 <td>Additional parameters for underlying functions. These are passed to n2n_predict_with_covariates(). Examples: - freq: Frequency for data resampling. Default: “h” (hourly). - columns: Specific columns to forecast. Default: None (all). Any parameter accepted by n2n_predict_with_covariates().</td>
@@ -1115,7 +1122,7 @@ Combined forecast length: 2</code></pre>
 </section>
 <section id="examples-2" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
-<div id="7bb1d412" class="cell" data-execution_count="3">
+<div id="fc3885e2" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
