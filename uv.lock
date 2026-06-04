@@ -3538,7 +3538,7 @@ wheels = [
 
 [[package]]
 name = "spotforecast2"
-version = "3.6.0"
+version = "3.7.0"
 source = { editable = "." }
 dependencies = [
     { name = "astral" },
@@ -3617,7 +3617,7 @@ requires-dist = [
     { name = "safety", marker = "extra == 'dev'", specifier = ">=3.0.0" },
     { name = "scikit-learn", specifier = ">=1.8.0" },
     { name = "shap", specifier = ">=0.49.1" },
-    { name = "spotforecast2-safe", specifier = ">=15.8.0,<16" },
+    { name = "spotforecast2-safe", specifier = ">=15.9.0,<16" },
     { name = "spotoptim", specifier = ">=0.12.3" },
     { name = "tqdm", specifier = ">=4.67.2" },
 ]
@@ -3633,7 +3633,7 @@ dev = [
 
 [[package]]
 name = "spotforecast2-safe"
-version = "15.8.0"
+version = "15.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astral" },
@@ -3651,9 +3651,9 @@ dependencies = [
     { name = "statsmodels" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/96/0d/6b76698299fb35b9c1f21ed3fe675284e049e72f950d76da51865ebbd4b2/spotforecast2_safe-15.8.0.tar.gz", hash = "sha256:1a441365c17da03d6a4fab3863ceca4af6e27e2a433929df649b4d696d5e8acb", size = 20562660, upload-time = "2026-06-03T23:32:42.296Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/5b/09/681fc582fef68395e52e58c8c99299296e53938ba32dfd4e93f654150825/spotforecast2_safe-15.9.0.tar.gz", hash = "sha256:e05e8cddc1cd5fa26f71f80fcf59662322b47cf96c2c379c9a50f172664fd851", size = 20565099, upload-time = "2026-06-04T14:59:21.352Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/ec/87/b8cdb5d5e3c12913670add945555088b274eae51c48264feec5fd31fe2a6/spotforecast2_safe-15.8.0-py3-none-any.whl", hash = "sha256:455e20196198b6b3b4f6b21e2bae83178f1f2783681c35f9901fd4b2dc6dd031", size = 20617217, upload-time = "2026-06-03T23:32:39.899Z" },
+    { url = "https://files.pythonhosted.org/packages/dd/22/b39cb63364ddcf8e34fe52955b0793148c84c389e244d41b8ddf6cd205e5/spotforecast2_safe-15.9.0-py3-none-any.whl", hash = "sha256:54f8b98d25e02aff2cd4d883b4e3dc09eeb60d8dfb9ea2fbd7a003cb5d889c9b", size = 20619739, upload-time = "2026-06-04T14:59:19.041Z" },
 ]
 
 [[package]]

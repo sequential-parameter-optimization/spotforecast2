@@ -61,7 +61,9 @@ def _make_y_train(end: pd.Timestamp = _END_TRAIN, n: int = _N) -> pd.Series:
     return pd.Series(range(n), index=idx, dtype=float, name="target_0")
 
 
-def _skl_cv(task: LazyTask, y_train: pd.Series, test_size: int) -> SklearnTimeSeriesSplit:
+def _skl_cv(
+    task: LazyTask, y_train: pd.Series, test_size: int
+) -> SklearnTimeSeriesSplit:
     """Build the sklearn TimeSeriesSplit equivalent for *task* with *test_size*."""
     end_cv = task.config.end_train_ts - task.config.delta_val
     n_train_cv = len(y_train.loc[:end_cv])

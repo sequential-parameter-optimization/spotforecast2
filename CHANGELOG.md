@@ -1,3 +1,13 @@
+## [3.8.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.7.0...v3.8.0-rc.1) (2026-06-04)
+
+### Features
+
+* **multitask:** thread include_holiday_adjacency_features through BaseTask ([049c310](https://github.com/sequential-parameter-optimization/spotforecast2/commit/049c31039a73cbba52a6a866694a5cf5da826e85))
+
+### Documentation
+
+* **deps:** update uv floor comment for the 15.9.0 requirement ([a9923b8](https://github.com/sequential-parameter-optimization/spotforecast2/commit/a9923b83f20a6736c7a735816ca3377e57138814))
+
 ## [3.7.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.6.0...v3.7.0) (2026-06-04)
 
 ### Features
