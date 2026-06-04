@@ -240,7 +240,10 @@ quartodoc:
     - title: "Multitask"
       desc: "Multi-target forecasting pipeline tasks and dispatcher."
       contents:
-        - multitask.agg_predictor
+        # agg_predictor is re-exported from spotforecast2_safe.multitask.base;
+        # griffe cannot resolve the alias statically, so load it dynamically.
+        - name: multitask.agg_predictor
+          dynamic: true
         - multitask.BaseTask
         - multitask.LazyTask
         - multitask.OptunaTask
