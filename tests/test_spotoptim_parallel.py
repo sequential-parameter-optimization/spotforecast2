@@ -101,9 +101,9 @@ def test_strategy_forwards_n_jobs_to_spotoptim(monkeypatch):
 
     # prepare_forecaster imports the name from spotforecast2.model_selection at
     # call time, so patch it on that package.
-    import spotforecast2.model_selection as ms
-
-    monkeypatch.setattr(ms, "spotoptim_search_forecaster", _fake_search)
+    monkeypatch.setattr(
+        "spotforecast2.model_selection.spotoptim_search_forecaster", _fake_search
+    )
 
     config = types.SimpleNamespace(
         warm_start_lags=False,
@@ -145,9 +145,9 @@ def test_strategy_omits_n_jobs_when_unset(monkeypatch):
         captured.update(kwargs)
         raise _Stop()
 
-    import spotforecast2.model_selection as ms
-
-    monkeypatch.setattr(ms, "spotoptim_search_forecaster", _fake_search)
+    monkeypatch.setattr(
+        "spotforecast2.model_selection.spotoptim_search_forecaster", _fake_search
+    )
 
     config = types.SimpleNamespace(
         warm_start_lags=False,
