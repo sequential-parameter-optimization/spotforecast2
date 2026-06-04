@@ -1,3 +1,10 @@
+## [3.8.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.8.0...v3.8.1) (2026-06-04)
+
+### Code Refactoring
+
+* **multitask:** collapse onto spotforecast2_safe.multitask ([4aee84a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/4aee84aab23f951fe3e5aa7a51f59228a20aad1c))
+* **multitask:** declare re-exports via __all__ in collapsed modules ([b34c131](https://github.com/sequential-parameter-optimization/spotforecast2/commit/b34c131290ede5efbd20e37a48c9f49981bdfb9f)), closes [#83](https://github.com/sequential-parameter-optimization/spotforecast2/issues/83)
+
 ## [3.8.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.8.0...v3.8.1-rc.1) (2026-06-04)
 
 ### Code Refactoring
