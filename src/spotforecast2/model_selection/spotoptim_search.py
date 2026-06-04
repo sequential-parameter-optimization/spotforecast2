@@ -659,15 +659,11 @@ def spotoptim_search(
             )
         y_hist = np.asarray(optimizer.y_, dtype=float).ravel()
         for row, y_val in zip(np.asarray(optimizer.X_, dtype=object), y_hist):
-            params_dict = array_to_params(
-                np.asarray(row), var_name, var_type, bounds
-            )
+            params_dict = array_to_params(np.asarray(row), var_name, var_type, bounds)
             sample_params = {k: v for k, v in params_dict.items() if k != "lags"}
             lags_val = params_dict.get(
                 "lags",
-                forecaster_search.lags
-                if hasattr(forecaster_search, "lags")
-                else None,
+                forecaster_search.lags if hasattr(forecaster_search, "lags") else None,
             )
             if isinstance(lags_val, str):
                 lags_val = parse_lags_from_strings(lags_val)
