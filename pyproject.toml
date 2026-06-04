@@ -75,9 +75,9 @@ spotforecast-n2o1-cov-df = "spotforecast2.tasks.task_n_to_1_with_covariates_and_
 # (e.g. >=15.8.0rc1) to let sf2's CI integrate against an sf2-safe release
 # candidate without waiting for the develop→main promotion; every other
 # dependency stays on stable. The current floor tracks the stable release that
-# added the poly-MI performance knobs n_jobs/mi_sample_size on
-# select_top_poly_features (spotforecast2-safe>=15.8.0), which
-# build_exogenous_features now passes unconditionally.
+# added the holiday-adjacency feature surface — get_holiday_adjacency_features
+# and the include_holiday_adjacency_features config flag
+# (spotforecast2-safe>=15.9.0), which multitask.base imports unconditionally.
 prerelease = "explicit"
 
 [tool.pytest.ini_options]
