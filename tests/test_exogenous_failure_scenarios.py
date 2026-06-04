@@ -73,19 +73,19 @@ def _stub_downstream(stack: ExitStack) -> None:
     """Stub the post-concat transforms / merge so each test isolates one branch."""
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.apply_cyclical_encoding",
+            "spotforecast2_safe.multitask.base.apply_cyclical_encoding",
             side_effect=lambda data, drop_original: data,
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.create_interaction_features",
+            "spotforecast2_safe.multitask.base.create_interaction_features",
             side_effect=lambda exogenous_features, weather_aligned, **_: exogenous_features,
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.select_exogenous_features",
+            "spotforecast2_safe.multitask.base.select_exogenous_features",
             side_effect=lambda exogenous_features, **_: list(
                 exogenous_features.columns
             ),
@@ -93,7 +93,7 @@ def _stub_downstream(stack: ExitStack) -> None:
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.merge_data_and_covariates",
+            "spotforecast2_safe.multitask.base.merge_data_and_covariates",
             side_effect=lambda data, exogenous_features, **_: (
                 data,
                 exogenous_features,
@@ -127,7 +127,7 @@ class TestScenarioS1HappyPath:
         with ExitStack() as stack:
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_weather_features",
+                    "spotforecast2_safe.multitask.base.get_weather_features",
                     return_value=(
                         _frame(idx, weather_cols),
                         _frame(idx, weather_cols),
@@ -136,19 +136,19 @@ class TestScenarioS1HappyPath:
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_calendar_features",
+                    "spotforecast2_safe.multitask.base.get_calendar_features",
                     return_value=_frame(idx, calendar_cols),
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_day_night_features",
+                    "spotforecast2_safe.multitask.base.get_day_night_features",
                     return_value=_frame(idx, day_night_cols),
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_features",
                     return_value=_frame(idx, holiday_cols),
                 )
             )
@@ -169,7 +169,7 @@ class TestScenarioS2WeatherRaiseDefault:
     def test_weather_fetch_error_propagates(self):
         mt = _make_task_ready(on_weather_failure="raise")
         with patch(
-            "spotforecast2.multitask.base.get_weather_features",
+            "spotforecast2_safe.multitask.base.get_weather_features",
             side_effect=WeatherFetchError("simulated outage"),
         ):
             with pytest.raises(WeatherFetchError, match="simulated outage"):
@@ -185,25 +185,25 @@ class TestScenarioS3WeatherSkip:
         with ExitStack() as stack:
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_weather_features",
+                    "spotforecast2_safe.multitask.base.get_weather_features",
                     side_effect=WeatherFetchError("simulated outage"),
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_calendar_features",
+                    "spotforecast2_safe.multitask.base.get_calendar_features",
                     return_value=empty,
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_day_night_features",
+                    "spotforecast2_safe.multitask.base.get_day_night_features",
                     return_value=empty,
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_features",
                     return_value=empty,
                 )
             )
@@ -248,25 +248,25 @@ class TestScenarioS4InvalidCountryCode:
         with ExitStack() as stack:
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_weather_features",
+                    "spotforecast2_safe.multitask.base.get_weather_features",
                     return_value=(empty, empty),
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_calendar_features",
+                    "spotforecast2_safe.multitask.base.get_calendar_features",
                     return_value=empty,
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_day_night_features",
+                    "spotforecast2_safe.multitask.base.get_day_night_features",
                     return_value=empty,
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_features",
                     side_effect=NotImplementedError(
                         "Country ZZ is not available in the holidays library"
                     ),
@@ -296,25 +296,25 @@ class TestScenarioS5InvalidCoordinates:
         with ExitStack() as stack:
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_weather_features",
+                    "spotforecast2_safe.multitask.base.get_weather_features",
                     return_value=(empty, empty),
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_calendar_features",
+                    "spotforecast2_safe.multitask.base.get_calendar_features",
                     return_value=empty,
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_day_night_features",
+                    "spotforecast2_safe.multitask.base.get_day_night_features",
                     side_effect=ValueError("latitude out of range"),
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_features",
                     return_value=empty,
                 )
             )
@@ -338,25 +338,25 @@ class TestScenarioS7MasterToggleOff:
         with ExitStack() as stack:
             mock_weather = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_weather_features",
+                    "spotforecast2_safe.multitask.base.get_weather_features",
                     side_effect=RuntimeError("must not be called"),
                 )
             )
             mock_calendar = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_calendar_features",
+                    "spotforecast2_safe.multitask.base.get_calendar_features",
                     side_effect=RuntimeError("must not be called"),
                 )
             )
             mock_day_night = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_day_night_features",
+                    "spotforecast2_safe.multitask.base.get_day_night_features",
                     side_effect=RuntimeError("must not be called"),
                 )
             )
             mock_holiday = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_features",
                     side_effect=RuntimeError("must not be called"),
                 )
             )

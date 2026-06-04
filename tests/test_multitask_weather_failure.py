@@ -14,8 +14,10 @@ Covers the two-branch behaviour added by
   is logged, and ``self.weather_aligned`` becomes an empty DataFrame
   so the rest of the pipeline can continue without weather features.
 
-The mock replaces ``spotforecast2.multitask.base.get_weather_features``
-directly — no network is touched.
+The mock replaces ``spotforecast2_safe.multitask.base.get_weather_features``
+directly — no network is touched.  After the pipeline collapse the
+implementation lives in the safe package; the patch target was updated
+accordingly.
 """
 
 import logging
@@ -58,36 +60,36 @@ def _mock_sibling_features(stack: ExitStack, index: pd.DatetimeIndex) -> None:
     """
     empty = pd.DataFrame(index=index)
     stack.enter_context(
-        patch("spotforecast2.multitask.base.get_calendar_features", return_value=empty)
+        patch("spotforecast2_safe.multitask.base.get_calendar_features", return_value=empty)
     )
     stack.enter_context(
-        patch("spotforecast2.multitask.base.get_day_night_features", return_value=empty)
+        patch("spotforecast2_safe.multitask.base.get_day_night_features", return_value=empty)
     )
     stack.enter_context(
-        patch("spotforecast2.multitask.base.get_holiday_features", return_value=empty)
+        patch("spotforecast2_safe.multitask.base.get_holiday_features", return_value=empty)
     )
     # Downstream transforms — return shapes the caller assigns through.
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.apply_cyclical_encoding",
+            "spotforecast2_safe.multitask.base.apply_cyclical_encoding",
             side_effect=lambda data, drop_original: data,
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.create_interaction_features",
+            "spotforecast2_safe.multitask.base.create_interaction_features",
             side_effect=lambda exogenous_features, weather_aligned, **_: exogenous_features,
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.select_exogenous_features",
+            "spotforecast2_safe.multitask.base.select_exogenous_features",
             return_value=[],
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.merge_data_and_covariates",
+            "spotforecast2_safe.multitask.base.merge_data_and_covariates",
             return_value=(empty, empty, empty),
         )
     )
@@ -97,7 +99,7 @@ class TestRaiseByDefault:
     def test_weather_failure_propagates(self):
         mt = _make_task_ready()
         with patch(
-            "spotforecast2.multitask.base.get_weather_features",
+            "spotforecast2_safe.multitask.base.get_weather_features",
             side_effect=WeatherFetchError("simulated outage"),
         ):
             with pytest.raises(WeatherFetchError, match="simulated outage"):
@@ -110,7 +112,7 @@ class TestSkipWhenConfigured:
         with ExitStack() as stack:
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_weather_features",
+                    "spotforecast2_safe.multitask.base.get_weather_features",
                     side_effect=WeatherFetchError("simulated outage"),
                 )
             )
@@ -124,7 +126,7 @@ class TestSkipWhenConfigured:
         with ExitStack() as stack:
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_weather_features",
+                    "spotforecast2_safe.multitask.base.get_weather_features",
                     side_effect=WeatherFetchError("simulated outage"),
                 )
             )
@@ -138,7 +140,7 @@ class TestSkipWhenConfigured:
         with ExitStack() as stack:
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_weather_features",
+                    "spotforecast2_safe.multitask.base.get_weather_features",
                     side_effect=WeatherFetchError("simulated outage"),
                 )
             )
@@ -164,7 +166,7 @@ class TestWarningLogged:
             with ExitStack() as stack:
                 stack.enter_context(
                     patch(
-                        "spotforecast2.multitask.base.get_weather_features",
+                        "spotforecast2_safe.multitask.base.get_weather_features",
                         side_effect=WeatherFetchError("simulated outage"),
                     )
                 )

@@ -49,7 +49,7 @@ def _frame(index: pd.DatetimeIndex, columns: list[str]) -> pd.DataFrame:
 def _patch_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.get_weather_features",
+            "spotforecast2_safe.multitask.base.get_weather_features",
             return_value=(
                 _frame(idx, ["temperature_2m"]),
                 _frame(idx, ["temperature_2m"]),
@@ -58,31 +58,31 @@ def _patch_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.get_calendar_features",
+            "spotforecast2_safe.multitask.base.get_calendar_features",
             return_value=_frame(idx, ["hour"]),
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.get_day_night_features",
+            "spotforecast2_safe.multitask.base.get_day_night_features",
             return_value=_frame(idx, ["is_daylight"]),
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.get_holiday_features",
+            "spotforecast2_safe.multitask.base.get_holiday_features",
             return_value=_frame(idx, ["is_holiday"]),
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.apply_cyclical_encoding",
+            "spotforecast2_safe.multitask.base.apply_cyclical_encoding",
             side_effect=lambda data, drop_original: data,
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.select_exogenous_features",
+            "spotforecast2_safe.multitask.base.select_exogenous_features",
             side_effect=lambda exogenous_features, **_: list(
                 exogenous_features.columns
             ),
@@ -90,7 +90,7 @@ def _patch_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.merge_data_and_covariates",
+            "spotforecast2_safe.multitask.base.merge_data_and_covariates",
             side_effect=lambda data, exogenous_features, **_: (
                 data,
                 exogenous_features,
@@ -122,7 +122,7 @@ def test_degree_is_threaded_into_create_interaction_features():
         _patch_builders(stack, idx)
         mock_create = stack.enter_context(
             patch(
-                "spotforecast2.multitask.base.create_interaction_features",
+                "spotforecast2_safe.multitask.base.create_interaction_features",
                 side_effect=_fake_interactions(3),
             )
         )
@@ -138,7 +138,7 @@ def test_poly_columns_capped_to_max():
         _patch_builders(stack, idx)
         stack.enter_context(
             patch(
-                "spotforecast2.multitask.base.create_interaction_features",
+                "spotforecast2_safe.multitask.base.create_interaction_features",
                 side_effect=_fake_interactions(8),
             )
         )
@@ -155,7 +155,7 @@ def test_no_cap_below_threshold():
         _patch_builders(stack, idx)
         stack.enter_context(
             patch(
-                "spotforecast2.multitask.base.create_interaction_features",
+                "spotforecast2_safe.multitask.base.create_interaction_features",
                 side_effect=_fake_interactions(4),
             )
         )
@@ -175,13 +175,13 @@ def test_poly_mi_knobs_are_threaded_into_select_top_poly_features():
         _patch_builders(stack, idx)
         stack.enter_context(
             patch(
-                "spotforecast2.multitask.base.create_interaction_features",
+                "spotforecast2_safe.multitask.base.create_interaction_features",
                 side_effect=_fake_interactions(8),
             )
         )
         mock_select = stack.enter_context(
             patch(
-                "spotforecast2.multitask.base.select_top_poly_features",
+                "spotforecast2_safe.multitask.base.select_top_poly_features",
                 return_value=["poly_x0", "poly_x1", "poly_x2"],
             )
         )
@@ -207,7 +207,7 @@ def test_exog_feature_names_deterministic_across_runs():
             _patch_builders(stack, idx)
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.create_interaction_features",
+                    "spotforecast2_safe.multitask.base.create_interaction_features",
                     side_effect=_fake_interactions(8),
                 )
             )
