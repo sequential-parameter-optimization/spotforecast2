@@ -69,6 +69,37 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.SEMANTIC_RELEASE_TOKEN }}
         run: npx semantic-release
 
+      # ── Audit artifacts ────────────────────────────────────────────────────
+      # The two steps below run only when semantic-release actually cut a
+      # release: its version-bump prepareCmd writes `.released-tag` with the
+      # git tag (see .releaserc.json), so `hashFiles('.released-tag')` is
+      # non-empty exactly when a release happened. Mirrors the audit-artifact
+      # convention in spotforecast2-safe's release workflow.
+      - name: Generate CycloneDX SBOM from uv.lock
+        if: success() && hashFiles('.released-tag') != ''
+        # CycloneDX 1.5 SBOM of the resolved production dependency graph,
+        # exported directly from uv.lock (no extra tool in the build env).
+        # Written to the repo root, NOT dist/ — the PyPI publish step uploads
+        # everything in dist/ and twine rejects non-distribution files.
+        run: |
+          uv export --preview-features sbom-export \
+            --format cyclonedx1.5 --no-dev \
+            -o sbom.cdx.json
+          echo "CycloneDX 1.5 SBOM generated:"
+          ls -lah sbom.cdx.json
+
+      - name: Attach SBOM and lockfile to the GitHub Release
+        if: success() && hashFiles('.released-tag') != ''
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # semantic-release already attached the wheel + sdist. Add the SBOM
+        # (production closure) and uv.lock (exact full-closure resolution,
+        # incl. dev tools, used by this release run) for the audit trail.
+        # --clobber keeps re-runs idempotent.
+        run: |
+          gh release upload "$(cat .released-tag)" \
+            sbom.cdx.json uv.lock --clobber
+
       - name: Publish to PyPI
         if: success()
         uses: pypa/gh-action-pypi-publish@f7600683efdcb7656dec5b29656edb7bc586e597  # release/v1
