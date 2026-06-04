@@ -763,11 +763,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Cache-cleaning task — removes all cached data from the pipeline cache.</p>
 <p>CleanTask deletes the entire cache directory configured for the pipeline, including saved models, tuning results, and any other cached artefacts written by training or tuning tasks.</p>
-<p>Unlike training or prediction tasks, CleanTask does not require prepare_data() to be called before run(). It operates purely on the file system and can be used as a standalone reset mechanism between experiments or deployments.</p>
-<p>Passing <code>dry_run=True</code> to run() reports what would be deleted without actually removing anything, which is useful for inspecting cache contents before committing to removal.</p>
+<p>Unlike training or prediction tasks, CleanTask does not require <code>prepare_data()</code> to be called before <code>run()</code>. It operates purely on the file system and can be used as a standalone reset mechanism between experiments or deployments.</p>
+<p>Passing <code>dry_run=True</code> to <code>run()</code> reports what would be deleted without actually removing anything, which is useful for inspecting cache contents before committing to removal.</p>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="0f67ad14" class="cell" data-execution_count="1">
+<div id="ab3561fa" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> CleanTask</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> CleanTask(data_frame_name<span class="op">=</span><span class="st">"demo10"</span>)</span>
@@ -799,7 +799,7 @@ Task name: clean</code></pre>
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.CleanTask.run">run</h3>
 <div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>multitask.CleanTask.run(dry_run<span class="op">=</span><span class="va">False</span>, cache_home<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>, <span class="op">**</span>kwargs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Remove all cached data from the pipeline cache directory.</p>
-<p>Does not require prepare_data() to be called first.</p>
+<p>Does not require <code>prepare_data()</code> to be called first.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
 <table class="caption-top table">
@@ -873,7 +873,7 @@ Task name: clean</code></pre>
 </section>
 <section id="examples-1" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
-<div id="7183a7b6" class="cell" data-execution_count="2">
+<div id="0b8f4c06" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> CleanTask</span>
@@ -883,7 +883,7 @@ Task name: clean</code></pre>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> task.run(dry_run<span class="op">=</span><span class="va">True</span>)</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(result[<span class="st">"status"</span>])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[clean] Dry run — would delete: /tmp/tmpdblxz7n5/test_cache
+<pre><code>[clean] Dry run — would delete: /tmp/tmp_onv537d/test_cache
   Would remove: logging
 dry_run</code></pre>
 </div>
