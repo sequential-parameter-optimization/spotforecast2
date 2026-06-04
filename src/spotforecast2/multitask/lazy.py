@@ -17,6 +17,8 @@ from spotforecast2_safe.multitask.lazy import execute_lazy  # noqa: F401
 
 from spotforecast2.multitask.base import BaseTask
 
+__all__ = ["execute_lazy", "LazyTask"]
+
 
 class LazyTask(BaseTask):
     """Task 1 — Lazy Fitting with default LightGBM parameters.

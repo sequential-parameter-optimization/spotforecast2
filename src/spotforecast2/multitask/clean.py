@@ -16,6 +16,8 @@ from spotforecast2_safe.multitask.clean import execute_clean  # noqa: F401
 
 from spotforecast2.multitask.base import BaseTask
 
+__all__ = ["execute_clean", "CleanTask"]
+
 
 class CleanTask(BaseTask):
     """Cache-cleaning task — removes all cached data from the pipeline cache.

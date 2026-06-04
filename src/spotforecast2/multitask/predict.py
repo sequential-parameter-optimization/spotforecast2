@@ -15,6 +15,8 @@ from spotforecast2_safe.multitask.predict import execute_predict  # noqa: F401
 
 from spotforecast2.multitask.base import BaseTask
 
+__all__ = ["execute_predict", "PredictTask"]
+
 
 class PredictTask(BaseTask):
     """Task 5 — Predict-only using previously saved models.

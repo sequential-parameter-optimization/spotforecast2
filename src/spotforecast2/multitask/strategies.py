@@ -29,6 +29,14 @@ from spotforecast2.multitask.search_spaces import (
     _default_spotoptim_search_space,
 )
 
+__all__ = [
+    "TrainingStrategy",
+    "LazyStrategy",
+    "DefaultsStrategy",
+    "OptunaStrategy",
+    "SpotOptimStrategy",
+]
+
 
 class OptunaStrategy:
     """Approach 3 — Optuna Bayesian tuning, then apply best params."""

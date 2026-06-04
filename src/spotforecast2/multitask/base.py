@@ -25,7 +25,18 @@ from spotforecast2_safe.multitask.base import (  # noqa: F401  (re-exported)
     agg_predictor,
 )
 
-from spotforecast2.plots.plotter import make_plot, plot_with_outliers as _plot_with_outliers
+from spotforecast2.plots.plotter import (
+    make_plot,
+    plot_with_outliers as _plot_with_outliers,
+)
+
+__all__ = [
+    "SafeBaseTask",
+    "PipelineConfig",
+    "agg_predictor",
+    "PlottingMixin",
+    "BaseTask",
+]
 
 
 class PlottingMixin:

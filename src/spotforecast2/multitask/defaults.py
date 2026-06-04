@@ -15,6 +15,8 @@ from spotforecast2_safe.multitask.defaults import execute_defaults  # noqa: F401
 
 from spotforecast2.multitask.base import BaseTask
 
+__all__ = ["execute_defaults", "DefaultsTask"]
+
 
 class DefaultsTask(BaseTask):
     """Task 2 — Defaults fitting (no tuning, no cached params).
