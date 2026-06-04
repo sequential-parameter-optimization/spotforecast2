@@ -22,6 +22,7 @@ from unittest.mock import patch
 
 import numpy as np
 import pandas as pd
+from spotforecast2_safe.configurator.config_entsoe import ConfigEntsoe
 from spotforecast2_safe.configurator.config_multi import ConfigMulti
 
 from spotforecast2.multitask import MultiTask
@@ -49,7 +50,12 @@ def _frame(index: pd.DatetimeIndex, columns: list) -> pd.DataFrame:
 
 
 def _patch_base_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
-    """Patch all heavy builders except get_holiday_adjacency_features."""
+    """Patch all heavy builders except get_holiday_adjacency_features.
+
+    ``select_exogenous_features`` gets a pass-through default so no test
+    depends on the installed spotforecast2-safe signature; individual
+    tests re-patch it when they need to assert call kwargs.
+    """
     stack.enter_context(
         patch(
             "spotforecast2.multitask.base.get_weather_features",
@@ -99,6 +105,14 @@ def _patch_base_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
             ),
         )
     )
+    stack.enter_context(
+        patch(
+            "spotforecast2.multitask.base.select_exogenous_features",
+            side_effect=lambda exogenous_features, **_: list(
+                exogenous_features.columns
+            ),
+        )
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -125,7 +139,7 @@ class TestAdjacencyFeaturesEnabled:
 
         mock_adj.assert_called_once()
 
-    def test_adjacency_columns_present_in_exogenous_features(self):
+    def test_adjacency_columns_present_after_concat(self):
         """Adjacency columns must appear in ``mt.exogenous_features`` after the build."""
         mt = _make_task(include_holiday_adjacency_features=True)
         idx = mt.df_pipeline.index
@@ -288,6 +302,12 @@ class TestAdjacencyFeaturesDisabled:
 def test_config_multi_default_is_false():
     """ConfigMulti must default include_holiday_adjacency_features to False."""
     cfg = ConfigMulti()
+    assert cfg.include_holiday_adjacency_features is False
+
+
+def test_config_entsoe_default_is_false():
+    """ConfigEntsoe must default include_holiday_adjacency_features to False."""
+    cfg = ConfigEntsoe()
     assert cfg.include_holiday_adjacency_features is False
 
 
