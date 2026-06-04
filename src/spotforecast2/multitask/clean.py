@@ -3,135 +3,35 @@
 
 """Cache-cleaning task — removes all cached pipeline artefacts.
 
-CleanTask deletes the entire cache directory used by the pipeline,
-including saved models, tuning results, and any other artefacts
-written by LazyTask, OptunaTask, SpotOptimTask, or intermediate
-pipeline helpers.  It does not require pipeline data to be prepared
-first and can be used as a standalone reset mechanism.
+Re-exports ``execute_clean`` from the safe package.  Redefines ``CleanTask``
+as a thin subclass of the sf2 ``BaseTask`` and preserves the historical
+``show=True`` default for this package.
 """
 
-import shutil
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
-from spotforecast2_safe.data.fetch_data import get_cache_home
+# Re-export execute_clean from the safe package.
+from spotforecast2_safe.multitask.clean import execute_clean  # noqa: F401
 
 from spotforecast2.multitask.base import BaseTask
-
-
-def execute_clean(
-    task: BaseTask,
-    cache_home: Optional[Path] = None,
-    dry_run: bool = False,
-) -> Dict[str, Any]:
-    """Remove all cached data from the pipeline cache directory.
-
-    Deletes the entire target directory (models, tuning results, and any
-    other artefacts).  When the directory does not exist the function
-    returns without error.  When ``dry_run`` is ``True`` nothing is
-    removed but details of what would be deleted are logged and returned.
-
-    Args:
-        task: A BaseTask (or subclass) instance.  Used to resolve the
-            default cache directory when ``cache_home`` is ``None``.
-        cache_home: Override the directory to clean.  ``None`` uses
-            ``get_cache_home(task.config.cache_home)``.
-        dry_run: If ``True``, report what would be deleted without
-            actually removing anything.
-
-    Returns:
-        Dict with keys:
-            status: ``"success"`` after successful removal, ``"dry_run"``
-                when ``dry_run`` is ``True``, or ``"empty"`` when the
-                directory did not exist.
-            cache_dir: The Path of the directory targeted for cleaning.
-            deleted_items: Sorted list of top-level item names that were
-                (or would have been) removed.
-
-    Raises:
-        RuntimeError: If the directory exists but cannot be removed due
-            to a permissions error or other OS-level failure.
-
-    Examples:
-        ```{python}
-        import tempfile
-        from pathlib import Path
-        from spotforecast2.multitask import CleanTask
-
-        with tempfile.TemporaryDirectory() as tmp:
-            cache = Path(tmp) / "sf2_cache"
-            cache.mkdir()
-            (cache / "models").mkdir()
-            (cache / "tuning_results").mkdir()
-            task = CleanTask(cache_home=cache)
-            result = execute_clean(task, dry_run=True)
-            print(result["status"])
-            print(sorted(result["deleted_items"]))
-        ```
-    """
-    target_dir: Path = (
-        get_cache_home(cache_home, create_dir=False)
-        if cache_home is not None
-        else get_cache_home(task.config.cache_home, create_dir=False)
-    )
-
-    if not target_dir.exists():
-        task.logger.info("[clean] Cache directory does not exist: %s", target_dir)
-        return {
-            "status": "empty",
-            "cache_dir": target_dir,
-            "deleted_items": [],
-        }
-
-    items: List[Path] = sorted(target_dir.iterdir())
-    item_names: List[str] = [item.name for item in items]
-
-    if dry_run:
-        print(f"[clean] Dry run — would delete: {target_dir}")
-        for item in items:
-            print(f"  Would remove: {item.name}")
-        task.logger.info("[clean] Dry run — would delete: %s", target_dir)
-        for item in items:
-            task.logger.info("  Would remove: %s", item.name)
-        return {
-            "status": "dry_run",
-            "cache_dir": target_dir,
-            "deleted_items": item_names,
-        }
-
-    try:
-        shutil.rmtree(target_dir)
-    except OSError as exc:
-        raise RuntimeError(
-            f"Could not clean cache directory '{target_dir}': {exc}.  "
-            "Check that the directory is not in use and that you have "
-            "write permission."
-        ) from exc
-
-    task.logger.info("[clean] Cache removed successfully: %s", target_dir)
-    print(f"[clean] Cache removed successfully: {target_dir}")
-    return {
-        "status": "success",
-        "cache_dir": target_dir,
-        "deleted_items": item_names,
-    }
 
 
 class CleanTask(BaseTask):
     """Cache-cleaning task — removes all cached data from the pipeline cache.
 
-    CleanTask deletes the entire cache directory configured for the
-    pipeline, including saved models, tuning results, and any other
-    cached artefacts written by training or tuning tasks.
+    CleanTask deletes the entire cache directory configured for the pipeline,
+    including saved models, tuning results, and any other cached artefacts
+    written by training or tuning tasks.
 
     Unlike training or prediction tasks, CleanTask does not require
-    prepare_data() to be called before run().  It operates purely on
-    the file system and can be used as a standalone reset mechanism
-    between experiments or deployments.
+    ``prepare_data()`` to be called before ``run()``.  It operates purely on
+    the file system and can be used as a standalone reset mechanism between
+    experiments or deployments.
 
-    Passing ``dry_run=True`` to run() reports what would be deleted
-    without actually removing anything, which is useful for inspecting
-    cache contents before committing to removal.
+    Passing ``dry_run=True`` to ``run()`` reports what would be deleted
+    without actually removing anything, which is useful for inspecting cache
+    contents before committing to removal.
 
     Examples:
         ```{python}
@@ -154,7 +54,7 @@ class CleanTask(BaseTask):
     ) -> Dict[str, Any]:
         """Remove all cached data from the pipeline cache directory.
 
-        Does not require prepare_data() to be called first.
+        Does not require ``prepare_data()`` to be called first.
 
         Args:
             dry_run: If ``True``, report what would be deleted without

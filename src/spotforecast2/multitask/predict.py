@@ -3,99 +3,17 @@
 
 """Predict-only task — loads previously saved models and forecasts.
 
-``PredictTask`` does not train any model.  It loads fitted forecasters
-that were persisted by a prior ``LazyTask``, ``OptunaTask``, or
-``SpotOptimTask`` run and uses them to generate predictions for all
-configured targets.  If no saved models are found, execution halts
-with an informative error.
+Re-exports ``execute_predict`` from the safe package.  Redefines ``PredictTask``
+as a thin subclass of the sf2 ``BaseTask`` (which carries plotting support)
+and restores the historical ``show=True`` default for this package.
 """
 
 from typing import Any, Dict, Optional
 
-from spotforecast2_safe.manager.predictor import build_prediction_package
+# Re-export execute_predict from the safe package.
+from spotforecast2_safe.multitask.predict import execute_predict  # noqa: F401
 
 from spotforecast2.multitask.base import BaseTask
-
-
-def execute_predict(
-    task: BaseTask,
-    show: bool = True,
-    task_name: Optional[str] = None,
-    max_age_days: Optional[float] = None,
-) -> Dict[str, Any]:
-    """Execute prediction-only mode using previously saved models.
-
-    Loads the most recent fitted forecaster for every configured target
-    from the cache directory.  No training is performed.  If no saved
-    models can be found the function raises ``RuntimeError``.
-
-    Args:
-        task: A ``BaseTask`` (or subclass) instance with prepared data.
-        show: If ``True``, display prediction figures.
-        task_name: Restrict model loading to a specific source task
-            (``"lazy"``, ``"optuna"``, or ``"spotoptim"``).
-            ``None`` loads the most recent model regardless of source.
-        max_age_days: Maximum age in days for saved models.
-            Models older than this are ignored.  ``None`` accepts any age.
-
-    Returns:
-        Aggregated prediction package (weighted combination of all targets).
-        Per-target packages are stored on ``task.results["predict"]``.
-
-    Raises:
-        RuntimeError: If no saved models are found in the cache directory,
-            or if a target has no matching saved model.
-    """
-    task._ensure_pipeline_ready()
-
-    loaded_models = task.load_models(
-        task_name=task_name,
-        max_age_days=max_age_days,
-    )
-
-    if not loaded_models:
-        raise RuntimeError(
-            "No saved models found in the cache directory "
-            f"'{task.config.data_frame_name}'. "
-            "Run LazyTask, OptunaTask, or SpotOptimTask first to train "
-            "and save models before using PredictTask."
-        )
-
-    results: Dict[str, Dict[str, Any]] = {}
-
-    for target in task.config.targets:
-        if target not in loaded_models:
-            raise RuntimeError(
-                f"No saved model found for target '{target}'. "
-                "Run a training task (lazy, optuna, or spotoptim) for "
-                "this target before using PredictTask."
-            )
-
-        task.logger.info("[predict] Target '%s': loading saved model...", target)
-
-        forecaster = loaded_models[target]
-        y_train, exog_train, exog_future = task._get_target_data(target)
-
-        results[target] = build_prediction_package(
-            forecaster=forecaster,
-            target=target,
-            y_train=y_train,
-            predict_size=task.config.predict_size,
-            exog_train=exog_train,
-            exog_future=exog_future,
-            df_test=task.df_test,
-            index_name=task.config.index_name,
-        )
-        if show:
-            task._show_prediction_figure(
-                results[target], target, "task 5: Predict (loaded models)"
-            )
-
-    task.results["predict"] = results
-    agg_pkg = task._aggregate_and_show(
-        results, "task 5: Predict (loaded models)", show=show
-    )
-    return agg_pkg
 
 
 class PredictTask(BaseTask):
