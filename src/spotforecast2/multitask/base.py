@@ -25,6 +25,7 @@ from sklearn.model_selection import TimeSeriesSplit as _SklearnTimeSeriesSplit
 from spotforecast2_safe.calendar import (
     get_calendar_features,
     get_day_night_features,
+    get_holiday_adjacency_features,
     get_holiday_features,
 )
 from spotforecast2_safe.configurator.config_multi import (  # noqa: F401  (re-exported for subclasses)
@@ -92,6 +93,7 @@ class PipelineConfig(Protocol):
     use_exogenous_features: bool
     include_weather_windows: bool
     include_holiday_features: bool
+    include_holiday_adjacency_features: bool
     poly_features_degree: int
     max_poly_features: int
     latitude: float
@@ -717,9 +719,32 @@ class BaseTask:
         )
         self.logger.info("  Holiday features: %s", holiday_features.shape)
 
+        # 4e. Holiday-adjacency features (Brückentag, before/after holiday)
+        concat_frames = [
+            calendar_features,
+            sun_light_features,
+            weather_features,
+            holiday_features,
+        ]
+        if self.config.include_holiday_adjacency_features:
+            holiday_adjacency_features = get_holiday_adjacency_features(
+                data=self.df_pipeline,
+                start=self.config.data_start,
+                cov_end=self.config.cov_end,
+                forecast_horizon=self.config.predict_size,
+                tz=self.config.timezone,
+                freq="h",
+                country_code=self.config.country_code,
+                state=self.config.state,
+            )
+            self.logger.info(
+                "  Holiday adjacency features: %s", holiday_adjacency_features.shape
+            )
+            concat_frames.append(holiday_adjacency_features)
+
         # Step 5 — Combine
         self.exogenous_features = pd.concat(
-            [calendar_features, sun_light_features, weather_features, holiday_features],
+            concat_frames,
             axis=1,
         )
 
@@ -820,6 +845,7 @@ class BaseTask:
             weather_aligned=self.weather_aligned,
             include_weather_windows=self.config.include_weather_windows,
             include_holiday_features=self.config.include_holiday_features,
+            include_holiday_adjacency_features=self.config.include_holiday_adjacency_features,
             poly_features_degree=self.config.poly_features_degree,
         )
         # ``select_exogenous_features`` matches calendar/weather/holiday/poly

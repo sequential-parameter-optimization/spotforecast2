@@ -86,6 +86,7 @@ Location & Time Parameters:
 Feature Engineering Parameters:
     include_weather_windows (bool): Include rolling weather statistics. Default: False.
     include_holiday_features (bool): Include holiday indicator features. Default: False.
+    include_holiday_adjacency_features (bool): Include Brückentag and before/after-holiday indicators. Default: False.
     poly_features_degree (int): Polynomial-interaction degree (1 = off, 2 = pairwise). Default: 1.
     max_poly_features (int): Cap on kept polynomial columns (top-K by mutual information). Default: 10.
 
@@ -134,6 +135,7 @@ def n_to_1_with_covariates(
     estimator: Optional[Union[str, object]] = None,
     include_weather_windows: bool = False,
     include_holiday_features: bool = False,
+    include_holiday_adjacency_features: bool = False,
     poly_features_degree: int = 1,
     max_poly_features: int = 10,
     weights: Optional[Union[Dict[str, float], List[float], np.ndarray]] = None,
@@ -207,6 +209,11 @@ def n_to_1_with_covariates(
         include_holiday_features (bool): Add holiday binary indicators.
             Creates features indicating holidays and special dates.
             Useful for capturing demand patterns around holidays.
+            Default: False.
+
+        include_holiday_adjacency_features (bool): Add Brückentag and
+            before/after-holiday binary indicators (``is_brueckentag``,
+            ``is_before_holiday``, ``is_after_holiday``).
             Default: False.
 
         poly_features_degree (int): Polynomial-interaction degree. 1 (default)
@@ -331,6 +338,7 @@ def n_to_1_with_covariates(
         print("  Feature Engineering:")
         print(f"    - Weather Windows: {include_weather_windows}")
         print(f"    - Holiday Features: {include_holiday_features}")
+        print(f"    - Holiday Adjacency Features: {include_holiday_adjacency_features}")
         print(f"    - Polynomial Degree: {poly_features_degree}")
         print(f"    - Max Polynomial Features: {max_poly_features}")
         print(f"  Weights Type: {type(weights).__name__}")
@@ -356,6 +364,7 @@ def n_to_1_with_covariates(
         "estimator": estimator,
         "include_weather_windows": include_weather_windows,
         "include_holiday_features": include_holiday_features,
+        "include_holiday_adjacency_features": include_holiday_adjacency_features,
         "poly_features_degree": poly_features_degree,
         "max_poly_features": max_poly_features,
         "verbose": verbose,
@@ -435,6 +444,7 @@ def main() -> None:
     STATE = "NW"
     INCLUDE_WEATHER_WINDOWS = False
     INCLUDE_HOLIDAY_FEATURES = False
+    INCLUDE_HOLIDAY_ADJACENCY_FEATURES = False
     POLY_FEATURES_DEGREE = 1
     MAX_POLY_FEATURES = 10
     VERBOSE = False
@@ -459,6 +469,7 @@ def main() -> None:
             estimator=None,
             include_weather_windows=INCLUDE_WEATHER_WINDOWS,
             include_holiday_features=INCLUDE_HOLIDAY_FEATURES,
+            include_holiday_adjacency_features=INCLUDE_HOLIDAY_ADJACENCY_FEATURES,
             poly_features_degree=POLY_FEATURES_DEGREE,
             max_poly_features=MAX_POLY_FEATURES,
             weights=WEIGHTS,
