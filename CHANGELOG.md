@@ -1,3 +1,9 @@
+## [3.8.2-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.8.1...v3.8.2-rc.1) (2026-06-04)
+
+### Bug Fixes
+
+* **docs:** resolve agg_predictor re-export alias dynamically in quartodoc ([9ce9379](https://github.com/sequential-parameter-optimization/spotforecast2/commit/9ce9379e8650a7a4252d816cdfc9fae0405a94e5)), closes [#175](https://github.com/sequential-parameter-optimization/spotforecast2/issues/175)
+
 ## [3.8.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.8.0...v3.8.1) (2026-06-04)
 
 ### Code Refactoring
