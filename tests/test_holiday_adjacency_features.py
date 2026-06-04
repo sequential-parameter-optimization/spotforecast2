@@ -58,7 +58,7 @@ def _patch_base_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
     """
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.get_weather_features",
+            "spotforecast2_safe.multitask.base.get_weather_features",
             return_value=(
                 _frame(idx, ["temperature_2m"]),
                 _frame(idx, ["temperature_2m"]),
@@ -67,37 +67,37 @@ def _patch_base_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.get_calendar_features",
+            "spotforecast2_safe.multitask.base.get_calendar_features",
             return_value=_frame(idx, ["hour"]),
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.get_day_night_features",
+            "spotforecast2_safe.multitask.base.get_day_night_features",
             return_value=_frame(idx, ["is_daylight"]),
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.get_holiday_features",
+            "spotforecast2_safe.multitask.base.get_holiday_features",
             return_value=_frame(idx, ["is_holiday"]),
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.apply_cyclical_encoding",
+            "spotforecast2_safe.multitask.base.apply_cyclical_encoding",
             side_effect=lambda data, drop_original: data,
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.create_interaction_features",
+            "spotforecast2_safe.multitask.base.create_interaction_features",
             side_effect=lambda exogenous_features, weather_aligned, **_: exogenous_features,
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.merge_data_and_covariates",
+            "spotforecast2_safe.multitask.base.merge_data_and_covariates",
             side_effect=lambda data, exogenous_features, **_: (
                 data,
                 exogenous_features,
@@ -107,7 +107,7 @@ def _patch_base_builders(stack: ExitStack, idx: pd.DatetimeIndex) -> None:
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.select_exogenous_features",
+            "spotforecast2_safe.multitask.base.select_exogenous_features",
             side_effect=lambda exogenous_features, **_: list(
                 exogenous_features.columns
             ),
@@ -129,7 +129,7 @@ class TestAdjacencyFeaturesEnabled:
             _patch_base_builders(stack, idx)
             mock_adj = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_adjacency_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_adjacency_features",
                     return_value=_frame(
                         idx, ["is_brueckentag", "is_before_holiday", "is_after_holiday"]
                     ),
@@ -147,7 +147,7 @@ class TestAdjacencyFeaturesEnabled:
             _patch_base_builders(stack, idx)
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_adjacency_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_adjacency_features",
                     return_value=_frame(
                         idx, ["is_brueckentag", "is_before_holiday", "is_after_holiday"]
                     ),
@@ -155,7 +155,7 @@ class TestAdjacencyFeaturesEnabled:
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.select_exogenous_features",
+                    "spotforecast2_safe.multitask.base.select_exogenous_features",
                     side_effect=lambda exogenous_features, **_: list(
                         exogenous_features.columns
                     ),
@@ -174,13 +174,13 @@ class TestAdjacencyFeaturesEnabled:
             _patch_base_builders(stack, idx)
             mock_holiday = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_features",
                     return_value=_frame(idx, ["is_holiday"]),
                 )
             )
             mock_adj = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_adjacency_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_adjacency_features",
                     return_value=_frame(
                         idx, ["is_brueckentag", "is_before_holiday", "is_after_holiday"]
                     ),
@@ -188,7 +188,7 @@ class TestAdjacencyFeaturesEnabled:
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.select_exogenous_features",
+                    "spotforecast2_safe.multitask.base.select_exogenous_features",
                     side_effect=lambda exogenous_features, **_: list(
                         exogenous_features.columns
                     ),
@@ -220,7 +220,7 @@ class TestAdjacencyFeaturesEnabled:
             _patch_base_builders(stack, idx)
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_adjacency_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_adjacency_features",
                     return_value=_frame(
                         idx, ["is_brueckentag", "is_before_holiday", "is_after_holiday"]
                     ),
@@ -228,7 +228,7 @@ class TestAdjacencyFeaturesEnabled:
             )
             mock_select = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.select_exogenous_features",
+                    "spotforecast2_safe.multitask.base.select_exogenous_features",
                     return_value=[],
                 )
             )
@@ -252,7 +252,7 @@ class TestAdjacencyFeaturesDisabled:
             _patch_base_builders(stack, idx)
             mock_adj = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_adjacency_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_adjacency_features",
                     return_value=_frame(
                         idx, ["is_brueckentag", "is_before_holiday", "is_after_holiday"]
                     ),
@@ -260,7 +260,7 @@ class TestAdjacencyFeaturesDisabled:
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.select_exogenous_features",
+                    "spotforecast2_safe.multitask.base.select_exogenous_features",
                     return_value=[],
                 )
             )
@@ -276,7 +276,7 @@ class TestAdjacencyFeaturesDisabled:
             _patch_base_builders(stack, idx)
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_adjacency_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_adjacency_features",
                     return_value=_frame(
                         idx, ["is_brueckentag", "is_before_holiday", "is_after_holiday"]
                     ),
@@ -284,7 +284,7 @@ class TestAdjacencyFeaturesDisabled:
             )
             mock_select = stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.select_exogenous_features",
+                    "spotforecast2_safe.multitask.base.select_exogenous_features",
                     return_value=[],
                 )
             )

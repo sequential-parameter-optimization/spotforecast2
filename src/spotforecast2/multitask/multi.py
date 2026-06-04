@@ -3,9 +3,10 @@
 
 """Backward-compatible MultiTask dispatcher.
 
-MultiTask preserves the original API where a single ``task``
-parameter selects which pipeline mode to run.  It inherits from
-BaseTask and delegates run() to the appropriate task-specific function.
+``MultiTask`` preserves the original API where a single ``task`` parameter
+selects which pipeline mode to run.  It inherits from ``BaseTask`` (the sf2
+version which includes ``PlottingMixin``) and delegates ``run()`` to the
+appropriate task-specific function.
 """
 
 import logging
@@ -220,7 +221,7 @@ class MultiTask(BaseTask):
     ) -> Dict[str, Any]:
         """Remove all cached data from the pipeline cache directory.
 
-        Does not require prepare_data() to be called first.
+        Does not require ``prepare_data()`` to be called first.
 
         Args:
             show: Accepted for API consistency.  Not used by the clean task.
@@ -260,7 +261,7 @@ class MultiTask(BaseTask):
         Raises:
             ValueError: If ``task`` is not one of ``"lazy"``, ``"defaults"``,
                 ``"optuna"``, ``"spotoptim"``, ``"predict"``, ``"clean"``.
-            RuntimeError: If method `prepare_data` has not been called
+            RuntimeError: If method ``prepare_data`` has not been called
                 (for training and prediction tasks).
         """
         task = task or self.TASK

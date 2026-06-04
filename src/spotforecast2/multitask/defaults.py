@@ -3,48 +3,19 @@
 
 """Defaults task — Task 2.
 
-Fits each target with the factory's default hyperparameters.  Distinct from
-`LazyTask` (from `spotforecast2.multitask.lazy`) in one respect only:
-``DefaultsTask`` never consults the tuning-result cache.  Use it when you
-want a deterministic baseline that is guaranteed not to inherit any prior
-Optuna or SpotOptim run.
-
-ENTSO-E "Approach 2: Training without Tuning" routes here.
+Re-exports ``execute_defaults`` from the safe package.  Redefines ``DefaultsTask``
+as a thin subclass of the sf2 ``BaseTask`` (which carries plotting support)
+and restores the historical ``show=True`` default for this package.
 """
 
 from typing import Any, Dict
 
+# Re-export execute_defaults from the safe package.
+from spotforecast2_safe.multitask.defaults import execute_defaults  # noqa: F401
+
 from spotforecast2.multitask.base import BaseTask
-from spotforecast2.multitask.strategies import DefaultsStrategy
 
-
-def execute_defaults(
-    task: BaseTask,
-    show: bool = True,
-) -> Dict[str, Any]:
-    """Execute defaults fitting for all targets on ``task``.
-
-    Thin wrapper around ``BaseTask._run_strategy`` using ``DefaultsStrategy``.
-
-    Args:
-        task: A BaseTask (or subclass) instance with prepared data.
-        show: If ``True``, display prediction figures.
-
-    Returns:
-        Aggregated prediction package (weighted combination of all targets,
-        or the single-target package when ``len(config.targets) == 1``).
-        Per-target packages are stored on ``task.results["defaults"]``.
-        When ``task.config.auto_save_models`` is ``True`` (the default), fitted
-        models are saved to disk so ``PredictTask(task_name="defaults")`` can
-        load them directly.
-    """
-    return task._run_strategy(
-        DefaultsStrategy(),
-        task_name="task 2: Defaults",
-        results_key="defaults",
-        show=show,
-        log_prefix="[task 2] ",
-    )
+__all__ = ["execute_defaults", "DefaultsTask"]
 
 
 class DefaultsTask(BaseTask):

@@ -3,132 +3,39 @@
 
 """Training strategies for the multitask pipeline.
 
-Each strategy encapsulates the per-target "prepare a forecaster for the
-final fit" step that the existing ``execute_lazy`` / ``execute_optuna`` /
-``execute_spotoptim`` functions perform between ``create_forecaster()`` and
-``_train_and_predict_target()``.
-
-The protocol is introduced here as scaffolding for the ENTSO-E integration
-(ADR-001 §5).  Step 4 of the migration only introduces the file — the
-concrete strategies are not yet called from ``BaseTask``.  Step 5 will
-rewire ``execute_*`` to delegate to these classes.
-
-The four concrete strategies map onto the ENTSO-E publication's "Approach
-1-4":
-
-- `LazyStrategy` — Approach 1.  Optionally applies cached tuning
-  results; otherwise leaves the forecaster at default parameters.
-- `DefaultsStrategy` — Approach 2.  Explicit "train with defaults,
-  no tuning, no cached params."  Returns the forecaster unchanged.
-- `OptunaStrategy` — Approach 3.  Runs Optuna Bayesian search and
-  applies best parameters.
-- `SpotOptimStrategy` — Approach 4.  Runs SpotOptim surrogate search
-  and applies best parameters.
+Re-exports ``TrainingStrategy``, ``LazyStrategy``, and ``DefaultsStrategy``
+from the safe package (tuning-free strategies).  Defines ``OptunaStrategy``
+and ``SpotOptimStrategy`` here because they depend on ``spotforecast2``-only
+packages (``optuna``, ``spotoptim``).
 """
 
 from __future__ import annotations
 
 from copy import deepcopy
-from typing import Any, Callable, Dict, Optional, Protocol
+from typing import Any, Callable, Dict, Optional
 
 import pandas as pd
+
+# Re-export tuning-free strategies from the safe package so importers of
+# ``spotforecast2.multitask.strategies`` continue to find all four names.
+from spotforecast2_safe.multitask.strategies import (  # noqa: F401  (re-exported)
+    DefaultsStrategy,
+    LazyStrategy,
+    TrainingStrategy,
+)
 
 from spotforecast2.multitask.search_spaces import (
     _default_optuna_search_space,
     _default_spotoptim_search_space,
 )
 
-
-class TrainingStrategy(Protocol):
-    """Strategy interface for preparing a forecaster before the final fit.
-
-    Implementations return a forecaster with any tuning/parameter changes
-    applied.  The final ``forecaster.fit(...)`` and prediction packaging are
-    performed by ``BaseTask._train_and_predict_target`` after this call.
-    """
-
-    name: str
-
-    def prepare_forecaster(
-        self,
-        task: Any,
-        target: str,
-        forecaster: Any,
-        y_train: pd.Series,
-        exog_train: Optional[pd.DataFrame] = None,
-    ) -> Any:
-        """Return a forecaster ready for the final fit step."""
-
-
-class LazyStrategy:
-    """Approach 1 — Lazy fitting with optional cached tuning.
-
-    Mirrors the body of ``execute_lazy`` between ``create_forecaster()`` and
-    ``_train_and_predict_target()``.
-    """
-
-    name = "lazy"
-
-    def __init__(
-        self,
-        use_tuned_params: bool = True,
-        max_age_days: Optional[float] = None,
-    ) -> None:
-        self.use_tuned_params = use_tuned_params
-        self.max_age_days = max_age_days
-
-    def prepare_forecaster(
-        self,
-        task: Any,
-        target: str,
-        forecaster: Any,
-        y_train: pd.Series,
-        exog_train: Optional[pd.DataFrame] = None,
-    ) -> Any:
-        del y_train, exog_train  # unused by this strategy
-        if not self.use_tuned_params:
-            return forecaster
-        tuned = task.load_tuning_results(target=target, max_age_days=self.max_age_days)
-        if tuned is None:
-            return forecaster
-        task.logger.info(
-            "  Applying cached %s tuning results (from %s).",
-            tuned["task_name"],
-            tuned["timestamp"],
-        )
-        forecaster.set_params(**tuned["best_params"])
-        if hasattr(forecaster, "set_lags"):
-            forecaster.set_lags(tuned["best_lags"])
-        return forecaster
-
-
-class DefaultsStrategy:
-    """Approach 2 — Train with defaults, no tuning, no cached params.
-
-    The simplest possible training strategy: leave the forecaster at the
-    parameters produced by the factory and hand it back to
-    ``_train_and_predict_target`` for the explicit fit.  Use this when the
-    caller wants a deterministic baseline that does *not* benefit from any
-    cached tuning results — useful for ENTSO-E "Approach 2: Training without
-    Tuning" and for regression benchmarking.
-
-    Functionally equivalent to ``LazyStrategy(use_tuned_params=False)``;
-    kept as a distinct class so the ``task="defaults"`` routing reads
-    intent at the call site (no implicit cache lookup).
-    """
-
-    name = "defaults"
-
-    def prepare_forecaster(
-        self,
-        task: Any,
-        target: str,
-        forecaster: Any,
-        y_train: pd.Series,
-        exog_train: Optional[pd.DataFrame] = None,
-    ) -> Any:
-        del task, target, y_train, exog_train  # no preparation needed
-        return forecaster
+__all__ = [
+    "TrainingStrategy",
+    "LazyStrategy",
+    "DefaultsStrategy",
+    "OptunaStrategy",
+    "SpotOptimStrategy",
+]
 
 
 class OptunaStrategy:
@@ -227,10 +134,7 @@ class SpotOptimStrategy:
                 task.logger.info("  Warm-start lags seeded: %s", seed_str)
 
         # Parallel evaluation: forward the configured worker count straight to
-        # SpotOptim (``kwargs_spotoptim`` is spread into its constructor). ``None``
-        # leaves the optimizer sequential (``n_jobs=1``); ``-1`` uses all cores.
-        # Steady-state parallel tuning changes the search trajectory, so it is
-        # opt-in per config and not bit-reproducible against a sequential run.
+        # SpotOptim (``kwargs_spotoptim`` is spread into its constructor).
         n_jobs_spotoptim = getattr(task.config, "n_jobs_spotoptim", None)
         if n_jobs_spotoptim is not None:
             kwargs_spotoptim["n_jobs"] = n_jobs_spotoptim

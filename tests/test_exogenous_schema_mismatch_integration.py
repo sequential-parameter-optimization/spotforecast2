@@ -56,19 +56,19 @@ def _make_task(on_weather_failure: str = "raise") -> MultiTask:
 def _stub_downstream(stack: ExitStack) -> None:
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.apply_cyclical_encoding",
+            "spotforecast2_safe.multitask.base.apply_cyclical_encoding",
             side_effect=lambda data, drop_original: data,
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.create_interaction_features",
+            "spotforecast2_safe.multitask.base.create_interaction_features",
             side_effect=lambda exogenous_features, weather_aligned, **_: exogenous_features,
         )
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.select_exogenous_features",
+            "spotforecast2_safe.multitask.base.select_exogenous_features",
             side_effect=lambda exogenous_features, **_: list(
                 exogenous_features.columns
             ),
@@ -76,7 +76,7 @@ def _stub_downstream(stack: ExitStack) -> None:
     )
     stack.enter_context(
         patch(
-            "spotforecast2.multitask.base.merge_data_and_covariates",
+            "spotforecast2_safe.multitask.base.merge_data_and_covariates",
             side_effect=lambda data, exogenous_features, **_: (
                 data,
                 exogenous_features,
@@ -165,7 +165,7 @@ class TestS6PipelineSchemaAsymmetry:
         with ExitStack() as stack:
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_weather_features",
+                    "spotforecast2_safe.multitask.base.get_weather_features",
                     return_value=(
                         _frame(idx_train, weather_cols),
                         _frame(idx_train, weather_cols),
@@ -174,19 +174,19 @@ class TestS6PipelineSchemaAsymmetry:
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_calendar_features",
+                    "spotforecast2_safe.multitask.base.get_calendar_features",
                     return_value=_frame(idx_train, calendar_cols),
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_day_night_features",
+                    "spotforecast2_safe.multitask.base.get_day_night_features",
                     return_value=_frame(idx_train, day_night_cols),
                 )
             )
             stack.enter_context(
                 patch(
-                    "spotforecast2.multitask.base.get_holiday_features",
+                    "spotforecast2_safe.multitask.base.get_holiday_features",
                     return_value=_frame(idx_train, holiday_cols),
                 )
             )
@@ -201,25 +201,25 @@ class TestS6PipelineSchemaAsymmetry:
             with ExitStack() as stack:
                 stack.enter_context(
                     patch(
-                        "spotforecast2.multitask.base.get_weather_features",
+                        "spotforecast2_safe.multitask.base.get_weather_features",
                         side_effect=WeatherFetchError("simulated outage"),
                     )
                 )
                 stack.enter_context(
                     patch(
-                        "spotforecast2.multitask.base.get_calendar_features",
+                        "spotforecast2_safe.multitask.base.get_calendar_features",
                         return_value=_frame(idx_predict, calendar_cols),
                     )
                 )
                 stack.enter_context(
                     patch(
-                        "spotforecast2.multitask.base.get_day_night_features",
+                        "spotforecast2_safe.multitask.base.get_day_night_features",
                         return_value=_frame(idx_predict, day_night_cols),
                     )
                 )
                 stack.enter_context(
                     patch(
-                        "spotforecast2.multitask.base.get_holiday_features",
+                        "spotforecast2_safe.multitask.base.get_holiday_features",
                         return_value=_frame(idx_predict, holiday_cols),
                     )
                 )
