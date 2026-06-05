@@ -1,3 +1,9 @@
+## [3.9.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.8.2...v3.9.0-rc.1) (2026-06-05)
+
+### Features
+
+* **multitask:** deduplicate runner onto spotforecast2-safe core ([5b4bac1](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5b4bac111f0bcc97a08cb8ed2530a5fe2b7f4231))
+
 ## [3.8.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.8.1...v3.8.2) (2026-06-04)
 
 ### Bug Fixes
