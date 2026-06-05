@@ -1,6 +1,6 @@
 [project]
 name = "spotforecast2"
-version = "3.8.2"
+version = "3.9.0-rc.1"
 description = "Forecasting with spot"
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
@@ -32,7 +32,7 @@ dependencies = [
     "ruff>=0.15.6",
     "scikit-learn>=1.8.0",
     "shap>=0.49.1",
-    "spotforecast2-safe>=16.0.0,<17",
+    "spotforecast2-safe>=16.3.0,<17",
     "spotoptim>=0.12.3",
     "tqdm>=4.67.2",
 ]

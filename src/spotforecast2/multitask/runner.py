@@ -6,89 +6,43 @@
 Provides a single ``run`` function that wraps the full pipeline
 sequence (prepare_data, detect_outliers, impute, build_exogenous_features,
 run) behind a one-call interface.
+
+The orchestration body lives in ``spotforecast2_safe.multitask.runner.run_with``
+and is reused here via delegation.  This module extends the safe-side task set
+with the auto-tuning tasks (``"optuna"``, ``"spotoptim"``) and binds the
+``spotforecast2.multitask.multi.MultiTask`` subclass that supports them.
 """
 
-from typing import Any, List, Optional, Tuple
+from typing import Any, List, Optional
 
 import pandas as pd
-from spotforecast2_safe.configurator.config_multi import ConfigMulti
-from spotforecast2_safe.data.fetch_data import get_cache_home
+
+from spotforecast2_safe.multitask.runner import (  # noqa: F401
+    SAFE_PIPELINE_TASKS,
+    _DEMO10_AGG_WEIGHTS,
+    _DEMO10_BOUNDS,
+    make_demo10_config,
+    run_with,
+)
 
 from spotforecast2.multitask.base import PipelineConfig
 from spotforecast2.multitask.multi import MultiTask
 
-# Demo-dataset presets for ``run()``.
-#
-# These lists are calibrated for the 11-target ENTSO-E demo dataset
-# (``demo10.csv``) used in the package examples and the Quarto docs.  They are
-# *not* general-purpose defaults: a different dataset needs its own bounds and
-# aggregation weights, supplied explicitly to ``run(bounds=..., agg_weights=...)``
-# or carried by a config preset.  Kept here (not on ``ConfigMulti``) so that
-# direct ``ConfigMulti()`` users don't silently inherit demo10-specific values.
-_DEMO10_BOUNDS: List[Tuple[float, float]] = [
-    (-2500, 4500),
-    (-10, 3000),
-    (0, 230),
-    (0, 550),
-    (0, 1400),
-    (0, 1400),
-    (0, 10),
-    (0, 4500),
-    (0, 300),
-    (0, 400),
-    (0, 300),
+__all__ = [
+    "SAFE_PIPELINE_TASKS",
+    "_DEMO10_AGG_WEIGHTS",
+    "_DEMO10_BOUNDS",
+    "make_demo10_config",
+    "run_with",
+    "run",
 ]
 
-_DEMO10_AGG_WEIGHTS: List[float] = [
-    1.0,
-    1.0,
-    -1.0,
-    -1.0,
-    1.0,
-    -1.0,
-    1.0,
-    1.0,
-    1.0,
-    -1.0,
-    1.0,
-]
-
-_PIPELINE_TASKS = frozenset({"lazy", "defaults", "optuna", "spotoptim", "predict"})
+_PIPELINE_TASKS = SAFE_PIPELINE_TASKS | frozenset({"optuna", "spotoptim"})
 _ALL_TASKS = _PIPELINE_TASKS | {"clean"}
 
 
-def make_demo10_config(**overrides: Any) -> ConfigMulti:
-    """Build a ``ConfigMulti`` pre-loaded with the 11-target demo10 presets.
-
-    The 11-target ENTSO-E demo dataset (``demo10.csv``) ships with the
-    package and is the canonical example dataset for the Quarto docs and
-    tutorial notebooks.  Its outlier ``bounds`` and aggregation
-    ``agg_weights`` are dataset-specific and should not be inherited by
-    arbitrary callers — this helper makes the opt-in explicit.
-
-    Args:
-        **overrides: Forwarded to ``ConfigMulti.set_params`` to tweak any
-            other field on the returned config.
-
-    Returns:
-        ConfigMulti: A new ``ConfigMulti`` with ``bounds`` and
-        ``agg_weights`` set to the demo10 presets, plus any caller-supplied
-        overrides applied.
-
-    Examples:
-        ```{python}
-        from spotforecast2.multitask.runner import make_demo10_config
-
-        cfg = make_demo10_config(predict_size=48)
-        print(cfg.predict_size)
-        print(len(cfg.bounds))
-        print(len(cfg.agg_weights))
-        ```
-    """
-    cfg = ConfigMulti(bounds=_DEMO10_BOUNDS, agg_weights=_DEMO10_AGG_WEIGHTS)
-    if overrides:
-        cfg.set_params(**overrides)
-    return cfg
+def _unknown_task_message(task: str, sorted_tasks: List[str]) -> str:
+    return f"Unknown task '{task}'. Choose from: {sorted_tasks}"
 
 
 def run(
@@ -221,46 +175,20 @@ def run(
         print(result.empty)
         ```
     """
-    if task not in _ALL_TASKS:
-        raise ValueError(f"Unknown task '{task}'. Choose from: {sorted(_ALL_TASKS)}")
-
-    if cache_home is None:
-        cache_home = get_cache_home()
-
-    if config is None:
-        config = ConfigMulti()
-    # ``project_name`` is the public name for what lives on the config as
-    # ``data_frame_name``; keep the runner argument for ergonomic reasons.
-    config.data_frame_name = project_name
-
-    if task == "clean":
-        mt = MultiTask(
-            config,
-            task="clean",
-            cache_home=cache_home,
-            dry_run=dry_run,
-            log_level=log_level,
-            **overrides,
-        )
-        mt.run()
-        return pd.DataFrame()
-
-    mt = MultiTask(
-        config,
+    return run_with(
+        multitask_cls=MultiTask,
+        all_tasks=_ALL_TASKS,
+        unknown_task_message=_unknown_task_message,
+        config=config,
         task=task,
         dataframe=dataframe,
         data_test=data_test,
+        project_name=project_name,
         cache_home=cache_home,
-        dry_run=dry_run,
+        plot_with_outliers=plot_with_outliers,
+        show=show,
         show_progress=show_progress,
+        dry_run=dry_run,
         log_level=log_level,
         **overrides,
     )
-    mt.prepare_data()
-    mt.detect_outliers()
-    if plot_with_outliers:
-        mt.plot_with_outliers()
-    mt.impute()
-    mt.build_exogenous_features()
-    result = mt.run(show=show)
-    return result["future_pred"].to_frame("forecast")
