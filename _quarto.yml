@@ -175,6 +175,8 @@ website:
         contents:
           - text: "ENTSO-E via run()"
             file: docs/multitask/entsoe.qmd
+          - text: "Multi-Target Demo II"
+            file: docs/multitask/multitask-II.qmd
 
       - section: "Model Card"
         contents:
