@@ -990,6 +990,221 @@
     ]
   },
   {
+    "objectID": "docs/multitask/multitask-II.html",
+    "href": "docs/multitask/multitask-II.html",
+    "title": "Multi-Target Demo II: run() mit demo10-Daten",
+    "section": "",
+    "text": "Diese Seite ist die aktualisierte Fassung des Multi-Task-Target-Demos für die run-Funktion aus spotforecast2.multitask.runner (Version &gt;= 3.9.0 erforderlich, installiert über PyPI oder GitHub). Ein Aufruf führt die komplette Pipeline aus — Datenaufbereitung, Ausreißerbehandlung, Imputation, exogene Merkmale, Training, Prognose, Aggregation — und gibt die aggregierte Vorhersage als DataFrame zurück.",
+    "crumbs": [
+      "Multitask",
+      "Multi-Target Demo II"
+    ]
+  },
+  {
+    "objectID": "docs/multitask/multitask-II.html#vorbereitung",
+    "href": "docs/multitask/multitask-II.html#vorbereitung",
+    "title": "Multi-Target Demo II: run() mit demo10-Daten",
+    "section": "Vorbereitung",
+    "text": "Vorbereitung\nBereitstellen des DataFrames df aus dem mitgelieferten Demo-Datensatz demo10.csv (11 Zielreihen, stündlich, ca. zwei Jahre):\n\nimport warnings\n\nfrom spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home\n\nwarnings.filterwarnings(\"ignore\")\n\ndf = fetch_data(filename=str(get_package_data_home() / \"demo10.csv\"))\ndf.tail(3)\n\n\n\n\n\n\n\n\nA\nB\nC\nD\nE\nF\nG\nH\nI\nJ\nK\n\n\nDateTime\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n2021-12-24 19:00:00+00:00\n6779.905942\n1914.575282\n-188.785332\n40.414701\n-151.954372\n1.890299\n32.396494\n10270.621206\n24.670940\n-159.680687\n138.444384\n\n\n2021-12-24 20:00:00+00:00\n5214.307366\n2594.522237\n738.566203\n290.816747\n575.507812\n-28.564654\n44.652500\n10715.139172\n-108.974569\n367.366066\n180.618827\n\n\n2021-12-24 21:00:00+00:00\n5420.030788\n3271.458407\n147.249660\n-32.572713\n576.854449\n-9.907991\n46.299119\n15585.949262\n15.319324\n-158.527425\n-66.810962\n\n\n\n\n\n\n\n\n\n\n\n\n\nPrivate Daten nicht in versionierten Seiten ausführen\n\n\n\nDiese Seite wird versioniert, in CI gerendert und veröffentlicht — auch die _freeze/-Ausführungsergebnisse liegen im Repository. Eine Zelle, die gegen private Daten läuft, bettet deren Werte in die veröffentlichte Dokumentation ein. Für lokale Läufe mit privaten Daten (z. B. /Users/bartz/spotforecast2_data/demo10.csv) das folgende Muster ausschließlich in einem nicht versionierten Dokument (z. B. unter local/) verwenden; auf GitHub greift dann automatisch der mitgelieferte Demo-Datensatz:\nfrom spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home\n\ntry:\n    df = fetch_data(filename=\"/Users/bartz/spotforecast2_data/demo10.csv\")\nexcept FileNotFoundError:\n    # Fallback auf den mitgelieferten Demo-Datensatz (z. B. für Tests auf GitHub)\n    df = fetch_data(filename=str(get_package_data_home() / \"demo10.csv\"))",
+    "crumbs": [
+      "Multitask",
+      "Multi-Target Demo II"
+    ]
+  },
+  {
+    "objectID": "docs/multitask/multitask-II.html#konfiguration",
+    "href": "docs/multitask/multitask-II.html#konfiguration",
+    "title": "Multi-Target Demo II: run() mit demo10-Daten",
+    "section": "Konfiguration",
+    "text": "Konfiguration\nKonfiguration der Parameter und des Cache-Verzeichnisses. Seit Version 3.9.0 werden Trainings- und Validierungsfenster als pd.Timedelta über die ConfigMulti-Felder train_size und delta_val gesetzt; die früheren Parameter train_days / val_days existieren nicht mehr. Alle weiteren Schlüsselwortargumente von run() werden als **overrides an config.set_params() weitergereicht — unbekannte Parameter führen zu einem expliziten ValueError statt zu stillem Ignorieren.\n\nimport tempfile\n\nimport pandas as pd\n\nCACHE_HOME = tempfile.mkdtemp()      # Demo: temporäres Cache-Verzeichnis\nPROJECT_NAME = \"demo10_run\"\nTRAIN_SIZE = pd.Timedelta(days=90)   # Produktion: pd.Timedelta(days=10 * 365)\nDELTA_VAL = pd.Timedelta(days=31)\nN_TRIALS_OPTUNA = 2                  # Produktion: 25\n\n\n\n\n\n\n\nNote\n\n\n\nDie Werte sind für eine schnell und offline rendernde Demo-Seite verkleinert. In Produktion: persistentes Cache-Verzeichnis (z. B. ~/.spotforecast2_cache/cache), train_size von zehn Jahren, 25 Optuna-Trials, und die hier deaktivierten Optionen use_exogenous_features / use_outlier_detection typischerweise eingeschaltet (Wetter-Features benötigen Netzzugriff).\n\n\nImportieren der run-Funktion:\n\nfrom spotforecast2.multitask.runner import run",
+    "crumbs": [
+      "Multitask",
+      "Multi-Target Demo II"
+    ]
+  },
+  {
+    "objectID": "docs/multitask/multitask-II.html#production",
+    "href": "docs/multitask/multitask-II.html#production",
+    "title": "Multi-Target Demo II: run() mit demo10-Daten",
+    "section": "Production",
+    "text": "Production\n\nOptuna\nTunen der Hyperparameter (wöchentlich):\n\nforecast = run(\n    dataframe=df,\n    task=\"optuna\",\n    project_name=PROJECT_NAME,\n    cache_home=CACHE_HOME,\n    train_size=TRAIN_SIZE,\n    delta_val=DELTA_VAL,\n    n_trials_optuna=N_TRIALS_OPTUNA,\n    use_exogenous_features=False,\n    use_outlier_detection=False,\n)\nforecast.head()\n\n\n\n\n\n\n\n\nforecast\n\n\n\n\n2021-12-24 22:00:00+00:00\n1998.730889\n\n\n2021-12-24 23:00:00+00:00\n1806.574009\n\n\n2021-12-25 00:00:00+00:00\n1735.236008\n\n\n2021-12-25 01:00:00+00:00\n1707.990166\n\n\n2021-12-25 02:00:00+00:00\n1698.098677\n\n\n\n\n\n\n\n\n\nLazy\nModel-Fit und Prediction mit den besten Hyperparametern aus Optuna, ohne erneutes Tuning (täglich oder stündlich). Wurde die Optuna-Phase noch nicht ausgeführt, startet lazy automatisch mit den Standardparametern. Mit show=True zeigt run() zusätzlich interaktive Grafiken pro Ziel und für die Aggregation; hier bleibt das ausgeschaltet, um die Seite schlank zu halten.\n\nforecast = run(\n    dataframe=df,\n    task=\"lazy\",\n    project_name=PROJECT_NAME,\n    cache_home=CACHE_HOME,\n    train_size=TRAIN_SIZE,\n    delta_val=DELTA_VAL,\n    use_exogenous_features=False,\n    use_outlier_detection=False,\n)\nforecast.head()\n\n\n\n\n\n\n\n\nforecast\n\n\n\n\n2021-12-24 22:00:00+00:00\n1998.730889\n\n\n2021-12-24 23:00:00+00:00\n1806.574009\n\n\n2021-12-25 00:00:00+00:00\n1735.236008\n\n\n2021-12-25 01:00:00+00:00\n1707.990166\n\n\n2021-12-25 02:00:00+00:00\n1698.098677",
+    "crumbs": [
+      "Multitask",
+      "Multi-Target Demo II"
+    ]
+  },
+  {
+    "objectID": "docs/multitask/multitask-II.html#zusätzliche-tasks",
+    "href": "docs/multitask/multitask-II.html#zusätzliche-tasks",
+    "title": "Multi-Target Demo II: run() mit demo10-Daten",
+    "section": "Zusätzliche Tasks",
+    "text": "Zusätzliche Tasks\n\nPredict\nNur Vorhersage, ohne Tuning oder Fit. Die Schritte optuna oder lazy müssen bereits einmal gelaufen sein, damit die Modelle im Cache vorliegen (auto_save_models=True ist der Standard).\n\nforecast = run(\n    dataframe=df,\n    task=\"predict\",\n    project_name=PROJECT_NAME,\n    cache_home=CACHE_HOME,\n    use_exogenous_features=False,\n    use_outlier_detection=False,\n)\nforecast.head()\n\n\n\n\n\n\n\n\nforecast\n\n\n\n\n2021-12-24 22:00:00+00:00\n1998.730889\n\n\n2021-12-24 23:00:00+00:00\n1806.574009\n\n\n2021-12-25 00:00:00+00:00\n1735.236008\n\n\n2021-12-25 01:00:00+00:00\n1707.990166\n\n\n2021-12-25 02:00:00+00:00\n1698.098677\n\n\n\n\n\n\n\n\n\nClean\nLöschen der Cache-Daten für das Projekt. Mit dry_run=True wird nur angezeigt, welche Dateien gelöscht würden, ohne sie tatsächlich zu entfernen.\n\nrun(task=\"clean\", project_name=PROJECT_NAME, cache_home=CACHE_HOME, dry_run=True)\n\n[clean] Dry run — would delete: /tmp/tmp514sw2_n\n  Would remove: logging\n  Would remove: models\n  Would remove: tuning_results\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nrun(task=\"clean\", project_name=PROJECT_NAME, cache_home=CACHE_HOME)\n\n[clean] Cache removed successfully: /tmp/tmp514sw2_n",
+    "crumbs": [
+      "Multitask",
+      "Multi-Target Demo II"
+    ]
+  },
+  {
+    "objectID": "docs/multitask/multitask-II.html#dokumentation-der-funktion-run",
+    "href": "docs/multitask/multitask-II.html#dokumentation-der-funktion-run",
+    "title": "Multi-Target Demo II: run() mit demo10-Daten",
+    "section": "Dokumentation der Funktion run",
+    "text": "Dokumentation der Funktion run\nDie vollständige API-Referenz mit allen Parametern und weiteren Beispielen: multitask.run.",
+    "crumbs": [
+      "Multitask",
+      "Multi-Target Demo II"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_lags.html",
+    "href": "docs/model_selection/spotoptim_lags.html",
+    "title": "Lag Handling in SpotOptim Search",
+    "section": "",
+    "text": "When performing hyperparameter optimization with spotoptim_search_forecaster, the lags parameter can be tuned just like any other model parameter. This guide explains the two primary ways to specify lag search spaces and how they are handled internally.",
+    "crumbs": [
+      "Model Selection Guides",
+      "SpotOptim Lag Handling"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_lags.html#specifying-search-spaces-for-lags",
+    "href": "docs/model_selection/spotoptim_lags.html#specifying-search-spaces-for-lags",
+    "title": "Lag Handling in SpotOptim Search",
+    "section": "Specifying Search Spaces for Lags",
+    "text": "Specifying Search Spaces for Lags\nIn spotforecast2, lags can be specified either as a numeric range (for searching the number of recent observations) or as a discrete set of configurations (for searching specific offsets).\n\n1. Numeric Range (Integer Search)\nIf you want to search for the optimal number of lags (e.g., between 2 and 24), you can provide a tuple of integers.\nsearch_space = {\n    \"lags\": (2, 24),\n    \"alpha\": (0.01, 1.0)\n}\nInternal Mapping:\n\nThis is mapped to an integer variable type (\"int\") in SpotOptim.\nSpotOptim treats this as a bounded search space [2, 24].\nDuring evaluation, if SpotOptim selects a value like 5, spotforecast2 automatically expands this into a full lag array: [1, 2, 3, 4, 5].\n\n\n\n2. Discrete Configurations (Categorical Search)\nOften, specific lag patterns are more effective than a simple range (e.g., “only the same hour yesterday” vs “all 24 hours”). You can specify these as a list of strings representing the configurations.\nsearch_space = {\n    \"lags\": [\"24\", \"48\", \"[1, 2, 24, 48]\"],\n    \"max_depth\": (3, 10)\n}\nInternal Mapping:\n\nThis is mapped to a factor variable type (\"factor\") in SpotOptim.\nEach string in the list is treated as a discrete category.\nSpotOptim selects one of the strings (e.g., \"[1, 2, 24, 48]\").\nspotforecast2 parses this string back into a Python object (e.g., a list of integers) and applies it to the forecaster.",
+    "crumbs": [
+      "Model Selection Guides",
+      "SpotOptim Lag Handling"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_lags.html#summary-of-mapping-logic",
+    "href": "docs/model_selection/spotoptim_lags.html#summary-of-mapping-logic",
+    "title": "Lag Handling in SpotOptim Search",
+    "section": "Summary of Mapping Logic",
+    "text": "Summary of Mapping Logic\nThe following table summarizes how different Python types in the search space dictionary are mapped to SpotOptim’s internal representations:\n\n\n\n\n\n\n\n\n\nUser Input Type\nExample\nSpotOptim Type\nInternal Handling\n\n\n\n\nTuple of ints\n(2, 24)\nint\nMaps to numeric range \\([LB, UB]\\).\n\n\nTuple of floats\n(0.1, 1.0)\nfloat\nMaps to numeric range \\([LB, UB]\\).\n\n\nList of strings\n[\"24\", \"48\"]\nfactor\nMaps to discrete categories.",
+    "crumbs": [
+      "Model Selection Guides",
+      "SpotOptim Lag Handling"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_lags.html#why-strings-for-lag-lists",
+    "href": "docs/model_selection/spotoptim_lags.html#why-strings-for-lag-lists",
+    "title": "Lag Handling in SpotOptim Search",
+    "section": "Why Strings for Lag Lists?",
+    "text": "Why Strings for Lag Lists?\nIn the categorical search space, lists of lags are provided as strings (e.g., \"[1, 2, 24]\" instead of [1, 2, 24]). This is because:\n\nSpotOptim Factors: SpotOptim’s categorical interface expects strings to distinguish different configurations.\nAmbiguity Avoidance: Using a string \"[1, 12, 24]\" ensures that the entire configuration is treated as a single “choice” rather than a range of values.",
+    "crumbs": [
+      "Model Selection Guides",
+      "SpotOptim Lag Handling"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_lags.html#implementation-details",
+    "href": "docs/model_selection/spotoptim_lags.html#implementation-details",
+    "title": "Lag Handling in SpotOptim Search",
+    "section": "Implementation Details",
+    "text": "Implementation Details\nThe mapping is handled via two internal utilities:\n\nconvert_search_space: Converts the dictionary into SpotOptim’s bounds, var_type, and var_name arrays.\nparse_lags_from_strings: Converts the selected choice back into a usable lag object (integer or list).\n\nThese utilities ensure that the optimization process is seamless, regardless of whether you are searching across a continuous range or a discrete set of domain-specific lag patterns.",
+    "crumbs": [
+      "Model Selection Guides",
+      "SpotOptim Lag Handling"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Welcome to spotforecast2",
+    "section": "",
+    "text": "spotforecast2 is a Python package for forecasting, combining the power of sklearn, spotoptim and skforecast with specialized utilities for “spot” forecasting.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#quick-links",
+    "href": "index.html#quick-links",
+    "title": "Welcome to spotforecast2",
+    "section": "Quick Links",
+    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 3.9.0-rc.1",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#installation",
+    "href": "index.html#installation",
+    "title": "Welcome to spotforecast2",
+    "section": "Installation",
+    "text": "Installation\n\nDownload from GitHub\n\ngit clone https://github.com/sequential-parameter-optimization/spotforecast2.git\ncd spotforecast2\n\nSync using uv\n\nuv sync",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#features",
+    "href": "index.html#features",
+    "title": "Welcome to spotforecast2",
+    "section": "Features",
+    "text": "Features\n\nData Fetching: Easy access to time series data.\nPreprocessing: Robust tools for curating, cleaning, and splitting data.\nForecasting: A rich set of forecasting strategies (constantly extended).\nModel Selection: spotoptim and optuna search for hyperparameter tuning.\nWeather Integration: Utilities for fetching and using weather data in forecasts.",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "index.html#attributions",
+    "href": "index.html#attributions",
+    "title": "Welcome to spotforecast2",
+    "section": "Attributions",
+    "text": "Attributions\nParts of the code are ported from skforecast to reduce external dependencies. Many thanks to the skforecast team for their great work!",
+    "crumbs": [
+      "Home"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_intro.html",
+    "href": "docs/model_selection/spotoptim_intro.html",
+    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
+    "section": "",
+    "text": "SpotOptim provides an advanced surrogate-model-based optimization engine integrated directly into spotforecast2. It acts as a powerful, drop-in alternative to bayesian_search_forecaster, leveraging surrogate modeling (such as Kriging/Gaussian Processes, Random Forests, etc.) rather than Optuna’s TPE sampler, often discovering better hyperparameter configurations with fewer evaluations.\nThis guide will walk you through the core function spotoptim_search_forecaster(), from a simple baseline example up to an advanced configuration, explaining every argument available.",
+    "crumbs": [
+      "Model Selection Guides",
+      "Intro to SpotOptim"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_intro.html#core-arguments-overview",
+    "href": "docs/model_selection/spotoptim_intro.html#core-arguments-overview",
+    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
+    "section": "Core Arguments Overview",
+    "text": "Core Arguments Overview\nWhen calling spotoptim_search_forecaster(), you can comprehensively control the optimization environment. Table 1 shows a breakdown of every available argument:\n\n\n\nTable 1: Available arguments for spotoptim_search_forecaster().\n\n\n\n\n\n\n\n\n\n\nArgument\nType\nDescription\n\n\n\n\nforecaster\nobject\nThe base forecaster model to be tuned (e.g., ForecasterRecursive).\n\n\ny\npd.Series\nThe target training time series. Must have a datetime or numeric index.\n\n\ncv\nTimeSeriesFold | OneStepAheadFold\nThe cross-validation strategy used to evaluate configurations during the search.\n\n\nsearch_space\nParameterSet | dict\nThe boundaries and categories of the hyperparameters to explore.\n\n\nmetric\nstr | Callable | list\nThe metric(s) used to evaluate forecaster performance. First metric dictates sorting.\n\n\nexog\npd.Series | pd.DataFrame | None\nOptional exogenous variables to include during modeling.\n\n\nn_trials\nint\nThe total number of evaluations to perform throughout the entire search.\n\n\nn_initial\nint\nThe number of random initial design points before the surrogate model takes over.\n\n\nrandom_state\nint\nRNG seed ensuring reproducible designs and sampling.\n\n\nreturn_best\nbool\nIf True, the passed forecaster is automatically refit on the entire y using the best found configuration.\n\n\nn_jobs\nint | str\nNumber of parallel jobs for backtesting parallelization. Use \"auto\" for automatic CPU detection.\n\n\nverbose\nbool\nPrint detailed SpotOptim engine optimization logs to stdout.\n\n\nshow_progress\nbool\nDisplay a tqdm progress bar for evaluation progression.\n\n\nsuppress_warnings\nbool\nTemporarily suppress spotforecast2 warnings during rapid evaluation cycles.\n\n\noutput_file\nstr | None\nPath to save the trial results incrementally as a TSV file.\n\n\nkwargs_spotoptim\ndict | None\nAdvanced dictionary passed directly to the underlying SpotOptim engine (e.g., custom surrogate configurations, acquisition functions).",
+    "crumbs": [
+      "Model Selection Guides",
+      "Intro to SpotOptim"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_intro.html#simple-tuning-example",
+    "href": "docs/model_selection/spotoptim_intro.html#simple-tuning-example",
+    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
+    "section": "Simple Tuning Example",
+    "text": "Simple Tuning Example\nIn this first example, we want to tune a basic Ridge regression forecaster. We will evaluate configurations using a simple cross-validation fold, passing the search_space as a standard dictionary.\n\nimport numpy as np\nimport pandas as pd\nfrom sklearn.linear_model import Ridge\nfrom spotforecast2_safe.forecaster.recursive import ForecasterRecursive\nfrom spotforecast2_safe.splitter import TimeSeriesFold\nfrom spotforecast2.model_selection import spotoptim_search_forecaster\n\n# 1. Generate realistic target data\nnp.random.seed(42)\ny = pd.Series(\n    np.random.randn(200).cumsum(),\n    index=pd.date_range(\"2022-01-01\", periods=200, freq=\"h\"),\n    name=\"load\",\n)\n\n# 2. Define Forecaster and Validation\nforecaster = ForecasterRecursive(estimator=Ridge(), lags=5)\ncv = TimeSeriesFold(\n    steps=5,\n    initial_train_size=150,\n    refit=False,\n)\n\n# 3. Define a simple search space using a dictionary\nsearch_space = {\"alpha\": (0.01, 10.0)}\n\n# 4. execute SpotOptim Search\nresults, optimizer = spotoptim_search_forecaster(\n    forecaster=forecaster,\n    y=y,\n    cv=cv,\n    search_space=search_space,\n    metric=\"mean_absolute_error\",\n    n_trials=5,      # 5 total trials\n    n_initial=3,     # 3 random, 2 surrogate-guided\n    random_state=42,\n    return_best=True, # Automatically refits the `forecaster` object\n    show_progress=False,\n)\n\nprint(results.head(3))\nprint(f\"Best found alpha: {results.loc[0, 'alpha']}\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n`Forecaster` refitted using the best-found lags and parameters, and the whole data set: \n  Lags: [1 2 3 4 5] \n  Parameters: {'alpha': 6.947241955342156}\n  Backtesting metric: 1.019885673261824\n              lags                          params  mean_absolute_error  \\\n0  [1, 2, 3, 4, 5]    {'alpha': 6.947241955342156}             1.019886   \n1  [1, 2, 3, 4, 5]   {'alpha': 3.6364143967777034}             1.019886   \n2  [1, 2, 3, 4, 5]  {'alpha': 0.42094695964921375}             1.019886   \n\n      alpha  \n0  6.947242  \n1  3.636414  \n2  0.420947  \nBest found alpha: 6.947241955342156\n\n\nBecause return_best=True, the forecaster object is now perfectly equipped to make predictions immediately, using alpha configuration results.loc[0, \"alpha\"].",
+    "crumbs": [
+      "Model Selection Guides",
+      "Intro to SpotOptim"
+    ]
+  },
+  {
+    "objectID": "docs/model_selection/spotoptim_intro.html#advanced-tuning-example",
+    "href": "docs/model_selection/spotoptim_intro.html#advanced-tuning-example",
+    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
+    "section": "Advanced Tuning Example",
+    "text": "Advanced Tuning Example\nNow, let’s explore an advanced configuration. We’ll use a ParameterSet object (from the spotoptim library) for more granular control over numerical types and transformations. We will also inject dictionary arguments explicitly to the SpotOptim engine.\n\nfrom sklearn.ensemble import RandomForestRegressor\nfrom spotforecast2_safe.splitter import OneStepAheadFold\nfrom spotoptim.hyperparameters import ParameterSet\n\n# Data generation\ny_adv = pd.Series(\n    np.random.randn(300).cumsum(),\n    index=pd.date_range(\"2023-01-01\", periods=300, freq=\"h\"),\n    name=\"advanced_load\",\n)\nexog_adv = pd.Series(\n    np.random.uniform(10, 20, 300),\n    index=y_adv.index,\n    name=\"temp\",\n)\n\n# 1. Advanced setup\nforecaster_rf = ForecasterRecursive(\n    estimator=RandomForestRegressor(random_state=123), \n    lags=12\n)\n\n# Fast screening validation approach\ncv_fast = OneStepAheadFold(initial_train_size=100)\n\n# 2. Granular Search Space using ParameterSet\nps = ParameterSet()\nps.add_int(\"n_estimators\", low=10, high=50)\nps.add_int(\"max_depth\", low=2, high=10)\nps.add_float(\"max_features\", low=0.1, high=1.0)\n# We can also tune `lags` systematically\nps.add_factor(\"lags\", [\"[1, 2, 3]\", \"[1, 2, 3, 4, 5, 6]\"])\n\n# 3. SpotOptim execution with advanced Engine Control\nresults_adv, optimizer_adv = spotoptim_search_forecaster(\n    forecaster=forecaster_rf,\n    y=y_adv,\n    exog=exog_adv,\n    cv=cv_fast,\n    search_space=ps,\n    metric=[\"mean_absolute_error\", \"mean_squared_error\"], # Multiple metrics tracked\n    n_trials=10,\n    n_initial=5,\n    random_state=99,\n    return_best=False,\n    n_jobs=1,\n    verbose=False,\n    show_progress=False,\n    suppress_warnings=True,\n    kwargs_spotoptim={\n        \"surrogate\": RandomForestRegressor(random_state=42), # Custom surrogate model\n    }\n)\n\nprint(results_adv[[\"n_estimators\", \"max_depth\", \"lags\", \"mean_absolute_error\"]].head(3))\n\n   n_estimators  max_depth       lags  mean_absolute_error\n0          42.0        7.0  [1, 2, 3]             1.091275\n1          30.0        6.0  [1, 2, 3]             1.091275\n2          46.0        7.0  [1, 2, 3]             1.091275\n\n\nThis advanced setup illustrates how spotoptim_search_forecaster acts as an extremely flexible orchestration bridge, allowing you to efficiently explore your state space while capturing comprehensive performance metadata.",
+    "crumbs": [
+      "Model Selection Guides",
+      "Intro to SpotOptim"
+    ]
+  },
+  {
     "objectID": "docs/multitask/entsoe.html",
     "href": "docs/multitask/entsoe.html",
     "title": "ENTSO-E single-target forecasting via run()",
@@ -1108,155 +1323,6 @@
     "crumbs": [
       "Multitask",
       "ENTSO-E via run()"
-    ]
-  },
-  {
-    "objectID": "docs/model_selection/spotoptim_intro.html",
-    "href": "docs/model_selection/spotoptim_intro.html",
-    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
-    "section": "",
-    "text": "SpotOptim provides an advanced surrogate-model-based optimization engine integrated directly into spotforecast2. It acts as a powerful, drop-in alternative to bayesian_search_forecaster, leveraging surrogate modeling (such as Kriging/Gaussian Processes, Random Forests, etc.) rather than Optuna’s TPE sampler, often discovering better hyperparameter configurations with fewer evaluations.\nThis guide will walk you through the core function spotoptim_search_forecaster(), from a simple baseline example up to an advanced configuration, explaining every argument available.",
-    "crumbs": [
-      "Model Selection Guides",
-      "Intro to SpotOptim"
-    ]
-  },
-  {
-    "objectID": "docs/model_selection/spotoptim_intro.html#core-arguments-overview",
-    "href": "docs/model_selection/spotoptim_intro.html#core-arguments-overview",
-    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
-    "section": "Core Arguments Overview",
-    "text": "Core Arguments Overview\nWhen calling spotoptim_search_forecaster(), you can comprehensively control the optimization environment. Table 1 shows a breakdown of every available argument:\n\n\n\nTable 1: Available arguments for spotoptim_search_forecaster().\n\n\n\n\n\n\n\n\n\n\nArgument\nType\nDescription\n\n\n\n\nforecaster\nobject\nThe base forecaster model to be tuned (e.g., ForecasterRecursive).\n\n\ny\npd.Series\nThe target training time series. Must have a datetime or numeric index.\n\n\ncv\nTimeSeriesFold | OneStepAheadFold\nThe cross-validation strategy used to evaluate configurations during the search.\n\n\nsearch_space\nParameterSet | dict\nThe boundaries and categories of the hyperparameters to explore.\n\n\nmetric\nstr | Callable | list\nThe metric(s) used to evaluate forecaster performance. First metric dictates sorting.\n\n\nexog\npd.Series | pd.DataFrame | None\nOptional exogenous variables to include during modeling.\n\n\nn_trials\nint\nThe total number of evaluations to perform throughout the entire search.\n\n\nn_initial\nint\nThe number of random initial design points before the surrogate model takes over.\n\n\nrandom_state\nint\nRNG seed ensuring reproducible designs and sampling.\n\n\nreturn_best\nbool\nIf True, the passed forecaster is automatically refit on the entire y using the best found configuration.\n\n\nn_jobs\nint | str\nNumber of parallel jobs for backtesting parallelization. Use \"auto\" for automatic CPU detection.\n\n\nverbose\nbool\nPrint detailed SpotOptim engine optimization logs to stdout.\n\n\nshow_progress\nbool\nDisplay a tqdm progress bar for evaluation progression.\n\n\nsuppress_warnings\nbool\nTemporarily suppress spotforecast2 warnings during rapid evaluation cycles.\n\n\noutput_file\nstr | None\nPath to save the trial results incrementally as a TSV file.\n\n\nkwargs_spotoptim\ndict | None\nAdvanced dictionary passed directly to the underlying SpotOptim engine (e.g., custom surrogate configurations, acquisition functions).",
-    "crumbs": [
-      "Model Selection Guides",
-      "Intro to SpotOptim"
-    ]
-  },
-  {
-    "objectID": "docs/model_selection/spotoptim_intro.html#simple-tuning-example",
-    "href": "docs/model_selection/spotoptim_intro.html#simple-tuning-example",
-    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
-    "section": "Simple Tuning Example",
-    "text": "Simple Tuning Example\nIn this first example, we want to tune a basic Ridge regression forecaster. We will evaluate configurations using a simple cross-validation fold, passing the search_space as a standard dictionary.\n\nimport numpy as np\nimport pandas as pd\nfrom sklearn.linear_model import Ridge\nfrom spotforecast2_safe.forecaster.recursive import ForecasterRecursive\nfrom spotforecast2_safe.splitter import TimeSeriesFold\nfrom spotforecast2.model_selection import spotoptim_search_forecaster\n\n# 1. Generate realistic target data\nnp.random.seed(42)\ny = pd.Series(\n    np.random.randn(200).cumsum(),\n    index=pd.date_range(\"2022-01-01\", periods=200, freq=\"h\"),\n    name=\"load\",\n)\n\n# 2. Define Forecaster and Validation\nforecaster = ForecasterRecursive(estimator=Ridge(), lags=5)\ncv = TimeSeriesFold(\n    steps=5,\n    initial_train_size=150,\n    refit=False,\n)\n\n# 3. Define a simple search space using a dictionary\nsearch_space = {\"alpha\": (0.01, 10.0)}\n\n# 4. execute SpotOptim Search\nresults, optimizer = spotoptim_search_forecaster(\n    forecaster=forecaster,\n    y=y,\n    cv=cv,\n    search_space=search_space,\n    metric=\"mean_absolute_error\",\n    n_trials=5,      # 5 total trials\n    n_initial=3,     # 3 random, 2 surrogate-guided\n    random_state=42,\n    return_best=True, # Automatically refits the `forecaster` object\n    show_progress=False,\n)\n\nprint(results.head(3))\nprint(f\"Best found alpha: {results.loc[0, 'alpha']}\")\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n`Forecaster` refitted using the best-found lags and parameters, and the whole data set: \n  Lags: [1 2 3 4 5] \n  Parameters: {'alpha': 6.947241955342156}\n  Backtesting metric: 1.019885673261824\n              lags                          params  mean_absolute_error  \\\n0  [1, 2, 3, 4, 5]    {'alpha': 6.947241955342156}             1.019886   \n1  [1, 2, 3, 4, 5]   {'alpha': 3.6364143967777034}             1.019886   \n2  [1, 2, 3, 4, 5]  {'alpha': 0.42094695964921375}             1.019886   \n\n      alpha  \n0  6.947242  \n1  3.636414  \n2  0.420947  \nBest found alpha: 6.947241955342156\n\n\nBecause return_best=True, the forecaster object is now perfectly equipped to make predictions immediately, using alpha configuration results.loc[0, \"alpha\"].",
-    "crumbs": [
-      "Model Selection Guides",
-      "Intro to SpotOptim"
-    ]
-  },
-  {
-    "objectID": "docs/model_selection/spotoptim_intro.html#advanced-tuning-example",
-    "href": "docs/model_selection/spotoptim_intro.html#advanced-tuning-example",
-    "title": "Introduction to Hyperparameter Tuning with SpotOptim",
-    "section": "Advanced Tuning Example",
-    "text": "Advanced Tuning Example\nNow, let’s explore an advanced configuration. We’ll use a ParameterSet object (from the spotoptim library) for more granular control over numerical types and transformations. We will also inject dictionary arguments explicitly to the SpotOptim engine.\n\nfrom sklearn.ensemble import RandomForestRegressor\nfrom spotforecast2_safe.splitter import OneStepAheadFold\nfrom spotoptim.hyperparameters import ParameterSet\n\n# Data generation\ny_adv = pd.Series(\n    np.random.randn(300).cumsum(),\n    index=pd.date_range(\"2023-01-01\", periods=300, freq=\"h\"),\n    name=\"advanced_load\",\n)\nexog_adv = pd.Series(\n    np.random.uniform(10, 20, 300),\n    index=y_adv.index,\n    name=\"temp\",\n)\n\n# 1. Advanced setup\nforecaster_rf = ForecasterRecursive(\n    estimator=RandomForestRegressor(random_state=123), \n    lags=12\n)\n\n# Fast screening validation approach\ncv_fast = OneStepAheadFold(initial_train_size=100)\n\n# 2. Granular Search Space using ParameterSet\nps = ParameterSet()\nps.add_int(\"n_estimators\", low=10, high=50)\nps.add_int(\"max_depth\", low=2, high=10)\nps.add_float(\"max_features\", low=0.1, high=1.0)\n# We can also tune `lags` systematically\nps.add_factor(\"lags\", [\"[1, 2, 3]\", \"[1, 2, 3, 4, 5, 6]\"])\n\n# 3. SpotOptim execution with advanced Engine Control\nresults_adv, optimizer_adv = spotoptim_search_forecaster(\n    forecaster=forecaster_rf,\n    y=y_adv,\n    exog=exog_adv,\n    cv=cv_fast,\n    search_space=ps,\n    metric=[\"mean_absolute_error\", \"mean_squared_error\"], # Multiple metrics tracked\n    n_trials=10,\n    n_initial=5,\n    random_state=99,\n    return_best=False,\n    n_jobs=1,\n    verbose=False,\n    show_progress=False,\n    suppress_warnings=True,\n    kwargs_spotoptim={\n        \"surrogate\": RandomForestRegressor(random_state=42), # Custom surrogate model\n    }\n)\n\nprint(results_adv[[\"n_estimators\", \"max_depth\", \"lags\", \"mean_absolute_error\"]].head(3))\n\n   n_estimators  max_depth       lags  mean_absolute_error\n0          42.0        7.0  [1, 2, 3]             1.091275\n1          30.0        6.0  [1, 2, 3]             1.091275\n2          46.0        7.0  [1, 2, 3]             1.091275\n\n\nThis advanced setup illustrates how spotoptim_search_forecaster acts as an extremely flexible orchestration bridge, allowing you to efficiently explore your state space while capturing comprehensive performance metadata.",
-    "crumbs": [
-      "Model Selection Guides",
-      "Intro to SpotOptim"
-    ]
-  },
-  {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "Welcome to spotforecast2",
-    "section": "",
-    "text": "spotforecast2 is a Python package for forecasting, combining the power of sklearn, spotoptim and skforecast with specialized utilities for “spot” forecasting.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#quick-links",
-    "href": "index.html#quick-links",
-    "title": "Welcome to spotforecast2",
-    "section": "Quick Links",
-    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 3.8.2-rc.1",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#installation",
-    "href": "index.html#installation",
-    "title": "Welcome to spotforecast2",
-    "section": "Installation",
-    "text": "Installation\n\nDownload from GitHub\n\ngit clone https://github.com/sequential-parameter-optimization/spotforecast2.git\ncd spotforecast2\n\nSync using uv\n\nuv sync",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#features",
-    "href": "index.html#features",
-    "title": "Welcome to spotforecast2",
-    "section": "Features",
-    "text": "Features\n\nData Fetching: Easy access to time series data.\nPreprocessing: Robust tools for curating, cleaning, and splitting data.\nForecasting: A rich set of forecasting strategies (constantly extended).\nModel Selection: spotoptim and optuna search for hyperparameter tuning.\nWeather Integration: Utilities for fetching and using weather data in forecasts.",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "index.html#attributions",
-    "href": "index.html#attributions",
-    "title": "Welcome to spotforecast2",
-    "section": "Attributions",
-    "text": "Attributions\nParts of the code are ported from skforecast to reduce external dependencies. Many thanks to the skforecast team for their great work!",
-    "crumbs": [
-      "Home"
-    ]
-  },
-  {
-    "objectID": "docs/model_selection/spotoptim_lags.html",
-    "href": "docs/model_selection/spotoptim_lags.html",
-    "title": "Lag Handling in SpotOptim Search",
-    "section": "",
-    "text": "When performing hyperparameter optimization with spotoptim_search_forecaster, the lags parameter can be tuned just like any other model parameter. This guide explains the two primary ways to specify lag search spaces and how they are handled internally.",
-    "crumbs": [
-      "Model Selection Guides",
-      "SpotOptim Lag Handling"
-    ]
-  },
-  {
-    "objectID": "docs/model_selection/spotoptim_lags.html#specifying-search-spaces-for-lags",
-    "href": "docs/model_selection/spotoptim_lags.html#specifying-search-spaces-for-lags",
-    "title": "Lag Handling in SpotOptim Search",
-    "section": "Specifying Search Spaces for Lags",
-    "text": "Specifying Search Spaces for Lags\nIn spotforecast2, lags can be specified either as a numeric range (for searching the number of recent observations) or as a discrete set of configurations (for searching specific offsets).\n\n1. Numeric Range (Integer Search)\nIf you want to search for the optimal number of lags (e.g., between 2 and 24), you can provide a tuple of integers.\nsearch_space = {\n    \"lags\": (2, 24),\n    \"alpha\": (0.01, 1.0)\n}\nInternal Mapping:\n\nThis is mapped to an integer variable type (\"int\") in SpotOptim.\nSpotOptim treats this as a bounded search space [2, 24].\nDuring evaluation, if SpotOptim selects a value like 5, spotforecast2 automatically expands this into a full lag array: [1, 2, 3, 4, 5].\n\n\n\n2. Discrete Configurations (Categorical Search)\nOften, specific lag patterns are more effective than a simple range (e.g., “only the same hour yesterday” vs “all 24 hours”). You can specify these as a list of strings representing the configurations.\nsearch_space = {\n    \"lags\": [\"24\", \"48\", \"[1, 2, 24, 48]\"],\n    \"max_depth\": (3, 10)\n}\nInternal Mapping:\n\nThis is mapped to a factor variable type (\"factor\") in SpotOptim.\nEach string in the list is treated as a discrete category.\nSpotOptim selects one of the strings (e.g., \"[1, 2, 24, 48]\").\nspotforecast2 parses this string back into a Python object (e.g., a list of integers) and applies it to the forecaster.",
-    "crumbs": [
-      "Model Selection Guides",
-      "SpotOptim Lag Handling"
-    ]
-  },
-  {
-    "objectID": "docs/model_selection/spotoptim_lags.html#summary-of-mapping-logic",
-    "href": "docs/model_selection/spotoptim_lags.html#summary-of-mapping-logic",
-    "title": "Lag Handling in SpotOptim Search",
-    "section": "Summary of Mapping Logic",
-    "text": "Summary of Mapping Logic\nThe following table summarizes how different Python types in the search space dictionary are mapped to SpotOptim’s internal representations:\n\n\n\n\n\n\n\n\n\nUser Input Type\nExample\nSpotOptim Type\nInternal Handling\n\n\n\n\nTuple of ints\n(2, 24)\nint\nMaps to numeric range \\([LB, UB]\\).\n\n\nTuple of floats\n(0.1, 1.0)\nfloat\nMaps to numeric range \\([LB, UB]\\).\n\n\nList of strings\n[\"24\", \"48\"]\nfactor\nMaps to discrete categories.",
-    "crumbs": [
-      "Model Selection Guides",
-      "SpotOptim Lag Handling"
-    ]
-  },
-  {
-    "objectID": "docs/model_selection/spotoptim_lags.html#why-strings-for-lag-lists",
-    "href": "docs/model_selection/spotoptim_lags.html#why-strings-for-lag-lists",
-    "title": "Lag Handling in SpotOptim Search",
-    "section": "Why Strings for Lag Lists?",
-    "text": "Why Strings for Lag Lists?\nIn the categorical search space, lists of lags are provided as strings (e.g., \"[1, 2, 24]\" instead of [1, 2, 24]). This is because:\n\nSpotOptim Factors: SpotOptim’s categorical interface expects strings to distinguish different configurations.\nAmbiguity Avoidance: Using a string \"[1, 12, 24]\" ensures that the entire configuration is treated as a single “choice” rather than a range of values.",
-    "crumbs": [
-      "Model Selection Guides",
-      "SpotOptim Lag Handling"
-    ]
-  },
-  {
-    "objectID": "docs/model_selection/spotoptim_lags.html#implementation-details",
-    "href": "docs/model_selection/spotoptim_lags.html#implementation-details",
-    "title": "Lag Handling in SpotOptim Search",
-    "section": "Implementation Details",
-    "text": "Implementation Details\nThe mapping is handled via two internal utilities:\n\nconvert_search_space: Converts the dictionary into SpotOptim’s bounds, var_type, and var_name arrays.\nparse_lags_from_strings: Converts the selected choice back into a usable lag object (integer or list).\n\nThese utilities ensure that the optimization process is seamless, regardless of whether you are searching across a continuous range or a discrete set of domain-specific lag patterns.",
-    "crumbs": [
-      "Model Selection Guides",
-      "SpotOptim Lag Handling"
     ]
   },
   {

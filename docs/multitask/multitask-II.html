@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>multitask.optunatask – spotforecast2</title>
+<title>Multi-Target Demo II: run() mit demo10-Daten – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -58,7 +58,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -106,6 +106,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
 
 
 </head>
@@ -305,7 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.agg_predictor.html">Multitask</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.OptunaTask.html">OptunaTask</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/multitask/entsoe.html">Multitask</a></li><li class="breadcrumb-item"><a href="../../docs/multitask/multitask-II.html">Multi-Target Demo II</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -325,13 +328,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false">
  <span class="menu-text">API Reference</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/index.html" class="sidebar-item-text sidebar-link">
@@ -386,13 +389,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false">
  <span class="menu-text">Multitask</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/multitask.agg_predictor.html" class="sidebar-item-text sidebar-link">
@@ -413,7 +416,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/multitask.OptunaTask.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../docs/reference/multitask.OptunaTask.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">OptunaTask</span></a>
   </div>
 </li>
@@ -679,13 +682,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
         <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true">
  <span class="menu-text">Multitask</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-13" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 ">  
+      <ul id="quarto-sidebar-section-13" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/multitask/entsoe.html" class="sidebar-item-text sidebar-link">
@@ -694,7 +697,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/multitask/multitask-II.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/multitask/multitask-II.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">Multi-Target Demo II</span></a>
   </div>
 </li>
@@ -727,21 +730,29 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#examples" id="toc-examples" class="nav-link active" data-scroll-target="#examples">Examples</a></li>
-  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
+  <li><a href="#vorbereitung" id="toc-vorbereitung" class="nav-link active" data-scroll-target="#vorbereitung">Vorbereitung</a></li>
+  <li><a href="#konfiguration" id="toc-konfiguration" class="nav-link" data-scroll-target="#konfiguration">Konfiguration</a></li>
+  <li><a href="#production" id="toc-production" class="nav-link" data-scroll-target="#production">Production</a>
   <ul class="collapse">
-  <li><a href="#spotforecast2.multitask.OptunaTask.run" id="toc-spotforecast2.multitask.OptunaTask.run" class="nav-link" data-scroll-target="#spotforecast2.multitask.OptunaTask.run">run</a></li>
+  <li><a href="#optuna" id="toc-optuna" class="nav-link" data-scroll-target="#optuna">Optuna</a></li>
+  <li><a href="#lazy" id="toc-lazy" class="nav-link" data-scroll-target="#lazy">Lazy</a></li>
   </ul></li>
+  <li><a href="#zusätzliche-tasks" id="toc-zusätzliche-tasks" class="nav-link" data-scroll-target="#zusätzliche-tasks">Zusätzliche Tasks</a>
+  <ul class="collapse">
+  <li><a href="#predict" id="toc-predict" class="nav-link" data-scroll-target="#predict">Predict</a></li>
+  <li><a href="#clean" id="toc-clean" class="nav-link" data-scroll-target="#clean">Clean</a></li>
+  </ul></li>
+  <li><a href="#dokumentation-der-funktion-run" id="toc-dokumentation-der-funktion-run" class="nav-link" data-scroll-target="#dokumentation-der-funktion-run">Dokumentation der Funktion <code>run</code></a></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/multitask.OptunaTask.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/multitask/multitask-II.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.agg_predictor.html">Multitask</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.OptunaTask.html">OptunaTask</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/multitask/entsoe.html">Multitask</a></li><li class="breadcrumb-item"><a href="../../docs/multitask/multitask-II.html">Multi-Target Demo II</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">multitask.OptunaTask</h1>
+<h1 class="title">Multi-Target Demo II: <code>run()</code> mit demo10-Daten</h1>
 </div>
 
 
@@ -758,105 +769,379 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>multitask.OptunaTask(</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    config<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    data_test<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span>logging.INFO,</span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>overrides,</span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Task 3 — Optuna Bayesian hyperparameter tuning.</p>
-<p>Uses Optuna’s TPE sampler to search for optimal LightGBM hyperparameters, then re-fits with the best discovered parameters.</p>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="0990de35" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> OptunaTask</span>
+<p>Diese Seite ist die aktualisierte Fassung des Multi-Task-Target-Demos für die <code>run</code>-Funktion aus <code>spotforecast2.multitask.runner</code> (<code>Version &gt;= 3.9.0</code> erforderlich, installiert über PyPI oder GitHub). Ein Aufruf führt die komplette Pipeline aus — Datenaufbereitung, Ausreißerbehandlung, Imputation, exogene Merkmale, Training, Prognose, Aggregation — und gibt die aggregierte Vorhersage als DataFrame zurück.</p>
+<section id="vorbereitung" class="level2">
+<h2 class="anchored" data-anchor-id="vorbereitung">Vorbereitung</h2>
+<p>Bereitstellen des DataFrames <code>df</code> aus dem mitgelieferten Demo-Datensatz <code>demo10.csv</code> (11 Zielreihen, stündlich, ca. zwei Jahre):</p>
+<div id="07f0467e" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(get_package_data_home() <span class="op">/</span> <span class="st">"demo10.csv"</span>))</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>df.tail(<span class="dv">3</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="1">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">A</th>
+<th data-quarto-table-cell-role="th">B</th>
+<th data-quarto-table-cell-role="th">C</th>
+<th data-quarto-table-cell-role="th">D</th>
+<th data-quarto-table-cell-role="th">E</th>
+<th data-quarto-table-cell-role="th">F</th>
+<th data-quarto-table-cell-role="th">G</th>
+<th data-quarto-table-cell-role="th">H</th>
+<th data-quarto-table-cell-role="th">I</th>
+<th data-quarto-table-cell-role="th">J</th>
+<th data-quarto-table-cell-role="th">K</th>
+</tr>
+<tr class="even">
+<th data-quarto-table-cell-role="th">DateTime</th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-24 19:00:00+00:00</td>
+<td>6779.905942</td>
+<td>1914.575282</td>
+<td>-188.785332</td>
+<td>40.414701</td>
+<td>-151.954372</td>
+<td>1.890299</td>
+<td>32.396494</td>
+<td>10270.621206</td>
+<td>24.670940</td>
+<td>-159.680687</td>
+<td>138.444384</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-12-24 20:00:00+00:00</td>
+<td>5214.307366</td>
+<td>2594.522237</td>
+<td>738.566203</td>
+<td>290.816747</td>
+<td>575.507812</td>
+<td>-28.564654</td>
+<td>44.652500</td>
+<td>10715.139172</td>
+<td>-108.974569</td>
+<td>367.366066</td>
+<td>180.618827</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-24 21:00:00+00:00</td>
+<td>5420.030788</td>
+<td>3271.458407</td>
+<td>147.249660</td>
+<td>-32.572713</td>
+<td>576.854449</td>
+<td>-9.907991</td>
+<td>46.299119</td>
+<td>15585.949262</td>
+<td>15.319324</td>
+<td>-158.527425</td>
+<td>-66.810962</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="callout callout-style-default callout-warning callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Private Daten nicht in versionierten Seiten ausführen
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Diese Seite wird versioniert, in CI gerendert und veröffentlicht — auch die <code>_freeze/</code>-Ausführungsergebnisse liegen im Repository. Eine Zelle, die gegen private Daten läuft, bettet deren Werte in die veröffentlichte Dokumentation ein. Für lokale Läufe mit privaten Daten (z. B. <code>/Users/bartz/spotforecast2_data/demo10.csv</code>) das folgende Muster ausschließlich in einem nicht versionierten Dokument (z. B. unter <code>local/</code>) verwenden; auf GitHub greift dann automatisch der mitgelieferte Demo-Datensatz:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> OptunaTask(n_trials_optuna<span class="op">=</span><span class="dv">5</span>, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Task: </span><span class="sc">{</span>task<span class="sc">.</span>TASK<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Optuna trials: </span><span class="sc">{</span>task<span class="sc">.</span>config<span class="sc">.</span>n_trials_optuna<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="st">"/Users/bartz/spotforecast2_data/demo10.csv"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">FileNotFoundError</span>:</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Fallback auf den mitgelieferten Demo-Datensatz (z. B. für Tests auf GitHub)</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(get_package_data_home() <span class="op">/</span> <span class="st">"demo10.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</div>
+</section>
+<section id="konfiguration" class="level2">
+<h2 class="anchored" data-anchor-id="konfiguration">Konfiguration</h2>
+<p>Konfiguration der Parameter und des Cache-Verzeichnisses. Seit Version 3.9.0 werden Trainings- und Validierungsfenster als <code>pd.Timedelta</code> über die <code>ConfigMulti</code>-Felder <code>train_size</code> und <code>delta_val</code> gesetzt; die früheren Parameter <code>train_days</code> / <code>val_days</code> existieren nicht mehr. Alle weiteren Schlüsselwortargumente von <code>run()</code> werden als <code>**overrides</code> an <code>config.set_params()</code> weitergereicht — unbekannte Parameter führen zu einem expliziten <code>ValueError</code> statt zu stillem Ignorieren.</p>
+<div id="31020d29" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>CACHE_HOME <span class="op">=</span> tempfile.mkdtemp()      <span class="co"># Demo: temporäres Cache-Verzeichnis</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>PROJECT_NAME <span class="op">=</span> <span class="st">"demo10_run"</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>TRAIN_SIZE <span class="op">=</span> pd.Timedelta(days<span class="op">=</span><span class="dv">90</span>)   <span class="co"># Produktion: pd.Timedelta(days=10 * 365)</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>DELTA_VAL <span class="op">=</span> pd.Timedelta(days<span class="op">=</span><span class="dv">31</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>N_TRIALS_OPTUNA <span class="op">=</span> <span class="dv">2</span>                  <span class="co"># Produktion: 25</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Die Werte sind für eine schnell und offline rendernde Demo-Seite verkleinert. In Produktion: persistentes Cache-Verzeichnis (z. B. <code>~/.spotforecast2_cache/cache</code>), <code>train_size</code> von zehn Jahren, 25 Optuna-Trials, und die hier deaktivierten Optionen <code>use_exogenous_features</code> / <code>use_outlier_detection</code> typischerweise eingeschaltet (Wetter-Features benötigen Netzzugriff).</p>
+</div>
+</div>
+<p>Importieren der <code>run</code>-Funktion:</p>
+<div id="b89d77dc" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.runner <span class="im">import</span> run</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="production" class="level2">
+<h2 class="anchored" data-anchor-id="production">Production</h2>
+<section id="optuna" class="level3">
+<h3 class="anchored" data-anchor-id="optuna">Optuna</h3>
+<p>Tunen der Hyperparameter (wöchentlich):</p>
+<div id="9d7cec6f" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span>df,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"optuna"</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span>PROJECT_NAME,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>TRAIN_SIZE,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    delta_val<span class="op">=</span>DELTA_VAL,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span>N_TRIALS_OPTUNA,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>forecast.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="4">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">forecast</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-24 22:00:00+00:00</td>
+<td>1998.730889</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-12-24 23:00:00+00:00</td>
+<td>1806.574009</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-25 00:00:00+00:00</td>
+<td>1735.236008</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-12-25 01:00:00+00:00</td>
+<td>1707.990166</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-25 02:00:00+00:00</td>
+<td>1698.098677</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="lazy" class="level3">
+<h3 class="anchored" data-anchor-id="lazy">Lazy</h3>
+<p>Model-Fit und Prediction mit den besten Hyperparametern aus Optuna, ohne erneutes Tuning (täglich oder stündlich). Wurde die Optuna-Phase noch nicht ausgeführt, startet <code>lazy</code> automatisch mit den Standardparametern. Mit <code>show=True</code> zeigt <code>run()</code> zusätzlich interaktive Grafiken pro Ziel und für die Aggregation; hier bleibt das ausgeschaltet, um die Seite schlank zu halten.</p>
+<div id="8af8c54f" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span>df,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"lazy"</span>,</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span>PROJECT_NAME,</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>TRAIN_SIZE,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    delta_val<span class="op">=</span>DELTA_VAL,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>forecast.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="5">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">forecast</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-24 22:00:00+00:00</td>
+<td>1998.730889</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-12-24 23:00:00+00:00</td>
+<td>1806.574009</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-25 00:00:00+00:00</td>
+<td>1735.236008</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-12-25 01:00:00+00:00</td>
+<td>1707.990166</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-25 02:00:00+00:00</td>
+<td>1698.098677</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="zusätzliche-tasks" class="level2">
+<h2 class="anchored" data-anchor-id="zusätzliche-tasks">Zusätzliche Tasks</h2>
+<section id="predict" class="level3">
+<h3 class="anchored" data-anchor-id="predict">Predict</h3>
+<p>Nur Vorhersage, ohne Tuning oder Fit. Die Schritte <code>optuna</code> oder <code>lazy</code> müssen bereits einmal gelaufen sein, damit die Modelle im Cache vorliegen (<code>auto_save_models=True</code> ist der Standard).</p>
+<div id="1ade8a35" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span>df,</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"predict"</span>,</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span>PROJECT_NAME,</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>forecast.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="6">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+<th data-quarto-table-cell-role="th">forecast</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-24 22:00:00+00:00</td>
+<td>1998.730889</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-12-24 23:00:00+00:00</td>
+<td>1806.574009</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-25 00:00:00+00:00</td>
+<td>1735.236008</td>
+</tr>
+<tr class="even">
+<td data-quarto-table-cell-role="th">2021-12-25 01:00:00+00:00</td>
+<td>1707.990166</td>
+</tr>
+<tr class="odd">
+<td data-quarto-table-cell-role="th">2021-12-25 02:00:00+00:00</td>
+<td>1698.098677</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</section>
+<section id="clean" class="level3">
+<h3 class="anchored" data-anchor-id="clean">Clean</h3>
+<p>Löschen der Cache-Daten für das Projekt. Mit <code>dry_run=True</code> wird nur angezeigt, welche Dateien gelöscht würden, ohne sie tatsächlich zu entfernen.</p>
+<div id="589f43a4" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>run(task<span class="op">=</span><span class="st">"clean"</span>, project_name<span class="op">=</span>PROJECT_NAME, cache_home<span class="op">=</span>CACHE_HOME, dry_run<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Task: optuna
-Optuna trials: 5</code></pre>
+<pre><code>[clean] Dry run — would delete: /tmp/tmp514sw2_n
+  Would remove: logging
+  Would remove: models
+  Would remove: tuning_results</code></pre>
 </div>
-</div>
-</section>
-<section id="methods" class="level2">
-<h2 class="anchored" data-anchor-id="methods">Methods</h2>
-<table class="caption-top table">
+<div class="cell-output cell-output-display" data-execution_count="7">
+<div>
+
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
 <thead>
 <tr class="header">
-<th>Name</th>
-<th>Description</th>
+<th data-quarto-table-cell-role="th"></th>
 </tr>
 </thead>
 <tbody>
-<tr class="odd">
-<td><a href="#spotforecast2.multitask.OptunaTask.run">run</a></td>
-<td>Run Optuna Bayesian tuning for all targets.</td>
-</tr>
-</tbody>
-</table>
-<section id="spotforecast2.multitask.OptunaTask.run" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.multitask.OptunaTask.run">run</h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>multitask.OptunaTask.run(show<span class="op">=</span><span class="va">True</span>, search_space<span class="op">=</span><span class="va">None</span>, <span class="op">**</span>kwargs)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Run Optuna Bayesian tuning for all targets.</p>
-<section id="parameters" class="level4 doc-section doc-section-parameters">
-<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-<th>Default</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>show</td>
-<td><a href="https://docs.python.org/3/library/functions.html#bool">bool</a></td>
-<td>If <code>True</code>, display prediction figures.</td>
-<td><code>True</code></td>
-</tr>
-<tr class="even">
-<td>search_space</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Optional">Optional</a>[<a href="https://docs.python.org/3/library/typing.html#typing.Callable">Callable</a>]</td>
-<td>Callable <code>(trial) -&gt; dict</code>. <code>None</code> uses the built-in default.</td>
-<td><code>None</code></td>
-</tr>
-</tbody>
-</table>
-</section>
-<section id="returns" class="level4 doc-section doc-section-returns">
-<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Name</th>
-<th>Type</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>Aggregated prediction package. Per-target packages are stored</td>
-</tr>
-<tr class="even">
-<td></td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Dict">Dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
-<td>on <code>self.results["optuna"]</code>.</td>
-</tr>
 </tbody>
 </table>
 
+</div>
+</div>
+</div>
+<div id="3e17e3a3" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>run(task<span class="op">=</span><span class="st">"clean"</span>, project_name<span class="op">=</span>PROJECT_NAME, cache_home<span class="op">=</span>CACHE_HOME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[clean] Cache removed successfully: /tmp/tmp514sw2_n</code></pre>
+</div>
+<div class="cell-output cell-output-display" data-execution_count="8">
+<div>
 
+
+<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th"></th>
+</tr>
+</thead>
+<tbody>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
 </section>
 </section>
+<section id="dokumentation-der-funktion-run" class="level2">
+<h2 class="anchored" data-anchor-id="dokumentation-der-funktion-run">Dokumentation der Funktion <code>run</code></h2>
+<p>Die vollständige API-Referenz mit allen Parametern und weiteren Beispielen: <a href="../../docs/reference/multitask.run.html"><code>multitask.run</code></a>.</p>
+
+
 </section>
 
 </main> <!-- /main -->
@@ -1287,7 +1572,7 @@ Optuna trials: 5</code></pre>
     </div>   
     <div class="nav-footer-center">
 <p>Copyright © 2024-2026 bartzbeielstein | <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/multitask.OptunaTask.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/multitask/multitask-II.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
