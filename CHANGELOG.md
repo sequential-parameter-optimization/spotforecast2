@@ -1,3 +1,38 @@
+## [4.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.9.0...v4.0.0) (2026-06-06)
+
+### ⚠ BREAKING CHANGES
+
+* **multitask:** spotforecast2.multitask.runner is removed.
+`from spotforecast2.multitask import run` and
+`from spotforecast2.multitask.runner import run` no longer work.
+Replace one-call usage with the explicit pipeline:
+
+    from spotforecast2.multitask.multi import MultiTask
+
+    mt = MultiTask(config, task="lazy", dataframe=df,
+                   cache_home=cache_home, log_level=40)
+    mt.prepare_data()
+    mt.detect_outliers()
+    mt.impute()
+    mt.build_exogenous_features()
+    result = mt.run(show=False)
+    forecast = result["future_pred"].to_frame("forecast")
+
+make_demo10_config is no longer re-exported from
+spotforecast2.multitask; import it from its canonical location:
+
+    from spotforecast2_safe.multitask.runner import make_demo10_config
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+### Features
+
+* **multitask:** remove module-level run() ([439884c](https://github.com/sequential-parameter-optimization/spotforecast2/commit/439884cc213f5623f7ff413e9407675fa3ea42f8))
+
+### Documentation
+
+* **multitask:** migrate multitask-II to direct MultiTask pipeline ([a97cad1](https://github.com/sequential-parameter-optimization/spotforecast2/commit/a97cad18186099a39db4dc491b410d5e859e989c))
+
 ## [4.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v3.9.0...v4.0.0-rc.1) (2026-06-06)
 
 ### ⚠ BREAKING CHANGES
