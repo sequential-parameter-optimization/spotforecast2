@@ -21,9 +21,7 @@ def _predict_call(model: str):
     Returns ``(positional_args, keyword_args)`` of the single
     ``_run_entsoe_pipeline`` call.
     """
-    with patch(
-        "spotforecast2.tasks.task_entsoe._run_entsoe_pipeline"
-    ) as mock_pipeline:
+    with patch("spotforecast2.tasks.task_entsoe._run_entsoe_pipeline") as mock_pipeline:
         with patch("sys.argv", ["spotforecast2-entsoe", "predict", model]):
             main()
     assert mock_pipeline.call_count == 1
@@ -53,9 +51,7 @@ def test_predict_xgb_uses_xgb_project_and_factory():
 
 
 def test_predict_default_model_is_lgbm():
-    with patch(
-        "spotforecast2.tasks.task_entsoe._run_entsoe_pipeline"
-    ) as mock_pipeline:
+    with patch("spotforecast2.tasks.task_entsoe._run_entsoe_pipeline") as mock_pipeline:
         with patch("sys.argv", ["spotforecast2-entsoe", "predict"]):
             main()
     args = mock_pipeline.call_args.args

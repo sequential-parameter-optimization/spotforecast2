@@ -109,7 +109,7 @@ class TestPrepareDataWithDataframe:
 
     def test_targets_populated_after_prepare(self, mt_with_df):
         mt_with_df.prepare_data()
-        assert len(mt_with_df.config.targets) > 0
+        assert len(mt_with_df.run_state.targets) > 0
 
     def test_pipeline_shape_is_2d(self, mt_with_df):
         mt_with_df.prepare_data()

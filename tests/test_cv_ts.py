@@ -40,7 +40,7 @@ _N = 2000  # two-thousand hourly observations
 
 
 def _make_task(tmp_path: Path, *, val_days: int = 7, **kwargs) -> LazyTask:
-    """Return a LazyTask whose ``config.end_train_ts`` is set without loading data.
+    """Return a LazyTask whose ``run_state.end_train_ts`` is set without loading data.
 
     ``val_days`` is pinned to 7 so that ``delta_val = 7 * number_folds`` days,
     keeping the test series length requirements manageable.  After the
@@ -51,7 +51,7 @@ def _make_task(tmp_path: Path, *, val_days: int = 7, **kwargs) -> LazyTask:
     overrides = dict(kwargs, delta_val=pd.Timedelta(days=val_days * number_folds))
     overrides.setdefault("data_frame_name", "test_data")
     t = LazyTask(cache_home=tmp_path, **overrides)
-    t.config.end_train_ts = _END_TRAIN
+    t.run_state.end_train_ts = _END_TRAIN
     return t
 
 
@@ -110,7 +110,7 @@ class TestCvTsReturnType:
 
 class TestCvTsInitialTrainSize:
     def test_initial_train_size_matches_slice(self, task, y_train):
-        end_cv = task.config.end_train_ts - task.config.delta_val
+        end_cv = task.run_state.end_train_ts - task.config.delta_val
         expected = len(y_train.loc[:end_cv])
         cv = task.cv_ts(y_train)
         assert cv.initial_train_size == expected

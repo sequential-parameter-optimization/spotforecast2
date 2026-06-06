@@ -28,7 +28,7 @@ def single_target_lazy() -> LazyTask:
     not to integration-test the full pipeline.
     """
     task = LazyTask(predict_size=24, auto_save_models=False)
-    task.config.targets = ["only_target"]
+    task.run_state.targets = ["only_target"]
     return task
 
 
@@ -74,7 +74,7 @@ def test_multi_target_aggregation_still_runs(monkeypatch):
     """Sanity: multi-target configurations still invoke the aggregator
     (regression guard for Step 6's single-target short-circuit)."""
     task = LazyTask(predict_size=24, auto_save_models=False)
-    task.config.targets = ["a", "b"]
+    task.run_state.targets = ["a", "b"]
     task.config.agg_weights = [0.5, 0.5]
 
     seen = {}

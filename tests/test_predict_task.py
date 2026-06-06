@@ -178,7 +178,7 @@ class TestRunMissingTarget:
         # Only save for target_0, but the demo10 dataset has multiple targets
         task.save_models(task_name="lazy", forecasters=single_forecaster)
 
-        targets = task.config.targets
+        targets = task.run_state.targets
         if len(targets) > 1:
             # At least one target should be missing
             with pytest.raises(RuntimeError, match="No saved model found for target"):
@@ -224,7 +224,7 @@ class TestRunSuccess:
 
         assert result is not None
         assert "predict" in pred.results
-        for target in pred.config.targets:
+        for target in pred.run_state.targets:
             pkg = pred.results["predict"][target]
             assert "future_pred" in pkg
             assert len(pkg["future_pred"]) == 24
@@ -258,7 +258,7 @@ class TestRunSuccess:
 
         assert "predict" in pred.results
         assert isinstance(pred.results["predict"], dict)
-        assert len(pred.results["predict"]) == len(pred.config.targets)
+        assert len(pred.results["predict"]) == len(pred.run_state.targets)
 
     def test_agg_results_stored(self, tmp_path, demo_df):
         """Verify aggregated results are stored."""
@@ -411,7 +411,7 @@ class TestRunMaxAgeFilter:
         pred.build_exogenous_features()
 
         # Save old-timestamped model files for all targets
-        for target in pred.config.targets:
+        for target in pred.run_state.targets:
             m = LinearRegression()
             m.fit(np.arange(10).reshape(-1, 1), np.arange(10))
             old_ts = "20240101_000000"
@@ -577,7 +577,7 @@ class TestPredictionPackage:
         pred.build_exogenous_features()
         pred.run(show=False)
 
-        for target in pred.config.targets:
+        for target in pred.run_state.targets:
             pkg = pred.results["predict"][target]
             assert "train_actual" in pkg
             assert "train_pred" in pkg
@@ -611,7 +611,7 @@ class TestPredictionPackage:
         pred.build_exogenous_features()
         pred.run(show=False)
 
-        for target in pred.config.targets:
+        for target in pred.run_state.targets:
             assert len(pred.results["predict"][target]["future_pred"]) == 24
 
 

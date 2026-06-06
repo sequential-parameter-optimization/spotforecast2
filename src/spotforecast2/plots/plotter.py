@@ -623,7 +623,10 @@ def plot_actual_vs_predicted(
 
 
 def plot_with_outliers(
-    df_pipeline: pd.DataFrame, df_pipeline_original: pd.DataFrame, config: Any
+    df_pipeline: pd.DataFrame,
+    df_pipeline_original: pd.DataFrame,
+    config: Any,
+    targets: Optional[list[str]] = None,
 ) -> None:
     """Interactive time series plot with outliers and optional bounds.
 
@@ -637,15 +640,26 @@ def plot_with_outliers(
     The plot title includes the percentage of outliers detected for each
     target variable.
 
+    The resolved list of target column names must be passed explicitly via
+    *targets*.  Callers inside the pipeline (e.g. ``PlottingMixin``) obtain
+    this list from ``task.run_state.targets`` after ``prepare_data`` has run.
+    A ``SimpleNamespace``/dict-like *config* that carries its own ``targets``
+    attribute is still accepted for backwards-compatible standalone usage —
+    the explicit *targets* argument takes precedence when provided.
+
     Args:
         df_pipeline (pd.DataFrame): The processed DataFrame from the pipeline,
             which may contain NaN values where outliers have been detected and
             removed.
         df_pipeline_original (pd.DataFrame): The original DataFrame before
             outlier removal.
-        config: Configuration object containing ``targets`` (list of column
-            names) and optionally ``bounds`` (list of ``(lower, upper)``
-            tuples, one per target, in the same order as ``targets``).
+        config: Configuration object carrying ``bounds`` (optional list of
+            ``(lower, upper)`` tuples, one per target, in the same order as
+            *targets*).  ``config.targets`` is used as a fallback when the
+            *targets* argument is ``None`` (legacy path).
+        targets: Resolved list of target column names.  When ``None`` the
+            function falls back to ``config.targets`` (legacy callers that
+            pass a ``SimpleNamespace`` with ``targets`` set).
 
     Returns:
         None. Displays one interactive Plotly figure per target variable.
@@ -667,17 +681,15 @@ def plot_with_outliers(
         data.loc[dates[20], "target2"] = 150  # Outlier in target2
         df_pipeline = data.copy()
         df_pipeline.loc[[dates[10], dates[20]], ["target1", "target2"]] = np.nan
-        # Config with bounds
-        config = SimpleNamespace(
-            targets=["target1", "target2"],
-            bounds=[(-10, 200), (0, 100)],
-        )
-        plot_with_outliers(df_pipeline, data, config)
+        # Config with bounds; targets passed explicitly
+        config = SimpleNamespace(bounds=[(-10, 200), (0, 100)])
+        plot_with_outliers(df_pipeline, data, config, targets=["target1", "target2"])
         ```
     """
     bounds = getattr(config, "bounds", None)
+    _targets = targets if targets is not None else config.targets
 
-    for i, target in enumerate(config.targets):
+    for i, target in enumerate(_targets):
         fig = go.Figure()
 
         # Plot Regular Data (lightgrey)
