@@ -1,3 +1,25 @@
+## [5.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v4.0.0...v5.0.0) (2026-06-06)
+
+### ⚠ BREAKING CHANGES
+
+* **multitask:** spotforecast2 no longer reads start_download,
+end_download, data_start, data_end, cov_start, cov_end, end_train_ts,
+start_train_ts, or the resolved target list from the config; use
+task.run_state. config.targets always holds the user input.
+
+NOTE: CI stays red against PyPI spotforecast2-safe < 18; green requires
+the 18.0.0 pin bump follow-up.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+### Features
+
+* **multitask:** read derived pipeline state from task.run_state ([1f36cec](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1f36cec2335ec9feea19e9addf984017d3c5e814))
+
+### Documentation
+
+* migrate multitask tutorial off make_demo10_config to explicit ConfigMulti ([3399699](https://github.com/sequential-parameter-optimization/spotforecast2/commit/3399699188cb13a9088b24bbd9dfd3e0856a4f6a))
+
 ## [5.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v4.0.0...v5.0.0-rc.1) (2026-06-06)
 
 ### ⚠ BREAKING CHANGES
