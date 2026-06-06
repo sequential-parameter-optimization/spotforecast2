@@ -3604,7 +3604,7 @@ wheels = [
 
 [[package]]
 name = "spotforecast2"
-version = "3.9.0"
+version = "4.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "astral" },
@@ -3699,7 +3699,7 @@ dev = [
 
 [[package]]
 name = "spotforecast2-safe"
-version = "16.3.0"
+version = "16.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astral" },
@@ -3717,9 +3717,9 @@ dependencies = [
     { name = "statsmodels" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/28/ce/456d06fdd69ed28af43c892f976ddebe0a0a1638306d1b59e2e6c4b4df47/spotforecast2_safe-16.3.0.tar.gz", hash = "sha256:217f31ac5e97d6c5d4d34d805663f6920f6e261116a697c1da48bcbaa8eef213", size = 20594976, upload-time = "2026-06-05T00:44:56.487Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/09/9d/ebc7ae23012b1dd9fceba90e34a6cc0f4fccd3ca727887f80131752fb631/spotforecast2_safe-16.4.0.tar.gz", hash = "sha256:8d0bb855bdd1c33ae8a749772b7025b1125528f3887824a0adb143b0392354e0", size = 20605944, upload-time = "2026-06-05T20:58:54.571Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7b/dc/beceeae4ca30a1ab7bd622852630d0b39ac23a5d4531955944964bfb1723/spotforecast2_safe-16.3.0-py3-none-any.whl", hash = "sha256:7ac352138d953e04af2f4c10eccd8848e6f26e1d5fb6f71c9490cb5b42b8567e", size = 20658346, upload-time = "2026-06-05T00:44:53.962Z" },
+    { url = "https://files.pythonhosted.org/packages/c6/d3/4bcc7ca6784b89e65876c9cb87078a94d3a2862a52f2f3458b576fc0075b/spotforecast2_safe-16.4.0-py3-none-any.whl", hash = "sha256:85adffec6abe1e38ddca9a2a41a2f291d3a2205e3c9614bcb59ca917aad6d523", size = 20669759, upload-time = "2026-06-05T20:58:52.201Z" },
 ]
 
 [[package]]
