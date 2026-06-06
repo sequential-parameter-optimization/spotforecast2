@@ -389,6 +389,17 @@ class TestGuards:
         with pytest.raises(RuntimeError, match="detect_outliers"):
             _lazy().plot_with_outliers()
 
+    def test_plot_with_outliers_invoked_after_detect(self, demo_df):
+        """plot_with_outliers() must not raise after detect_outliers() runs."""
+        from unittest.mock import patch as _patch
+
+        task = LazyTask(use_exogenous_features=False)
+        task.prepare_data(demo_data=demo_df)
+        task.detect_outliers()
+        with _patch("spotforecast2.multitask.base._plot_with_outliers") as mock_plt:
+            task.plot_with_outliers()
+        mock_plt.assert_called_once()
+
     def test_run_before_prepare_multitask(self):
         with pytest.raises(RuntimeError, match="Pipeline data not prepared"):
             _default().run(show=False)
@@ -776,3 +787,48 @@ class TestMethodChaining:
             task.prepare_data().detect_outliers().impute().build_exogenous_features()
         )
         assert result is task
+
+
+# ---------------------------------------------------------------------------
+# cache_home=None resolves via get_cache_home()
+# ---------------------------------------------------------------------------
+
+
+class TestCacheHomeResolution:
+    """BaseTask must resolve cache_home=None to get_cache_home()."""
+
+    def test_cache_home_none_resolves_to_default(self, tmp_path, monkeypatch):
+        import logging
+
+        from spotforecast2_safe.data.fetch_data import get_cache_home
+
+        # Redirect the package default so the test never touches the
+        # user's real cache directory (get_cache_home honours this env var).
+        monkeypatch.setenv("SPOTFORECAST2_CACHE", str(tmp_path))
+
+        mt = MultiTask(task="clean", cache_home=None)
+        expected = get_cache_home()
+        # _attach_file_handler resolves via get_cache_home(config.cache_home);
+        # when cache_home=None the resolved path must equal the package default.
+        file_handlers = [
+            h
+            for h in mt.logger.handlers
+            if isinstance(h, logging.FileHandler)
+        ]
+        # Loggers are singletons: earlier tests may have left handlers for
+        # other cache locations — assert the default-resolved one exists.
+        matching = [h for h in file_handlers if str(expected) in h.baseFilename]
+        try:
+            assert matching, (
+                f"no FileHandler under the resolved default cache home {expected}; "
+                f"handlers: {[h.baseFilename for h in file_handlers]}"
+            )
+        finally:
+            for h in matching:
+                h.close()
+                mt.logger.removeHandler(h)
+
+    def test_explicit_cache_home_written_to_config(self, tmp_path):
+        """cache_home passed to MultiTask must be written onto config.cache_home."""
+        mt = MultiTask(task="clean", cache_home=tmp_path)
+        assert mt.config.cache_home == tmp_path

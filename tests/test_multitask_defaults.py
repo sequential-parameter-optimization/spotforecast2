@@ -143,11 +143,3 @@ def test_multitask_dispatcher_routes_defaults_task():
         run_task_defaults.return_value = {}
         mt.run(show=False)
     run_task_defaults.assert_called_once_with(show=False)
-
-
-def test_runner_accepts_task_defaults():
-    """``runner._PIPELINE_TASKS`` includes ``"defaults"`` so
-    ``run(task="defaults")`` does not raise on the task-name validation."""
-    from spotforecast2.multitask.runner import _PIPELINE_TASKS
-
-    assert "defaults" in _PIPELINE_TASKS

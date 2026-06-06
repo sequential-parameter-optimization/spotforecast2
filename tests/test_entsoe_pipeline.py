@@ -1,13 +1,12 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""End-to-end tests for the ENTSO-E integration under the unified `run()` entry point.
+"""End-to-end tests for the ENTSO-E integration driven directly through MultiTask.
 
-ADR-002 Step 6.  Exercises each ENTSO-E task variant (`lazy`, `defaults`,
-`optuna`, `spotoptim`, `predict`) against an in-memory synthetic
-single-target DataFrame supplied via `config.data_loader`.  No network
-calls — `use_exogenous_features=False` skips the Open-Meteo weather fetch
-that would otherwise need the internet.
+Exercises each ENTSO-E task variant (defaults, lazy, optuna, spotoptim, predict)
+against an in-memory synthetic single-target DataFrame supplied via
+config.data_loader.  No network calls — use_exogenous_features=False skips
+the Open-Meteo weather fetch.
 """
 
 from pathlib import Path
@@ -17,7 +16,7 @@ import pandas as pd
 import pytest
 from spotforecast2_safe.configurator import ConfigEntsoe
 
-from spotforecast2.multitask.runner import run
+from spotforecast2.multitask.multi import MultiTask
 from spotforecast2.tasks.task_entsoe import entsoe_lgbm_factory
 
 
@@ -54,7 +53,7 @@ def _make_loader(df: pd.DataFrame):
 
 @pytest.fixture
 def entsoe_config(tmp_path: Path) -> ConfigEntsoe:
-    """Pre-wired ``ConfigEntsoe`` used by every ``run(...)`` call in this module."""
+    """Pre-wired ``ConfigEntsoe`` used by every pipeline call in this module."""
     df = _synthetic_entsoe_df(n_days=30)
     cfg = ConfigEntsoe(
         targets=["Actual Load"],
@@ -72,56 +71,68 @@ def entsoe_config(tmp_path: Path) -> ConfigEntsoe:
 
 
 def _assert_forecast_shape(forecast: pd.DataFrame, predict_size: int) -> None:
-    """Every run(...) returns a single-column ``forecast`` DataFrame."""
+    """Every pipeline result must yield a single-column ``forecast`` DataFrame."""
     assert isinstance(forecast, pd.DataFrame)
     assert list(forecast.columns) == ["forecast"]
     assert len(forecast) == predict_size
     assert forecast["forecast"].notna().all()
 
 
-def test_run_entsoe_defaults_round_trip(entsoe_config):
+def _drive(cfg: ConfigEntsoe, task: str, cache_home: str, **overrides) -> dict:
+    """Construct a MultiTask, wire project name, run all five pipeline steps.
+
+    Returns the raw result dict from ``mt.run(show=False)``.
+    """
+    cfg.data_frame_name = "test-entsoe"
+    if overrides:
+        cfg.set_params(**overrides)
+    mt = MultiTask(cfg, task=task, cache_home=cache_home, log_level=40)
+    mt.prepare_data()
+    mt.detect_outliers()
+    mt.impute()
+    mt.build_exogenous_features()
+    return mt.run(show=False)
+
+
+def test_entsoe_defaults_round_trip(entsoe_config, tmp_path):
     """``task="defaults"`` fits with factory defaults and returns a forecast."""
-    forecast = run(
-        entsoe_config, task="defaults", project_name="test-entsoe", show=False
-    )
+    result = _drive(entsoe_config, "defaults", str(tmp_path))
+    forecast = result["future_pred"].to_frame("forecast")
     _assert_forecast_shape(forecast, entsoe_config.predict_size)
 
 
-def test_run_entsoe_lazy_round_trip(entsoe_config):
+def test_entsoe_lazy_round_trip(entsoe_config, tmp_path):
     """``task="lazy"`` works for ENTSO-E with no prior tuning in cache."""
-    forecast = run(entsoe_config, task="lazy", project_name="test-entsoe", show=False)
+    result = _drive(entsoe_config, "lazy", str(tmp_path))
+    forecast = result["future_pred"].to_frame("forecast")
     _assert_forecast_shape(forecast, entsoe_config.predict_size)
 
 
-def test_run_entsoe_optuna_round_trip(entsoe_config):
+def test_entsoe_optuna_round_trip(entsoe_config, tmp_path):
     """``task="optuna"`` runs Bayesian tuning then trains."""
-    forecast = run(
-        entsoe_config,
-        task="optuna",
-        project_name="test-entsoe",
-        show=False,
-        n_trials_optuna=2,
-    )
+    result = _drive(entsoe_config, "optuna", str(tmp_path), n_trials_optuna=2)
+    forecast = result["future_pred"].to_frame("forecast")
     _assert_forecast_shape(forecast, entsoe_config.predict_size)
 
 
-def test_run_entsoe_spotoptim_round_trip(entsoe_config):
+def test_entsoe_spotoptim_round_trip(entsoe_config, tmp_path):
     """``task="spotoptim"`` runs surrogate-model tuning then trains."""
-    forecast = run(
+    result = _drive(
         entsoe_config,
-        task="spotoptim",
-        project_name="test-entsoe",
-        show=False,
+        "spotoptim",
+        str(tmp_path),
         n_trials_spotoptim=3,
         n_initial_spotoptim=2,
     )
+    forecast = result["future_pred"].to_frame("forecast")
     _assert_forecast_shape(forecast, entsoe_config.predict_size)
 
 
-def test_run_entsoe_predict_after_defaults(entsoe_config):
+def test_entsoe_predict_after_defaults(entsoe_config, tmp_path):
     """``task="predict"`` reads models saved by a prior ``task="defaults"`` run."""
-    run(entsoe_config, task="defaults", project_name="test-entsoe", show=False)
-    forecast = run(
-        entsoe_config, task="predict", project_name="test-entsoe", show=False
-    )
+    # Training step: must write models into cache before predict can load them.
+    _drive(entsoe_config, "defaults", str(tmp_path))
+    # Predict step: same cache_home and project_name as the training run.
+    result = _drive(entsoe_config, "predict", str(tmp_path))
+    forecast = result["future_pred"].to_frame("forecast")
     _assert_forecast_shape(forecast, entsoe_config.predict_size)

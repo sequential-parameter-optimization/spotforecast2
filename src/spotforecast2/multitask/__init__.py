@@ -30,7 +30,6 @@ from spotforecast2.multitask.lazy import LazyTask
 from spotforecast2.multitask.multi import MultiTask
 from spotforecast2.multitask.optuna import OptunaTask
 from spotforecast2.multitask.predict import PredictTask
-from spotforecast2.multitask.runner import make_demo10_config, run
 from spotforecast2.multitask.spotoptim import SpotOptimTask
 
 __all__ = [
@@ -43,6 +42,4 @@ __all__ = [
     "PredictTask",
     "SpotOptimTask",
     "agg_predictor",
-    "make_demo10_config",
-    "run",
 ]

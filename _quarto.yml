@@ -102,8 +102,6 @@ website:
                 file: docs/reference/multitask.CleanTask.qmd
               - text: "MultiTask"
                 file: docs/reference/multitask.MultiTask.qmd
-              - text: "run"
-                file: docs/reference/multitask.run.qmd
           - section: "Model Selection"
             contents:
               - text: "bayesian_search"
@@ -173,7 +171,7 @@ website:
 
       - section: "Multitask"
         contents:
-          - text: "ENTSO-E via run()"
+          - text: "ENTSO-E single-target"
             file: docs/multitask/entsoe.qmd
           - text: "Multi-Target Demo II"
             file: docs/multitask/multitask-II.qmd
@@ -253,7 +251,6 @@ quartodoc:
         - multitask.PredictTask
         - multitask.CleanTask
         - multitask.MultiTask
-        - multitask.run
 
     - title: "Stats"
       desc: "Statistical analysis tools."
