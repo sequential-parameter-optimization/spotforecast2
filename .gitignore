@@ -259,3 +259,8 @@ docs/tasks/improved2.quarto_ipynb_1
 docs/tasks/improved2.quarto_ipynb_2
 TASK.md
 CLAUDE.md
+
+# Quarto freeze store: local/CI render accelerator only. CI restores it via
+# actions/cache (docs.yml "Restore Quarto freeze cache"), NOT from git —
+# do not commit it (unlike spotforecast2-safe, which does track _freeze/).
+/_freeze/

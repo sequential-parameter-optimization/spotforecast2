@@ -32,11 +32,11 @@ def test_train_subcommand_skips_when_recent_model_exists(tmp_path, monkeypatch):
     )
     _make_model_file(tmp_path, "entsoe-lgbm", age_days=1)
 
-    with patch.object(task_entsoe, "run") as mock_run:
+    with patch.object(task_entsoe, "_run_entsoe_pipeline") as mock_pipeline:
         monkeypatch.setattr(sys, "argv", ["spotforecast2-entsoe", "train", "lgbm"])
         task_entsoe.main()
 
-    mock_run.assert_not_called()
+    mock_pipeline.assert_not_called()
 
 
 def test_train_subcommand_retrains_with_force(tmp_path, monkeypatch):
@@ -46,13 +46,13 @@ def test_train_subcommand_retrains_with_force(tmp_path, monkeypatch):
     )
     _make_model_file(tmp_path, "entsoe-lgbm", age_days=1)
 
-    with patch.object(task_entsoe, "run") as mock_run:
+    with patch.object(task_entsoe, "_run_entsoe_pipeline") as mock_pipeline:
         monkeypatch.setattr(
             sys, "argv", ["spotforecast2-entsoe", "train", "lgbm", "--force"]
         )
         task_entsoe.main()
 
-    mock_run.assert_called_once()
+    mock_pipeline.assert_called_once()
 
 
 def test_train_subcommand_retrains_when_no_previous_model(tmp_path, monkeypatch):
@@ -61,11 +61,11 @@ def test_train_subcommand_retrains_when_no_previous_model(tmp_path, monkeypatch)
         task_entsoe, "get_cache_home", lambda *_args, **_kwargs: tmp_path
     )
 
-    with patch.object(task_entsoe, "run") as mock_run:
+    with patch.object(task_entsoe, "_run_entsoe_pipeline") as mock_pipeline:
         monkeypatch.setattr(sys, "argv", ["spotforecast2-entsoe", "train", "lgbm"])
         task_entsoe.main()
 
-    mock_run.assert_called_once()
+    mock_pipeline.assert_called_once()
 
 
 def test_train_subcommand_retrains_when_model_is_old(tmp_path, monkeypatch):
@@ -75,11 +75,11 @@ def test_train_subcommand_retrains_when_model_is_old(tmp_path, monkeypatch):
     )
     _make_model_file(tmp_path, "entsoe-lgbm", age_days=10)
 
-    with patch.object(task_entsoe, "run") as mock_run:
+    with patch.object(task_entsoe, "_run_entsoe_pipeline") as mock_pipeline:
         monkeypatch.setattr(sys, "argv", ["spotforecast2-entsoe", "train", "lgbm"])
         task_entsoe.main()
 
-    mock_run.assert_called_once()
+    mock_pipeline.assert_called_once()
 
 
 def test_latest_saved_model_timestamp_returns_none_when_dir_missing(tmp_path):

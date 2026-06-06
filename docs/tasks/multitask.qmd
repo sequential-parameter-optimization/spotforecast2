@@ -20,24 +20,19 @@ warnings.filterwarnings("ignore")
 
 Konfiguration der Parameter und des Cache-Verzeichnisses.  Seit dem
 Refactor 05-2026 lebt jeder Pipeline-Parameter auf einem `ConfigMulti`
-(oder `ConfigEntsoe`) und wird als einzelnes `config`-Argument an `run`
-übergeben.
+(oder `ConfigEntsoe`) und wird direkt an `MultiTask` übergeben.
 
 ```{python}
+import tempfile
+
 import pandas as pd
 
-from spotforecast2_safe.data.fetch_data import get_cache_home
-from spotforecast2.multitask.runner import run, make_demo10_config
+from spotforecast2.multitask.multi import MultiTask
+from spotforecast2_safe.configurator.config_multi import ConfigMulti
+from spotforecast2_safe.multitask.runner import make_demo10_config
 
-CACHE_HOME = get_cache_home()
+CACHE_HOME = tempfile.mkdtemp()
 PROJECT_NAME = "test_001"
-
-config = make_demo10_config(
-    train_size=pd.Timedelta(days=365),
-    delta_val=pd.Timedelta(days=7 * 10),
-    n_trials_optuna=5,
-    use_exogenous_features=False,
-)
 ```
 
 ### Fail-safe Verhalten bei Open-Meteo-Ausfällen
@@ -76,15 +71,15 @@ same as it was in training data (36).`
 
 Für Produktivpfade gibt es zwei sichere Optionen:
 
-- **Strikt** (`on_weather_failure="raise"`, Default): Ausfälle stoppen die
+- Strikt (`on_weather_failure="raise"`, Default): Ausfälle stoppen die
   Pipeline; trainierte Modelle und Vorhersageläufe sehen immer dieselben
   Spalten. Empfohlen, wenn der Datenanbieter zuverlässig ist und ein
   unterbrochener Lauf akzeptabel ist.
-- **Vollständig wetterfrei** (`use_exogenous_features=False` oder
+- Vollständig wetterfrei (`use_exogenous_features=False` oder
   `on_weather_failure="skip"` mit *beiden* Schritten unter derselben Policy):
-  Modell und Vorhersage werden konsistent ohne Wetter trainiert.
+  Modell und Prognose werden konsistent ohne Wetter trainiert.
 
-`on_weather_failure="skip"` ist ideal für *isolierte, einmalige* Vorhersagen
+`on_weather_failure="skip"` ist ideal für *isolierte, einmalige* Prognosen
 (z. B. ein interaktives Notebook), in denen kein zuvor trainiertes Modell
 geladen wird.
 :::
@@ -95,25 +90,51 @@ geladen wird.
 
 ### Optuna
 
-Tunen der Hyperparameter (wöchentlich).
+Tunen der Hyperparameter (wöchentlich):
 
 ```{python}
-forecast = run(config, task="optuna", dataframe=df,
-               project_name=PROJECT_NAME, cache_home=CACHE_HOME, show=True)
-print(forecast)
+cfg_optuna = make_demo10_config(
+    train_size=pd.Timedelta(days=365),
+    delta_val=pd.Timedelta(days=7 * 10),
+    n_trials_optuna=2,
+    use_exogenous_features=False,
+)
+cfg_optuna.data_frame_name = PROJECT_NAME
+
+mt_optuna = MultiTask(cfg_optuna, task="optuna", cache_home=CACHE_HOME, log_level=40)
+mt_optuna.prepare_data(demo_data=df)
+mt_optuna.detect_outliers()
+mt_optuna.impute()
+mt_optuna.build_exogenous_features()
+result_optuna = mt_optuna.run(show=False)
+
+forecast_optuna = result_optuna["future_pred"].to_frame("forecast")
+print(forecast_optuna)
 ```
 
 
 ### Lazy
 
-Model-Fit und Prediction mit den besten Hyperparametern aus Optuna, ohne erneutes Tuning (täglich oder stündlich).
+Model-Fit und Prognose mit den besten Hyperparametern aus Optuna, ohne erneutes Tuning (täglich oder stündlich).
 Wurde die Optuna-Phase noch nicht ausgeführt, wird `lazy` automatisch mit den Standardparametern gestartet.
 
-
 ```{python}
-forecast = run(config, task="lazy", dataframe=df,
-               project_name=PROJECT_NAME, cache_home=CACHE_HOME, show=True)
-print(forecast)
+cfg_lazy = make_demo10_config(
+    train_size=pd.Timedelta(days=365),
+    delta_val=pd.Timedelta(days=7 * 10),
+    use_exogenous_features=False,
+)
+cfg_lazy.data_frame_name = PROJECT_NAME
+
+mt_lazy = MultiTask(cfg_lazy, task="lazy", cache_home=CACHE_HOME, log_level=40)
+mt_lazy.prepare_data(demo_data=df)
+mt_lazy.detect_outliers()
+mt_lazy.impute()
+mt_lazy.build_exogenous_features()
+result_lazy = mt_lazy.run(show=False)
+
+forecast_lazy = result_lazy["future_pred"].to_frame("forecast")
+print(forecast_lazy)
 ```
 
 
@@ -125,9 +146,24 @@ Im Gegensatz zu `lazy` werden zwischengespeicherte Tuning-Ergebnisse
 "Approach 2: Training without Tuning" in der ENTSO-E-Publikation).
 
 ```{python}
-forecast = run(config, task="defaults", dataframe=df,
-               project_name=PROJECT_NAME, cache_home=CACHE_HOME, show=True)
-print(forecast)
+cfg_defaults = make_demo10_config(
+    train_size=pd.Timedelta(days=365),
+    delta_val=pd.Timedelta(days=7 * 10),
+    use_exogenous_features=False,
+)
+cfg_defaults.data_frame_name = PROJECT_NAME
+
+mt_defaults = MultiTask(
+    cfg_defaults, task="defaults", cache_home=CACHE_HOME, log_level=40
+)
+mt_defaults.prepare_data(demo_data=df)
+mt_defaults.detect_outliers()
+mt_defaults.impute()
+mt_defaults.build_exogenous_features()
+result_defaults = mt_defaults.run(show=False)
+
+forecast_defaults = result_defaults["future_pred"].to_frame("forecast")
+print(forecast_defaults)
 ```
 
 
@@ -136,12 +172,23 @@ print(forecast)
 
 ### Predict
 
-Nur Vorhersage, ohne Tuning oder Fit. Die Schritte  `optuna` oder `lazy` müssen bereits einmal gelaufen sein, damit die Ergebnisse im Cache vorliegen.
+Nur Prognose, ohne Tuning oder Fit. Die Schritte `optuna` oder `lazy` müssen bereits einmal gelaufen sein, damit die Ergebnisse im Cache vorliegen.
 
 ```{python}
-forecast = run(config, task="predict", dataframe=df,
-               project_name=PROJECT_NAME, cache_home=CACHE_HOME, show=True)
-print(forecast)
+cfg_predict = make_demo10_config(use_exogenous_features=False)
+cfg_predict.data_frame_name = PROJECT_NAME
+
+mt_predict = MultiTask(
+    cfg_predict, task="predict", cache_home=CACHE_HOME, log_level=40
+)
+mt_predict.prepare_data(demo_data=df)
+mt_predict.detect_outliers()
+mt_predict.impute()
+mt_predict.build_exogenous_features()
+result_predict = mt_predict.run(show=False)
+
+forecast_predict = result_predict["future_pred"].to_frame("forecast")
+print(forecast_predict)
 ```
 
 
@@ -150,19 +197,32 @@ print(forecast)
 Löschen der Cache-Daten für das Projekt. Mit `dry_run=True` wird nur angezeigt, welche Dateien gelöscht würden, ohne sie tatsächlich zu entfernen.
 
 ```{python}
-run(config, task="clean", project_name=PROJECT_NAME,
-    cache_home=CACHE_HOME, dry_run=True)
+cfg_clean_dry = ConfigMulti()
+cfg_clean_dry.data_frame_name = PROJECT_NAME
+
+mt_clean_dry = MultiTask(
+    cfg_clean_dry, task="clean", cache_home=CACHE_HOME, dry_run=True, log_level=40
+)
+mt_clean_dry.run()
 ```
 
 ```{python}
-run(config, task="clean", project_name=PROJECT_NAME, cache_home=CACHE_HOME)
+cfg_clean = ConfigMulti()
+cfg_clean.data_frame_name = PROJECT_NAME
+
+mt_clean = MultiTask(
+    cfg_clean, task="clean", cache_home=CACHE_HOME, dry_run=False, log_level=40
+)
+mt_clean.run()
 ```
 
-## Dokumentation der Funktion `run`
+## Dokumentation der Klasse `MultiTask`
 
-[https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/manager.multitask.run.html](https://sequential-parameter-optimization.github.io/spotforecast2/docs/reference/manager.multitask.run.html)
+Die vollständige API-Referenz mit allen Parametern, Pipeline-Methoden
+und weiteren Beispielen:
+[`multitask.MultiTask`](../reference/multitask.MultiTask.qmd).
 
-## Von der Funktion `run` aufgerufene Funktionen
+## Von `MultiTask` aufgerufene Funktionen
 
 Aufgelistet werden nur Funktionen und Methoden aus den Paketen `spotforecast2`
 und `spotforecast2_safe`. Aufrufe in Drittbibliotheken (`pandas`, `numpy`,
@@ -171,15 +231,14 @@ Das Beispiel folgt dem Pfad `task="lazy"` (siehe Abschnitt *Lazy* oben).
 
 ### Einstiegspunkt
 
-- `spotforecast2.multitask.runner.run`
-  - `spotforecast2_safe.data.fetch_data.get_cache_home` (falls `cache_home is None`)
+- `spotforecast2.multitask.multi.MultiTask.__init__`
+  - `spotforecast2_safe.data.fetch_data.get_cache_home` (falls `cache_home` im Konstruktor übergeben wird)
   - `spotforecast2_safe.configurator.config_multi.ConfigMulti` (nur falls `config is None`)
   - `config.set_params(**overrides)` (sofern Overrides übergeben wurden)
-  - `spotforecast2.multitask.multi.MultiTask.__init__`
-    - `spotforecast2.multitask.base.BaseTask.__init__`
-      - `config.set_params(**overrides)` (Overrides aus `MultiTask`)
-      - `spotforecast2.multitask.base.BaseTask._attach_file_handler`
-        - `spotforecast2_safe.data.fetch_data.get_cache_home`
+  - `spotforecast2.multitask.base.BaseTask.__init__`
+    - `config.set_params(**overrides)` (Overrides aus `MultiTask`)
+    - `spotforecast2.multitask.base.BaseTask._attach_file_handler`
+      - `spotforecast2_safe.data.fetch_data.get_cache_home`
 
 ### Phase 1 — `prepare_data`
 
@@ -196,7 +255,7 @@ Das Beispiel folgt dem Pfad `task="lazy"` (siehe Abschnitt *Lazy* oben).
   - `spotforecast2_safe.preprocessing.outlier.manual_outlier_removal`
   - `spotforecast2_safe.preprocessing.outlier.get_outliers`
 
-### Phase 2b — `plot_with_outliers` (nur falls `plot_with_outliers=True`)
+### Phase 2b — `plot_with_outliers` (nur falls explizit aufgerufen)
 
 - `spotforecast2.multitask.base.BaseTask.plot_with_outliers`
   - `spotforecast2.plots.plotter.plot_with_outliers`

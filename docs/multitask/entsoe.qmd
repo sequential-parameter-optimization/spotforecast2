@@ -1,12 +1,11 @@
 ---
-title: "ENTSO-E single-target forecasting via `run()`"
+title: "ENTSO-E single-target forecasting"
 ---
 
-This page walks through driving the ENTSO-E single-target pipeline through
-the unified `spotforecast2.multitask.runner.run` entry point.  The
-publication-style "Approach 1-4" variants from the
-`bart26b_spotforecast2` paper map onto the four `task` values that
-`run` accepts:
+This page walks through driving the ENTSO-E single-target pipeline directly
+through `spotforecast2.multitask.multi.MultiTask`.  The publication-style
+"Approach 1-4" variants from the `bart26b_spotforecast2` paper map onto
+the four `task` values:
 
 | Publication approach | `task=` value |
 |---|---|
@@ -15,13 +14,14 @@ publication-style "Approach 1-4" variants from the
 | Approach 3 — Optuna tuning | `"optuna"` |
 | Approach 4 — SpotOptim tuning | `"spotoptim"` |
 
-The same `ConfigEntsoe` instance plus two hook callables
-(`config.data_loader` and `config.forecaster_factory`) drive every
-variant.  No per-approach wrapper classes are needed.
+`ConfigEntsoe` plus two hook callables (`config.data_loader` and
+`config.forecaster_factory`) drive every variant.  No per-approach wrapper
+classes are needed.
 
 ## Setup
 
 ```{python}
+import tempfile
 import warnings
 
 import numpy as np
@@ -31,8 +31,10 @@ warnings.filterwarnings("ignore")
 
 from spotforecast2_safe.configurator import ConfigEntsoe
 
-from spotforecast2.multitask.runner import run
+from spotforecast2.multitask.multi import MultiTask
 from spotforecast2.tasks.task_entsoe import entsoe_lgbm_factory
+
+CACHE_HOME = tempfile.mkdtemp()
 ```
 
 ## Synthetic ENTSO-E load curve
@@ -67,33 +69,12 @@ load_df.head()
 ## Wiring the data loader
 
 `BaseTask.prepare_data` calls `config.data_loader(config)` whenever no
-DataFrame is supplied to `run`.  Here we wrap the synthetic DataFrame as
-a tiny stub loader so the tutorial is self-contained.
+DataFrame is supplied.  Here we wrap the synthetic DataFrame as a stub
+loader so the tutorial is self-contained.
 
 ```{python}
 def stub_loader(_config):
     return load_df.copy()
-```
-
-## Shared config
-
-Every approach below shares the same `ConfigEntsoe` instance — only the
-`task=` value changes.  Outlier detection and exogenous features
-(weather / calendar / holidays) are disabled here so the tutorial does
-not depend on network access.
-
-```{python}
-config = ConfigEntsoe(
-    targets=["Actual Load"],
-    agg_weights=[1.0],
-    bounds=[(-1e9, 1e9)],
-    index_name="Time (UTC)",
-    use_exogenous_features=False,
-    use_outlier_detection=False,
-    predict_size=12,
-)
-config.data_loader = stub_loader
-config.forecaster_factory = entsoe_lgbm_factory
 ```
 
 ## Approach 1 — Lazy fitting
@@ -102,7 +83,27 @@ config.forecaster_factory = entsoe_lgbm_factory
 result is available, applies it before fitting.
 
 ```{python}
-forecast_lazy = run(config, task="lazy", project_name="entsoe-tutorial", show=False)
+config_lazy = ConfigEntsoe(
+    targets=["Actual Load"],
+    agg_weights=[1.0],
+    bounds=[(-1e9, 1e9)],
+    index_name="Time (UTC)",
+    use_exogenous_features=False,
+    use_outlier_detection=False,
+    predict_size=12,
+)
+config_lazy.data_loader = stub_loader
+config_lazy.forecaster_factory = entsoe_lgbm_factory
+config_lazy.data_frame_name = "entsoe-tutorial"
+
+mt_lazy = MultiTask(config_lazy, task="lazy", cache_home=CACHE_HOME, log_level=40)
+mt_lazy.prepare_data()
+mt_lazy.detect_outliers()
+mt_lazy.impute()
+mt_lazy.build_exogenous_features()
+result_lazy = mt_lazy.run(show=False)
+
+forecast_lazy = result_lazy["future_pred"].to_frame("forecast")
 forecast_lazy.head()
 ```
 
@@ -112,7 +113,29 @@ forecast_lazy.head()
 factory defaults, never reads the tuning cache.
 
 ```{python}
-forecast_defaults = run(config, task="defaults", project_name="entsoe-tutorial", show=False)
+config_defaults = ConfigEntsoe(
+    targets=["Actual Load"],
+    agg_weights=[1.0],
+    bounds=[(-1e9, 1e9)],
+    index_name="Time (UTC)",
+    use_exogenous_features=False,
+    use_outlier_detection=False,
+    predict_size=12,
+)
+config_defaults.data_loader = stub_loader
+config_defaults.forecaster_factory = entsoe_lgbm_factory
+config_defaults.data_frame_name = "entsoe-tutorial"
+
+mt_defaults = MultiTask(
+    config_defaults, task="defaults", cache_home=CACHE_HOME, log_level=40
+)
+mt_defaults.prepare_data()
+mt_defaults.detect_outliers()
+mt_defaults.impute()
+mt_defaults.build_exogenous_features()
+result_defaults = mt_defaults.run(show=False)
+
+forecast_defaults = result_defaults["future_pred"].to_frame("forecast")
 forecast_defaults.head()
 ```
 
@@ -123,13 +146,33 @@ trains with the best parameters.  `n_trials_optuna` controls the search
 budget; we use a tiny value here so the tutorial renders fast.
 
 ```{python}
-forecast_optuna = run(
-    config,
+config_optuna = ConfigEntsoe(
+    targets=["Actual Load"],
+    agg_weights=[1.0],
+    bounds=[(-1e9, 1e9)],
+    index_name="Time (UTC)",
+    use_exogenous_features=False,
+    use_outlier_detection=False,
+    predict_size=12,
+)
+config_optuna.data_loader = stub_loader
+config_optuna.forecaster_factory = entsoe_lgbm_factory
+config_optuna.data_frame_name = "entsoe-tutorial"
+
+mt_optuna = MultiTask(
+    config_optuna,
     task="optuna",
-    project_name="entsoe-tutorial",
-    show=False,
+    cache_home=CACHE_HOME,
+    log_level=40,
     n_trials_optuna=2,
 )
+mt_optuna.prepare_data()
+mt_optuna.detect_outliers()
+mt_optuna.impute()
+mt_optuna.build_exogenous_features()
+result_optuna = mt_optuna.run(show=False)
+
+forecast_optuna = result_optuna["future_pred"].to_frame("forecast")
 forecast_optuna.head()
 ```
 
@@ -138,14 +181,34 @@ forecast_optuna.head()
 `task="spotoptim"` runs surrogate-model-based tuning via `spotoptim`.
 
 ```{python}
-forecast_spotoptim = run(
-    config,
+config_spotoptim = ConfigEntsoe(
+    targets=["Actual Load"],
+    agg_weights=[1.0],
+    bounds=[(-1e9, 1e9)],
+    index_name="Time (UTC)",
+    use_exogenous_features=False,
+    use_outlier_detection=False,
+    predict_size=12,
+)
+config_spotoptim.data_loader = stub_loader
+config_spotoptim.forecaster_factory = entsoe_lgbm_factory
+config_spotoptim.data_frame_name = "entsoe-tutorial"
+
+mt_spotoptim = MultiTask(
+    config_spotoptim,
     task="spotoptim",
-    project_name="entsoe-tutorial",
-    show=False,
+    cache_home=CACHE_HOME,
+    log_level=40,
     n_trials_spotoptim=3,
     n_initial_spotoptim=2,
 )
+mt_spotoptim.prepare_data()
+mt_spotoptim.detect_outliers()
+mt_spotoptim.impute()
+mt_spotoptim.build_exogenous_features()
+result_spotoptim = mt_spotoptim.run(show=False)
+
+forecast_spotoptim = result_spotoptim["future_pred"].to_frame("forecast")
 forecast_spotoptim.head()
 ```
 
@@ -153,25 +216,50 @@ forecast_spotoptim.head()
 
 After any training task, the fitted model is auto-saved to the project's
 cache directory.  `task="predict"` skips fitting and loads the latest
-saved model for each target.
+saved model for each target.  The cell below requires that at least one
+of the training cells above has executed in the same render session —
+any of them writes models into the shared
+`CACHE_HOME`/`"entsoe-tutorial"` path that `predict` loads from.
 
 ```{python}
-forecast_predict = run(config, task="predict", project_name="entsoe-tutorial", show=False)
+config_predict = ConfigEntsoe(
+    targets=["Actual Load"],
+    agg_weights=[1.0],
+    bounds=[(-1e9, 1e9)],
+    index_name="Time (UTC)",
+    use_exogenous_features=False,
+    use_outlier_detection=False,
+    predict_size=12,
+)
+config_predict.data_loader = stub_loader
+config_predict.forecaster_factory = entsoe_lgbm_factory
+config_predict.data_frame_name = "entsoe-tutorial"
+
+mt_predict = MultiTask(
+    config_predict, task="predict", cache_home=CACHE_HOME, log_level=40
+)
+mt_predict.prepare_data()
+mt_predict.detect_outliers()
+mt_predict.impute()
+mt_predict.build_exogenous_features()
+result_predict = mt_predict.run(show=False)
+
+forecast_predict = result_predict["future_pred"].to_frame("forecast")
 forecast_predict.head()
 ```
 
 ## Putting it together
 
-A production CLI such as `spotforecast2-entsoe` typically:
+The `spotforecast2-entsoe` CLI drives `MultiTask` directly:
 
 1. Downloads the latest ENTSO-E data
    (`spotforecast2_safe.downloader.entsoe.download_new_data`).
-2. Merges the raw CSVs into the interim file
-   (`merge_build_manual`).
-3. Runs `run(config, task="defaults", project_name=...)` to fit and
-   save the model.
-4. Runs `run(config, task="predict", project_name=...)` on a
-   schedule to generate the next forecast.
+2. Merges the raw CSVs into the interim file (`merge_build_manual`).
+3. Constructs a `MultiTask(config, task="defaults", ...)`, runs all five
+   pipeline steps, and saves the fitted model automatically.
+4. On a schedule, constructs a `MultiTask(config, task="predict", ...)`,
+   runs the five steps, and reads the saved model to produce the next
+   forecast.
 
 The same four task values are available to notebook callers — pick the
 one that matches the level of tuning the operational policy allows.
