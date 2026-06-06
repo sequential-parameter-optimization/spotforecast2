@@ -3,8 +3,8 @@
 
 """Unified CLI for the ENTSO-E single-target forecasting pipeline.
 
-Thin argparse wrapper over `spotforecast2.multitask.runner.run` with
-`ConfigEntsoe` plugged in via the `data_loader` and `forecaster_factory`
+Drives the pipeline directly through `spotforecast2.multitask.multi.MultiTask`
+with `ConfigEntsoe` plugged in via the `data_loader` and `forecaster_factory`
 hooks introduced in ADR-001.  The CLI exposes four subcommands:
 
 - ``download`` — fetch raw data from the ENTSO-E Transparency Platform.
@@ -39,7 +39,7 @@ from spotforecast2_safe.manager.trainer import should_retrain
 from spotforecast2_safe.preprocessing import RollingFeatures
 from xgboost import XGBRegressor
 
-from spotforecast2.multitask.runner import run
+from spotforecast2.multitask.multi import MultiTask
 
 _PROJECT_BY_MODEL = {"lgbm": "entsoe-lgbm", "xgb": "entsoe-xgb"}
 
@@ -197,7 +197,7 @@ def _latest_saved_model_timestamp(
         config: A ``ConfigEntsoe`` (its ``cache_home`` resolves the model
             directory).
         project_name: Project / dataset identifier — same value the
-            runner passes for ``data_frame_name``.
+            pipeline passes for ``data_frame_name``.
 
     Returns:
         UTC ``pd.Timestamp`` of the newest ``.joblib`` file, or ``None``
@@ -211,6 +211,41 @@ def _latest_saved_model_timestamp(
         return None
     latest_mtime = max(c.stat().st_mtime for c in candidates)
     return pd.Timestamp(latest_mtime, unit="s", tz="UTC")
+
+
+def _run_entsoe_pipeline(
+    config: ConfigEntsoe,
+    *,
+    task: str,
+    project_name: str,
+    show: bool,
+) -> None:
+    """Run the ENTSO-E single-target forecasting pipeline.
+
+    Wires ``config`` into a ``MultiTask`` instance, sets
+    ``config.data_frame_name`` to ``project_name``, then executes the
+    standard five-step pipeline sequence and calls ``MultiTask.run(show=show)``.
+
+    Args:
+        config: A ``ConfigEntsoe`` already wired with ``data_loader`` and
+            ``forecaster_factory``.
+        task: Pipeline task mode — ``"defaults"``, ``"predict"``, etc.
+        project_name: Active-dataset identifier; drives the cache-subdirectory
+            and model-file naming.
+        show: Whether to display prediction figures after the run.
+    """
+    config.data_frame_name = project_name
+    mt = MultiTask(
+        config,
+        task=task,
+        cache_home=get_cache_home(config.cache_home),
+        log_level=logging.ERROR,
+    )
+    mt.prepare_data()
+    mt.detect_outliers()
+    mt.impute()
+    mt.build_exogenous_features()
+    mt.run(show=show)
 
 
 # Configure logging
@@ -270,7 +305,7 @@ def main() -> None:
             force=args.force,
         ):
             return
-        run(
+        _run_entsoe_pipeline(
             config,
             task="defaults",
             project_name=project_name,
@@ -279,7 +314,7 @@ def main() -> None:
 
     elif args.subcommand == "predict":
         config = _build_entsoe_config(args.model)
-        run(
+        _run_entsoe_pipeline(
             config,
             task="predict",
             project_name=_PROJECT_BY_MODEL[args.model],

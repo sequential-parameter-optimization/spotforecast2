@@ -4,28 +4,24 @@
 """Pytest tests for dry_run support in the clean task.
 
 Covers the full call chain:
-  runner.run(task="clean", dry_run=True)
-    → MultiTask(dry_run=True)
-      → MultiTask.run()
-        → run_task_clean(dry_run=True)
-          → execute_clean(..., dry_run=True)
+  MultiTask(dry_run=True)
+    → MultiTask.run()
+      → run_task_clean(dry_run=True)
+        → execute_clean(..., dry_run=True)
 
 Test classes:
-- TestRunnerDryRun      – runner.run() forwards dry_run to MultiTask
 - TestMultiTaskDryRun   – MultiTask stores and dispatches dry_run
 - TestExecuteCleanDryRun– execute_clean() dry_run logic (filesystem)
 - TestCleanTaskDryRun   – CleanTask.run(dry_run=True) integration
 """
 
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
-import pandas as pd
 import pytest
 
 from spotforecast2.multitask.clean import CleanTask, execute_clean
 from spotforecast2.multitask.multi import MultiTask
-from spotforecast2.multitask.runner import run
 
 # ---------------------------------------------------------------------------
 # Shared fixtures / helpers
@@ -39,63 +35,6 @@ def _populated_cache(tmp_path: Path) -> Path:
     (cache / "models").mkdir()
     (cache / "tuning").mkdir()
     return cache
-
-
-# ---------------------------------------------------------------------------
-# runner.run() dry_run forwarding
-# ---------------------------------------------------------------------------
-
-
-class TestRunnerDryRun:
-    """runner.run(task='clean', dry_run=True) must forward dry_run to MultiTask."""
-
-    @patch("spotforecast2.multitask.runner.MultiTask")
-    def test_dry_run_true_forwarded_to_multitask(self, MockMT):
-        mt = MagicMock()
-        MockMT.return_value = mt
-        run(task="clean", project_name="demo10", dry_run=True)
-        _, kwargs = MockMT.call_args
-        assert kwargs["dry_run"] is True
-
-    @patch("spotforecast2.multitask.runner.MultiTask")
-    def test_dry_run_false_forwarded_to_multitask(self, MockMT):
-        mt = MagicMock()
-        MockMT.return_value = mt
-        run(task="clean", project_name="demo10", dry_run=False)
-        _, kwargs = MockMT.call_args
-        assert kwargs["dry_run"] is False
-
-    @patch("spotforecast2.multitask.runner.MultiTask")
-    def test_dry_run_default_false_when_omitted(self, MockMT):
-        """When the caller omits ``dry_run`` it is forwarded as ``False``."""
-        mt = MagicMock()
-        MockMT.return_value = mt
-        run(task="clean", project_name="demo10")
-        _, kwargs = MockMT.call_args
-        assert kwargs["dry_run"] is False
-
-    @patch("spotforecast2.multitask.runner.MultiTask")
-    def test_run_called_once_with_dry_run(self, MockMT):
-        mt = MagicMock()
-        MockMT.return_value = mt
-        run(task="clean", project_name="demo10", dry_run=True)
-        mt.run.assert_called_once()
-
-    @patch("spotforecast2.multitask.runner.MultiTask")
-    def test_returns_empty_dataframe_with_dry_run(self, MockMT):
-        MockMT.return_value = MagicMock()
-        result = run(task="clean", project_name="demo10", dry_run=True)
-        assert isinstance(result, pd.DataFrame)
-        assert result.empty
-
-    @patch("spotforecast2.multitask.runner.MultiTask")
-    def test_other_clean_kwargs_still_forwarded(self, MockMT):
-        mt = MagicMock()
-        MockMT.return_value = mt
-        run(task="clean", project_name="demo10", dry_run=True, cache_home="/tmp/c")
-        _, kwargs = MockMT.call_args
-        assert kwargs["dry_run"] is True
-        assert kwargs["cache_home"] == "/tmp/c"
 
 
 # ---------------------------------------------------------------------------
