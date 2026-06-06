@@ -441,12 +441,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">MultiTask</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/multitask.run.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">run</span></a>
-  </div>
-</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -689,7 +683,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/multitask/entsoe.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ENTSO-E via run()</span></a>
+ <span class="menu-text">ENTSO-E single-target</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -753,7 +747,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h1>tasks.task_entsoe</h1>
 <p><code>tasks.task_entsoe</code></p>
 <p>Unified CLI for the ENTSO-E single-target forecasting pipeline.</p>
-<p>Thin argparse wrapper over <code>spotforecast2.multitask.runner.run</code> with <code>ConfigEntsoe</code> plugged in via the <code>data_loader</code> and <code>forecaster_factory</code> hooks introduced in ADR-001. The CLI exposes four subcommands:</p>
+<p>Drives the pipeline directly through <code>spotforecast2.multitask.multi.MultiTask</code> with <code>ConfigEntsoe</code> plugged in via the <code>data_loader</code> and <code>forecaster_factory</code> hooks introduced in ADR-001. The CLI exposes four subcommands:</p>
 <ul>
 <li><code>download</code> — fetch raw data from the ENTSO-E Transparency Platform.</li>
 <li><code>merge</code> — concatenate raw CSVs into the interim merged file.</li>

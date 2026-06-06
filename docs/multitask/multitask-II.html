@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Multi-Target Demo II: run() mit demo10-Daten – spotforecast2</title>
+<title>Multi-Target Demo II: Die MultiTask-Pipeline mit demo10-Daten – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -444,12 +444,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  <span class="menu-text">MultiTask</span></a>
   </div>
 </li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/multitask.run.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">run</span></a>
-  </div>
-</li>
       </ul>
   </li>
           <li class="sidebar-item sidebar-item-section">
@@ -692,7 +686,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/multitask/entsoe.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ENTSO-E via run()</span></a>
+ <span class="menu-text">ENTSO-E single-target</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -742,7 +736,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#predict" id="toc-predict" class="nav-link" data-scroll-target="#predict">Predict</a></li>
   <li><a href="#clean" id="toc-clean" class="nav-link" data-scroll-target="#clean">Clean</a></li>
   </ul></li>
-  <li><a href="#dokumentation-der-funktion-run" id="toc-dokumentation-der-funktion-run" class="nav-link" data-scroll-target="#dokumentation-der-funktion-run">Dokumentation der Funktion <code>run</code></a></li>
+  <li><a href="#dokumentation-der-klasse-multitask" id="toc-dokumentation-der-klasse-multitask" class="nav-link" data-scroll-target="#dokumentation-der-klasse-multitask">Dokumentation der Klasse <code>MultiTask</code></a></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/multitask/multitask-II.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -752,7 +746,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/multitask/entsoe.html">Multitask</a></li><li class="breadcrumb-item"><a href="../../docs/multitask/multitask-II.html">Multi-Target Demo II</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">Multi-Target Demo II: <code>run()</code> mit demo10-Daten</h1>
+<h1 class="title">Multi-Target Demo II: Die <code>MultiTask</code>-Pipeline mit demo10-Daten</h1>
 </div>
 
 
@@ -769,11 +763,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p>Diese Seite ist die aktualisierte Fassung des Multi-Task-Target-Demos für die <code>run</code>-Funktion aus <code>spotforecast2.multitask.runner</code> (<code>Version &gt;= 3.9.0</code> erforderlich, installiert über PyPI oder GitHub). Ein Aufruf führt die komplette Pipeline aus — Datenaufbereitung, Ausreißerbehandlung, Imputation, exogene Merkmale, Training, Prognose, Aggregation — und gibt die aggregierte Vorhersage als DataFrame zurück.</p>
+<p>Diese Seite ist die aktualisierte Fassung des Multi-Task-Target-Demos. Sie steuert die komplette Pipeline direkt über die Klasse <code>MultiTask</code> aus <code>spotforecast2.multitask.multi</code> (<code>Version &gt;= 3.9.0</code> erforderlich, installiert über PyPI oder GitHub). Eine <code>MultiTask</code>-Instanz wird mit einer <code>ConfigMulti</code> und den Laufzeit-Parametern konstruiert; anschließend durchläuft sie die Pipeline-Schritte — Datenaufbereitung, Ausreißerbehandlung, Imputation, exogene Merkmale, Training, Prognose, Aggregation — und die Methode <code>MultiTask.run()</code> gibt das aggregierte Prediction-Package zurück, aus dem sich die Prognose als DataFrame entnehmen lässt.</p>
 <section id="vorbereitung" class="level2">
 <h2 class="anchored" data-anchor-id="vorbereitung">Vorbereitung</h2>
 <p>Bereitstellen des DataFrames <code>df</code> aus dem mitgelieferten Demo-Datensatz <code>demo10.csv</code> (11 Zielreihen, stündlich, ca. zwei Jahre):</p>
-<div id="07f0467e" class="cell" data-execution_count="1">
+<div id="cf6246d9" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
@@ -889,8 +883,8 @@ Private Daten nicht in versionierten Seiten ausführen
 </section>
 <section id="konfiguration" class="level2">
 <h2 class="anchored" data-anchor-id="konfiguration">Konfiguration</h2>
-<p>Konfiguration der Parameter und des Cache-Verzeichnisses. Seit Version 3.9.0 werden Trainings- und Validierungsfenster als <code>pd.Timedelta</code> über die <code>ConfigMulti</code>-Felder <code>train_size</code> und <code>delta_val</code> gesetzt; die früheren Parameter <code>train_days</code> / <code>val_days</code> existieren nicht mehr. Alle weiteren Schlüsselwortargumente von <code>run()</code> werden als <code>**overrides</code> an <code>config.set_params()</code> weitergereicht — unbekannte Parameter führen zu einem expliziten <code>ValueError</code> statt zu stillem Ignorieren.</p>
-<div id="31020d29" class="cell" data-execution_count="2">
+<p>Konfiguration der Parameter und des Cache-Verzeichnisses. Seit Version 3.9.0 werden Trainings- und Validierungsfenster als <code>pd.Timedelta</code> über die <code>ConfigMulti</code>-Felder <code>train_size</code> und <code>delta_val</code> gesetzt; die früheren Parameter <code>train_days</code> / <code>val_days</code> existieren nicht mehr. Alle weiteren Schlüsselwortargumente des <code>MultiTask</code>-Konstruktors werden als <code>**overrides</code> an <code>config.set_params()</code> weitergereicht — unbekannte Parameter führen zu einem expliziten <code>ValueError</code> statt zu stillem Ignorieren. Da diese <code>**overrides</code> die übergebene <code>ConfigMulti</code> direkt mutieren, legt jeder Task-Abschnitt unten eine eigene frische <code>ConfigMulti</code> an, damit sich Einstellungen nicht zwischen den Abschnitten vermischen.</p>
+<div id="fdd53965" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -914,9 +908,10 @@ Note
 <p>Die Werte sind für eine schnell und offline rendernde Demo-Seite verkleinert. In Produktion: persistentes Cache-Verzeichnis (z. B. <code>~/.spotforecast2_cache/cache</code>), <code>train_size</code> von zehn Jahren, 25 Optuna-Trials, und die hier deaktivierten Optionen <code>use_exogenous_features</code> / <code>use_outlier_detection</code> typischerweise eingeschaltet (Wetter-Features benötigen Netzzugriff).</p>
 </div>
 </div>
-<p>Importieren der <code>run</code>-Funktion:</p>
-<div id="b89d77dc" class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.runner <span class="im">import</span> run</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Importieren der Pipeline-Klasse und ihrer Konfiguration:</p>
+<div id="3e00621a" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.multi <span class="im">import</span> MultiTask</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="production" class="level2">
@@ -924,19 +919,35 @@ Note
 <section id="optuna" class="level3">
 <h3 class="anchored" data-anchor-id="optuna">Optuna</h3>
 <p>Tunen der Hyperparameter (wöchentlich):</p>
-<div id="9d7cec6f" class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span>df,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"optuna"</span>,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span>PROJECT_NAME,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>TRAIN_SIZE,</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    delta_val<span class="op">=</span>DELTA_VAL,</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span>N_TRIALS_OPTUNA,</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>forecast.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="7bb53580" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cfg_optuna <span class="op">=</span> ConfigMulti()</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>cfg_optuna.data_frame_name <span class="op">=</span> PROJECT_NAME   <span class="co"># Projektname = Cache-/Modell-Namespace</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>mt_optuna <span class="op">=</span> MultiTask(</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    cfg_optuna,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"optuna"</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span>df,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span><span class="dv">40</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># ab hier: **overrides, werden via config.set_params() gesetzt</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>TRAIN_SIZE,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    delta_val<span class="op">=</span>DELTA_VAL,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span>N_TRIALS_OPTUNA,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Pipeline-Schritte in fester Reihenfolge:</span></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>mt_optuna.prepare_data()</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>mt_optuna.detect_outliers()</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>mt_optuna.impute()</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>mt_optuna.build_exogenous_features()</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>result_optuna <span class="op">=</span> mt_optuna.run(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="co"># MultiTask.run() liefert das aggregierte Prediction-Package;</span></span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a><span class="co"># die Prognose liegt unter result_optuna["future_pred"]:</span></span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>forecast_optuna <span class="op">=</span> result_optuna[<span class="st">"future_pred"</span>].to_frame(<span class="st">"forecast"</span>)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>forecast_optuna.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <div>
 
@@ -978,19 +989,31 @@ Note
 </section>
 <section id="lazy" class="level3">
 <h3 class="anchored" data-anchor-id="lazy">Lazy</h3>
-<p>Model-Fit und Prediction mit den besten Hyperparametern aus Optuna, ohne erneutes Tuning (täglich oder stündlich). Wurde die Optuna-Phase noch nicht ausgeführt, startet <code>lazy</code> automatisch mit den Standardparametern. Mit <code>show=True</code> zeigt <code>run()</code> zusätzlich interaktive Grafiken pro Ziel und für die Aggregation; hier bleibt das ausgeschaltet, um die Seite schlank zu halten.</p>
-<div id="8af8c54f" class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span>df,</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"lazy"</span>,</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span>PROJECT_NAME,</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>TRAIN_SIZE,</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    delta_val<span class="op">=</span>DELTA_VAL,</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>forecast.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Model-Fit und Prediction mit den besten Hyperparametern aus Optuna, ohne erneutes Tuning (täglich oder stündlich). Wurde die Optuna-Phase noch nicht ausgeführt, startet <code>lazy</code> automatisch mit den Standardparametern. Mit <code>run(show=True)</code> ließen sich zusätzlich interaktive Grafiken pro Ziel und für die Aggregation anzeigen; hier bleibt das mit <code>run(show=False)</code> ausgeschaltet, um die Seite schlank zu halten. Eine eigene frische <code>ConfigMulti</code> stellt sicher, dass keine Einstellungen aus dem Optuna-Abschnitt hereinlecken.</p>
+<div id="e828a7f3" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cfg_lazy <span class="op">=</span> ConfigMulti()</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>cfg_lazy.data_frame_name <span class="op">=</span> PROJECT_NAME</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>mt_lazy <span class="op">=</span> MultiTask(</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    cfg_lazy,</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"lazy"</span>,</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span>df,</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span><span class="dv">40</span>,</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    train_size<span class="op">=</span>TRAIN_SIZE,</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>    delta_val<span class="op">=</span>DELTA_VAL,</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>mt_lazy.prepare_data()</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>mt_lazy.detect_outliers()</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>mt_lazy.impute()</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>mt_lazy.build_exogenous_features()</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>result_lazy <span class="op">=</span> mt_lazy.run(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>forecast_lazy <span class="op">=</span> result_lazy[<span class="st">"future_pred"</span>].to_frame(<span class="st">"forecast"</span>)</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a>forecast_lazy.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <div>
 
@@ -1036,16 +1059,29 @@ Note
 <section id="predict" class="level3">
 <h3 class="anchored" data-anchor-id="predict">Predict</h3>
 <p>Nur Vorhersage, ohne Tuning oder Fit. Die Schritte <code>optuna</code> oder <code>lazy</code> müssen bereits einmal gelaufen sein, damit die Modelle im Cache vorliegen (<code>auto_save_models=True</code> ist der Standard).</p>
-<div id="1ade8a35" class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>forecast <span class="op">=</span> run(</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span>df,</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"predict"</span>,</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    project_name<span class="op">=</span>PROJECT_NAME,</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>)</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>forecast.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="841b1080" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cfg_predict <span class="op">=</span> ConfigMulti()</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cfg_predict.data_frame_name <span class="op">=</span> PROJECT_NAME</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>mt_predict <span class="op">=</span> MultiTask(</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    cfg_predict,</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"predict"</span>,</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    dataframe<span class="op">=</span>df,</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span><span class="dv">40</span>,</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="co"># train_size / delta_val entfallen: predict fittet nicht neu</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>mt_predict.prepare_data()</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>mt_predict.detect_outliers()</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>mt_predict.impute()</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>mt_predict.build_exogenous_features()</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>result_predict <span class="op">=</span> mt_predict.run(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>forecast_predict <span class="op">=</span> result_predict[<span class="st">"future_pred"</span>].to_frame(<span class="st">"forecast"</span>)</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>forecast_predict.head()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <div>
 
@@ -1088,58 +1124,56 @@ Note
 <section id="clean" class="level3">
 <h3 class="anchored" data-anchor-id="clean">Clean</h3>
 <p>Löschen der Cache-Daten für das Projekt. Mit <code>dry_run=True</code> wird nur angezeigt, welche Dateien gelöscht würden, ohne sie tatsächlich zu entfernen.</p>
-<div id="589f43a4" class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>run(task<span class="op">=</span><span class="st">"clean"</span>, project_name<span class="op">=</span>PROJECT_NAME, cache_home<span class="op">=</span>CACHE_HOME, dry_run<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="b831f4c2" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cfg_clean <span class="op">=</span> ConfigMulti()</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>cfg_clean.data_frame_name <span class="op">=</span> PROJECT_NAME</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>mt_clean_dry <span class="op">=</span> MultiTask(</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    cfg_clean,</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"clean"</span>,</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span><span class="dv">40</span>,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>mt_clean_dry.run()   <span class="co"># dry_run=True: zeigt nur an, was gelöscht würde</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[clean] Dry run — would delete: /tmp/tmp514sw2_n
+<pre><code>[clean] Dry run — would delete: /tmp/tmp3poge5iz
   Would remove: logging
   Would remove: models
   Would remove: tuning_results</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="7">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
-
+<pre><code>{'status': 'dry_run',
+ 'cache_dir': PosixPath('/tmp/tmp3poge5iz'),
+ 'deleted_items': ['logging', 'models', 'tuning_results']}</code></pre>
 </div>
 </div>
-</div>
-<div id="3e17e3a3" class="cell" data-execution_count="8">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>run(task<span class="op">=</span><span class="st">"clean"</span>, project_name<span class="op">=</span>PROJECT_NAME, cache_home<span class="op">=</span>CACHE_HOME)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div id="196225a0" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>cfg_clean_real <span class="op">=</span> ConfigMulti()</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>cfg_clean_real.data_frame_name <span class="op">=</span> PROJECT_NAME</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>mt_clean <span class="op">=</span> MultiTask(</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    cfg_clean_real,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="st">"clean"</span>,</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span>CACHE_HOME,</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    log_level<span class="op">=</span><span class="dv">40</span>,</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>mt_clean.run()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[clean] Cache removed successfully: /tmp/tmp514sw2_n</code></pre>
+<pre><code>[clean] Cache removed successfully: /tmp/tmp3poge5iz</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="8">
-<div>
-
-
-<table class="dataframe caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-border="1">
-<thead>
-<tr class="header">
-<th data-quarto-table-cell-role="th"></th>
-</tr>
-</thead>
-<tbody>
-</tbody>
-</table>
-
-</div>
+<pre><code>{'status': 'success',
+ 'cache_dir': PosixPath('/tmp/tmp3poge5iz'),
+ 'deleted_items': ['logging', 'models', 'tuning_results']}</code></pre>
 </div>
 </div>
 </section>
 </section>
-<section id="dokumentation-der-funktion-run" class="level2">
-<h2 class="anchored" data-anchor-id="dokumentation-der-funktion-run">Dokumentation der Funktion <code>run</code></h2>
-<p>Die vollständige API-Referenz mit allen Parametern und weiteren Beispielen: <a href="../../docs/reference/multitask.run.html"><code>multitask.run</code></a>.</p>
+<section id="dokumentation-der-klasse-multitask" class="level2">
+<h2 class="anchored" data-anchor-id="dokumentation-der-klasse-multitask">Dokumentation der Klasse <code>MultiTask</code></h2>
+<p>Die vollständige API-Referenz mit allen Parametern, Pipeline-Methoden und weiteren Beispielen: <a href="../../docs/reference/multitask.MultiTask.html"><code>multitask.MultiTask</code></a>.</p>
 
 
 </section>
