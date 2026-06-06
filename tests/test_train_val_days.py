@@ -102,9 +102,9 @@ class TestFixedVsSlidingWindow:
 
     def test_cv_ts_fixed_train_size_true_when_train_size_set(self):
         t = LazyTask(ConfigMulti(train_size=pd.Timedelta(days=365)))
-        t.config.end_train_ts = pd.Timestamp("2025-01-01", tz="UTC")
+        t.run_state.end_train_ts = pd.Timestamp("2025-01-01", tz="UTC")
         n = 4000
-        idx = pd.date_range(end=t.config.end_train_ts, periods=n, freq="h", tz="UTC")
+        idx = pd.date_range(end=t.run_state.end_train_ts, periods=n, freq="h", tz="UTC")
         y = pd.Series(range(n), index=idx, dtype=float)
         cv = t.cv_ts(y)
         assert cv.fixed_train_size is True

@@ -25,10 +25,8 @@ from spotforecast2_safe.multitask.base import (  # noqa: F401  (re-exported)
     agg_predictor,
 )
 
-from spotforecast2.plots.plotter import (
-    make_plot,
-    plot_with_outliers as _plot_with_outliers,
-)
+from spotforecast2.plots.plotter import make_plot
+from spotforecast2.plots.plotter import plot_with_outliers as _plot_with_outliers
 
 __all__ = [
     "SafeBaseTask",
@@ -63,6 +61,7 @@ class PlottingMixin:
             df_pipeline=self.df_pipeline,  # type: ignore[attr-defined]
             df_pipeline_original=self.df_pipeline_original,  # type: ignore[attr-defined]
             config=self.config,  # type: ignore[attr-defined]
+            targets=self.run_state.targets,  # type: ignore[attr-defined]
         )
 
     def _show_prediction_figure(
@@ -100,7 +99,7 @@ class PlottingMixin:
             agg_pkg,
             title=(
                 f"Aggregated Forecast: Weighted Combination of "
-                f"Targets {self.config.targets} ({task_name})"  # type: ignore[attr-defined]
+                f"Targets {self.run_state.targets} ({task_name})"  # type: ignore[attr-defined]
             ),
             save=False,
         )
@@ -161,16 +160,16 @@ class BaseTask(PlottingMixin, SafeBaseTask):
         Returns:
             Aggregated prediction package dict.
         """
-        if len(self.config.targets) == 1:
-            target = self.config.targets[0]
+        if len(self.run_state.targets) == 1:
+            target = self.run_state.targets[0]
             agg_pkg = results[target]
             self.agg_results[task_name] = agg_pkg
             return agg_pkg
 
         if self.config.agg_weights is not None:
-            active_weights = self.config.agg_weights[: len(self.config.targets)]
+            active_weights = self.config.agg_weights[: len(self.run_state.targets)]
         else:
-            n = len(self.config.targets)
+            n = len(self.run_state.targets)
             active_weights = [1.0 / n] * n
             self.logger.info(
                 "No agg_weights configured — using equal weights (1/%d each).", n
@@ -178,7 +177,7 @@ class BaseTask(PlottingMixin, SafeBaseTask):
 
         agg_pkg = self.agg_predictor(
             results=results,
-            targets=self.config.targets,
+            targets=self.run_state.targets,
             weights=active_weights,
         )
         self.agg_results[task_name] = agg_pkg

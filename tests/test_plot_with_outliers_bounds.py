@@ -41,6 +41,7 @@ def _captured_figures(
     df_pipeline: pd.DataFrame,
     df_original: pd.DataFrame,
     config,
+    targets: list[str] | None = None,
 ) -> list[go.Figure]:
     """Run plot_with_outliers and collect figures without displaying them."""
     figures = []
@@ -49,7 +50,7 @@ def _captured_figures(
         figures.append(self)
 
     with patch.object(go.Figure, "show", fake_show):
-        plot_with_outliers(df_pipeline, df_original, config)
+        plot_with_outliers(df_pipeline, df_original, config, targets=targets)
 
     return figures
 
@@ -239,3 +240,41 @@ class TestPlotWithOutliersNoOutliers:
         figs = _captured_figures(data, data, config)
         names = [t.name for t in figs[0].data]
         assert "Outliers" not in names
+
+
+# ---------------------------------------------------------------------------
+# Tests: explicit targets argument (primary pipeline path)
+# ---------------------------------------------------------------------------
+
+
+class TestPlotWithOutliersExplicitTargets:
+    """The explicit ``targets=`` argument is the primary (run_state) path.
+
+    ``PlottingMixin`` passes ``task.run_state.targets`` explicitly; the
+    ``config.targets`` fallback exists only for legacy standalone callers.
+    """
+
+    def test_explicit_targets_used_when_config_lacks_targets(self):
+        """A config without a targets attribute must work with explicit targets."""
+        df_pipe, df_orig, _ = _make_data(targets=["load"])
+        config = SimpleNamespace(bounds=None)  # no targets attribute at all
+        figs = _captured_figures(df_pipe, df_orig, config, targets=["load"])
+        assert len(figs) == 1
+        assert "load" in figs[0].layout.title.text
+
+    def test_explicit_targets_take_precedence_over_config(self):
+        """When both are present, the explicit argument wins."""
+        df_pipe, df_orig, _ = _make_data(targets=["A", "B"])
+        config = SimpleNamespace(targets=["A", "B"], bounds=None)
+        figs = _captured_figures(df_pipe, df_orig, config, targets=["A"])
+        assert len(figs) == 1  # only the explicit list is plotted
+        assert "A" in figs[0].layout.title.text
+
+    def test_explicit_targets_with_bounds(self):
+        """Bounds are applied positionally against the explicit target list."""
+        df_pipe, df_orig, _ = _make_data(targets=["load"])
+        config = SimpleNamespace(bounds=[(0.0, 100.0)])
+        figs = _captured_figures(df_pipe, df_orig, config, targets=["load"])
+        assert len(figs[0].layout.shapes) == 2
+        y_vals = {s.y0 for s in figs[0].layout.shapes}
+        assert 0.0 in y_vals and 100.0 in y_vals

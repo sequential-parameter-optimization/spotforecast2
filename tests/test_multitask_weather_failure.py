@@ -44,9 +44,9 @@ def _make_task_ready(on_weather_failure: str = "raise") -> MultiTask:
     mt = MultiTask(cfg)
     idx = pd.date_range("2024-01-01", periods=48, freq="h", tz="UTC")
     mt.df_pipeline = pd.DataFrame({"target_0": range(48)}, index=idx)
-    mt.config.targets = ["target_0"]
-    mt.config.data_start = idx[0]
-    mt.config.cov_end = idx[-1]
+    mt.run_state.targets = ["target_0"]
+    mt.run_state.data_start = idx[0]
+    mt.run_state.cov_end = idx[-1]
     return mt
 
 
@@ -60,13 +60,21 @@ def _mock_sibling_features(stack: ExitStack, index: pd.DatetimeIndex) -> None:
     """
     empty = pd.DataFrame(index=index)
     stack.enter_context(
-        patch("spotforecast2_safe.multitask.base.get_calendar_features", return_value=empty)
+        patch(
+            "spotforecast2_safe.multitask.base.get_calendar_features",
+            return_value=empty,
+        )
     )
     stack.enter_context(
-        patch("spotforecast2_safe.multitask.base.get_day_night_features", return_value=empty)
+        patch(
+            "spotforecast2_safe.multitask.base.get_day_night_features",
+            return_value=empty,
+        )
     )
     stack.enter_context(
-        patch("spotforecast2_safe.multitask.base.get_holiday_features", return_value=empty)
+        patch(
+            "spotforecast2_safe.multitask.base.get_holiday_features", return_value=empty
+        )
     )
     # Downstream transforms — return shapes the caller assigns through.
     stack.enter_context(

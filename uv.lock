@@ -3683,7 +3683,7 @@ requires-dist = [
     { name = "safety", marker = "extra == 'dev'", specifier = ">=3.0.0" },
     { name = "scikit-learn", specifier = ">=1.8.0" },
     { name = "shap", specifier = ">=0.49.1" },
-    { name = "spotforecast2-safe", specifier = ">=16.3.0,<17" },
+    { name = "spotforecast2-safe", specifier = ">=18.0.0,<19" },
     { name = "spotoptim", specifier = ">=0.12.3" },
     { name = "tqdm", specifier = ">=4.67.2" },
 ]
@@ -3699,7 +3699,7 @@ dev = [
 
 [[package]]
 name = "spotforecast2-safe"
-version = "16.4.0"
+version = "18.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astral" },
@@ -3717,9 +3717,9 @@ dependencies = [
     { name = "statsmodels" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/09/9d/ebc7ae23012b1dd9fceba90e34a6cc0f4fccd3ca727887f80131752fb631/spotforecast2_safe-16.4.0.tar.gz", hash = "sha256:8d0bb855bdd1c33ae8a749772b7025b1125528f3887824a0adb143b0392354e0", size = 20605944, upload-time = "2026-06-05T20:58:54.571Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/59/200ebbb03ee5429f87c11cda3082a531f2abd786a94c594a24d9a9023def/spotforecast2_safe-18.0.0.tar.gz", hash = "sha256:23ac511e5b9f2313c8c680516bd688b3773e37427d5c90e19d90fd7b00def957", size = 20607276, upload-time = "2026-06-06T20:42:24.808Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/c6/d3/4bcc7ca6784b89e65876c9cb87078a94d3a2862a52f2f3458b576fc0075b/spotforecast2_safe-16.4.0-py3-none-any.whl", hash = "sha256:85adffec6abe1e38ddca9a2a41a2f291d3a2205e3c9614bcb59ca917aad6d523", size = 20669759, upload-time = "2026-06-05T20:58:52.201Z" },
+    { url = "https://files.pythonhosted.org/packages/aa/c2/677dfbb970cb52524fd26b60b4ff9cd7e1cb0470c5a673feabc2f996a9dd/spotforecast2_safe-18.0.0-py3-none-any.whl", hash = "sha256:6b5f873f51d583f19b7ab914f8a7ed92a46d9f46e4f198e69679ec06f3d9bc2e", size = 20671800, upload-time = "2026-06-06T20:42:13.41Z" },
 ]
 
 [[package]]

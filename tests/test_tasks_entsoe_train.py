@@ -29,9 +29,7 @@ def _train_call(model: str):
     ``_run_entsoe_pipeline`` call.  ``--force`` bypasses the cadence gate so
     the dispatch test does not depend on the state of the user's model cache.
     """
-    with patch(
-        "spotforecast2.tasks.task_entsoe._run_entsoe_pipeline"
-    ) as mock_pipeline:
+    with patch("spotforecast2.tasks.task_entsoe._run_entsoe_pipeline") as mock_pipeline:
         with patch("sys.argv", ["spotforecast2-entsoe", "train", model, "--force"]):
             main()
     assert mock_pipeline.call_count == 1
@@ -63,9 +61,7 @@ def test_train_xgb_dispatches_to_pipeline_with_xgb_factory():
 
 def test_train_default_model_is_lgbm():
     """Omitting the positional ``model`` arg falls back to LightGBM."""
-    with patch(
-        "spotforecast2.tasks.task_entsoe._run_entsoe_pipeline"
-    ) as mock_pipeline:
+    with patch("spotforecast2.tasks.task_entsoe._run_entsoe_pipeline") as mock_pipeline:
         with patch("sys.argv", ["spotforecast2-entsoe", "train", "--force"]):
             main()
     args = mock_pipeline.call_args.args
@@ -75,9 +71,7 @@ def test_train_default_model_is_lgbm():
 
 
 def test_train_show_flag_forwards_to_pipeline():
-    with patch(
-        "spotforecast2.tasks.task_entsoe._run_entsoe_pipeline"
-    ) as mock_pipeline:
+    with patch("spotforecast2.tasks.task_entsoe._run_entsoe_pipeline") as mock_pipeline:
         with patch(
             "sys.argv",
             ["spotforecast2-entsoe", "train", "lgbm", "--show", "--force"],

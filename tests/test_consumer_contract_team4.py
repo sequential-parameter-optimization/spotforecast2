@@ -31,9 +31,9 @@ import re
 from pathlib import Path
 
 import pytest
+from spotforecast2_safe.configurator.config_entsoe import ConfigEntsoe
 
 from spotforecast2.multitask import MultiTask
-from spotforecast2_safe.configurator.config_entsoe import ConfigEntsoe
 
 DEFAULT_QMD = Path.home() / "workspace" / "bart26k-lecture" / "14_team_4_submission.qmd"
 QMD_PATH = Path(os.environ.get("TEAM4_QMD", DEFAULT_QMD))
@@ -134,9 +134,9 @@ def test_spotforecast_imports_resolve(trees):
                 continue
             mod = importlib.import_module(node.module)
             for alias in node.names:
-                assert hasattr(mod, alias.name), (
-                    f"{node.module} no longer exports {alias.name!r}"
-                )
+                assert hasattr(
+                    mod, alias.name
+                ), f"{node.module} no longer exports {alias.name!r}"
                 checked += 1
         elif isinstance(node, ast.Import):
             for alias in node.names:
@@ -173,9 +173,9 @@ def test_config_attribute_surface(trees):
         ):
             if not hasattr(cfg, node.attr):
                 missing.add(node.attr)
-    assert not missing, (
-        f"qmd uses config attributes missing on ConfigEntsoe: {sorted(missing)}"
-    )
+    assert (
+        not missing
+    ), f"qmd uses config attributes missing on ConfigEntsoe: {sorted(missing)}"
 
 
 def test_multitask_call_and_pipeline_methods(trees):
@@ -189,9 +189,9 @@ def test_multitask_call_and_pipeline_methods(trees):
         mt_params = set(inspect.signature(MultiTask).parameters)
         for kw in call.keywords:
             if kw.arg is not None and kw.arg not in mt_params:
-                assert kw.arg in ConfigEntsoe._PARAM_NAMES, (
-                    f"MultiTask override {kw.arg!r} is not a ConfigEntsoe field"
-                )
+                assert (
+                    kw.arg in ConfigEntsoe._PARAM_NAMES
+                ), f"MultiTask override {kw.arg!r} is not a ConfigEntsoe field"
 
     mt_vars = _multitask_var_names(trees)
     assert mt_vars, "qmd no longer assigns a MultiTask instance"
@@ -209,8 +209,11 @@ def test_multitask_call_and_pipeline_methods(trees):
         name = call.func.attr
         method = getattr(MultiTask, name, None)
         assert method is not None, f"MultiTask lost method {name!r} used by the qmd"
-        _bind(method, ast.Call(  # account for the bound `self` slot
-            func=call.func,
-            args=[ast.Constant(value=None)] + list(call.args),
-            keywords=call.keywords,
-        ))
+        _bind(
+            method,
+            ast.Call(  # account for the bound `self` slot
+                func=call.func,
+                args=[ast.Constant(value=None)] + list(call.args),
+                keywords=call.keywords,
+            ),
+        )
