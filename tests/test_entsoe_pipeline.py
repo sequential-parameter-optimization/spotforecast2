@@ -17,7 +17,10 @@ import pytest
 from spotforecast2_safe.configurator import ConfigEntsoe
 
 from spotforecast2.multitask.multi import MultiTask
-from spotforecast2.tasks.task_entsoe import entsoe_lgbm_factory
+from spotforecast2.tasks.task_entsoe import (
+    _run_entsoe_pipeline,
+    entsoe_lgbm_factory,
+)
 
 
 def _synthetic_entsoe_df(n_days: int = 30) -> pd.DataFrame:
@@ -136,3 +139,30 @@ def test_entsoe_predict_after_defaults(entsoe_config, tmp_path):
     result = _drive(entsoe_config, "predict", str(tmp_path))
     forecast = result["future_pred"].to_frame("forecast")
     _assert_forecast_shape(forecast, entsoe_config.predict_size)
+
+
+def test_run_entsoe_pipeline_helper_end_to_end(entsoe_config):
+    """The CLI seam ``_run_entsoe_pipeline`` trains, saves, and predicts for real.
+
+    The CLI subcommand tests patch this helper, so this is the one place its
+    body executes against real objects: a ``defaults`` run must leave saved
+    models in the cache (the CLI's training contract), and a follow-up
+    ``predict`` run must load them without refitting.
+    """
+    _run_entsoe_pipeline(
+        entsoe_config,
+        task="defaults",
+        project_name="test-entsoe-cli",
+        show=False,
+    )
+    cache_dir = Path(entsoe_config.cache_home)
+    saved = list(cache_dir.rglob("*.pkl")) + list(cache_dir.rglob("*.joblib"))
+    assert saved, "defaults run must auto-save models into the cache"
+
+    # Same config/cache: predict must succeed purely from the saved models.
+    _run_entsoe_pipeline(
+        entsoe_config,
+        task="predict",
+        project_name="test-entsoe-cli",
+        show=False,
+    )
