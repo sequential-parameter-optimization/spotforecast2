@@ -352,7 +352,7 @@ class TestAutoSaveModels:
         from spotforecast2.multitask.base import BaseTask
 
         task = BaseTask(predict_size=24, auto_save_models=True)
-        task.config.targets = ["t1"]
+        task.run_state.targets = ["t1"]
         strategy = MagicMock(name="strategy")
         strategy.prepare_forecaster.return_value = MagicMock(name="prepared")
 
@@ -382,7 +382,7 @@ class TestAutoSaveModels:
         from spotforecast2.multitask.base import BaseTask
 
         task = BaseTask(predict_size=24, auto_save_models=False)
-        task.config.targets = ["t1"]
+        task.run_state.targets = ["t1"]
         strategy = MagicMock(name="strategy")
         strategy.prepare_forecaster.return_value = MagicMock(name="prepared")
 

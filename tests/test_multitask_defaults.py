@@ -60,7 +60,7 @@ def test_defaults_does_not_read_tuning_cache():
     once per target without ever calling ``load_tuning_results`` (that path
     belongs to ``LazyStrategy`` with ``use_tuned_params=True``)."""
     task = DefaultsTask(predict_size=24, auto_save_models=False)
-    task.config.targets = ["t1"]
+    task.run_state.targets = ["t1"]
     strategy = DefaultsStrategy()
 
     with (
@@ -86,7 +86,7 @@ def test_defaults_does_not_write_tuning_results():
     """End-to-end through ``_run_strategy``: no JSON tuning-result file is
     written for the defaults task (that path belongs to Optuna/SpotOptim)."""
     task = DefaultsTask(predict_size=24, auto_save_models=False)
-    task.config.targets = ["t1"]
+    task.run_state.targets = ["t1"]
     strategy = DefaultsStrategy()
 
     with (
@@ -112,7 +112,7 @@ def test_defaults_saves_models_under_defaults_key_when_auto_save():
     """``auto_save_models=True`` causes ``_run_strategy`` to call
     ``save_models(task_name="defaults")`` so ``PredictTask`` can find them."""
     task = DefaultsTask(predict_size=24, auto_save_models=True)
-    task.config.targets = ["t1"]
+    task.run_state.targets = ["t1"]
     strategy = DefaultsStrategy()
 
     with (

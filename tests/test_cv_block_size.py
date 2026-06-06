@@ -19,7 +19,7 @@ These tests do not require the spotforecast2-safe ``cv_block_size`` field to
 be present on the config class — the override is exercised via the same
 ``getattr`` fallback that ``cv_ts`` uses, by assigning the attribute on the
 constructed config object (mirroring how the existing cv_ts tests set
-``config.end_train_ts`` and ``config.train_size``).
+``run_state.end_train_ts`` and ``config.train_size``).
 """
 
 import math
@@ -41,7 +41,7 @@ _N = 3000  # three-thousand hourly observations
 
 
 def _make_task(tmp_path: Path, *, val_days: int = 7, **kwargs) -> LazyTask:
-    """Return a LazyTask with ``end_train_ts`` pinned to ``_END_TRAIN``.
+    """Return a LazyTask with ``run_state.end_train_ts`` pinned to ``_END_TRAIN``.
 
     Mirrors the helper in ``test_cv_ts_sklearn.py``: ``delta_val`` is computed
     explicitly from ``val_days * number_folds`` rather than derived inside
@@ -51,7 +51,7 @@ def _make_task(tmp_path: Path, *, val_days: int = 7, **kwargs) -> LazyTask:
     overrides = dict(kwargs, delta_val=pd.Timedelta(days=val_days * number_folds))
     overrides.setdefault("data_frame_name", "test_data")
     t = LazyTask(cache_home=tmp_path, **overrides)
-    t.config.end_train_ts = _END_TRAIN
+    t.run_state.end_train_ts = _END_TRAIN
     return t
 
 
@@ -65,7 +65,7 @@ def _skl_cv(
     task: LazyTask, y_train: pd.Series, test_size: int
 ) -> SklearnTimeSeriesSplit:
     """Build the sklearn TimeSeriesSplit equivalent for *task* with *test_size*."""
-    end_cv = task.config.end_train_ts - task.config.delta_val
+    end_cv = task.run_state.end_train_ts - task.config.delta_val
     n_train_cv = len(y_train.loc[:end_cv])
     max_train_size = n_train_cv if task.config.train_size is not None else None
     return SklearnTimeSeriesSplit(

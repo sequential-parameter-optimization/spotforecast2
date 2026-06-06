@@ -36,9 +36,9 @@ def _make_task(poly_features_degree: int, max_poly_features: int) -> MultiTask:
     mt = MultiTask(cfg)
     idx = pd.date_range("2024-01-01", periods=96, freq="h", tz="UTC")
     mt.df_pipeline = pd.DataFrame({"target_0": np.arange(96.0)}, index=idx)
-    mt.config.targets = ["target_0"]
-    mt.config.data_start = idx[0]
-    mt.config.cov_end = idx[-1]
+    mt.run_state.targets = ["target_0"]
+    mt.run_state.data_start = idx[0]
+    mt.run_state.cov_end = idx[-1]
     return mt
 
 

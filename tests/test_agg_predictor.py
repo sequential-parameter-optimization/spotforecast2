@@ -282,7 +282,7 @@ class TestAggregateAndShowAlwaysAggregates:
 
     def _make_task_with_targets(self, targets):
         task = MultiTask()
-        task.config.targets = targets
+        task.run_state.targets = targets
         return task
 
     def test_returns_dict_without_agg_weights(self):
@@ -356,13 +356,13 @@ def _inject_pipeline(task, n_rows=300):
     df_test = df.iloc[-24:].copy().reset_index().rename(columns={"index": "DateTime"})
     task.df_pipeline = df
     task.df_test = df_test
-    task.config.targets = ["A", "B"]
+    task.run_state.targets = ["A", "B"]
     task.config.agg_weights = [0.5, 0.5]
     task.data_with_exog = None
     task.exo_pred = None
     task.exog_feature_names = []
-    task.config.end_train_ts = idx[-25]
-    task.config.start_train_ts = idx[0]
+    task.run_state.end_train_ts = idx[-25]
+    task.run_state.start_train_ts = idx[0]
     return task
 
 

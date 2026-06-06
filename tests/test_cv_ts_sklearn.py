@@ -34,7 +34,7 @@ _N = 3000  # three-thousand hourly observations — comfortably more than any fo
 
 
 def _make_task(tmp_path, *, val_days: int = 7, **kwargs) -> LazyTask:
-    """Return a LazyTask with ``end_train_ts`` set to ``_END_TRAIN``.
+    """Return a LazyTask with ``run_state.end_train_ts`` set to ``_END_TRAIN``.
 
     After the config-object refactor ``delta_val`` is no longer derived from
     ``val_days * number_folds`` inside ``BaseTask``; the helper computes it
@@ -44,7 +44,7 @@ def _make_task(tmp_path, *, val_days: int = 7, **kwargs) -> LazyTask:
     overrides = dict(kwargs, delta_val=pd.Timedelta(days=val_days * number_folds))
     overrides.setdefault("data_frame_name", "test_data")
     t = LazyTask(cache_home=tmp_path, **overrides)
-    t.config.end_train_ts = _END_TRAIN
+    t.run_state.end_train_ts = _END_TRAIN
     return t
 
 
@@ -56,7 +56,7 @@ def _make_y_train(end: pd.Timestamp = _END_TRAIN, n: int = _N) -> pd.Series:
 
 def _skl_cv(task: LazyTask, y_train: pd.Series) -> SklearnTimeSeriesSplit:
     """Build the equivalent sklearn TimeSeriesSplit for *task*."""
-    end_cv = task.config.end_train_ts - task.config.delta_val
+    end_cv = task.run_state.end_train_ts - task.config.delta_val
     n_train_cv = len(y_train.loc[:end_cv])
     max_train_size = n_train_cv if task.config.train_size is not None else None
     return SklearnTimeSeriesSplit(
@@ -230,7 +230,7 @@ class TestSlidingVsExpandingWindow:
 
     def test_max_train_size_equals_n_train_cv(self, task, y_train):
         """When ``train_size`` is set, ``max_train_size`` equals ``n_train_cv``."""
-        end_cv = task.config.end_train_ts - task.config.delta_val
+        end_cv = task.run_state.end_train_ts - task.config.delta_val
         n_train_cv = len(y_train.loc[:end_cv])
         # Each fold's training set should be at most n_train_cv observations.
         for train_idx, _ in _skl_cv(task, y_train).split(y_train):
@@ -248,8 +248,8 @@ class TestNumberFoldsEffect:
         task_5 = _make_task(tmp_path, number_folds=5)
         task_10 = _make_task(tmp_path, number_folds=10)
         # Both use the same n_train_cv derived from end_cv
-        end_cv_5 = task_5.config.end_train_ts - task_5.config.delta_val
-        end_cv_10 = task_10.config.end_train_ts - task_10.config.delta_val
+        end_cv_5 = task_5.run_state.end_train_ts - task_5.config.delta_val
+        end_cv_10 = task_10.run_state.end_train_ts - task_10.config.delta_val
         n5 = len(y_train.loc[:end_cv_5])
         n10 = len(y_train.loc[:end_cv_10])
         # With fixed window: initial_train_size == max_train_size == n_train_cv
@@ -260,8 +260,8 @@ class TestNumberFoldsEffect:
         """Larger number_folds enlarges delta_val, shrinking n_train_cv."""
         task_5 = _make_task(tmp_path, number_folds=5)
         task_15 = _make_task(tmp_path, number_folds=15)
-        end_cv_5 = task_5.config.end_train_ts - task_5.config.delta_val
-        end_cv_15 = task_15.config.end_train_ts - task_15.config.delta_val
+        end_cv_5 = task_5.run_state.end_train_ts - task_5.config.delta_val
+        end_cv_15 = task_15.run_state.end_train_ts - task_15.config.delta_val
         n5 = len(y_train.loc[:end_cv_5])
         n15 = len(y_train.loc[:end_cv_15])
         assert (

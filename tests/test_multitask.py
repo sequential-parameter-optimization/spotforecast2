@@ -398,7 +398,12 @@ class TestGuards:
         task.detect_outliers()
         with _patch("spotforecast2.multitask.base._plot_with_outliers") as mock_plt:
             task.plot_with_outliers()
-        mock_plt.assert_called_once()
+        mock_plt.assert_called_once_with(
+            df_pipeline=task.df_pipeline,
+            df_pipeline_original=task.df_pipeline_original,
+            config=task.config,
+            targets=task.run_state.targets,
+        )
 
     def test_run_before_prepare_multitask(self):
         with pytest.raises(RuntimeError, match="Pipeline data not prepared"):
@@ -518,7 +523,7 @@ class TestMultiTaskRunDispatcher:
     def test_invalid_task_raises(self):
         mt = MultiTask(task="invalid_task")
         mt.df_pipeline = pd.DataFrame()
-        mt.config.end_train_ts = pd.Timestamp("2024-01-01", tz="UTC")
+        mt.run_state.end_train_ts = pd.Timestamp("2024-01-01", tz="UTC")
         with pytest.raises(ValueError, match="Unknown task"):
             mt.run(show=False)
 
@@ -608,16 +613,16 @@ class TestPrepareData:
     def test_prepare_data_sets_targets(self, demo_df):
         task = LazyTask(data_frame_name="demo10")
         task.prepare_data(demo_data=demo_df)
-        assert task.config.targets is not None
-        assert len(task.config.targets) > 0
+        assert task.run_state.targets is not None
+        assert len(task.run_state.targets) > 0
 
     def test_prepare_data_sets_date_ranges(self, demo_df):
         task = LazyTask(data_frame_name="demo10")
         task.prepare_data(demo_data=demo_df)
-        assert task.config.data_start is not None
-        assert task.config.data_end is not None
-        assert task.config.cov_start is not None
-        assert task.config.cov_end is not None
+        assert task.run_state.data_start is not None
+        assert task.run_state.data_end is not None
+        assert task.run_state.cov_start is not None
+        assert task.run_state.cov_end is not None
 
     def test_prepare_data_returns_self(self, demo_df):
         task = LazyTask()
@@ -811,9 +816,7 @@ class TestCacheHomeResolution:
         # _attach_file_handler resolves via get_cache_home(config.cache_home);
         # when cache_home=None the resolved path must equal the package default.
         file_handlers = [
-            h
-            for h in mt.logger.handlers
-            if isinstance(h, logging.FileHandler)
+            h for h in mt.logger.handlers if isinstance(h, logging.FileHandler)
         ]
         # Loggers are singletons: earlier tests may have left handlers for
         # other cache locations — assert the default-resolved one exists.
