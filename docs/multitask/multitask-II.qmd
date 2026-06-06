@@ -1,13 +1,17 @@
 ---
-title: "Multi-Target Demo II: `run()` mit demo10-Daten"
+title: "Multi-Target Demo II: Die `MultiTask`-Pipeline mit demo10-Daten"
 ---
 
-Diese Seite ist die aktualisierte Fassung des Multi-Task-Target-Demos für
-die `run`-Funktion aus `spotforecast2.multitask.runner`
-(`Version >= 3.9.0` erforderlich, installiert über PyPI oder GitHub).
-Ein Aufruf führt die komplette Pipeline aus — Datenaufbereitung,
+Diese Seite ist die aktualisierte Fassung des Multi-Task-Target-Demos.
+Sie steuert die komplette Pipeline direkt über die Klasse `MultiTask`
+aus `spotforecast2.multitask.multi` (`Version >= 3.9.0` erforderlich,
+installiert über PyPI oder GitHub). Eine `MultiTask`-Instanz wird mit
+einer `ConfigMulti` und den Laufzeit-Parametern konstruiert;
+anschließend durchläuft sie die Pipeline-Schritte — Datenaufbereitung,
 Ausreißerbehandlung, Imputation, exogene Merkmale, Training, Prognose,
-Aggregation — und gibt die aggregierte Vorhersage als DataFrame zurück.
+Aggregation — und die Methode `MultiTask.run()` gibt das aggregierte
+Prediction-Package zurück, aus dem sich die Prognose als DataFrame
+entnehmen lässt.
 
 ## Vorbereitung
 
@@ -54,10 +58,13 @@ Konfiguration der Parameter und des Cache-Verzeichnisses. Seit Version
 3.9.0 werden Trainings- und Validierungsfenster als `pd.Timedelta` über
 die `ConfigMulti`-Felder `train_size` und `delta_val` gesetzt; die
 früheren Parameter `train_days` / `val_days` existieren nicht mehr.
-Alle weiteren Schlüsselwortargumente von `run()` werden als
-`**overrides` an `config.set_params()` weitergereicht — unbekannte
-Parameter führen zu einem expliziten `ValueError` statt zu stillem
-Ignorieren.
+Alle weiteren Schlüsselwortargumente des `MultiTask`-Konstruktors
+werden als `**overrides` an `config.set_params()` weitergereicht —
+unbekannte Parameter führen zu einem expliziten `ValueError` statt zu
+stillem Ignorieren. Da diese `**overrides` die übergebene `ConfigMulti`
+direkt mutieren, legt jeder Task-Abschnitt unten eine eigene frische
+`ConfigMulti` an, damit sich Einstellungen nicht zwischen den
+Abschnitten vermischen.
 
 ```{python}
 import tempfile
@@ -80,10 +87,11 @@ Optuna-Trials, und die hier deaktivierten Optionen
 eingeschaltet (Wetter-Features benötigen Netzzugriff).
 :::
 
-Importieren der `run`-Funktion:
+Importieren der Pipeline-Klasse und ihrer Konfiguration:
 
 ```{python}
-from spotforecast2.multitask.runner import run
+from spotforecast2.multitask.multi import MultiTask
+from spotforecast2_safe.configurator.config_multi import ConfigMulti
 ```
 
 ## Production
@@ -93,18 +101,34 @@ from spotforecast2.multitask.runner import run
 Tunen der Hyperparameter (wöchentlich):
 
 ```{python}
-forecast = run(
-    dataframe=df,
+cfg_optuna = ConfigMulti()
+cfg_optuna.data_frame_name = PROJECT_NAME   # Projektname = Cache-/Modell-Namespace
+
+mt_optuna = MultiTask(
+    cfg_optuna,
     task="optuna",
-    project_name=PROJECT_NAME,
+    dataframe=df,
     cache_home=CACHE_HOME,
+    log_level=40,
+    # ab hier: **overrides, werden via config.set_params() gesetzt
     train_size=TRAIN_SIZE,
     delta_val=DELTA_VAL,
     n_trials_optuna=N_TRIALS_OPTUNA,
     use_exogenous_features=False,
     use_outlier_detection=False,
 )
-forecast.head()
+
+# Pipeline-Schritte in fester Reihenfolge:
+mt_optuna.prepare_data()
+mt_optuna.detect_outliers()
+mt_optuna.impute()
+mt_optuna.build_exogenous_features()
+result_optuna = mt_optuna.run(show=False)
+
+# MultiTask.run() liefert das aggregierte Prediction-Package;
+# die Prognose liegt unter result_optuna["future_pred"]:
+forecast_optuna = result_optuna["future_pred"].to_frame("forecast")
+forecast_optuna.head()
 ```
 
 ### Lazy
@@ -112,22 +136,36 @@ forecast.head()
 Model-Fit und Prediction mit den besten Hyperparametern aus Optuna, ohne
 erneutes Tuning (täglich oder stündlich). Wurde die Optuna-Phase noch
 nicht ausgeführt, startet `lazy` automatisch mit den Standardparametern.
-Mit `show=True` zeigt `run()` zusätzlich interaktive Grafiken pro Ziel
-und für die Aggregation; hier bleibt das ausgeschaltet, um die Seite
-schlank zu halten.
+Mit `run(show=True)` ließen sich zusätzlich interaktive Grafiken pro
+Ziel und für die Aggregation anzeigen; hier bleibt das mit
+`run(show=False)` ausgeschaltet, um die Seite schlank zu halten. Eine
+eigene frische `ConfigMulti` stellt sicher, dass keine Einstellungen
+aus dem Optuna-Abschnitt hereinlecken.
 
 ```{python}
-forecast = run(
-    dataframe=df,
+cfg_lazy = ConfigMulti()
+cfg_lazy.data_frame_name = PROJECT_NAME
+
+mt_lazy = MultiTask(
+    cfg_lazy,
     task="lazy",
-    project_name=PROJECT_NAME,
+    dataframe=df,
     cache_home=CACHE_HOME,
+    log_level=40,
     train_size=TRAIN_SIZE,
     delta_val=DELTA_VAL,
     use_exogenous_features=False,
     use_outlier_detection=False,
 )
-forecast.head()
+
+mt_lazy.prepare_data()
+mt_lazy.detect_outliers()
+mt_lazy.impute()
+mt_lazy.build_exogenous_features()
+result_lazy = mt_lazy.run(show=False)
+
+forecast_lazy = result_lazy["future_pred"].to_frame("forecast")
+forecast_lazy.head()
 ```
 
 ## Zusätzliche Tasks
@@ -139,15 +177,28 @@ müssen bereits einmal gelaufen sein, damit die Modelle im Cache
 vorliegen (`auto_save_models=True` ist der Standard).
 
 ```{python}
-forecast = run(
-    dataframe=df,
+cfg_predict = ConfigMulti()
+cfg_predict.data_frame_name = PROJECT_NAME
+
+mt_predict = MultiTask(
+    cfg_predict,
     task="predict",
-    project_name=PROJECT_NAME,
+    dataframe=df,
     cache_home=CACHE_HOME,
+    log_level=40,
+    # train_size / delta_val entfallen: predict fittet nicht neu
     use_exogenous_features=False,
     use_outlier_detection=False,
 )
-forecast.head()
+
+mt_predict.prepare_data()
+mt_predict.detect_outliers()
+mt_predict.impute()
+mt_predict.build_exogenous_features()
+result_predict = mt_predict.run(show=False)
+
+forecast_predict = result_predict["future_pred"].to_frame("forecast")
+forecast_predict.head()
 ```
 
 ### Clean
@@ -157,14 +208,35 @@ angezeigt, welche Dateien gelöscht würden, ohne sie tatsächlich zu
 entfernen.
 
 ```{python}
-run(task="clean", project_name=PROJECT_NAME, cache_home=CACHE_HOME, dry_run=True)
+cfg_clean = ConfigMulti()
+cfg_clean.data_frame_name = PROJECT_NAME
+
+mt_clean_dry = MultiTask(
+    cfg_clean,
+    task="clean",
+    cache_home=CACHE_HOME,
+    dry_run=True,
+    log_level=40,
+)
+mt_clean_dry.run()   # dry_run=True: zeigt nur an, was gelöscht würde
 ```
 
 ```{python}
-run(task="clean", project_name=PROJECT_NAME, cache_home=CACHE_HOME)
+cfg_clean_real = ConfigMulti()
+cfg_clean_real.data_frame_name = PROJECT_NAME
+
+mt_clean = MultiTask(
+    cfg_clean_real,
+    task="clean",
+    cache_home=CACHE_HOME,
+    dry_run=False,
+    log_level=40,
+)
+mt_clean.run()
 ```
 
-## Dokumentation der Funktion `run`
+## Dokumentation der Klasse `MultiTask`
 
-Die vollständige API-Referenz mit allen Parametern und weiteren
-Beispielen: [`multitask.run`](../reference/multitask.run.qmd).
+Die vollständige API-Referenz mit allen Parametern, Pipeline-Methoden
+und weiteren Beispielen:
+[`multitask.MultiTask`](../reference/multitask.MultiTask.qmd).

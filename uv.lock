@@ -3604,7 +3604,7 @@ wheels = [
 
 [[package]]
 name = "spotforecast2"
-version = "3.8.2"
+version = "3.9.0"
 source = { editable = "." }
 dependencies = [
     { name = "astral" },
