@@ -29,10 +29,29 @@ import pandas as pd
 
 from spotforecast2.multitask.multi import MultiTask
 from spotforecast2_safe.configurator.config_multi import ConfigMulti
-from spotforecast2_safe.multitask.runner import make_demo10_config
 
 CACHE_HOME = tempfile.mkdtemp()
 PROJECT_NAME = "test_001"
+```
+
+`bounds` und `agg_weights` sind domänenspezifische Kalibrierungen, die der
+Anwender explizit bereitstellen muss.  `bounds=None` bedeutet kein Clipping;
+`agg_weights=None` bedeutet gleichmäßige 1/n-Gewichtung.  Für den anonymisierten
+demo10-Datensatz werden datengetriebene Quantilgrenzen verwendet, da absolute
+Voreinstellungen je nach Skalierung 20–98 % der Werte als Ausreißer markieren
+würden.
+
+```{python}
+# Aggregationsgewichte: ein Wert pro Zielspalte (positional); negatives
+# Vorzeichen invertiert eine Reihe vor der Aggregation.
+# demo10 hat 11 Zielspalten — für andere Datensätze die Länge anpassen.
+agg_weights = [1.0, 1.0, -1.0, -1.0, 1.0, -1.0, 1.0, 1.0, 1.0, -1.0, 1.0]
+
+# Datengetriebene Ausreißergrenzen (0,1 %- / 99,9 %-Quantil je Spalte).
+bounds = [
+    (float(df[c].quantile(0.001)), float(df[c].quantile(0.999)))
+    for c in df.columns
+]
 ```
 
 ### Fail-safe Verhalten bei Open-Meteo-Ausfällen
@@ -51,7 +70,9 @@ nicht erreichbares Archiv):
   Kovariaten trainiert.
 
 ```{python}
-config_skip = make_demo10_config(
+config_skip = ConfigMulti(
+    bounds=bounds,
+    agg_weights=agg_weights,
     train_size=pd.Timedelta(days=365),
     on_weather_failure="skip",
 )
@@ -93,7 +114,9 @@ geladen wird.
 Tunen der Hyperparameter (wöchentlich):
 
 ```{python}
-cfg_optuna = make_demo10_config(
+cfg_optuna = ConfigMulti(
+    bounds=bounds,
+    agg_weights=agg_weights,
     train_size=pd.Timedelta(days=365),
     delta_val=pd.Timedelta(days=7 * 10),
     n_trials_optuna=2,
@@ -119,7 +142,9 @@ Model-Fit und Prognose mit den besten Hyperparametern aus Optuna, ohne erneutes 
 Wurde die Optuna-Phase noch nicht ausgeführt, wird `lazy` automatisch mit den Standardparametern gestartet.
 
 ```{python}
-cfg_lazy = make_demo10_config(
+cfg_lazy = ConfigMulti(
+    bounds=bounds,
+    agg_weights=agg_weights,
     train_size=pd.Timedelta(days=365),
     delta_val=pd.Timedelta(days=7 * 10),
     use_exogenous_features=False,
@@ -146,7 +171,9 @@ Im Gegensatz zu `lazy` werden zwischengespeicherte Tuning-Ergebnisse
 "Approach 2: Training without Tuning" in der ENTSO-E-Publikation).
 
 ```{python}
-cfg_defaults = make_demo10_config(
+cfg_defaults = ConfigMulti(
+    bounds=bounds,
+    agg_weights=agg_weights,
     train_size=pd.Timedelta(days=365),
     delta_val=pd.Timedelta(days=7 * 10),
     use_exogenous_features=False,
@@ -175,7 +202,11 @@ print(forecast_defaults)
 Nur Prognose, ohne Tuning oder Fit. Die Schritte `optuna` oder `lazy` müssen bereits einmal gelaufen sein, damit die Ergebnisse im Cache vorliegen.
 
 ```{python}
-cfg_predict = make_demo10_config(use_exogenous_features=False)
+cfg_predict = ConfigMulti(
+    bounds=bounds,
+    agg_weights=agg_weights,
+    use_exogenous_features=False,
+)
 cfg_predict.data_frame_name = PROJECT_NAME
 
 mt_predict = MultiTask(
