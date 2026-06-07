@@ -1,3 +1,19 @@
+## [6.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v5.2.0...v6.0.0-rc.1) (2026-06-07)
+
+### ⚠ BREAKING CHANGES
+
+* **multitask:** spotforecast2 now requires spotforecast2-safe >=19,<20.
+Derived pipeline fields (start_download, end_download, data_start,
+data_end, cov_start, cov_end, end_train_ts, start_train_ts) are no
+longer readable from the config after pipeline runs — read them from
+task.run_state. config.task is no longer mutated at task init.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+### Features
+
+* **multitask:** require spotforecast2-safe >=19,<20 (mirror shim removed) ([ac5a2ed](https://github.com/sequential-parameter-optimization/spotforecast2/commit/ac5a2ed2dec04e2382c851b8faf8fc9014439fe6)), closes [#2](https://github.com/sequential-parameter-optimization/spotforecast2/issues/2) [#201](https://github.com/sequential-parameter-optimization/spotforecast2/issues/201)
+
 ## [5.2.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v5.1.1...v5.2.0) (2026-06-07)
 
 ### Features
