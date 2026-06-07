@@ -39,7 +39,26 @@ __all__ = [
 
 
 class OptunaStrategy:
-    """Approach 3 — Optuna Bayesian tuning, then apply best params."""
+    """Approach 3 — Optuna Bayesian tuning, then apply best params.
+
+    Examples:
+        ```{python}
+        from spotforecast2.multitask.strategies import OptunaStrategy
+
+        strategy = OptunaStrategy()
+        print(f"name: {strategy.name}")
+        assert strategy.name == "optuna"
+        assert strategy.search_space is None
+
+        # Custom search space can be injected at construction time.
+        def my_space(trial):
+            return {"estimator__n_estimators": trial.suggest_int("estimator__n_estimators", 10, 50)}
+
+        custom = OptunaStrategy(search_space=my_space)
+        assert custom.search_space is my_space
+        print(f"custom search_space: {custom.search_space.__name__}")
+        ```
+    """
 
     name = "optuna"
 
@@ -54,6 +73,77 @@ class OptunaStrategy:
         y_train: pd.Series,
         exog_train: Optional[pd.DataFrame] = None,
     ) -> Any:
+        """Run Optuna search and return a forecaster initialised with the best params.
+
+        Args:
+            task: A `BaseTask` (or compatible) instance that supplies ``cv_ts``,
+                ``config``, ``logger``, ``save_tuning_results``, and
+                ``create_forecaster``.
+            target: Target column name; forwarded to ``task.create_forecaster``
+                and ``task.save_tuning_results``.
+            forecaster: An unfitted forecaster instance used as the search
+                template.
+            y_train: Training time series for the current target.
+            exog_train: Optional exogenous features aligned with ``y_train``.
+
+        Returns:
+            A fresh, unfitted forecaster with ``set_params`` and ``set_lags``
+            applied from the best trial found by Optuna.
+
+        Examples:
+            ```{python}
+            import types, logging, warnings
+            import numpy as np
+            import pandas as pd
+            from lightgbm import LGBMRegressor
+            from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+            from spotforecast2_safe.splitter import TimeSeriesFold
+            from spotforecast2.multitask.strategies import OptunaStrategy
+
+            rng = np.random.default_rng(0)
+            n = 300
+            idx = pd.date_range("2023-01-01", periods=n, freq="h", tz="UTC")
+            y_train = pd.Series(rng.normal(0, 1, n), index=idx, name="A")
+
+            forecaster = ForecasterRecursive(
+                estimator=LGBMRegressor(n_estimators=10, verbose=-1), lags=3
+            )
+            cv = TimeSeriesFold(
+                steps=24, initial_train_size=200, refit=False,
+                gap=0, allow_incomplete_fold=True,
+            )
+
+            def tiny_space(trial):
+                return {
+                    "estimator__n_estimators": trial.suggest_int(
+                        "estimator__n_estimators", 10, 30
+                    ),
+                    "lags": trial.suggest_categorical("lags", [3, 5, 6]),
+                }
+
+            cfg = types.SimpleNamespace(
+                n_trials_optuna=1, random_state=0, verbose=False
+            )
+            task = types.SimpleNamespace(
+                config=cfg,
+                logger=logging.getLogger("example"),
+                cv_ts=lambda y: cv,
+                create_forecaster=lambda target=None: ForecasterRecursive(
+                    estimator=LGBMRegressor(n_estimators=10, verbose=-1), lags=3
+                ),
+                save_tuning_results=lambda **kw: None,
+                _show_progress=False,
+            )
+
+            strategy = OptunaStrategy(search_space=tiny_space)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                tuned = strategy.prepare_forecaster(task, "A", forecaster, y_train)
+
+            print(f"tuned type: {type(tuned).__name__}")
+            assert isinstance(tuned, ForecasterRecursive)
+            ```
+        """
         from spotforecast2.model_selection import bayesian_search_forecaster
 
         search_space = self.search_space or _default_optuna_search_space
@@ -89,7 +179,27 @@ class OptunaStrategy:
 
 
 class SpotOptimStrategy:
-    """Approach 4 — SpotOptim surrogate-model tuning, then apply best params."""
+    """Approach 4 — SpotOptim surrogate-model tuning, then apply best params.
+
+    Examples:
+        ```{python}
+        from spotforecast2.multitask.strategies import SpotOptimStrategy
+
+        strategy = SpotOptimStrategy()
+        print(f"name: {strategy.name}")
+        assert strategy.name == "spotoptim"
+        assert strategy.search_space is None
+
+        # A custom search space narrows the grid explored by the surrogate model.
+        custom_space = {
+            "estimator__n_estimators": (10, 50),
+            "lags": ["3", "5", "6"],
+        }
+        custom = SpotOptimStrategy(search_space=custom_space)
+        assert custom.search_space is custom_space
+        print(f"custom search_space keys: {list(custom.search_space.keys())}")
+        ```
+    """
 
     name = "spotoptim"
 
@@ -104,6 +214,81 @@ class SpotOptimStrategy:
         y_train: pd.Series,
         exog_train: Optional[pd.DataFrame] = None,
     ) -> Any:
+        """Run SpotOptim surrogate search and return a forecaster with best params.
+
+        Args:
+            task: A `BaseTask` (or compatible) instance that supplies ``cv_ts``,
+                ``config``, ``logger``, ``save_tuning_results``, and
+                ``create_forecaster``.  The config must expose
+                ``n_trials_spotoptim``, ``n_initial_spotoptim``,
+                ``random_state``, ``warm_start_lags``, and optionally
+                ``lags_consider`` and ``n_jobs_spotoptim``.
+            target: Target column name; forwarded to ``task.create_forecaster``
+                and ``task.save_tuning_results``.
+            forecaster: An unfitted forecaster instance used as the search
+                template.
+            y_train: Training time series for the current target.
+            exog_train: Optional exogenous features aligned with ``y_train``.
+
+        Returns:
+            A fresh, unfitted forecaster with ``set_params`` and ``set_lags``
+            applied from the best configuration found by the SpotOptim surrogate.
+
+        Examples:
+            ```{python}
+            import types, logging, warnings
+            import numpy as np
+            import pandas as pd
+            from lightgbm import LGBMRegressor
+            from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+            from spotforecast2_safe.splitter import TimeSeriesFold
+            from spotforecast2.multitask.strategies import SpotOptimStrategy
+
+            rng = np.random.default_rng(0)
+            n = 300
+            idx = pd.date_range("2023-01-01", periods=n, freq="h", tz="UTC")
+            y_train = pd.Series(rng.normal(0, 1, n), index=idx, name="A")
+
+            forecaster = ForecasterRecursive(
+                estimator=LGBMRegressor(n_estimators=10, verbose=-1), lags=3
+            )
+            cv = TimeSeriesFold(
+                steps=24, initial_train_size=200, refit=False,
+                gap=0, allow_incomplete_fold=True,
+            )
+
+            tiny_space = {
+                "estimator__n_estimators": (10, 30),
+                "lags": ["3", "5", "6"],
+            }
+
+            cfg = types.SimpleNamespace(
+                n_trials_spotoptim=5,
+                n_initial_spotoptim=3,
+                random_state=0,
+                warm_start_lags=False,
+                n_jobs_spotoptim=None,
+            )
+            task = types.SimpleNamespace(
+                config=cfg,
+                logger=logging.getLogger("example"),
+                cv_ts=lambda y: cv,
+                create_forecaster=lambda target=None: ForecasterRecursive(
+                    estimator=LGBMRegressor(n_estimators=10, verbose=-1), lags=3
+                ),
+                save_tuning_results=lambda **kw: None,
+                _show_progress=False,
+            )
+
+            strategy = SpotOptimStrategy(search_space=tiny_space)
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                tuned = strategy.prepare_forecaster(task, "A", forecaster, y_train)
+
+            print(f"tuned type: {type(tuned).__name__}")
+            assert isinstance(tuned, ForecasterRecursive)
+            ```
+        """
         from spotforecast2.model_selection import (
             build_warm_start_x0,
             spotoptim_search_forecaster,

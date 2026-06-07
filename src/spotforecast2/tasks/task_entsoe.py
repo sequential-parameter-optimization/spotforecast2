@@ -61,8 +61,8 @@ def entsoe_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
     """Read the merged interim ENTSO-E CSV that ``config.data_filename`` points at.
 
     Args:
-        config: A ``ConfigEntsoe`` with ``data_filename`` set.  Relative paths
-            are resolved against ``spotforecast2_safe.data.fetch_data.get_data_home``.
+        config: A `ConfigEntsoe` with ``data_filename`` set.  Relative paths
+            are resolved against `spotforecast2_safe.data.fetch_data.get_data_home`.
 
     Returns:
         DataFrame indexed by the ENTSO-E timestamp column (``Time (UTC)``)
@@ -71,6 +71,34 @@ def entsoe_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
     Raises:
         FileNotFoundError: If the merged CSV does not exist.  Run
             ``spotforecast2-entsoe download`` and ``merge`` first.
+
+    Examples:
+        ```{python}
+        import os
+        import tempfile
+
+        import pandas as pd
+        from spotforecast2_safe.configurator import ConfigEntsoe
+
+        from spotforecast2.tasks.task_entsoe import entsoe_data_loader
+
+        # Build a tiny synthetic interim CSV in a temp directory.
+        tmp = tempfile.mkdtemp()
+        csv_path = os.path.join(tmp, "energy_load.csv")
+        idx = pd.date_range(
+            "2025-01-01", periods=48, freq="h", tz="UTC", name="Time (UTC)"
+        )
+        pd.DataFrame({"Actual Load": range(48)}, index=idx).to_csv(csv_path)
+
+        # Absolute path bypasses get_data_home; loader returns the full frame.
+        config = ConfigEntsoe()
+        config.data_filename = csv_path
+        df = entsoe_data_loader(config)
+
+        print(df.shape)
+        assert df.shape == (48, 1)
+        assert df.index.name == "Time (UTC)"
+        ```
     """
     path = Path(config.data_filename)
     if not path.is_absolute():
@@ -100,7 +128,7 @@ def entsoe_test_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
     actually predicting, rather than always "yesterday in wall-clock UTC".
 
     Args:
-        config: A ``ConfigEntsoe`` with ``data_filename``, ``end_train_default``,
+        config: A `ConfigEntsoe` with ``data_filename``, ``end_train_default``,
             and ``predict_size`` set; the merged interim CSV must already
             contain data covering the forecast horizon (run
             ``spotforecast2-entsoe download`` first).
@@ -108,6 +136,37 @@ def entsoe_test_data_loader(config: ConfigEntsoe) -> pd.DataFrame:
     Returns:
         DataFrame indexed by ``Time (UTC)`` with the rows the forecast will be
         scored against.
+
+    Examples:
+        ```{python}
+        import os
+        import tempfile
+
+        import pandas as pd
+        from spotforecast2_safe.configurator import ConfigEntsoe
+
+        from spotforecast2.tasks.task_entsoe import entsoe_test_data_loader
+
+        # Synthetic interim CSV spanning the forecast window.
+        tmp = tempfile.mkdtemp()
+        csv_path = os.path.join(tmp, "energy_load.csv")
+        idx = pd.date_range(
+            "2025-12-29 00:00", periods=120, freq="h", tz="UTC", name="Time (UTC)"
+        )
+        pd.DataFrame({"Actual Load": range(120)}, index=idx).to_csv(csv_path)
+
+        config = ConfigEntsoe()
+        config.data_filename = csv_path
+        config.end_train_default = "2025-12-31 00:00+00:00"
+        config.predict_size = 24
+
+        test_df = entsoe_test_data_loader(config)
+
+        # The slice covers exactly predict_size hourly steps after end_train.
+        print(test_df.shape)
+        assert test_df.shape == (24, 1)
+        assert test_df.index[0] == pd.Timestamp("2025-12-31 01:00", tz="UTC")
+        ```
     """
     df = entsoe_data_loader(config)
     end_train = pd.Timestamp(config.end_train_default)
@@ -136,9 +195,26 @@ def entsoe_lgbm_factory(
 
     Args:
         config: Any object exposing ``random_state``, ``lags_consider``, and
-            ``window_size`` (typically ``ConfigEntsoe``).
+            ``window_size`` (typically `ConfigEntsoe`).
         weight_func: Per-sample weight function from the imputation step.
         target: Ignored; accepted for factory-signature compatibility.
+
+    Examples:
+        ```{python}
+        from spotforecast2_safe.configurator import ConfigEntsoe
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+
+        from spotforecast2.tasks.task_entsoe import entsoe_lgbm_factory
+
+        config = ConfigEntsoe()
+        forecaster = entsoe_lgbm_factory(config, weight_func=None, target="Actual Load")
+
+        print(type(forecaster).__name__)
+        assert isinstance(forecaster, ForecasterRecursive)
+        # The lags array is derived from lags_consider[-1] = 23.
+        assert len(forecaster.lags) == config.lags_consider[-1]
+        print("lags:", forecaster.lags)
+        ```
     """
     del target
     return ForecasterRecursive(
@@ -157,7 +233,35 @@ def entsoe_xgb_factory(
     weight_func: Optional[Any] = None,
     target: Optional[str] = None,
 ) -> ForecasterRecursive:
-    """XGBoost ForecasterRecursive for the ENTSO-E pipeline."""
+    """XGBoost ForecasterRecursive for the ENTSO-E pipeline.
+
+    Mirrors `entsoe_lgbm_factory()` but uses an `XGBRegressor` estimator.
+    Kept as a named helper so the XGBoost variant is explicit at the
+    configuration site.
+
+    Args:
+        config: Any object exposing ``random_state``, ``lags_consider``, and
+            ``window_size`` (typically `ConfigEntsoe`).
+        weight_func: Per-sample weight function from the imputation step.
+        target: Ignored; accepted for factory-signature compatibility.
+
+    Examples:
+        ```{python}
+        from spotforecast2_safe.configurator import ConfigEntsoe
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from xgboost import XGBRegressor
+
+        from spotforecast2.tasks.task_entsoe import entsoe_xgb_factory
+
+        config = ConfigEntsoe()
+        forecaster = entsoe_xgb_factory(config, weight_func=None, target="Actual Load")
+
+        print(type(forecaster).__name__)
+        assert isinstance(forecaster, ForecasterRecursive)
+        assert isinstance(forecaster.estimator, XGBRegressor)
+        print("lags:", forecaster.lags)
+        ```
+    """
     del target
     return ForecasterRecursive(
         estimator=XGBRegressor(random_state=config.random_state, verbosity=0),
@@ -258,7 +362,24 @@ logger = logging.getLogger(__name__)
 
 
 def main() -> None:
-    """Entry point for the ``spotforecast2-entsoe`` console script."""
+    """Entry point for the ``spotforecast2-entsoe`` console script.
+
+    Parses ``sys.argv`` and dispatches to one of four subcommands:
+    ``download``, ``merge``, ``train``, or ``predict``.  Calling with no
+    subcommand prints the top-level help and returns.
+
+    Examples:
+        ```{python}
+        import sys
+
+        from spotforecast2.tasks.task_entsoe import main
+
+        # With no subcommand, main() prints the usage summary and returns
+        # without error — useful for verifying the CLI is wired correctly.
+        sys.argv = ["spotforecast2-entsoe"]
+        main()  # prints usage and returns normally
+        ```
+    """
     parser = argparse.ArgumentParser(description="spotforecast2 ENTSO-E pipeline")
     subparsers = parser.add_subparsers(dest="subcommand")
 

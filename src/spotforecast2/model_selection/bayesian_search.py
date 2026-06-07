@@ -127,6 +127,46 @@ def bayesian_search_forecaster(
         TypeError: If cv is not an instance of TimeSeriesFold or OneStepAheadFold.
         ValueError: If metric list contains duplicate metric names.
 
+    Examples:
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from sklearn.linear_model import Ridge
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from spotforecast2_safe.splitter import TimeSeriesFold
+        from spotforecast2.model_selection.bayesian_search import bayesian_search_forecaster
+
+        rng = np.random.default_rng(0)
+        y = pd.Series(rng.standard_normal(40), name="y")
+
+        forecaster = ForecasterRecursive(estimator=Ridge(), lags=2)
+        cv = TimeSeriesFold(steps=2, initial_train_size=25, refit=False)
+
+        def search_space(trial):
+            return {
+                "estimator__alpha": trial.suggest_float("estimator__alpha", 0.01, 10.0),
+            }
+
+        results, best_trial = bayesian_search_forecaster(
+            forecaster=forecaster,
+            y=y,
+            cv=cv,
+            search_space=search_space,
+            metric="mean_squared_error",
+            n_trials=3,
+            random_state=0,
+            return_best=False,
+            verbose=False,
+            show_progress=False,
+            suppress_warnings=True,
+        )
+
+        print(results.shape)
+        print(results.columns.tolist())
+        assert results.shape[0] == 3
+        assert "mean_squared_error" in results.columns
+        assert "estimator__alpha" in results.columns
+        ```
     """
 
     if return_best and exog is not None and (len(exog) != len(y)):

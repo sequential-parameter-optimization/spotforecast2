@@ -61,6 +61,54 @@ class LazyTask(BaseTask):
         Returns:
             Aggregated prediction package. Per-target packages are stored
             on ``self.results["lazy"]``.
+
+        Examples:
+            ```{python}
+            import tempfile
+            import numpy as np
+            import pandas as pd
+            from lightgbm import LGBMRegressor
+            from spotforecast2.multitask import LazyTask
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+            from spotforecast2_safe.preprocessing import RollingFeatures
+
+            rng = np.random.default_rng(0)
+            n = 24 * 14  # two weeks of hourly data
+            idx = pd.date_range("2023-01-01", periods=n, freq="h", tz="UTC")
+            idx.name = "DateTime"
+            df = pd.DataFrame({"load": rng.normal(100, 10, n)}, index=idx)
+
+            def _fast_factory(config, *, weight_func=None, target=None):
+                return ForecasterRecursive(
+                    estimator=LGBMRegressor(
+                        n_estimators=10,
+                        random_state=config.random_state,
+                        verbose=-1,
+                    ),
+                    lags=6,
+                    window_features=RollingFeatures(stats=["mean"], window_sizes=6),
+                    weight_func=weight_func,
+                )
+
+            with tempfile.TemporaryDirectory() as tmp:
+                cfg = ConfigMulti(
+                    predict_size=6,
+                    use_exogenous_features=False,
+                    use_outlier_detection=False,
+                    auto_save_models=False,
+                    number_folds=2,
+                    random_state=42,
+                    forecaster_factory=_fast_factory,
+                    cache_home=tmp,
+                )
+                task = LazyTask(cfg, dataframe=df)
+                task.prepare_data().detect_outliers().impute().build_exogenous_features()
+                result = task.run(show=False, use_tuned_params=False)
+
+            print(f"Future predictions: {len(result['future_pred'])} steps")
+            assert len(result["future_pred"]) == 6
+            ```
         """
         return execute_lazy(
             self,

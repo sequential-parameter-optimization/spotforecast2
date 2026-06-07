@@ -40,6 +40,36 @@ def execute_optuna(
         Per-target packages are stored on ``task.results["optuna"]``.
         When ``task.config.auto_save_models`` is ``True`` (the default), fitted
         models are saved to disk so PredictTask can load them directly.
+
+    Examples:
+        ```{python}
+        import warnings
+        from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+        from spotforecast2.multitask import OptunaTask
+        from spotforecast2.multitask.optuna import execute_optuna
+
+        data_home = get_package_data_home()
+        df = fetch_data(filename=str(data_home / "demo10.csv"))
+        tiny_df = df.iloc[:500][["A"]]
+
+        task = OptunaTask(
+            n_trials_optuna=2,
+            predict_size=24,
+            auto_save_models=False,
+            lags_consider=[1, 2, 24],
+            number_folds=2,
+            verbose=False,
+        )
+        task.prepare_data(demo_data=tiny_df)
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            result = execute_optuna(task, show=False)
+
+        assert isinstance(result, dict)
+        assert "future_pred" in result
+        print("execute_optuna result keys:", sorted(result.keys()))
+        ```
     """
     strategy = OptunaStrategy(search_space=search_space)
     return task._run_strategy(
@@ -90,5 +120,34 @@ class OptunaTask(BaseTask):
         Returns:
             Aggregated prediction package. Per-target packages are stored
             on ``self.results["optuna"]``.
+
+        Examples:
+            ```{python}
+            import warnings
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+            from spotforecast2.multitask import OptunaTask
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv"))
+            tiny_df = df.iloc[:500][["A"]]
+
+            task = OptunaTask(
+                n_trials_optuna=2,
+                predict_size=24,
+                auto_save_models=False,
+                lags_consider=[1, 2, 24],
+                number_folds=2,
+                verbose=False,
+            )
+            task.prepare_data(demo_data=tiny_df)
+
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+                result = task.run(show=False)
+
+            assert "future_pred" in result
+            assert result.get("validation_passed") is True
+            print("OptunaTask.run result keys:", sorted(result.keys()))
+            ```
         """
         return execute_optuna(self, show=show, search_space=search_space)
