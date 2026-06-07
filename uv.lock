@@ -3604,7 +3604,7 @@ wheels = [
 
 [[package]]
 name = "spotforecast2"
-version = "5.1.0"
+version = "5.1.1"
 source = { editable = "." }
 dependencies = [
     { name = "astral" },
@@ -3684,7 +3684,7 @@ requires-dist = [
     { name = "scikit-learn", specifier = ">=1.8.0" },
     { name = "shap", specifier = ">=0.49.1" },
     { name = "spotforecast2-safe", specifier = ">=18.0.0,<19" },
-    { name = "spotoptim", specifier = ">=0.12.8" },
+    { name = "spotoptim", specifier = ">=0.12.9" },
     { name = "tqdm", specifier = ">=4.67.2" },
 ]
 provides-extras = ["dev"]
@@ -3724,7 +3724,7 @@ wheels = [
 
 [[package]]
 name = "spotoptim"
-version = "0.12.8"
+version = "0.12.9"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "black" },
@@ -3747,9 +3747,9 @@ dependencies = [
     { name = "ty" },
     { name = "xgboost" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/16/5a/a61ed4072c98c69de68854013e49856a241c5875a452b963e4c2d85ea8b3/spotoptim-0.12.8.tar.gz", hash = "sha256:215dc6e9c7718f181f47a0d16b54faea7818dfd26a300f4aaacd83156db28506", size = 316306, upload-time = "2026-06-07T12:46:19.632Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/39/f9/95d6e754898c7d9bd976adb643b7e21d219bb73940bb977c6a0ab5479639/spotoptim-0.12.9.tar.gz", hash = "sha256:190287bd272063bd170229e6c979d69089258363e71a448bbbddea5cf412bada", size = 316604, upload-time = "2026-06-07T16:02:46.901Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/83/aa/926c52ee29a5655b9d7f677d231e19fdcf1540558fa26169b0626736e302/spotoptim-0.12.8-py3-none-any.whl", hash = "sha256:9eb2c05232bd2bac16487ecf2f0ae437f8c7e4fca44b706551308be363604a03", size = 355920, upload-time = "2026-06-07T12:46:17.986Z" },
+    { url = "https://files.pythonhosted.org/packages/90/6c/40bce16374aeeb6bbc74de705829637fc0671499806d36c2828449b5a5ed/spotoptim-0.12.9-py3-none-any.whl", hash = "sha256:e6319b305acfafb6b8d9a204c152a5060d9f923c8171070b6d210bd827d252cd", size = 356232, upload-time = "2026-06-07T16:02:44.859Z" },
 ]
 
 [[package]]

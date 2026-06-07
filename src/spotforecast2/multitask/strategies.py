@@ -222,9 +222,14 @@ class SpotOptimStrategy:
         SpotOptim constructor and the ongoing search can be watched with
         ``tensorboard --logdir <path>`` (defaults to ``runs/``).  Set them
         as plain attributes, e.g. ``cfg.tensorboard_log = True`` — no
-        config-class change is required.  Live per-eval scalars under
-        parallel tuning (``n_jobs_spotoptim != 1``) require
-        ``spotoptim >= 0.12.8``.
+        config-class change is required.  When logging is enabled and
+        ``tensorboard_clean`` is unset, it defaults to ``True`` so every
+        run starts with a fresh dashboard (the configured log directory
+        is wiped at search start); set ``cfg.tensorboard_clean = False``
+        to keep accumulating event files instead — do that, or give each
+        task its own ``tensorboard_path``, when several tasks share one
+        log directory.  Live per-eval scalars under parallel tuning
+        (``n_jobs_spotoptim != 1``) require ``spotoptim >= 0.12.8``.
 
         Args:
             task: A `BaseTask` (or compatible) instance that supplies ``cv_ts``,
@@ -347,6 +352,11 @@ class SpotOptimStrategy:
             for key in ("tensorboard_log", "tensorboard_path", "tensorboard_clean")
             if getattr(task.config, key, None) is not None
         }
+        if tb_kwargs.get("tensorboard_log") and "tensorboard_clean" not in tb_kwargs:
+            # Fresh dashboard per run: wipe the configured log directory before
+            # the search starts (spotoptim >= 0.12.9 cleans tensorboard_path
+            # itself). Opt out with ``cfg.tensorboard_clean = False``.
+            tb_kwargs["tensorboard_clean"] = True
         if tb_kwargs:
             kwargs_spotoptim.update(tb_kwargs)
             task.logger.info("  SpotOptim TensorBoard: %s", tb_kwargs)
