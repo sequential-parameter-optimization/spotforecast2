@@ -1,6 +1,6 @@
 [project]
 name = "spotforecast2"
-version = "5.0.0"
+version = "5.1.0-rc.1"
 description = "Forecasting with spot"
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
@@ -33,7 +33,7 @@ dependencies = [
     "scikit-learn>=1.8.0",
     "shap>=0.49.1",
     "spotforecast2-safe>=18.0.0,<19",
-    "spotoptim>=0.12.3",
+    "spotoptim>=0.12.8",
     "tqdm>=4.67.2",
 ]
 
@@ -98,5 +98,6 @@ line-length = 88
 target-version = "py313"
 
 # [tool.uv.sources]
-# Local editable install — uses ../spotforecast2-safe instead of PyPI:
+# Local editable installs — use the sibling checkouts instead of PyPI:
 # spotforecast2-safe = { path = "../spotforecast2-safe", editable = true }
+# spotoptim = { path = "../spotoptim", editable = true }

@@ -54,3 +54,97 @@ def test_defaults_strategy_returns_forecaster_unchanged():
         exog_train=None,
     )
     assert result is sentinel
+
+
+class _FakeForecaster:
+    """Minimal stand-in accepting set_params/set_lags."""
+
+    def set_params(self, **kwargs):
+        self.params = kwargs
+
+    def set_lags(self, lags):
+        self.lags = lags
+
+
+def _make_fake_task(**config_extra):
+    """Fake task carrying just what SpotOptimStrategy.prepare_forecaster reads."""
+    import logging
+    import types
+
+    cfg = types.SimpleNamespace(
+        n_trials_spotoptim=2,
+        n_initial_spotoptim=1,
+        random_state=0,
+        warm_start_lags=False,
+        n_jobs_spotoptim=None,
+        **config_extra,
+    )
+    return types.SimpleNamespace(
+        config=cfg,
+        logger=logging.getLogger("test-strategies"),
+        cv_ts=lambda y: None,
+        create_forecaster=lambda target=None: _FakeForecaster(),
+        save_tuning_results=lambda **kw: None,
+        _show_progress=False,
+    )
+
+
+def test_spotoptim_strategy_forwards_tensorboard_kwargs(monkeypatch):
+    """config.tensorboard_* attrs must reach kwargs_spotoptim unchanged.
+
+    ``prepare_forecaster`` imports ``spotoptim_search_forecaster`` from
+    ``spotforecast2.model_selection`` at call time, so patching the module
+    attribute intercepts the call.
+    """
+    import pandas as pd
+
+    import spotforecast2.model_selection as ms
+
+    captured = {}
+
+    def fake_search_forecaster(*args, **kwargs):
+        captured["kwargs_spotoptim"] = kwargs.get("kwargs_spotoptim")
+        results = pd.DataFrame({"params": [{"alpha": 1.0}], "lags": [[1, 2]]})
+        return results, object()
+
+    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search_forecaster)
+
+    task = _make_fake_task(
+        tensorboard_log=True,
+        tensorboard_path="runs/test-tb",
+    )
+    tuned = SpotOptimStrategy(search_space={"alpha": (0.1, 1.0)}).prepare_forecaster(
+        task, "A", _FakeForecaster(), y_train=None
+    )
+
+    ks = captured["kwargs_spotoptim"]
+    assert ks["tensorboard_log"] is True
+    assert ks["tensorboard_path"] == "runs/test-tb"
+    # Unset attribute must be skipped so SpotOptim's default stays in charge.
+    assert "tensorboard_clean" not in ks
+    assert isinstance(tuned, _FakeForecaster)
+    assert tuned.params == {"alpha": 1.0}
+
+
+def test_spotoptim_strategy_no_tensorboard_attrs_no_kwargs(monkeypatch):
+    """Without tensorboard config attrs, no tensorboard keys are forwarded."""
+    import pandas as pd
+
+    import spotforecast2.model_selection as ms
+
+    captured = {}
+
+    def fake_search_forecaster(*args, **kwargs):
+        captured["kwargs_spotoptim"] = kwargs.get("kwargs_spotoptim")
+        results = pd.DataFrame({"params": [{"alpha": 1.0}], "lags": [[1, 2]]})
+        return results, object()
+
+    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search_forecaster)
+
+    task = _make_fake_task()
+    SpotOptimStrategy(search_space={"alpha": (0.1, 1.0)}).prepare_forecaster(
+        task, "A", _FakeForecaster(), y_train=None
+    )
+
+    # n_jobs_spotoptim=None and no tensorboard attrs -> empty dict -> None.
+    assert captured["kwargs_spotoptim"] is None

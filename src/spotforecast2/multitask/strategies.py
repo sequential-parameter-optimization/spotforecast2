@@ -216,13 +216,24 @@ class SpotOptimStrategy:
     ) -> Any:
         """Run SpotOptim surrogate search and return a forecaster with best params.
 
+        Live tuning visualization: when the config carries the optional
+        attributes ``tensorboard_log`` (bool), ``tensorboard_path`` (str)
+        or ``tensorboard_clean`` (bool), they are forwarded to the
+        SpotOptim constructor and the ongoing search can be watched with
+        ``tensorboard --logdir <path>`` (defaults to ``runs/``).  Set them
+        as plain attributes, e.g. ``cfg.tensorboard_log = True`` — no
+        config-class change is required.  Live per-eval scalars under
+        parallel tuning (``n_jobs_spotoptim != 1``) require
+        ``spotoptim >= 0.12.8``.
+
         Args:
             task: A `BaseTask` (or compatible) instance that supplies ``cv_ts``,
                 ``config``, ``logger``, ``save_tuning_results``, and
                 ``create_forecaster``.  The config must expose
                 ``n_trials_spotoptim``, ``n_initial_spotoptim``,
                 ``random_state``, ``warm_start_lags``, and optionally
-                ``lags_consider`` and ``n_jobs_spotoptim``.
+                ``lags_consider``, ``n_jobs_spotoptim``, and the
+                TensorBoard knobs described above.
             target: Target column name; forwarded to ``task.create_forecaster``
                 and ``task.save_tuning_results``.
             forecaster: An unfitted forecaster instance used as the search
@@ -324,6 +335,21 @@ class SpotOptimStrategy:
         if n_jobs_spotoptim is not None:
             kwargs_spotoptim["n_jobs"] = n_jobs_spotoptim
             task.logger.info("  SpotOptim n_jobs: %s", n_jobs_spotoptim)
+
+        # Tuning visualization: forward TensorBoard knobs to SpotOptim. Users
+        # set these as plain attributes on the config (the safe-package config
+        # classes carry no __slots__, so no spotforecast2_safe change is
+        # needed). Unset attributes are skipped so SpotOptim's own defaults
+        # (tensorboard_log=False) stay in charge. Requires spotoptim >= 0.12.8
+        # for live per-eval logging under n_jobs != 1.
+        tb_kwargs = {
+            key: getattr(task.config, key)
+            for key in ("tensorboard_log", "tensorboard_path", "tensorboard_clean")
+            if getattr(task.config, key, None) is not None
+        }
+        if tb_kwargs:
+            kwargs_spotoptim.update(tb_kwargs)
+            task.logger.info("  SpotOptim TensorBoard: %s", tb_kwargs)
 
         tuning_results, _ = spotoptim_search_forecaster(
             forecaster=forecaster,
