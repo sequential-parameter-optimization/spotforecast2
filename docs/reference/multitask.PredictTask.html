@@ -766,7 +766,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>If no saved models exist in the cache directory the <code>run</code> method raises <code>RuntimeError</code> with an informative message.</p>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="f58e16f4" class="cell" data-execution_count="1">
+<div id="e7a40085" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> PredictTask</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> PredictTask(data_frame_name<span class="op">=</span><span class="st">"demo10"</span>, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
@@ -878,6 +878,63 @@ Predict size: 24</code></pre>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div id="9c3f6816" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> pathlib <span class="im">import</span> Path</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> LazyTask, PredictTask</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>demo_df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(get_package_data_home() <span class="op">/</span> <span class="st">"demo10.csv"</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> tempfile.TemporaryDirectory() <span class="im">as</span> tmp:</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Train and persist a model for a single target.</span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    lazy <span class="op">=</span> LazyTask(</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        data_frame_name<span class="op">=</span><span class="st">"demo10"</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        cache_home<span class="op">=</span>Path(tmp),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>        targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>        use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    lazy.prepare_data(demo_data<span class="op">=</span>demo_df)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    lazy.detect_outliers()</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    lazy.impute()</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    lazy.build_exogenous_features()</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    lazy.run(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>    lazy.save_models(task_name<span class="op">=</span><span class="st">"lazy"</span>)</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Load the saved model and produce predictions.</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    pred <span class="op">=</span> PredictTask(</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>        data_frame_name<span class="op">=</span><span class="st">"demo10"</span>,</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>        cache_home<span class="op">=</span>Path(tmp),</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>        predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a>        targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a>        use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-31"><a href="#cb5-31" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb5-32"><a href="#cb5-32" aria-hidden="true" tabindex="-1"></a>    pred.prepare_data(demo_data<span class="op">=</span>demo_df)</span>
+<span id="cb5-33"><a href="#cb5-33" aria-hidden="true" tabindex="-1"></a>    pred.detect_outliers()</span>
+<span id="cb5-34"><a href="#cb5-34" aria-hidden="true" tabindex="-1"></a>    pred.impute()</span>
+<span id="cb5-35"><a href="#cb5-35" aria-hidden="true" tabindex="-1"></a>    pred.build_exogenous_features()</span>
+<span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> pred.run(show<span class="op">=</span><span class="va">False</span>, task_name<span class="op">=</span><span class="st">"lazy"</span>)</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>pkg <span class="op">=</span> pred.results[<span class="st">"predict"</span>][<span class="st">"A"</span>]</span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"future_pred length: </span><span class="sc">{</span><span class="bu">len</span>(pkg[<span class="st">'future_pred'</span>])<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-40"><a href="#cb5-40" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"result keys: </span><span class="sc">{</span><span class="bu">sorted</span>(result.keys())<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-41"><a href="#cb5-41" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">len</span>(pkg[<span class="st">"future_pred"</span>]) <span class="op">==</span> <span class="dv">24</span></span>
+<span id="cb5-42"><a href="#cb5-42" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"future_pred"</span> <span class="kw">in</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_3195/494582107.py:17: DeprecationWarning: Derived pipeline fields (start_download, end_download, data_start, data_end, cov_start, cov_end, end_train_ts, start_train_ts) have moved to task.run_state. Reading them from the config is deprecated and will stop working in the next major release. config.targets continues to hold the user input unchanged; read the resolved list from task.run_state.targets.
+  lazy.prepare_data(demo_data=demo_df)
+/tmp/ipykernel_3195/494582107.py:32: DeprecationWarning: Derived pipeline fields (start_download, end_download, data_start, data_end, cov_start, cov_end, end_train_ts, start_train_ts) have moved to task.run_state. Reading them from the config is deprecated and will stop working in the next major release. config.targets continues to hold the user input unchanged; read the resolved list from task.run_state.targets.
+  pred.prepare_data(demo_data=demo_df)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>future_pred length: 24
+result keys: ['future_actual', 'future_pred', 'metrics_future', 'metrics_future_one_day', 'metrics_train', 'train_actual', 'train_pred', 'validation_passed']</code></pre>
+</div>
+</div>
 
 
 </section>

@@ -765,7 +765,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Uses <code>spotoptim</code> for surrogate-model-based Bayesian optimisation. Effective with small trial budgets.</p>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="602e63e1" class="cell" data-execution_count="1">
+<div id="c0ba1ef0" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> SpotOptimTask</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> SpotOptimTask(n_trials_spotoptim<span class="op">=</span><span class="dv">10</span>, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
@@ -847,6 +847,32 @@ SpotOptim trials: 10</code></pre>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div id="b81f1f4c" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Construct the task and verify configuration before running.</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># A full run requires prepared data (prepare_data, impute, etc.);</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># this example demonstrates construction and config inspection.</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.spotoptim <span class="im">import</span> SpotOptimTask</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> SpotOptimTask(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    n_trials_spotoptim<span class="op">=</span><span class="dv">5</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    n_initial_spotoptim<span class="op">=</span><span class="dv">3</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Task type: </span><span class="sc">{</span>task<span class="sc">.</span>TASK<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Trials: </span><span class="sc">{</span>task<span class="sc">.</span>config<span class="sc">.</span>n_trials_spotoptim<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Initial evaluations: </span><span class="sc">{</span>task<span class="sc">.</span>config<span class="sc">.</span>n_initial_spotoptim<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> task.config.n_trials_spotoptim <span class="op">==</span> <span class="dv">5</span></span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> task.config.auto_save_models <span class="kw">is</span> <span class="va">False</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Task type: spotoptim
+Trials: 5
+Initial evaluations: 3</code></pre>
+</div>
+</div>
 
 
 </section>

@@ -765,7 +765,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Uses Optuna’s TPE sampler to search for optimal LightGBM hyperparameters, then re-fits with the best discovered parameters.</p>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="0990de35" class="cell" data-execution_count="1">
+<div id="c98871fb" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> OptunaTask</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> OptunaTask(n_trials_optuna<span class="op">=</span><span class="dv">5</span>, predict_size<span class="op">=</span><span class="dv">24</span>)</span>
@@ -847,6 +847,43 @@ Optuna trials: 5</code></pre>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div id="dae756ee" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> OptunaTask</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>))</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>tiny_df <span class="op">=</span> df.iloc[:<span class="dv">500</span>][[<span class="st">"A"</span>]]</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>task <span class="op">=</span> OptunaTask(</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">24</span>,</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    lags_consider<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">24</span>],</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>task.prepare_data(demo_data<span class="op">=</span>tiny_df)</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> warnings.catch_warnings():</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    warnings.simplefilter(<span class="st">"ignore"</span>)</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>    result <span class="op">=</span> task.run(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"future_pred"</span> <span class="kw">in</span> result</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> result.get(<span class="st">"validation_passed"</span>) <span class="kw">is</span> <span class="va">True</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"OptunaTask.run result keys:"</span>, <span class="bu">sorted</span>(result.keys()))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_3155/104901005.py:17: DeprecationWarning: Derived pipeline fields (start_download, end_download, data_start, data_end, cov_start, cov_end, end_train_ts, start_train_ts) have moved to task.run_state. Reading them from the config is deprecated and will stop working in the next major release. config.targets continues to hold the user input unchanged; read the resolved list from task.run_state.targets.
+  task.prepare_data(demo_data=tiny_df)</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>OptunaTask.run result keys: ['forecaster', 'future_actual', 'future_pred', 'metrics_future', 'metrics_future_one_day', 'metrics_train', 'train_actual', 'train_pred', 'validation_passed']</code></pre>
+</div>
+</div>
 
 
 </section>

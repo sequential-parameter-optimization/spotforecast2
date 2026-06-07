@@ -58,7 +58,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </style>
 
 
-<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha512-bLT0Qm9VnAYZDflyKcBaQ2gg0hSYNQrJ8RilYldYQ1FxQYoCLtUjuuRuZo+fjqhx/qtq/1itJ0C2ejDxltZVFg==" crossorigin="anonymous"></script><script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="../../site_libs/quarto-nav/headroom.min.js"></script>
 <script src="../../site_libs/clipboard/clipboard.min.js"></script>
 <script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
@@ -106,6 +106,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   }
 }</script>
 <style>html{ scroll-behavior: smooth; }</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.6/require.min.js" integrity="sha512-c3Nl8+7g4LMSTdrm621y7kf9v3SDPnhxLNhcjFJbKECVnmZHTdo+IRO05sNLTH/D3vA6u1X32ehoLC7WFVdheg==" crossorigin="anonymous"></script>
+
+<script type="application/javascript">define('jquery', [],function() {return window.jQuery;})</script>
+<script src="https://unpkg.com/@jupyter-widgets/html-manager@*/dist/embed-amd.js" crossorigin="anonymous"></script>
 
 
 </head>
@@ -853,7 +857,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="examples" class="level2 doc-section doc-section-examples">
 <h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="1e97e622" class="cell" data-execution_count="1">
+<div id="c817bfe2" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> MultiTask</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
@@ -990,10 +994,51 @@ Task: lazy</code></pre>
 </tbody>
 </table>
 </section>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<div id="6ed40044" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> MultiTask</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>)).iloc[:<span class="dv">500</span>]</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> ConfigMulti(</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    lags_consider<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>config.cache_home <span class="op">=</span> tempfile.mkdtemp()</span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="co"># run() dispatches to run_task_lazy when task="lazy".</span></span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(config, task<span class="op">=</span><span class="st">"lazy"</span>, dataframe<span class="op">=</span>df, show_progress<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>mt.prepare_data()</span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>mt.impute()</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> mt.run(task<span class="op">=</span><span class="st">"lazy"</span>, show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Result keys:"</span>, <span class="bu">list</span>(result.keys())[:<span class="dv">4</span>])</span>
+<span id="cb5-30"><a href="#cb5-30" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"future_pred"</span> <span class="kw">in</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Result keys: ['train_actual', 'train_pred', 'future_actual', 'future_pred']</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="spotforecast2.multitask.MultiTask.run_task_clean" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_clean">run_task_clean</h3>
-<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_clean(show<span class="op">=</span><span class="va">True</span>, dry_run<span class="op">=</span><span class="va">False</span>, cache_home<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_clean(show<span class="op">=</span><span class="va">True</span>, dry_run<span class="op">=</span><span class="va">False</span>, cache_home<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Remove all cached data from the pipeline cache directory.</p>
 <p>Does not require <code>prepare_data()</code> to be called first.</p>
 <section id="parameters-2" class="level4 doc-section doc-section-parameters">
@@ -1067,10 +1112,49 @@ Task: lazy</code></pre>
 </tbody>
 </table>
 </section>
+<section id="examples-2" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
+<div id="7cfcba9d" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> MultiTask</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>)).iloc[:<span class="dv">500</span>]</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>cache_dir <span class="op">=</span> tempfile.mkdtemp()</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> ConfigMulti(</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>    lags_consider<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb9-18"><a href="#cb9-18" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb9-19"><a href="#cb9-19" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb9-20"><a href="#cb9-20" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb9-21"><a href="#cb9-21" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb9-22"><a href="#cb9-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb9-23"><a href="#cb9-23" aria-hidden="true" tabindex="-1"></a>config.cache_home <span class="op">=</span> cache_dir</span>
+<span id="cb9-24"><a href="#cb9-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a><span class="co"># dry_run=True reports what would be removed without deleting.</span></span>
+<span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(config, task<span class="op">=</span><span class="st">"clean"</span>, dataframe<span class="op">=</span>df, show_progress<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> mt.run_task_clean(dry_run<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"status:"</span>, result[<span class="st">"status"</span>])</span>
+<span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> result[<span class="st">"status"</span>] <span class="op">==</span> <span class="st">"dry_run"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[clean] Dry run — would delete: /tmp/tmpy8toxilu
+  Would remove: logging
+status: dry_run</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="spotforecast2.multitask.MultiTask.run_task_defaults" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_defaults">run_task_defaults</h3>
-<div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_defaults(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_defaults(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Defaults fitting — no tuning, no cached params.</p>
 <p>Distinct from <code>run_task_lazy</code> only in that it never consults the tuning-result cache. Use this for deterministic baselines and for ENTSO-E “Approach 2: Training without Tuning”.</p>
 <section id="parameters-3" class="level4 doc-section doc-section-parameters">
@@ -1118,10 +1202,50 @@ Task: lazy</code></pre>
 </tbody>
 </table>
 </section>
+<section id="examples-3" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-3">Examples</h4>
+<div id="ff407377" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> MultiTask</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>)).iloc[:<span class="dv">500</span>]</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> ConfigMulti(</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>    lags_consider<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>config.cache_home <span class="op">=</span> tempfile.mkdtemp()</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(config, task<span class="op">=</span><span class="st">"defaults"</span>, dataframe<span class="op">=</span>df, show_progress<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb12-25"><a href="#cb12-25" aria-hidden="true" tabindex="-1"></a>mt.prepare_data()</span>
+<span id="cb12-26"><a href="#cb12-26" aria-hidden="true" tabindex="-1"></a>mt.impute()</span>
+<span id="cb12-27"><a href="#cb12-27" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> mt.run_task_defaults(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb12-28"><a href="#cb12-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Result keys:"</span>, <span class="bu">list</span>(result.keys())[:<span class="dv">4</span>])</span>
+<span id="cb12-29"><a href="#cb12-29" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"future_pred"</span> <span class="kw">in</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Result keys: ['train_actual', 'train_pred', 'future_actual', 'future_pred']</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="spotforecast2.multitask.MultiTask.run_task_lazy" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_lazy">run_task_lazy</h3>
-<div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_lazy(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_lazy(show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Lazy Fitting with default LightGBM parameters.</p>
 <section id="parameters-4" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-4">Parameters</h4>
@@ -1168,14 +1292,54 @@ Task: lazy</code></pre>
 </tbody>
 </table>
 </section>
+<section id="examples-4" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-4">Examples</h4>
+<div id="826a1ecf" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> MultiTask</span>
+<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb16-9"><a href="#cb16-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>)).iloc[:<span class="dv">500</span>]</span>
+<span id="cb16-10"><a href="#cb16-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-11"><a href="#cb16-11" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> ConfigMulti(</span>
+<span id="cb16-12"><a href="#cb16-12" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb16-13"><a href="#cb16-13" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb16-14"><a href="#cb16-14" aria-hidden="true" tabindex="-1"></a>    lags_consider<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb16-15"><a href="#cb16-15" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb16-16"><a href="#cb16-16" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb16-17"><a href="#cb16-17" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb16-18"><a href="#cb16-18" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb16-19"><a href="#cb16-19" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb16-20"><a href="#cb16-20" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb16-21"><a href="#cb16-21" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb16-22"><a href="#cb16-22" aria-hidden="true" tabindex="-1"></a>config.cache_home <span class="op">=</span> tempfile.mkdtemp()</span>
+<span id="cb16-23"><a href="#cb16-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb16-24"><a href="#cb16-24" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(config, task<span class="op">=</span><span class="st">"lazy"</span>, dataframe<span class="op">=</span>df, show_progress<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb16-25"><a href="#cb16-25" aria-hidden="true" tabindex="-1"></a>mt.prepare_data()</span>
+<span id="cb16-26"><a href="#cb16-26" aria-hidden="true" tabindex="-1"></a>mt.impute()</span>
+<span id="cb16-27"><a href="#cb16-27" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> mt.run_task_lazy(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb16-28"><a href="#cb16-28" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Result keys:"</span>, <span class="bu">list</span>(result.keys())[:<span class="dv">4</span>])</span>
+<span id="cb16-29"><a href="#cb16-29" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"future_pred"</span> <span class="kw">in</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Result keys: ['train_actual', 'train_pred', 'future_actual', 'future_pred']</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="spotforecast2.multitask.MultiTask.run_task_optuna" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_optuna">run_task_optuna</h3>
-<div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_optuna(</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    search_space<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_optuna(</span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    search_space<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>    show_progress<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Optuna Bayesian hyperparameter tuning.</p>
 <section id="parameters-5" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-5">Parameters</h4>
@@ -1228,14 +1392,58 @@ Task: lazy</code></pre>
 </tbody>
 </table>
 </section>
+<section id="examples-5" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-5">Examples</h4>
+<div id="0e1c61ec" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> MultiTask</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>)).iloc[:<span class="dv">500</span>]</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> ConfigMulti(</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>    lags_consider<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>    n_trials_optuna<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>config.cache_home <span class="op">=</span> tempfile.mkdtemp()</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(config, task<span class="op">=</span><span class="st">"optuna"</span>, dataframe<span class="op">=</span>df, show_progress<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a>mt.prepare_data()</span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>mt.impute()</span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> mt.run_task_optuna(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb20-29"><a href="#cb20-29" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Result keys:"</span>, <span class="bu">list</span>(result.keys())[:<span class="dv">4</span>])</span>
+<span id="cb20-30"><a href="#cb20-30" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"future_pred"</span> <span class="kw">in</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Result keys: ['train_actual', 'train_pred', 'future_actual', 'future_pred']</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="spotforecast2.multitask.MultiTask.run_task_predict" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_predict">run_task_predict</h3>
-<div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_predict(</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    task_name<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    max_age_days<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_predict(</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>    task_name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>    max_age_days<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Predict-only using previously saved models.</p>
 <p>Loads fitted models from the cache directory and produces predictions without any training. Raises <code>RuntimeError</code> if no saved models are found.</p>
 <section id="parameters-6" class="level4 doc-section doc-section-parameters">
@@ -1314,10 +1522,69 @@ Task: lazy</code></pre>
 </tbody>
 </table>
 </section>
+<section id="examples-6" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-6">Examples</h4>
+<div id="fbcb6e3e" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb24-3"><a href="#cb24-3" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb24-4"><a href="#cb24-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb24-5"><a href="#cb24-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb24-6"><a href="#cb24-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> MultiTask</span>
+<span id="cb24-7"><a href="#cb24-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-8"><a href="#cb24-8" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb24-9"><a href="#cb24-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>)).iloc[:<span class="dv">500</span>]</span>
+<span id="cb24-10"><a href="#cb24-10" aria-hidden="true" tabindex="-1"></a>cache_dir <span class="op">=</span> tempfile.mkdtemp()</span>
+<span id="cb24-11"><a href="#cb24-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-12"><a href="#cb24-12" aria-hidden="true" tabindex="-1"></a><span class="co"># First train and save a model with the lazy task.</span></span>
+<span id="cb24-13"><a href="#cb24-13" aria-hidden="true" tabindex="-1"></a>config_train <span class="op">=</span> ConfigMulti(</span>
+<span id="cb24-14"><a href="#cb24-14" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb24-15"><a href="#cb24-15" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb24-16"><a href="#cb24-16" aria-hidden="true" tabindex="-1"></a>    lags_consider<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb24-17"><a href="#cb24-17" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb24-18"><a href="#cb24-18" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb24-19"><a href="#cb24-19" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-20"><a href="#cb24-20" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-21"><a href="#cb24-21" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb24-22"><a href="#cb24-22" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-23"><a href="#cb24-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-24"><a href="#cb24-24" aria-hidden="true" tabindex="-1"></a>config_train.cache_home <span class="op">=</span> cache_dir</span>
+<span id="cb24-25"><a href="#cb24-25" aria-hidden="true" tabindex="-1"></a>mt_train <span class="op">=</span> MultiTask(config_train, task<span class="op">=</span><span class="st">"lazy"</span>, dataframe<span class="op">=</span>df, show_progress<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb24-26"><a href="#cb24-26" aria-hidden="true" tabindex="-1"></a>mt_train.prepare_data()</span>
+<span id="cb24-27"><a href="#cb24-27" aria-hidden="true" tabindex="-1"></a>mt_train.impute()</span>
+<span id="cb24-28"><a href="#cb24-28" aria-hidden="true" tabindex="-1"></a>mt_train.run_task_lazy(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb24-29"><a href="#cb24-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb24-30"><a href="#cb24-30" aria-hidden="true" tabindex="-1"></a><span class="co"># Then load and predict without re-training.</span></span>
+<span id="cb24-31"><a href="#cb24-31" aria-hidden="true" tabindex="-1"></a>config_pred <span class="op">=</span> ConfigMulti(</span>
+<span id="cb24-32"><a href="#cb24-32" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb24-33"><a href="#cb24-33" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb24-34"><a href="#cb24-34" aria-hidden="true" tabindex="-1"></a>    lags_consider<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb24-35"><a href="#cb24-35" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb24-36"><a href="#cb24-36" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb24-37"><a href="#cb24-37" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-38"><a href="#cb24-38" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-39"><a href="#cb24-39" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-40"><a href="#cb24-40" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb24-41"><a href="#cb24-41" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb24-42"><a href="#cb24-42" aria-hidden="true" tabindex="-1"></a>config_pred.cache_home <span class="op">=</span> cache_dir</span>
+<span id="cb24-43"><a href="#cb24-43" aria-hidden="true" tabindex="-1"></a>mt_pred <span class="op">=</span> MultiTask(config_pred, task<span class="op">=</span><span class="st">"predict"</span>, dataframe<span class="op">=</span>df, show_progress<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb24-44"><a href="#cb24-44" aria-hidden="true" tabindex="-1"></a>mt_pred.prepare_data()</span>
+<span id="cb24-45"><a href="#cb24-45" aria-hidden="true" tabindex="-1"></a>mt_pred.impute()</span>
+<span id="cb24-46"><a href="#cb24-46" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> mt_pred.run_task_predict(show<span class="op">=</span><span class="va">False</span>, task_name<span class="op">=</span><span class="st">"lazy"</span>)</span>
+<span id="cb24-47"><a href="#cb24-47" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Result keys:"</span>, <span class="bu">list</span>(result.keys())[:<span class="dv">4</span>])</span>
+<span id="cb24-48"><a href="#cb24-48" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"future_pred"</span> <span class="kw">in</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Result keys: ['train_actual', 'train_pred', 'future_actual', 'future_pred']</code></pre>
+</div>
+</div>
+</section>
 </section>
 <section id="spotforecast2.multitask.MultiTask.run_task_spotoptim" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.MultiTask.run_task_spotoptim">run_task_spotoptim</h3>
-<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_spotoptim(search_space<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>multitask.MultiTask.run_task_spotoptim(search_space<span class="op">=</span><span class="va">None</span>, show<span class="op">=</span><span class="va">True</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>SpotOptim surrogate-model Bayesian tuning.</p>
 <section id="parameters-7" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-7">Parameters</h4>
@@ -1369,6 +1636,69 @@ Task: lazy</code></pre>
 </tr>
 </tbody>
 </table>
+</section>
+<section id="examples-7" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-7">Examples</h4>
+<div id="619c6221" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
+<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>warnings.filterwarnings(<span class="st">"ignore"</span>)</span>
+<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
+<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> MultiTask</span>
+<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-8"><a href="#cb28-8" aria-hidden="true" tabindex="-1"></a>data_home <span class="op">=</span> get_package_data_home()</span>
+<span id="cb28-9"><a href="#cb28-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> fetch_data(filename<span class="op">=</span><span class="bu">str</span>(data_home <span class="op">/</span> <span class="st">"demo10.csv"</span>)).iloc[:<span class="dv">500</span>]</span>
+<span id="cb28-10"><a href="#cb28-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-11"><a href="#cb28-11" aria-hidden="true" tabindex="-1"></a>config <span class="op">=</span> ConfigMulti(</span>
+<span id="cb28-12"><a href="#cb28-12" aria-hidden="true" tabindex="-1"></a>    predict_size<span class="op">=</span><span class="dv">12</span>,</span>
+<span id="cb28-13"><a href="#cb28-13" aria-hidden="true" tabindex="-1"></a>    targets<span class="op">=</span>[<span class="st">"A"</span>],</span>
+<span id="cb28-14"><a href="#cb28-14" aria-hidden="true" tabindex="-1"></a>    lags_consider<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>],</span>
+<span id="cb28-15"><a href="#cb28-15" aria-hidden="true" tabindex="-1"></a>    window_size<span class="op">=</span><span class="dv">4</span>,</span>
+<span id="cb28-16"><a href="#cb28-16" aria-hidden="true" tabindex="-1"></a>    number_folds<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb28-17"><a href="#cb28-17" aria-hidden="true" tabindex="-1"></a>    use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb28-18"><a href="#cb28-18" aria-hidden="true" tabindex="-1"></a>    use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb28-19"><a href="#cb28-19" aria-hidden="true" tabindex="-1"></a>    auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb28-20"><a href="#cb28-20" aria-hidden="true" tabindex="-1"></a>    verbose<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb28-21"><a href="#cb28-21" aria-hidden="true" tabindex="-1"></a>    n_trials_spotoptim<span class="op">=</span><span class="dv">2</span>,</span>
+<span id="cb28-22"><a href="#cb28-22" aria-hidden="true" tabindex="-1"></a>    n_initial_spotoptim<span class="op">=</span><span class="dv">1</span>,</span>
+<span id="cb28-23"><a href="#cb28-23" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb28-24"><a href="#cb28-24" aria-hidden="true" tabindex="-1"></a>config.cache_home <span class="op">=</span> tempfile.mkdtemp()</span>
+<span id="cb28-25"><a href="#cb28-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb28-26"><a href="#cb28-26" aria-hidden="true" tabindex="-1"></a>mt <span class="op">=</span> MultiTask(config, task<span class="op">=</span><span class="st">"spotoptim"</span>, dataframe<span class="op">=</span>df, show_progress<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb28-27"><a href="#cb28-27" aria-hidden="true" tabindex="-1"></a>mt.prepare_data()</span>
+<span id="cb28-28"><a href="#cb28-28" aria-hidden="true" tabindex="-1"></a>mt.impute()</span>
+<span id="cb28-29"><a href="#cb28-29" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> mt.run_task_spotoptim(show<span class="op">=</span><span class="va">False</span>)</span>
+<span id="cb28-30"><a href="#cb28-30" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Result keys:"</span>, <span class="bu">list</span>(result.keys())[:<span class="dv">4</span>])</span>
+<span id="cb28-31"><a href="#cb28-31" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"future_pred"</span> <span class="kw">in</span> result</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"8079c796453d471c8780a189f7137cac","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<script type="application/vnd.jupyter.widget-view+json">
+{"model_id":"feb50abbecc24787ac0db480469491f1","version_major":2,"version_minor":0,"quarto_mimetype":"application/vnd.jupyter.widget-view+json"}
+</script>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.
+WeightFunction: all sample weights for the requested index are zero (the window falls entirely within gap-penalty zones). Returning None so ForecasterRecursive uses uniform weighting.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>`Forecaster` refitted using the best-found lags and parameters, and the whole data set: 
+  Lags: [ 1  2 23 24 47 48] 
+  Parameters: {'estimator__num_leaves': 212, 'estimator__max_depth': 8, 'estimator__learning_rate': 0.022237942587898952, 'estimator__n_estimators': 23, 'estimator__bagging_fraction': 0.8966718932567622, 'estimator__feature_fraction': 0.6759904724131447, 'estimator__reg_alpha': 80.46568296843319, 'estimator__reg_lambda': 37.13270777695332}
+  Backtesting metric: 24013.098401317144
+Result keys: ['train_actual', 'train_pred', 'future_actual', 'future_pred']</code></pre>
+</div>
+</div>
 
 
 </section>
@@ -1376,6 +1706,9 @@ Task: lazy</code></pre>
 </section>
 
 </main> <!-- /main -->
+<script type="application/vnd.jupyter.widget-state+json">
+{"state":{"05dff80ddef949a19dd8d2404146bb00":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"1518d842d7ca464599f5399024f359fb":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"39beed8fcdb742f1acbab4d3205d72b7":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"44e5be31039942838617d2542e6dc076":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_9022ecdfd32e43269c412a5dc75948f1","placeholder":"​","style":"IPY_MODEL_39beed8fcdb742f1acbab4d3205d72b7","tabbable":null,"tooltip":null,"value":"config 2/2: 100%"}},"52c8040d0888400aa6123f7026d8dd63":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"53864a3d06b54784b33bd846674b65d1":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"61eb83d971874a299853640eeef97c09":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"7eb351d6a79345f49330a563a2c67170":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}},"8079c796453d471c8780a189f7137cac":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_e1ee49a9a31c4433b776d36ce86a23c0","IPY_MODEL_8807d5c3908945a48d4115f1a0fb602f","IPY_MODEL_834060e0d87c4d9f814a0454b58da627"],"layout":"IPY_MODEL_9f8eabe17ea447dbbf603232734d0081","tabbable":null,"tooltip":null}},"834060e0d87c4d9f814a0454b58da627":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_8c2f09576fda4c96b3d4cba778016a76","placeholder":"​","style":"IPY_MODEL_52c8040d0888400aa6123f7026d8dd63","tabbable":null,"tooltip":null,"value":" 2/2 [00:00&lt;00:00, 146.95it/s]"}},"8807d5c3908945a48d4115f1a0fb602f":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_a0107dc3301a4754bc8b6667d1ded4e2","max":2,"min":0,"orientation":"horizontal","style":"IPY_MODEL_f3dca06523224d649b713de0db8b1e57","tabbable":null,"tooltip":null,"value":2}},"8c2f09576fda4c96b3d4cba778016a76":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"9022ecdfd32e43269c412a5dc75948f1":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"9f8eabe17ea447dbbf603232734d0081":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"a0107dc3301a4754bc8b6667d1ded4e2":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"ba3690314a9f46c7a5805f2b9b548af6":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_53864a3d06b54784b33bd846674b65d1","placeholder":"​","style":"IPY_MODEL_61eb83d971874a299853640eeef97c09","tabbable":null,"tooltip":null,"value":" 2/2 [00:00&lt;00:00, 145.41it/s]"}},"c6858dc35ca04d2f8a1d7964a15e7f3d":{"model_module":"@jupyter-widgets/base","model_module_version":"2.0.0","model_name":"LayoutModel","state":{"_model_module":"@jupyter-widgets/base","_model_module_version":"2.0.0","_model_name":"LayoutModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"LayoutView","align_content":null,"align_items":null,"align_self":null,"border_bottom":null,"border_left":null,"border_right":null,"border_top":null,"bottom":null,"display":null,"flex":null,"flex_flow":null,"grid_area":null,"grid_auto_columns":null,"grid_auto_flow":null,"grid_auto_rows":null,"grid_column":null,"grid_gap":null,"grid_row":null,"grid_template_areas":null,"grid_template_columns":null,"grid_template_rows":null,"height":null,"justify_content":null,"justify_items":null,"left":null,"margin":null,"max_height":null,"max_width":null,"min_height":null,"min_width":null,"object_fit":null,"object_position":null,"order":null,"overflow":null,"padding":null,"right":null,"top":null,"visibility":null,"width":null}},"d1bcb39038ac4ebc970e49258d4ddeb4":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","background":null,"description_width":"","font_size":null,"text_color":null}},"e1ee49a9a31c4433b776d36ce86a23c0":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HTMLModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HTMLModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HTMLView","description":"","description_allow_html":false,"layout":"IPY_MODEL_05dff80ddef949a19dd8d2404146bb00","placeholder":"​","style":"IPY_MODEL_d1bcb39038ac4ebc970e49258d4ddeb4","tabbable":null,"tooltip":null,"value":"config 1/2: 100%"}},"e3d1994bb1654081b2ae9c9f86f3ba44":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"FloatProgressModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"FloatProgressModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"ProgressView","bar_style":"success","description":"","description_allow_html":false,"layout":"IPY_MODEL_1518d842d7ca464599f5399024f359fb","max":2,"min":0,"orientation":"horizontal","style":"IPY_MODEL_7eb351d6a79345f49330a563a2c67170","tabbable":null,"tooltip":null,"value":2}},"f3dca06523224d649b713de0db8b1e57":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"ProgressStyleModel","state":{"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"ProgressStyleModel","_view_count":null,"_view_module":"@jupyter-widgets/base","_view_module_version":"2.0.0","_view_name":"StyleView","bar_color":null,"description_width":""}},"feb50abbecc24787ac0db480469491f1":{"model_module":"@jupyter-widgets/controls","model_module_version":"2.0.0","model_name":"HBoxModel","state":{"_dom_classes":[],"_model_module":"@jupyter-widgets/controls","_model_module_version":"2.0.0","_model_name":"HBoxModel","_view_count":null,"_view_module":"@jupyter-widgets/controls","_view_module_version":"2.0.0","_view_name":"HBoxView","box_style":"","children":["IPY_MODEL_44e5be31039942838617d2542e6dc076","IPY_MODEL_e3d1994bb1654081b2ae9c9f86f3ba44","IPY_MODEL_ba3690314a9f46c7a5805f2b9b548af6"],"layout":"IPY_MODEL_c6858dc35ca04d2f8a1d7964a15e7f3d","tabbable":null,"tooltip":null}}},"version_major":2,"version_minor":0}
+</script>
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     // Ensure there is a toggle, if there isn't float one in the top right

@@ -721,26 +721,38 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#spotforecast2.multitask.BaseTask" id="toc-spotforecast2.multitask.BaseTask" class="nav-link active" data-scroll-target="#spotforecast2.multitask.BaseTask">multitask.BaseTask</a>
-  <ul class="collapse">
-  <li><a href="#visualisation-additions-over-the-safe-base" id="toc-visualisation-additions-over-the-safe-base" class="nav-link" data-scroll-target="#visualisation-additions-over-the-safe-base">Visualisation additions over the safe base</a></li>
+  <li><a href="#visualisation-additions-over-the-safe-base" id="toc-visualisation-additions-over-the-safe-base" class="nav-link active" data-scroll-target="#visualisation-additions-over-the-safe-base">Visualisation additions over the safe base</a></li>
+  <li><a href="#examples" id="toc-examples" class="nav-link" data-scroll-target="#examples">Examples</a></li>
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a>
   <ul class="collapse">
   <li><a href="#spotforecast2.multitask.BaseTask.run" id="toc-spotforecast2.multitask.BaseTask.run" class="nav-link" data-scroll-target="#spotforecast2.multitask.BaseTask.run">run</a></li>
-  </ul></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/multitask.BaseTask.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.agg_predictor.html">Multitask</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.BaseTask.html">BaseTask</a></li></ol></nav></header>
+<main class="content" id="quarto-document-content">
+
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.agg_predictor.html">Multitask</a></li><li class="breadcrumb-item"><a href="../../docs/reference/multitask.BaseTask.html">BaseTask</a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title">multitask.BaseTask</h1>
+</div>
 
 
 
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
 
 
-<section id="spotforecast2.multitask.BaseTask" class="level1">
-<h1>multitask.BaseTask</h1>
+</header>
+
+
 <div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>multitask.BaseTask(</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    config<span class="op">=</span><span class="va">None</span>,</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
@@ -757,6 +769,49 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="visualisation-additions-over-the-safe-base" class="level2 doc-section doc-section-visualisation-additions-over-the-safe-base">
 <h2 class="doc-section doc-section-visualisation-additions-over-the-safe-base anchored" data-anchor-id="visualisation-additions-over-the-safe-base">Visualisation additions over the safe base</h2>
 <p>plot_with_outliers: Renders original vs.&nbsp;cleaned data with outlier markers via <code>spotforecast2.plots.plotter.plot_with_outliers</code>. _show_prediction_figure: Calls <code>make_plot</code> and shows the figure interactively. _show_prediction_figure_agg: Same for the aggregated prediction.</p>
+</section>
+<section id="examples" class="level2 doc-section doc-section-examples">
+<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
+<div id="0905aa74" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.base <span class="im">import</span> BaseTask, PlottingMixin</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> pd.date_range(<span class="st">"2023-01-01"</span>, periods<span class="op">=</span><span class="dv">24</span> <span class="op">*</span> <span class="dv">14</span>, freq<span class="op">=</span><span class="st">"h"</span>, tz<span class="op">=</span><span class="st">"UTC"</span>)</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({<span class="st">"load"</span>: rng.normal(<span class="dv">100</span>, <span class="dv">10</span>, <span class="bu">len</span>(idx))}, index<span class="op">=</span>idx)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>df.index.name <span class="op">=</span> <span class="st">"DateTime"</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> tempfile.TemporaryDirectory() <span class="im">as</span> tmp:</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>    cfg <span class="op">=</span> ConfigMulti(</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        predict_size<span class="op">=</span><span class="dv">6</span>,</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        use_exogenous_features<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        use_outlier_detection<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        auto_save_models<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>        cache_home<span class="op">=</span>tmp,</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    task <span class="op">=</span> BaseTask(cfg, dataframe<span class="op">=</span>df)</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>    <span class="co"># Data-preparation pipeline (steps 1-3)</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>    task.prepare_data().detect_outliers().impute()</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Pipeline shape:"</span>, task.df_pipeline.shape)</span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"Targets:"</span>, task.config.targets)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a><span class="co"># PlottingMixin is in the MRO — visualisation hooks are live Plotly calls.</span></span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"PlottingMixin in MRO:"</span>, PlottingMixin <span class="kw">in</span> <span class="bu">type</span>(task).__mro__)</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> task.df_pipeline.shape[<span class="dv">1</span>] <span class="op">==</span> <span class="dv">1</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> PlottingMixin <span class="kw">in</span> <span class="bu">type</span>(task).__mro__</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Pipeline shape: (336, 1)
+Targets: None
+PlottingMixin in MRO: True</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>/tmp/ipykernel_3027/2659341657.py:22: DeprecationWarning: Derived pipeline fields (start_download, end_download, data_start, data_end, cov_start, cov_end, end_train_ts, start_train_ts) have moved to task.run_state. Reading them from the config is deprecated and will stop working in the next major release. config.targets continues to hold the user input unchanged; read the resolved list from task.run_state.targets.
+  task.prepare_data().detect_outliers().impute()</code></pre>
+</div>
+</div>
 </section>
 <section id="methods" class="level2">
 <h2 class="anchored" data-anchor-id="methods">Methods</h2>
@@ -776,17 +831,17 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </table>
 <section id="spotforecast2.multitask.BaseTask.run" class="level3">
 <h3 class="anchored" data-anchor-id="spotforecast2.multitask.BaseTask.run">run</h3>
-<div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>multitask.BaseTask.run(</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    task_name<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    use_tuned_params<span class="op">=</span><span class="va">True</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    max_age_days<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    search_space<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">False</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>multitask.BaseTask.run(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    show<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    task<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    task_name<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    use_tuned_params<span class="op">=</span><span class="va">True</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    max_age_days<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    search_space<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    dry_run<span class="op">=</span><span class="va">False</span>,</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    cache_home<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Execute the task-specific training / tuning pipeline.</p>
 <p>Subclasses must override this method.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
@@ -895,9 +950,44 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </tr>
 </tbody>
 </table>
-
-
 </section>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<p><code>BaseTask.run</code> is abstract — it raises <code>NotImplementedError</code> to enforce that every concrete task subclass provides its own implementation. Use <code>LazyTask</code>, <code>OptunaTask</code>, <code>SpotOptimTask</code>, <code>PredictTask</code>, or <code>CleanTask</code> for live pipelines.</p>
+<div id="7422b666" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.base <span class="im">import</span> BaseTask</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask <span class="im">import</span> LazyTask</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">0</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>idx <span class="op">=</span> pd.date_range(<span class="st">"2023-01-01"</span>, periods<span class="op">=</span><span class="dv">24</span> <span class="op">*</span> <span class="dv">14</span>, freq<span class="op">=</span><span class="st">"h"</span>, tz<span class="op">=</span><span class="st">"UTC"</span>)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> pd.DataFrame({<span class="st">"load"</span>: rng.normal(<span class="dv">100</span>, <span class="dv">10</span>, <span class="bu">len</span>(idx))}, index<span class="op">=</span>idx)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>df.index.name <span class="op">=</span> <span class="st">"DateTime"</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co"># BaseTask.run raises NotImplementedError — use a concrete subclass.</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> tempfile.TemporaryDirectory() <span class="im">as</span> tmp:</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>    cfg <span class="op">=</span> ConfigMulti(cache_home<span class="op">=</span>tmp)</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a>    base <span class="op">=</span> BaseTask(cfg)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="cf">try</span>:</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a>    base.run()</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="cf">except</span> <span class="pp">NotImplementedError</span> <span class="im">as</span> exc:</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="st">"BaseTask.run() raised NotImplementedError (expected)."</span>)</span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">print</span>(<span class="bu">str</span>(exc)[:<span class="dv">60</span>])</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co"># LazyTask overrides run() with lazy fitting logic.</span></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"LazyTask.run is overridden:"</span>, LazyTask.run <span class="kw">is</span> <span class="kw">not</span> BaseTask.run)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> LazyTask.run <span class="kw">is</span> <span class="kw">not</span> BaseTask.run</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>BaseTask.run() raised NotImplementedError (expected).
+BaseTask must implement run(). Use LazyTask, OptunaTask, Spo
+LazyTask.run is overridden: True</code></pre>
+</div>
+</div>
+
+
 </section>
 </section>
 </section>
