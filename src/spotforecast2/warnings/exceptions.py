@@ -98,6 +98,18 @@ def format_warning_handler(
 
     Returns:
         None
+
+    Examples:
+        ```{python}
+        import warnings
+        from spotforecast2_safe.exceptions import MissingValuesWarning
+        from spotforecast2.warnings.exceptions import format_warning_handler
+
+        # Construct the warning instance the same way Python's warnings machinery does
+        msg = MissingValuesWarning("Missing values detected in column 'price'.")
+        # Call the handler directly (bypasses warnings.warn overhead)
+        format_warning_handler(msg, MissingValuesWarning, "example.py", 42)
+        ```
     """
 
     if isinstance(message, tuple(warn_skforecast_categories)):
@@ -148,6 +160,19 @@ def rich_warning_handler(
 
     Returns:
         None
+
+    Examples:
+        ```{python}
+        import warnings
+        from spotforecast2_safe.exceptions import MissingValuesWarning
+        from spotforecast2.warnings.exceptions import rich_warning_handler
+
+        # Construct the warning instance the same way Python's warnings machinery does
+        msg = MissingValuesWarning("Missing values detected in column 'price'.")
+        # Call the handler directly; falls back to format_warning_handler when
+        # the optional 'rich' package is not installed
+        rich_warning_handler(msg, MissingValuesWarning, "example.py", 42)
+        ```
     """
 
     if isinstance(message, tuple(warn_skforecast_categories)):

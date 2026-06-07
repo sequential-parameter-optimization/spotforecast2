@@ -80,7 +80,7 @@ def _default_spotoptim_search_space() -> Dict[str, Any]:
     """Built-in SpotOptim search space for LightGBM.
 
     Estimator hyperparameters carry the ``estimator__`` prefix; see the docstring
-    of :func:`_default_optuna_search_space` for the rationale.
+    of `_default_optuna_search_space` for the rationale.
     """
     return {
         "estimator__num_leaves": (8, 256),
@@ -107,7 +107,7 @@ def search_space_lgbm(trial: Any) -> Dict[str, Any]:
 
     Consumed by ``ForecasterRecursiveModelFull.tune`` via the
     ``SEARCH_SPACES`` registry below. Estimator keys use the ``estimator__``
-    prefix; see :func:`_default_optuna_search_space` for the rationale.
+    prefix; see `_default_optuna_search_space` for the rationale.
 
     Args:
         trial: An ``optuna.trial.Trial`` instance.
@@ -115,6 +115,24 @@ def search_space_lgbm(trial: Any) -> Dict[str, Any]:
     Returns:
         Mapping of hyperparameter name to suggested value for the current
         trial.
+
+    Examples:
+        ```{python}
+        import optuna
+        from spotforecast2.multitask.search_spaces import search_space_lgbm
+
+        optuna.logging.set_verbosity(optuna.logging.WARNING)
+        study = optuna.create_study(
+            direction="minimize",
+            sampler=optuna.samplers.TPESampler(seed=42),
+        )
+        trial = study.ask()
+        params = search_space_lgbm(trial)
+        print("Keys:", list(params.keys()))
+        assert "estimator__num_leaves" in params
+        assert "lags" in params
+        assert isinstance(params["estimator__learning_rate"], float)
+        ```
     """
     return {
         "estimator__num_leaves": trial.suggest_int("estimator__num_leaves", 8, 256),
@@ -144,7 +162,7 @@ def search_space_xgb(trial: Any) -> Dict[str, Any]:
 
     Consumed by ``ForecasterRecursiveModelFull.tune`` via the
     ``SEARCH_SPACES`` registry below. Estimator keys use the ``estimator__``
-    prefix; see :func:`_default_optuna_search_space` for the rationale.
+    prefix; see `_default_optuna_search_space` for the rationale.
 
     Args:
         trial: An ``optuna.trial.Trial`` instance.
@@ -152,6 +170,24 @@ def search_space_xgb(trial: Any) -> Dict[str, Any]:
     Returns:
         Mapping of hyperparameter name to suggested value for the current
         trial.
+
+    Examples:
+        ```{python}
+        import optuna
+        from spotforecast2.multitask.search_spaces import search_space_xgb
+
+        optuna.logging.set_verbosity(optuna.logging.WARNING)
+        study = optuna.create_study(
+            direction="minimize",
+            sampler=optuna.samplers.TPESampler(seed=42),
+        )
+        trial = study.ask()
+        params = search_space_xgb(trial)
+        print("Keys:", list(params.keys()))
+        assert "estimator__max_depth" in params
+        assert "lags" in params
+        assert isinstance(params["estimator__learning_rate"], float)
+        ```
     """
     return {
         "estimator__max_depth": trial.suggest_int("estimator__max_depth", 2, 10),

@@ -128,6 +128,39 @@ class MultiTask(BaseTask):
         Returns:
             Aggregated prediction package. Per-target results in
             ``self.results["lazy"]``.
+
+        Examples:
+            ```{python}
+            import warnings
+            import tempfile
+            warnings.filterwarnings("ignore")
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2.multitask import MultiTask
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv")).iloc[:500]
+
+            config = ConfigMulti(
+                predict_size=12,
+                targets=["A"],
+                lags_consider=[1, 2, 3],
+                window_size=4,
+                number_folds=2,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=False,
+                verbose=False,
+            )
+            config.cache_home = tempfile.mkdtemp()
+
+            mt = MultiTask(config, task="lazy", dataframe=df, show_progress=False)
+            mt.prepare_data()
+            mt.impute()
+            result = mt.run_task_lazy(show=False)
+            print("Result keys:", list(result.keys())[:4])
+            assert "future_pred" in result
+            ```
         """
         return execute_lazy(self, show=show)
 
@@ -144,6 +177,39 @@ class MultiTask(BaseTask):
         Returns:
             Aggregated prediction package. Per-target results in
             ``self.results["defaults"]``.
+
+        Examples:
+            ```{python}
+            import warnings
+            import tempfile
+            warnings.filterwarnings("ignore")
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2.multitask import MultiTask
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv")).iloc[:500]
+
+            config = ConfigMulti(
+                predict_size=12,
+                targets=["A"],
+                lags_consider=[1, 2, 3],
+                window_size=4,
+                number_folds=2,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=False,
+                verbose=False,
+            )
+            config.cache_home = tempfile.mkdtemp()
+
+            mt = MultiTask(config, task="defaults", dataframe=df, show_progress=False)
+            mt.prepare_data()
+            mt.impute()
+            result = mt.run_task_defaults(show=False)
+            print("Result keys:", list(result.keys())[:4])
+            assert "future_pred" in result
+            ```
         """
         return execute_defaults(self, show=show)
 
@@ -162,6 +228,40 @@ class MultiTask(BaseTask):
         Returns:
             Aggregated prediction package. Per-target results in
             ``self.results["optuna"]``.
+
+        Examples:
+            ```{python}
+            import warnings
+            import tempfile
+            warnings.filterwarnings("ignore")
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2.multitask import MultiTask
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv")).iloc[:500]
+
+            config = ConfigMulti(
+                predict_size=12,
+                targets=["A"],
+                lags_consider=[1, 2, 3],
+                window_size=4,
+                number_folds=2,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=False,
+                verbose=False,
+                n_trials_optuna=2,
+            )
+            config.cache_home = tempfile.mkdtemp()
+
+            mt = MultiTask(config, task="optuna", dataframe=df, show_progress=False)
+            mt.prepare_data()
+            mt.impute()
+            result = mt.run_task_optuna(show=False)
+            print("Result keys:", list(result.keys())[:4])
+            assert "future_pred" in result
+            ```
         """
         return execute_optuna(self, show=show, search_space=search_space)
 
@@ -179,6 +279,41 @@ class MultiTask(BaseTask):
         Returns:
             Aggregated prediction package. Per-target results in
             ``self.results["spotoptim"]``.
+
+        Examples:
+            ```{python}
+            import warnings
+            import tempfile
+            warnings.filterwarnings("ignore")
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2.multitask import MultiTask
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv")).iloc[:500]
+
+            config = ConfigMulti(
+                predict_size=12,
+                targets=["A"],
+                lags_consider=[1, 2, 3],
+                window_size=4,
+                number_folds=2,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=False,
+                verbose=False,
+                n_trials_spotoptim=2,
+                n_initial_spotoptim=1,
+            )
+            config.cache_home = tempfile.mkdtemp()
+
+            mt = MultiTask(config, task="spotoptim", dataframe=df, show_progress=False)
+            mt.prepare_data()
+            mt.impute()
+            result = mt.run_task_spotoptim(show=False)
+            print("Result keys:", list(result.keys())[:4])
+            assert "future_pred" in result
+            ```
         """
         return execute_spotoptim(self, show=show, search_space=search_space)
 
@@ -208,6 +343,58 @@ class MultiTask(BaseTask):
 
         Raises:
             RuntimeError: If no saved models are found.
+
+        Examples:
+            ```{python}
+            import warnings
+            import tempfile
+            warnings.filterwarnings("ignore")
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2.multitask import MultiTask
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv")).iloc[:500]
+            cache_dir = tempfile.mkdtemp()
+
+            # First train and save a model with the lazy task.
+            config_train = ConfigMulti(
+                predict_size=12,
+                targets=["A"],
+                lags_consider=[1, 2, 3],
+                window_size=4,
+                number_folds=2,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=True,
+                verbose=False,
+            )
+            config_train.cache_home = cache_dir
+            mt_train = MultiTask(config_train, task="lazy", dataframe=df, show_progress=False)
+            mt_train.prepare_data()
+            mt_train.impute()
+            mt_train.run_task_lazy(show=False)
+
+            # Then load and predict without re-training.
+            config_pred = ConfigMulti(
+                predict_size=12,
+                targets=["A"],
+                lags_consider=[1, 2, 3],
+                window_size=4,
+                number_folds=2,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=False,
+                verbose=False,
+            )
+            config_pred.cache_home = cache_dir
+            mt_pred = MultiTask(config_pred, task="predict", dataframe=df, show_progress=False)
+            mt_pred.prepare_data()
+            mt_pred.impute()
+            result = mt_pred.run_task_predict(show=False, task_name="lazy")
+            print("Result keys:", list(result.keys())[:4])
+            assert "future_pred" in result
+            ```
         """
         return execute_predict(
             self, show=show, task_name=task_name, max_age_days=max_age_days
@@ -235,6 +422,39 @@ class MultiTask(BaseTask):
 
         Raises:
             RuntimeError: If the cache directory cannot be removed.
+
+        Examples:
+            ```{python}
+            import warnings
+            import tempfile
+            warnings.filterwarnings("ignore")
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2.multitask import MultiTask
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv")).iloc[:500]
+            cache_dir = tempfile.mkdtemp()
+
+            config = ConfigMulti(
+                predict_size=12,
+                targets=["A"],
+                lags_consider=[1, 2, 3],
+                window_size=4,
+                number_folds=2,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=False,
+                verbose=False,
+            )
+            config.cache_home = cache_dir
+
+            # dry_run=True reports what would be removed without deleting.
+            mt = MultiTask(config, task="clean", dataframe=df, show_progress=False)
+            result = mt.run_task_clean(dry_run=True)
+            print("status:", result["status"])
+            assert result["status"] == "dry_run"
+            ```
         """
         return execute_clean(self, cache_home=cache_home, dry_run=dry_run)
 
@@ -263,6 +483,40 @@ class MultiTask(BaseTask):
                 ``"optuna"``, ``"spotoptim"``, ``"predict"``, ``"clean"``.
             RuntimeError: If method ``prepare_data`` has not been called
                 (for training and prediction tasks).
+
+        Examples:
+            ```{python}
+            import warnings
+            import tempfile
+            warnings.filterwarnings("ignore")
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2.multitask import MultiTask
+
+            data_home = get_package_data_home()
+            df = fetch_data(filename=str(data_home / "demo10.csv")).iloc[:500]
+
+            config = ConfigMulti(
+                predict_size=12,
+                targets=["A"],
+                lags_consider=[1, 2, 3],
+                window_size=4,
+                number_folds=2,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=False,
+                verbose=False,
+            )
+            config.cache_home = tempfile.mkdtemp()
+
+            # run() dispatches to run_task_lazy when task="lazy".
+            mt = MultiTask(config, task="lazy", dataframe=df, show_progress=False)
+            mt.prepare_data()
+            mt.impute()
+            result = mt.run(task="lazy", show=False)
+            print("Result keys:", list(result.keys())[:4])
+            assert "future_pred" in result
+            ```
         """
         task = task or self.TASK
         dispatch = {

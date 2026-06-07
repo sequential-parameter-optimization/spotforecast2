@@ -66,6 +66,52 @@ class PredictTask(BaseTask):
         Raises:
             RuntimeError: If no saved models are found in the cache
                 directory, or if a target has no matching model.
+
+        Examples:
+            ```{python}
+            import tempfile
+            from pathlib import Path
+            from spotforecast2_safe.data.fetch_data import fetch_data, get_package_data_home
+            from spotforecast2.multitask import LazyTask, PredictTask
+
+            demo_df = fetch_data(filename=str(get_package_data_home() / "demo10.csv"))
+
+            with tempfile.TemporaryDirectory() as tmp:
+                # Train and persist a model for a single target.
+                lazy = LazyTask(
+                    data_frame_name="demo10",
+                    cache_home=Path(tmp),
+                    predict_size=24,
+                    targets=["A"],
+                    use_exogenous_features=False,
+                )
+                lazy.prepare_data(demo_data=demo_df)
+                lazy.detect_outliers()
+                lazy.impute()
+                lazy.build_exogenous_features()
+                lazy.run(show=False)
+                lazy.save_models(task_name="lazy")
+
+                # Load the saved model and produce predictions.
+                pred = PredictTask(
+                    data_frame_name="demo10",
+                    cache_home=Path(tmp),
+                    predict_size=24,
+                    targets=["A"],
+                    use_exogenous_features=False,
+                )
+                pred.prepare_data(demo_data=demo_df)
+                pred.detect_outliers()
+                pred.impute()
+                pred.build_exogenous_features()
+                result = pred.run(show=False, task_name="lazy")
+
+            pkg = pred.results["predict"]["A"]
+            print(f"future_pred length: {len(pkg['future_pred'])}")
+            print(f"result keys: {sorted(result.keys())}")
+            assert len(pkg["future_pred"]) == 24
+            assert "future_pred" in result
+            ```
         """
         return execute_predict(
             self,

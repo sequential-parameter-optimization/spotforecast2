@@ -30,7 +30,7 @@ def execute_spotoptim(
     Thin wrapper around ``BaseTask._run_strategy`` using ``SpotOptimStrategy``.
 
     Args:
-        task: A class `BaseTask` (or subclass) instance with prepared data.
+        task: A `BaseTask` (or subclass) instance with prepared data.
         show: If ``True``, display prediction figures.
         search_space: Dictionary defining the SpotOptim search space.
             ``None`` uses the built-in default.
@@ -40,6 +40,30 @@ def execute_spotoptim(
         Per-target packages are stored on ``task.results["spotoptim"]``.
         When ``task.config.auto_save_models`` is ``True`` (the default), fitted
         models are saved to disk so PredictTask can load them directly.
+
+    Examples:
+        ```{python}
+        # Demonstrate the strategy wiring that execute_spotoptim sets up.
+        # A full run requires prepared data; here we inspect the strategy object
+        # and the search space it would use.
+        from spotforecast2.multitask.strategies import SpotOptimStrategy
+        from spotforecast2.multitask.search_spaces import _default_spotoptim_search_space
+
+        strategy = SpotOptimStrategy()
+        print(f"Strategy name: {strategy.name}")
+        assert strategy.search_space is None  # uses built-in default when None
+
+        default_space = _default_spotoptim_search_space()
+        print(f"Search space keys: {list(default_space.keys())[:4]}")
+        assert "lags" in default_space
+        assert "estimator__num_leaves" in default_space
+
+        # Custom search space can be injected:
+        custom_space = {"lags": ["24", "48"], "estimator__num_leaves": (8, 64)}
+        strategy_custom = SpotOptimStrategy(search_space=custom_space)
+        assert strategy_custom.search_space is custom_space
+        print(f"Custom space lags options: {strategy_custom.search_space['lags']}")
+        ```
     """
     strategy = SpotOptimStrategy(search_space=search_space)
     return task._run_strategy(
@@ -90,5 +114,25 @@ class SpotOptimTask(BaseTask):
         Returns:
             Aggregated prediction package. Per-target packages are stored
             on ``self.results["spotoptim"]``.
+
+        Examples:
+            ```{python}
+            # Construct the task and verify configuration before running.
+            # A full run requires prepared data (prepare_data, impute, etc.);
+            # this example demonstrates construction and config inspection.
+            from spotforecast2.multitask.spotoptim import SpotOptimTask
+
+            task = SpotOptimTask(
+                n_trials_spotoptim=5,
+                n_initial_spotoptim=3,
+                predict_size=24,
+                auto_save_models=False,
+            )
+            print(f"Task type: {task.TASK}")
+            print(f"Trials: {task.config.n_trials_spotoptim}")
+            print(f"Initial evaluations: {task.config.n_initial_spotoptim}")
+            assert task.config.n_trials_spotoptim == 5
+            assert task.config.auto_save_models is False
+            ```
         """
         return execute_spotoptim(self, show=show, search_space=search_space)
