@@ -252,18 +252,29 @@ class TestConfigDelegation:
         task = SpotOptimTask(use_exogenous_features=False)
         assert task.config.use_exogenous_features is False
 
-    def test_config_task_lazy(self):
-        assert _lazy().config.task == "lazy"
+    # Since spotforecast2-safe 19.0.0 task init no longer mutates
+    # config.task: the config keeps its constructor default ("lazy");
+    # the active mode is the class/instance constant task.TASK.
 
-    def test_config_task_optuna(self):
-        assert _optuna().config.task == "optuna"
+    def test_config_task_not_mutated_lazy(self):
+        task = _lazy()
+        assert task.TASK == "lazy"
+        assert task.config.task == "lazy"
 
-    def test_config_task_spotoptim(self):
-        assert _spotoptim().config.task == "spotoptim"
+    def test_config_task_not_mutated_optuna(self):
+        task = _optuna()
+        assert task.TASK == "optuna"
+        assert task.config.task == "lazy"
 
-    def test_config_task_multitask(self):
+    def test_config_task_not_mutated_spotoptim(self):
+        task = _spotoptim()
+        assert task.TASK == "spotoptim"
+        assert task.config.task == "lazy"
+
+    def test_config_task_not_mutated_multitask(self):
         mt = MultiTask(task="optuna")
-        assert mt.config.task == "optuna"
+        assert mt.TASK == "optuna"
+        assert mt.config.task == "lazy"
 
     def test_config_n_trials_optuna(self):
         task = OptunaTask(n_trials_optuna=3)
