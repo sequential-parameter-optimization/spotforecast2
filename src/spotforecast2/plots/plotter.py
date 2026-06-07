@@ -653,12 +653,12 @@ def plot_with_outliers(
     The plot title includes the percentage of outliers detected for each
     target variable.
 
-    The resolved list of target column names must be passed explicitly via
-    *targets*.  Callers inside the pipeline (e.g. ``PlottingMixin``) obtain
-    this list from ``task.run_state.targets`` after ``prepare_data`` has run.
-    A ``SimpleNamespace``/dict-like *config* that carries its own ``targets``
-    attribute is still accepted for backwards-compatible standalone usage —
-    the explicit *targets* argument takes precedence when provided.
+    The explicit *targets* argument takes precedence when provided.  When
+    omitted, ``config.targets`` is used — the supported path for
+    standalone/notebook usage where the config carries the resolved target
+    list (e.g. ``ConfigEntsoe`` with explicit ``targets``).  Pipeline-internal
+    callers (``PlottingMixin``) always pass ``task.run_state.targets``
+    explicitly after ``prepare_data`` has run.
 
     Args:
         df_pipeline (pd.DataFrame): The processed DataFrame from the pipeline,
@@ -668,11 +668,13 @@ def plot_with_outliers(
             outlier removal.
         config: Configuration object carrying ``bounds`` (optional list of
             ``(lower, upper)`` tuples, one per target, in the same order as
-            *targets*).  ``config.targets`` is used as a fallback when the
-            *targets* argument is ``None`` (legacy path).
-        targets: Resolved list of target column names.  When ``None`` the
-            function falls back to ``config.targets`` (legacy callers that
-            pass a ``SimpleNamespace`` with ``targets`` set).
+            *targets*).  ``config.targets`` is used when the *targets*
+            argument is ``None`` — the supported standalone/notebook path.
+        targets: Resolved list of target column names.  When provided, takes
+            precedence over ``config.targets``.  When omitted,
+            ``config.targets`` is used — a supported convenience for callers
+            (e.g. notebooks) where the config already carries the resolved
+            target list.
 
     Returns:
         None. Displays one interactive Plotly figure per target variable.
@@ -697,6 +699,9 @@ def plot_with_outliers(
         # Config with bounds; targets passed explicitly
         config = SimpleNamespace(bounds=[(-10, 200), (0, 100)])
         plot_with_outliers(df_pipeline, data, config, targets=["target1", "target2"])
+        # Standalone path: config.targets is used when targets kwarg is omitted
+        config2 = SimpleNamespace(bounds=None, targets=["target1", "target2"])
+        plot_with_outliers(df_pipeline, data, config2)
         ```
     """
     bounds = getattr(config, "bounds", None)
