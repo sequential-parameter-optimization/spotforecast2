@@ -52,6 +52,33 @@ class DefaultsTask(BaseTask):
         Returns:
             Aggregated prediction package.  Per-target packages are stored
             on ``self.results["defaults"]``.
+
+        Examples:
+            ```{python}
+            from unittest.mock import MagicMock, patch
+            from spotforecast2.multitask import DefaultsTask
+
+            task = DefaultsTask(predict_size=24, auto_save_models=False)
+            task.config.targets = ["t1"]
+
+            sentinel = {"future_pred": MagicMock(name="predictions")}
+            with (
+                patch.object(task, "_ensure_pipeline_ready"),
+                patch.object(
+                    task,
+                    "_get_target_data",
+                    return_value=(MagicMock(), MagicMock(), MagicMock()),
+                ),
+                patch.object(task, "create_forecaster"),
+                patch.object(task, "_train_and_predict_target", return_value=sentinel),
+                patch.object(task, "_aggregate_and_show", return_value=sentinel),
+            ):
+                result = task.run(show=False)
+
+            assert "future_pred" in result
+            print(f"task.TASK: {task.TASK!r}")
+            print(f"result keys: {list(result.keys())}")
+            ```
         """
         del kwargs  # DefaultsTask has no tuning- or cache-related parameters
         return execute_defaults(self, show=show)

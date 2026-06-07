@@ -305,6 +305,45 @@ def grid_search_forecaster(
 ) -> pd.DataFrame:
     """
     Exhaustive grid search over parameter values for a Forecaster.
+
+    Examples:
+        ```{python}
+        import warnings
+        import numpy as np
+        import pandas as pd
+        from sklearn.linear_model import Ridge
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+        from spotforecast2_safe.splitter import TimeSeriesFold
+        from spotforecast2.model_selection.grid_search import grid_search_forecaster
+
+        rng = np.random.default_rng(0)
+        idx = pd.date_range("2020-01-01", periods=120, freq="h")
+        y = pd.Series(rng.normal(0, 1, 120), index=idx)
+
+        forecaster = ForecasterRecursive(estimator=Ridge(), lags=3)
+        cv = TimeSeriesFold(steps=3, initial_train_size=90, refit=False)
+        param_grid = {"alpha": [0.1, 1.0]}
+
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore")
+            results = grid_search_forecaster(
+                forecaster=forecaster,
+                y=y,
+                cv=cv,
+                param_grid=param_grid,
+                metric="mean_absolute_error",
+                lags_grid=[3, 5],
+                return_best=True,
+                n_jobs=1,
+                verbose=False,
+                show_progress=False,
+                suppress_warnings=True,
+            )
+
+        print(results[["lags_label", "params", "mean_absolute_error"]].head())
+        assert results.shape == (4, 5)
+        assert "mean_absolute_error" in results.columns
+        ```
     """
 
     param_grid = list(ParameterGrid(param_grid))

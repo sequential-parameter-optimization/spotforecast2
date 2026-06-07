@@ -47,6 +47,41 @@ class PlottingMixin:
         plot_with_outliers: Display original vs. cleaned data with outlier markers.
         _show_prediction_figure: Show an interactive per-target prediction figure.
         _show_prediction_figure_agg: Show an interactive aggregated prediction figure.
+
+    Examples:
+        ```{python}
+        import tempfile
+        import numpy as np
+        import pandas as pd
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
+        from spotforecast2.multitask import LazyTask
+        from spotforecast2.multitask.base import PlottingMixin
+
+        rng = np.random.default_rng(0)
+        idx = pd.date_range("2023-01-01", periods=24 * 14, freq="h", tz="UTC")
+        df = pd.DataFrame({"load": rng.normal(100, 10, len(idx))}, index=idx)
+        df.index.name = "DateTime"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = ConfigMulti(
+                predict_size=6,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=False,
+                cache_home=tmp,
+            )
+            task = LazyTask(cfg, dataframe=df)
+
+        # LazyTask inherits from BaseTask(PlottingMixin, SafeBaseTask), so
+        # PlottingMixin.plot_with_outliers overrides the safe-base no-op stub.
+        print("PlottingMixin in MRO:", PlottingMixin in type(task).__mro__)
+        print(
+            "plot_with_outliers wired to PlottingMixin:",
+            type(task).plot_with_outliers is PlottingMixin.plot_with_outliers,
+        )
+        assert PlottingMixin in type(task).__mro__
+        assert type(task).plot_with_outliers is PlottingMixin.plot_with_outliers
+        ```
     """
 
     def plot_with_outliers(self) -> None:
@@ -54,6 +89,33 @@ class PlottingMixin:
 
         Raises:
             RuntimeError: If ``detect_outliers`` has not been called.
+
+        Examples:
+            ```{python}
+            import tempfile
+            import numpy as np
+            import pandas as pd
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2.multitask import LazyTask
+
+            rng = np.random.default_rng(0)
+            idx = pd.date_range("2023-01-01", periods=24 * 14, freq="h", tz="UTC")
+            df = pd.DataFrame({"load": rng.normal(100, 10, len(idx))}, index=idx)
+            df.index.name = "DateTime"
+
+            with tempfile.TemporaryDirectory() as tmp:
+                cfg = ConfigMulti(
+                    predict_size=6,
+                    use_exogenous_features=False,
+                    use_outlier_detection=False,
+                    bounds=[(50, 150)],
+                    auto_save_models=False,
+                    cache_home=tmp,
+                )
+                task = LazyTask(cfg, dataframe=df)
+                task.prepare_data().detect_outliers()
+                task.plot_with_outliers()
+            ```
         """
         if self.df_pipeline_original is None:  # type: ignore[attr-defined]
             raise RuntimeError("Call detect_outliers() before plot_with_outliers().")
@@ -124,10 +186,43 @@ class BaseTask(PlottingMixin, SafeBaseTask):
 
     Visualisation additions over the safe base:
         plot_with_outliers: Renders original vs. cleaned data with outlier
-            markers via ``spotforecast2.plots.plotter.plot_with_outliers``.
-        _show_prediction_figure: Calls ``make_plot`` and shows the figure
+            markers via `spotforecast2.plots.plotter.plot_with_outliers`.
+        _show_prediction_figure: Calls `make_plot` and shows the figure
             interactively.
         _show_prediction_figure_agg: Same for the aggregated prediction.
+
+    Examples:
+        ```{python}
+        import tempfile
+        import numpy as np
+        import pandas as pd
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
+        from spotforecast2.multitask.base import BaseTask, PlottingMixin
+
+        rng = np.random.default_rng(0)
+        idx = pd.date_range("2023-01-01", periods=24 * 14, freq="h", tz="UTC")
+        df = pd.DataFrame({"load": rng.normal(100, 10, len(idx))}, index=idx)
+        df.index.name = "DateTime"
+
+        with tempfile.TemporaryDirectory() as tmp:
+            cfg = ConfigMulti(
+                predict_size=6,
+                use_exogenous_features=False,
+                use_outlier_detection=False,
+                auto_save_models=False,
+                cache_home=tmp,
+            )
+            task = BaseTask(cfg, dataframe=df)
+            # Data-preparation pipeline (steps 1-3)
+            task.prepare_data().detect_outliers().impute()
+
+        print("Pipeline shape:", task.df_pipeline.shape)
+        print("Targets:", task.config.targets)
+        # PlottingMixin is in the MRO — visualisation hooks are live Plotly calls.
+        print("PlottingMixin in MRO:", PlottingMixin in type(task).__mro__)
+        assert task.df_pipeline.shape[1] == 1
+        assert PlottingMixin in type(task).__mro__
+        ```
     """
 
     # ``_show_prediction_figure`` and ``_show_prediction_figure_agg`` are
@@ -222,6 +317,40 @@ class BaseTask(PlottingMixin, SafeBaseTask):
 
         Raises:
             NotImplementedError: Always, unless overridden by a subclass.
+
+        Examples:
+            `BaseTask.run` is abstract — it raises `NotImplementedError` to
+            enforce that every concrete task subclass provides its own
+            implementation.  Use `LazyTask`, `OptunaTask`, `SpotOptimTask`,
+            `PredictTask`, or `CleanTask` for live pipelines.
+
+            ```{python}
+            import tempfile
+            import numpy as np
+            import pandas as pd
+            from spotforecast2_safe.configurator.config_multi import ConfigMulti
+            from spotforecast2.multitask.base import BaseTask
+            from spotforecast2.multitask import LazyTask
+
+            rng = np.random.default_rng(0)
+            idx = pd.date_range("2023-01-01", periods=24 * 14, freq="h", tz="UTC")
+            df = pd.DataFrame({"load": rng.normal(100, 10, len(idx))}, index=idx)
+            df.index.name = "DateTime"
+
+            # BaseTask.run raises NotImplementedError — use a concrete subclass.
+            with tempfile.TemporaryDirectory() as tmp:
+                cfg = ConfigMulti(cache_home=tmp)
+                base = BaseTask(cfg)
+            try:
+                base.run()
+            except NotImplementedError as exc:
+                print("BaseTask.run() raised NotImplementedError (expected).")
+                print(str(exc)[:60])
+
+            # LazyTask overrides run() with lazy fitting logic.
+            print("LazyTask.run is overridden:", LazyTask.run is not BaseTask.run)
+            assert LazyTask.run is not BaseTask.run
+            ```
         """
         raise NotImplementedError(
             f"{self.__class__.__name__} must implement run(). "
