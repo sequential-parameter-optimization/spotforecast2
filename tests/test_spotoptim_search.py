@@ -409,6 +409,100 @@ class TestParityWithBayesian:
 
 
 # ------------------------------------------------------------------
+# "config k/N" progress label
+# ------------------------------------------------------------------
+
+
+class TestConfigProgressLabel:
+    """The per-config progress label must count across worker processes."""
+
+    @staticmethod
+    def _record_descs(monkeypatch):
+        """Replace _backtesting_forecaster with a stub recording progress_desc."""
+        descs = []
+
+        def fake_backtesting(**kwargs):
+            descs.append(kwargs["progress_desc"])
+            return pd.DataFrame([[0.5]], columns=["mean_absolute_error"]), None
+
+        monkeypatch.setattr(
+            "spotforecast2.model_selection.spotoptim_search._backtesting_forecaster",
+            fake_backtesting,
+        )
+        return descs
+
+    def _run_objective(self, y_series, cv, counter=None, lock=None):
+        from spotforecast2.model_selection.spotoptim_search import spotoptim_objective
+
+        return spotoptim_objective(
+            X=np.array([[0.1], [0.2]]),
+            forecaster_search=ForecasterRecursive(estimator=Ridge(), lags=3),
+            cv_name="TimeSeriesFold",
+            cv=cv,
+            metric=[lambda y_true, y_pred: 0.5],
+            y=y_series,
+            exog=None,
+            n_jobs=1,
+            verbose=False,
+            show_progress=True,
+            suppress_warnings=False,
+            var_name=["alpha"],
+            var_type=["float"],
+            bounds=[(0.01, 10.0)],
+            all_metric_values=[],
+            all_lags=[],
+            all_params=[],
+            n_trials=10,
+            config_counter=counter,
+            config_counter_lock=lock,
+        )
+
+    def test_label_falls_back_to_local_count(self, y_series, cv, monkeypatch):
+        """Without a shared counter the label counts completed local configs."""
+        descs = self._record_descs(monkeypatch)
+        self._run_objective(y_series, cv)
+        assert descs == ["config 1/10", "config 2/10"]
+
+    def test_label_uses_shared_counter(self, y_series, cv, monkeypatch):
+        """With a shared counter the label continues the cross-process count."""
+        import threading
+
+        class FakeCounter:
+            value = 5  # five configs already started in other workers
+
+        descs = self._record_descs(monkeypatch)
+        counter = FakeCounter()
+        self._run_objective(y_series, cv, counter=counter, lock=threading.Lock())
+        assert descs == ["config 6/10", "config 7/10"]
+        assert counter.value == 7
+
+    def test_parallel_search_labels_increment(self, y_series, forecaster, cv, capfd):
+        """End to end: SpotOptim n_jobs=2 must not repeat 'config 1/N'.
+
+        Each parallel evaluation runs in a worker process holding a dill
+        copy of the objective closure, so a label derived from local list
+        length is stuck at 1 (the bug this guards against). The
+        manager-backed counter must yield one distinct label per config.
+        """
+        spotoptim_search(
+            forecaster=forecaster,
+            y=y_series,
+            cv=cv,
+            search_space={"alpha": (0.01, 10.0)},
+            metric="mean_absolute_error",
+            n_trials=4,
+            n_initial=2,
+            return_best=False,
+            verbose=False,
+            show_progress=True,
+            kwargs_spotoptim={"n_jobs": 2},
+        )
+        err = capfd.readouterr().err
+        for k in range(1, 5):
+            assert f"config {k}/4" in err, f"missing 'config {k}/4' in:\n{err}"
+
+
+# ------------------------------------------------------------------
 # Docstring examples
 # ------------------------------------------------------------------
 
