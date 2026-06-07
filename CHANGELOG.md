@@ -1,3 +1,9 @@
+## [5.2.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v5.1.1...v5.2.0-rc.1) (2026-06-07)
+
+### Features
+
+* **multitask:** default tensorboard_clean=True when TensorBoard logging is enabled ([6ebd767](https://github.com/sequential-parameter-optimization/spotforecast2/commit/6ebd767a64f06d01c9ff1abd1c0c461d2953282a))
+
 ## [5.1.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v5.1.0...v5.1.1) (2026-06-07)
 
 ### Bug Fixes
