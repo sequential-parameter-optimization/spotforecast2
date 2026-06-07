@@ -167,7 +167,10 @@ results, optimizer = spotoptim_search_forecaster(
 cfg = ConfigEntsoe(...)
 cfg.tensorboard_log = True
 cfg.tensorboard_path = "runs/my_tuning_run"   # optional; defaults to runs/<stamp>
-cfg.tensorboard_clean = False                 # True wipes old runs/ subdirs first
+# tensorboard_clean defaults to True when logging is enabled: the log
+# directory is wiped at search start so each run gets a fresh dashboard.
+# Set cfg.tensorboard_clean = False to keep accumulating event files —
+# do that (or use per-task paths) when several tasks share one directory.
 ```
 
 Then watch the run live:

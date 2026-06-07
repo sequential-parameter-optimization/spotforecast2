@@ -120,10 +120,67 @@ def test_spotoptim_strategy_forwards_tensorboard_kwargs(monkeypatch):
     ks = captured["kwargs_spotoptim"]
     assert ks["tensorboard_log"] is True
     assert ks["tensorboard_path"] == "runs/test-tb"
-    # Unset attribute must be skipped so SpotOptim's default stays in charge.
-    assert "tensorboard_clean" not in ks
+    # With logging enabled and tensorboard_clean unset, the strategy
+    # defaults it to True so every run starts with a fresh dashboard.
+    assert ks["tensorboard_clean"] is True
     assert isinstance(tuned, _FakeForecaster)
     assert tuned.params == {"alpha": 1.0}
+
+
+def test_spotoptim_strategy_respects_explicit_tensorboard_clean_false(monkeypatch):
+    """An explicit tensorboard_clean=False must not be overridden."""
+    import pandas as pd
+
+    import spotforecast2.model_selection as ms
+
+    captured = {}
+
+    def fake_search_forecaster(*args, **kwargs):
+        captured["kwargs_spotoptim"] = kwargs.get("kwargs_spotoptim")
+        results = pd.DataFrame({"params": [{"alpha": 1.0}], "lags": [[1, 2]]})
+        return results, object()
+
+    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search_forecaster)
+
+    task = _make_fake_task(
+        tensorboard_log=True,
+        tensorboard_path="runs/test-tb",
+        tensorboard_clean=False,
+    )
+    SpotOptimStrategy(search_space={"alpha": (0.1, 1.0)}).prepare_forecaster(
+        task, "A", _FakeForecaster(), y_train=None
+    )
+
+    ks = captured["kwargs_spotoptim"]
+    assert ks["tensorboard_log"] is True
+    assert ks["tensorboard_clean"] is False
+
+
+def test_spotoptim_strategy_no_clean_default_without_logging(monkeypatch):
+    """tensorboard_clean is only defaulted when tensorboard_log is enabled."""
+    import pandas as pd
+
+    import spotforecast2.model_selection as ms
+
+    captured = {}
+
+    def fake_search_forecaster(*args, **kwargs):
+        captured["kwargs_spotoptim"] = kwargs.get("kwargs_spotoptim")
+        results = pd.DataFrame({"params": [{"alpha": 1.0}], "lags": [[1, 2]]})
+        return results, object()
+
+    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search_forecaster)
+
+    # tensorboard_log=False is forwarded (it is not None) but must not
+    # trigger the clean default.
+    task = _make_fake_task(tensorboard_log=False)
+    SpotOptimStrategy(search_space={"alpha": (0.1, 1.0)}).prepare_forecaster(
+        task, "A", _FakeForecaster(), y_train=None
+    )
+
+    ks = captured["kwargs_spotoptim"]
+    assert ks["tensorboard_log"] is False
+    assert "tensorboard_clean" not in ks
 
 
 def test_spotoptim_strategy_no_tensorboard_attrs_no_kwargs(monkeypatch):
