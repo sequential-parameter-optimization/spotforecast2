@@ -9,6 +9,7 @@ when config.bounds is provided, and that the function degrades gracefully when
 bounds are absent.
 """
 
+import warnings
 from types import SimpleNamespace
 from unittest.mock import patch
 
@@ -278,3 +279,61 @@ class TestPlotWithOutliersExplicitTargets:
         assert len(figs[0].layout.shapes) == 2
         y_vals = {s.y0 for s in figs[0].layout.shapes}
         assert 0.0 in y_vals and 100.0 in y_vals
+
+
+# ---------------------------------------------------------------------------
+# Tests: config.targets fallback (supported standalone/notebook path)
+# ---------------------------------------------------------------------------
+
+
+class TestPlotWithOutliersConfigTargetsFallback:
+    """Pin config.targets fallback as a supported standalone/notebook API.
+
+    WHY THIS IS PINNED:
+    The consumer-contract artifact ``bart26k-lecture/14_team_4_submission.qmd``
+    (line 1888) calls ``plot_with_outliers`` WITHOUT an explicit ``targets``
+    kwarg, relying on ``config.targets`` being used as the fallback.  This
+    usage pattern is load-bearing and must not be removed.  The previously
+    planned removal in 6.0.0 is cancelled.
+
+    Reference: ADR adr-multitask-configmulti-merge follow-up reassessment
+    2026-06-07.
+    """
+
+    def test_no_targets_kwarg_uses_config_targets(self):
+        """Calling without targets kwarg produces figures for config.targets."""
+        df_pipe, df_orig, _ = _make_data(targets=["alpha", "beta"])
+        config = SimpleNamespace(bounds=None, targets=["alpha", "beta"])
+        # Call WITHOUT explicit targets kwarg — passes targets=None through to plot_with_outliers, triggering the config.targets fallback inside the function
+        figs = _captured_figures(df_pipe, df_orig, config)
+        assert len(figs) == 2
+        titles = [figs[i].layout.title.text for i in range(2)]
+        assert any("alpha" in t for t in titles)
+        assert any("beta" in t for t in titles)
+
+    def test_no_targets_kwarg_emits_no_deprecation_warning(self):
+        """The config.targets fallback must not emit DeprecationWarning or FutureWarning."""
+        df_pipe, df_orig, _ = _make_data(targets=["load"])
+        config = SimpleNamespace(bounds=None, targets=["load"])
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            _captured_figures(df_pipe, df_orig, config)
+        deprecation_warnings = [
+            w
+            for w in caught
+            if issubclass(w.category, (DeprecationWarning, FutureWarning))
+        ]
+        assert deprecation_warnings == [], (
+            f"Unexpected deprecation warnings: {[str(w.message) for w in deprecation_warnings]}"
+        )
+
+    def test_explicit_targets_wins_over_config_targets(self):
+        """When explicit targets= differs from config.targets, explicit wins."""
+        df_pipe, df_orig, _ = _make_data(targets=["series_a", "series_b"])
+        config = SimpleNamespace(bounds=None, targets=["series_a", "series_b"])
+        # Pass only ["series_a"] explicitly — only one figure should be produced
+        figs = _captured_figures(df_pipe, df_orig, config, targets=["series_a"])
+        assert len(figs) == 1
+        title = figs[0].layout.title.text
+        assert "series_a" in title
+        assert "series_b" not in title
