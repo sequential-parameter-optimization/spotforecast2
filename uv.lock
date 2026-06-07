@@ -3604,13 +3604,12 @@ wheels = [
 
 [[package]]
 name = "spotforecast2"
-version = "5.2.0"
+version = "6.0.0"
 source = { editable = "." }
 dependencies = [
     { name = "astral" },
     { name = "entsoe-py" },
     { name = "feature-engine" },
-    { name = "flake8" },
     { name = "holidays" },
     { name = "ipykernel" },
     { name = "jinja2" },
@@ -3643,6 +3642,7 @@ dev = [
     { name = "quartodoc" },
     { name = "ruff" },
     { name = "safety" },
+    { name = "ty" },
 ]
 
 [package.dev-dependencies]
@@ -3651,6 +3651,7 @@ dev = [
     { name = "pytest" },
     { name = "pytest-anyio" },
     { name = "quartodoc" },
+    { name = "ty" },
 ]
 
 [package.metadata]
@@ -3660,7 +3661,6 @@ requires-dist = [
     { name = "black", marker = "extra == 'dev'", specifier = ">=24.1.0" },
     { name = "entsoe-py", specifier = ">=0.7.10" },
     { name = "feature-engine", specifier = ">=1.9.3" },
-    { name = "flake8", specifier = ">=7.3.0" },
     { name = "holidays", specifier = ">=0.90" },
     { name = "ipykernel", specifier = ">=7.1.0" },
     { name = "isort", marker = "extra == 'dev'", specifier = ">=5.13.0" },
@@ -3686,6 +3686,7 @@ requires-dist = [
     { name = "spotforecast2-safe", specifier = ">=19.0.0,<20" },
     { name = "spotoptim", specifier = ">=0.12.9" },
     { name = "tqdm", specifier = ">=4.67.2" },
+    { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.29" },
 ]
 provides-extras = ["dev"]
 
@@ -3695,11 +3696,12 @@ dev = [
     { name = "pytest", specifier = ">=9.0.2" },
     { name = "pytest-anyio", specifier = ">=0.0.0" },
     { name = "quartodoc", specifier = ">=0.7.2" },
+    { name = "ty", specifier = ">=0.0.29" },
 ]
 
 [[package]]
 name = "spotforecast2-safe"
-version = "19.0.0"
+version = "19.1.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astral" },
@@ -3717,9 +3719,9 @@ dependencies = [
     { name = "statsmodels" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/aa/ff/24638c47bcc50fae93efec970e0b60d9e6bc447be5888433162614139547/spotforecast2_safe-19.0.0.tar.gz", hash = "sha256:5399c94f8db4a833f05abefbbbf45d65edc594e195fe3b1f47b3833e787f57b2", size = 20621730, upload-time = "2026-06-07T19:08:50.083Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/bc/22/10a45c89b8805c63eb5c0a24c6a8bc47a2eac6b5821de91daa493298edae/spotforecast2_safe-19.1.0.tar.gz", hash = "sha256:bf5ddda8990e3454a0de1040ac10a44239fbd1e4da02e2c9e2896a8cf3cd4ea4", size = 20616792, upload-time = "2026-06-07T22:20:42.105Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/cb/88/a181acb1fb8d8b8b7547a703641ff17b8fb62621af0d1c0dfe1ac14af6eb/spotforecast2_safe-19.0.0-py3-none-any.whl", hash = "sha256:9bf724aea5c609341785b5cbd255d99feda56a205e5ee18566473bce5019396a", size = 20687905, upload-time = "2026-06-07T19:08:46.663Z" },
+    { url = "https://files.pythonhosted.org/packages/7e/a5/36917eb6493569a95d79b498853d3069303a1c79b7b879b4330f34f66730/spotforecast2_safe-19.1.0-py3-none-any.whl", hash = "sha256:4e50dc82db56bb58c64e72d29e0eeafe39161e81ecc55b8fb7ba3ec134cb1b87", size = 20685366, upload-time = "2026-06-07T22:20:39.088Z" },
 ]
 
 [[package]]
