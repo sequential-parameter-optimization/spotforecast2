@@ -1,3 +1,9 @@
+## [5.1.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v5.1.0...v5.1.1-rc.1) (2026-06-07)
+
+### Bug Fixes
+
+* **model_selection:** create the parallel config-label counter regardless of show_progress ([67b1a1d](https://github.com/sequential-parameter-optimization/spotforecast2/commit/67b1a1d815f85d0a761f54364bca7df718707ecf))
+
 ## [5.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v5.0.0...v5.1.0) (2026-06-07)
 
 ### Features
