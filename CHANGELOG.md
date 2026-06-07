@@ -1,3 +1,18 @@
+## [5.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v5.0.0...v5.1.0) (2026-06-07)
+
+### Features
+
+* **multitask:** expose TensorBoard tuning visualization via SpotOptimStrategy ([3f5770c](https://github.com/sequential-parameter-optimization/spotforecast2/commit/3f5770c012b3c0ea10b66fecab2fd3fbbe872cc1))
+
+### Bug Fixes
+
+* **model_selection:** show real config k/N progress labels in parallel SpotOptim search ([9fb8ced](https://github.com/sequential-parameter-optimization/spotforecast2/commit/9fb8ced39e0f6694a43e329876898cefde11776f))
+* **plots:** make prediction figures safe for direct fig.write_image() ([2c9328f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2c9328fda577ed269f46c8b62c711235b0999f86))
+
+### Documentation
+
+* add live {python} Examples to all public symbols missing them ([eabfd98](https://github.com/sequential-parameter-optimization/spotforecast2/commit/eabfd9867617218e5071609338d6e0dddfb6c70e))
+
 ## [5.1.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v5.0.0...v5.1.0-rc.1) (2026-06-07)
 
 ### Features
