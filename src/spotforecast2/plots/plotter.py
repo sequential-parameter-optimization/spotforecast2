@@ -15,9 +15,23 @@ from typing import Any, Dict, Optional, Union
 
 import pandas as pd
 import plotly.graph_objects as go
+import plotly.io as pio
 from spotforecast2_safe.data.fetch_data import get_data_home
 
 logger = logging.getLogger(__name__)
+
+
+def _iso_x(index: pd.DatetimeIndex) -> list[str]:
+    """ISO-8601 strings for a Plotly date axis.
+
+    kaleido v1 serialises figures via orjson, which rejects the raw pandas
+    Timestamps a tz-aware ``DatetimeIndex`` leaves in trace x arrays (object
+    dtype) — direct ``fig.write_image()`` then fails with "Type is not JSON
+    serializable: Timestamp".  Plotly date axes accept ISO-8601 strings
+    natively, so coercing at trace-build time keeps the figure JSON-safe
+    without changing how it renders.
+    """
+    return [ts.isoformat() for ts in index]
 
 
 class PredictionFigure:
@@ -185,7 +199,7 @@ class PredictionFigure:
         # --- Traces ---
         self.fig.add_trace(
             go.Scatter(
-                x=y_actual_visible.index,
+                x=_iso_x(y_actual_visible.index),
                 y=y_actual_visible,
                 mode="lines+markers",
                 name=actual_legend,
@@ -193,7 +207,7 @@ class PredictionFigure:
         )
         self.fig.add_trace(
             go.Scatter(
-                x=y_pred_visible.index,
+                x=_iso_x(y_pred_visible.index),
                 y=y_pred_visible,
                 mode="lines+markers",
                 name=pred_legend,
@@ -210,7 +224,7 @@ class PredictionFigure:
             )
             self.fig.add_trace(
                 go.Scatter(
-                    x=y_forecast.index,
+                    x=_iso_x(y_forecast.index),
                     y=y_forecast,
                     mode="lines+markers",
                     name=forecast_legend,
@@ -220,7 +234,7 @@ class PredictionFigure:
         if test_actual is not None and len(test_actual) > 0:
             self.fig.add_trace(
                 go.Scatter(
-                    x=test_actual.index,
+                    x=_iso_x(test_actual.index),
                     y=test_actual,
                     mode="lines+markers",
                     name="Actual (test / ground truth)",
@@ -231,7 +245,7 @@ class PredictionFigure:
 
         self.fig.add_trace(
             go.Scatter(
-                x=y_last_week_visible.index,
+                x=_iso_x(y_last_week_visible.index),
                 y=y_last_week_visible,
                 mode="lines+markers",
                 line=dict(dash="dash"),
@@ -260,18 +274,18 @@ class PredictionFigure:
             xaxis=dict(title="Time (UTC)"),
             yaxis=dict(title="Load"),
         )
-        self.fig.update_xaxes(range=[min_range, max_range])
+        self.fig.update_xaxes(range=[min_range.isoformat(), max_range.isoformat()])
         self.fig.update_yaxes(range=[y_min - y_margin, y_max + y_margin])
 
         # Vertical marker at end of training
         self.fig.add_vline(
-            x=end_training,
+            x=end_training.isoformat(),
             line_width=2,
             line_color="black",
             line_dash="dash",
         )
         self.fig.add_annotation(
-            x=end_training,
+            x=end_training.isoformat(),
             text="End of Training",
             showarrow=False,
             yref="paper",
@@ -336,10 +350,9 @@ class PredictionFigure:
         if not path.parent.exists():
             raise FileNotFoundError(f"Parent directory does not exist: {path.parent}")
         # kaleido v1 cannot serialise pandas Timestamp axis values directly
-        # (orjson rejects them).  Round-trip through Plotly's own JSON
-        # encoder, which coerces Timestamps to ISO strings.
-        import plotly.io as pio
-
+        # (orjson rejects them).  make_plot() already returns a JSON-safe
+        # figure; the round-trip here keeps the method safe for traces
+        # added to self.fig after make_plot().
         pio.from_json(self.fig.to_json()).write_image(str(path), **kwargs)
         return path
 
