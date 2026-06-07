@@ -1191,7 +1191,7 @@
     "href": "docs/model_selection/spotoptim_intro.html#live-tuning-visualization-with-tensorboard",
     "title": "Introduction to Hyperparameter Tuning with SpotOptim",
     "section": "Live Tuning Visualization with TensorBoard",
-    "text": "Live Tuning Visualization with TensorBoard\nSpotOptim can stream the ongoing search to TensorBoard: pass the knobs through kwargs_spotoptim, or — when tuning via the MultiTask pipeline — set them as plain attributes on the config (the SpotOptimStrategy forwards them automatically; no config-class change is needed):\n# Direct search call\nresults, optimizer = spotoptim_search_forecaster(\n    ...,\n    kwargs_spotoptim={\n        \"tensorboard_log\": True,\n        \"tensorboard_path\": \"runs/my_tuning_run\",\n    },\n)\n\n# MultiTask pipeline\ncfg = ConfigEntsoe(...)\ncfg.tensorboard_log = True\ncfg.tensorboard_path = \"runs/my_tuning_run\"   # optional; defaults to runs/&lt;stamp&gt;\ncfg.tensorboard_clean = False                 # True wipes old runs/ subdirs first\nThen watch the run live:\ntensorboard --logdir runs\nTensorBoard shows y_values/min, y_values/last, X_best/&lt;param&gt; and success_rate advancing as evaluations complete, plus one HParams entry per evaluated configuration. This also works with parallel tuning (n_jobs_spotoptim != 1 / kwargs_spotoptim={\"n_jobs\": -1}): evaluations run in worker processes and are logged parent-side as their results arrive (requires spotoptim &gt;= 0.12.8; older versions log only the initial design in parallel mode).",
+    "text": "Live Tuning Visualization with TensorBoard\nSpotOptim can stream the ongoing search to TensorBoard: pass the knobs through kwargs_spotoptim, or — when tuning via the MultiTask pipeline — set them as plain attributes on the config (the SpotOptimStrategy forwards them automatically; no config-class change is needed):\n# Direct search call\nresults, optimizer = spotoptim_search_forecaster(\n    ...,\n    kwargs_spotoptim={\n        \"tensorboard_log\": True,\n        \"tensorboard_path\": \"runs/my_tuning_run\",\n    },\n)\n\n# MultiTask pipeline\ncfg = ConfigEntsoe(...)\ncfg.tensorboard_log = True\ncfg.tensorboard_path = \"runs/my_tuning_run\"   # optional; defaults to runs/&lt;stamp&gt;\n# tensorboard_clean defaults to True when logging is enabled: the log\n# directory is wiped at search start so each run gets a fresh dashboard.\n# Set cfg.tensorboard_clean = False to keep accumulating event files —\n# do that (or use per-task paths) when several tasks share one directory.\nThen watch the run live:\ntensorboard --logdir runs\nTensorBoard shows y_values/min, y_values/last, X_best/&lt;param&gt; and success_rate advancing as evaluations complete, plus one HParams entry per evaluated configuration. This also works with parallel tuning (n_jobs_spotoptim != 1 / kwargs_spotoptim={\"n_jobs\": -1}): evaluations run in worker processes and are logged parent-side as their results arrive (requires spotoptim &gt;= 0.12.8; older versions log only the initial design in parallel mode).",
     "crumbs": [
       "Model Selection Guides",
       "Intro to SpotOptim"
@@ -1212,7 +1212,7 @@
     "href": "index.html#quick-links",
     "title": "Welcome to spotforecast2",
     "section": "Quick Links",
-    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 5.1.1-rc.1",
+    "text": "Quick Links\n\n📦 GitHub Repository\n📚 API Reference\n🚀 Current Version: 5.2.0-rc.1",
     "crumbs": [
       "Home"
     ]
