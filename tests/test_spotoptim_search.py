@@ -476,6 +476,35 @@ class TestConfigProgressLabel:
         assert descs == ["config 6/10", "config 7/10"]
         assert counter.value == 7
 
+    def test_parallel_labels_increment_with_show_progress_false(
+        self, y_series, forecaster, cv, capfd
+    ):
+        """Labels must increment even when the OUTER show_progress is False.
+
+        The MultiTask pipeline calls spotoptim_search with
+        show_progress=False, yet the per-config fold bars are always shown
+        (the objective wrapper hardcodes show_progress=True). Gating the
+        shared counter on the outer flag therefore reintroduced frozen
+        'config 1/N' labels in every real pipeline run — this is the exact
+        scenario from the 2026-06-07 team4_submit report.
+        """
+        spotoptim_search(
+            forecaster=forecaster,
+            y=y_series,
+            cv=cv,
+            search_space={"alpha": (0.01, 10.0)},
+            metric="mean_absolute_error",
+            n_trials=4,
+            n_initial=2,
+            return_best=False,
+            verbose=False,
+            show_progress=False,
+            kwargs_spotoptim={"n_jobs": 2},
+        )
+        err = capfd.readouterr().err
+        for k in range(1, 5):
+            assert f"config {k}/4" in err, f"missing 'config {k}/4' in:\n{err}"
+
     def test_parallel_search_labels_increment(self, y_series, forecaster, cv, capfd):
         """End to end: SpotOptim n_jobs=2 must not repeat 'config 1/N'.
 

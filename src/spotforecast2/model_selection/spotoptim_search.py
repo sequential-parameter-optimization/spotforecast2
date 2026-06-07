@@ -611,7 +611,12 @@ def spotoptim_search(
     config_counter = None
     config_counter_lock = None
     counter_manager = None
-    if show_progress and parallel_eval:
+    # NOT gated on ``show_progress``: the per-config fold bars are always on
+    # (``_objective_wrapper`` passes ``show_progress=True`` to the objective
+    # below), so the label needs the shared counter in every parallel run —
+    # the MultiTask pipeline reaches this with ``show_progress=False`` and
+    # would otherwise show frozen "config 1/N" labels again.
+    if parallel_eval:
         counter_manager = multiprocessing.Manager()
         config_counter = counter_manager.Value("i", 0)
         config_counter_lock = counter_manager.Lock()
