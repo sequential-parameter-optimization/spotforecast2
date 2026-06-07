@@ -503,6 +503,55 @@ class TestConfigProgressLabel:
 
 
 # ------------------------------------------------------------------
+# TensorBoard kwargs pass-through
+# ------------------------------------------------------------------
+
+
+class TestTensorboardPassThrough:
+    """tensorboard_* kwargs flow through kwargs_spotoptim into SpotOptim."""
+
+    @staticmethod
+    def _spotoptim_version():
+        import importlib.metadata
+
+        from packaging.version import Version
+
+        return Version(importlib.metadata.version("spotoptim"))
+
+    def test_parallel_run_writes_event_files(self, y_series, forecaster, cv, tmp_path):
+        """Real tiny parallel run with tensorboard_log=True creates event files.
+
+        Live per-eval logging under n_jobs != 1 requires spotoptim>=0.12.8
+        (older versions log only the initial design in parallel mode).
+        """
+        import pytest as _pytest
+
+        if self._spotoptim_version() < type(self._spotoptim_version())("0.12.8"):
+            _pytest.skip("parallel TensorBoard infill logging needs spotoptim>=0.12.8")
+
+        tb_path = tmp_path / "tb"
+        spotoptim_search(
+            forecaster=forecaster,
+            y=y_series,
+            cv=cv,
+            search_space={"alpha": (0.01, 10.0)},
+            metric="mean_absolute_error",
+            n_trials=4,
+            n_initial=2,
+            return_best=False,
+            verbose=False,
+            show_progress=False,
+            kwargs_spotoptim={
+                "n_jobs": 2,
+                "tensorboard_log": True,
+                "tensorboard_path": str(tb_path),
+            },
+        )
+        event_files = list(tb_path.rglob("events.out.tfevents*"))
+        assert event_files, "tensorboard_log=True must produce event files"
+
+
+# ------------------------------------------------------------------
 # Docstring examples
 # ------------------------------------------------------------------
 
