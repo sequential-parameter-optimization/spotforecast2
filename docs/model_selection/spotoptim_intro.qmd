@@ -145,3 +145,41 @@ print(results_adv[["n_estimators", "max_depth", "lags", "mean_absolute_error"]].
 ```
 
 This advanced setup illustrates how `spotoptim_search_forecaster` acts as an extremely flexible orchestration bridge, allowing you to efficiently explore your state space while capturing comprehensive performance metadata.
+
+## Live Tuning Visualization with TensorBoard
+
+SpotOptim can stream the ongoing search to TensorBoard: pass the knobs
+through `kwargs_spotoptim`, or — when tuning via the `MultiTask` pipeline —
+set them as plain attributes on the config (the `SpotOptimStrategy`
+forwards them automatically; no config-class change is needed):
+
+```python
+# Direct search call
+results, optimizer = spotoptim_search_forecaster(
+    ...,
+    kwargs_spotoptim={
+        "tensorboard_log": True,
+        "tensorboard_path": "runs/my_tuning_run",
+    },
+)
+
+# MultiTask pipeline
+cfg = ConfigEntsoe(...)
+cfg.tensorboard_log = True
+cfg.tensorboard_path = "runs/my_tuning_run"   # optional; defaults to runs/<stamp>
+cfg.tensorboard_clean = False                 # True wipes old runs/ subdirs first
+```
+
+Then watch the run live:
+
+```bash
+tensorboard --logdir runs
+```
+
+TensorBoard shows `y_values/min`, `y_values/last`, `X_best/<param>` and
+`success_rate` advancing as evaluations complete, plus one HParams entry
+per evaluated configuration. This also works with parallel tuning
+(`n_jobs_spotoptim != 1` / `kwargs_spotoptim={"n_jobs": -1}`):
+evaluations run in worker processes and are logged parent-side as their
+results arrive (requires `spotoptim >= 0.12.8`; older versions log only
+the initial design in parallel mode).
