@@ -76,6 +76,27 @@ def _skl_cv(
     )
 
 
+class _HideAttr:
+    """Proxy delegating to a wrapped object but hiding one attribute.
+
+    Recreates the "config never declared this field" path. Since
+    spotforecast2-safe >= 19.1 ConfigMulti is a dataclass, every field default
+    is also a *class* attribute, so deleting the instance attribute is no longer
+    enough to make ``hasattr`` / the ``getattr(..., default)`` fallback see it as
+    absent. This proxy makes the chosen attribute genuinely raise
+    ``AttributeError``, mirroring an older or third-party ``PipelineConfig``.
+    """
+
+    def __init__(self, wrapped: object, hidden: str) -> None:
+        self._wrapped = wrapped
+        self._hidden = hidden
+
+    def __getattr__(self, name: str) -> object:
+        if name == self._hidden:
+            raise AttributeError(name)
+        return getattr(self._wrapped, name)
+
+
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
@@ -126,12 +147,12 @@ class TestCvBlockSizeFallback:
     def test_steps_equal_predict_size_when_attr_absent(self, tmp_path, y_train):
         task = _make_task(tmp_path, predict_size=32)
         # Exercise the getattr-absent fallback in cv_ts: a config that does not
-        # declare cv_block_size at all must fall back to predict_size. Newer
-        # spotforecast2-safe ConfigMulti declares the field (default None), so
-        # delete it from the instance to recreate the "attribute absent" path
-        # the getattr fallback is written for.
-        if hasattr(task.config, "cv_block_size"):
-            delattr(task.config, "cv_block_size")
+        # declare cv_block_size at all must fall back to predict_size. The
+        # dataclass ConfigMulti (spotforecast2-safe >= 19.1) always exposes the
+        # field as a class attribute (default None), so deleting the instance
+        # attribute is not enough — wrap the config so the attribute is genuinely
+        # absent, mirroring an older / third-party PipelineConfig.
+        task.config = _HideAttr(task.config, "cv_block_size")
         assert not hasattr(task.config, "cv_block_size")
         assert task.cv_ts(y_train).steps == task.config.predict_size == 32
 

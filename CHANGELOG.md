@@ -1,3 +1,9 @@
+## [6.1.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v6.0.0...v6.1.0-rc.1) (2026-06-08)
+
+### Features
+
+* **deps:** support spotforecast2-safe 20.x ([40654f4](https://github.com/sequential-parameter-optimization/spotforecast2/commit/40654f4b19df647441b7822f21c8d967353d2c1e))
+
 ## [6.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v5.2.0...v6.0.0) (2026-06-07)
 
 ### ⚠ BREAKING CHANGES
