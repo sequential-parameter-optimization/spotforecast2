@@ -3683,7 +3683,7 @@ requires-dist = [
     { name = "safety", marker = "extra == 'dev'", specifier = ">=3.0.0" },
     { name = "scikit-learn", specifier = ">=1.8.0" },
     { name = "shap", specifier = ">=0.49.1" },
-    { name = "spotforecast2-safe", specifier = ">=19.0.0,<20" },
+    { name = "spotforecast2-safe", specifier = ">=19.0.0,<21" },
     { name = "spotoptim", specifier = ">=0.12.9" },
     { name = "tqdm", specifier = ">=4.67.2" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.29" },
@@ -3701,12 +3701,11 @@ dev = [
 
 [[package]]
 name = "spotforecast2-safe"
-version = "19.1.0"
+version = "20.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astral" },
     { name = "feature-engine" },
-    { name = "flake8" },
     { name = "holidays" },
     { name = "lightgbm" },
     { name = "numba" },
@@ -3719,9 +3718,9 @@ dependencies = [
     { name = "statsmodels" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/bc/22/10a45c89b8805c63eb5c0a24c6a8bc47a2eac6b5821de91daa493298edae/spotforecast2_safe-19.1.0.tar.gz", hash = "sha256:bf5ddda8990e3454a0de1040ac10a44239fbd1e4da02e2c9e2896a8cf3cd4ea4", size = 20616792, upload-time = "2026-06-07T22:20:42.105Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/c8/5c/6af66d76ba594b64540fed675307cf6ada608d99850afdd808ea7d780ea2/spotforecast2_safe-20.0.0.tar.gz", hash = "sha256:2fbb176270dce6d72316a40a6e0311d39fbae89effffa34c1857a7f445aeb371", size = 20624314, upload-time = "2026-06-08T18:57:38.291Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7e/a5/36917eb6493569a95d79b498853d3069303a1c79b7b879b4330f34f66730/spotforecast2_safe-19.1.0-py3-none-any.whl", hash = "sha256:4e50dc82db56bb58c64e72d29e0eeafe39161e81ecc55b8fb7ba3ec134cb1b87", size = 20685366, upload-time = "2026-06-07T22:20:39.088Z" },
+    { url = "https://files.pythonhosted.org/packages/f3/4c/2c76a20c0083e2c70012c95fba1a6950bd24a142d2b475d159ff3de2d77e/spotforecast2_safe-20.0.0-py3-none-any.whl", hash = "sha256:2a4259fdd8078af1cf7a8cf4ef75758091b504494f999f179d3d44f08acebe1b", size = 20688771, upload-time = "2026-06-08T18:57:35.613Z" },
 ]
 
 [[package]]
