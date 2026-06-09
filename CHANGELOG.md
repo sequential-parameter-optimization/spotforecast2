@@ -1,3 +1,17 @@
+## [7.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v6.1.0...v7.0.0-rc.1) (2026-06-09)
+
+### ⚠ BREAKING CHANGES
+
+* spotforecast2 now requires spotoptim>=1.0 and
+spotforecast2-safe>=21. The n_jobs_spotoptim config field is gone and SpotOptim
+tuning is sequential-only; backtesting parallelism (n_jobs) is unaffected.
+
+Co-Authored-By: Claude Opus 4.8 (1M context) <noreply@anthropic.com>
+
+### Features
+
+* require spotoptim 1.0 (sequential) + sf2-safe 21, drop n_jobs_spotoptim ([ce81d8f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/ce81d8f9190524b437844416875bf4b858988135))
+
 ## [6.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v6.0.0...v6.1.0) (2026-06-08)
 
 ### Features
