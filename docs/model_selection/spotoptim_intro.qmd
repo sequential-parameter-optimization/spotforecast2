@@ -181,8 +181,6 @@ tensorboard --logdir runs
 
 TensorBoard shows `y_values/min`, `y_values/last`, `X_best/<param>` and
 `success_rate` advancing as evaluations complete, plus one HParams entry
-per evaluated configuration. This also works with parallel tuning
-(`n_jobs_spotoptim != 1` / `kwargs_spotoptim={"n_jobs": -1}`):
-evaluations run in worker processes and are logged parent-side as their
-results arrive (requires `spotoptim >= 0.12.8`; older versions log only
-the initial design in parallel mode).
+per evaluated configuration. SpotOptim runs the tuning sequentially
+(spotoptim &ge; 1.0 is sequential-only), so every evaluation is logged as
+soon as it finishes.

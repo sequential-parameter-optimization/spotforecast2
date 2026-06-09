@@ -228,8 +228,7 @@ class SpotOptimStrategy:
         is wiped at search start); set ``cfg.tensorboard_clean = False``
         to keep accumulating event files instead — do that, or give each
         task its own ``tensorboard_path``, when several tasks share one
-        log directory.  Live per-eval scalars under parallel tuning
-        (``n_jobs_spotoptim != 1``) require ``spotoptim >= 0.12.8``.
+        log directory.
 
         Args:
             task: A `BaseTask` (or compatible) instance that supplies ``cv_ts``,
@@ -237,8 +236,8 @@ class SpotOptimStrategy:
                 ``create_forecaster``.  The config must expose
                 ``n_trials_spotoptim``, ``n_initial_spotoptim``,
                 ``random_state``, ``warm_start_lags``, and optionally
-                ``lags_consider``, ``n_jobs_spotoptim``, and the
-                TensorBoard knobs described above.
+                ``lags_consider`` and the TensorBoard knobs described
+                above.
             target: Target column name; forwarded to ``task.create_forecaster``
                 and ``task.save_tuning_results``.
             forecaster: An unfitted forecaster instance used as the search
@@ -283,7 +282,6 @@ class SpotOptimStrategy:
                 n_initial_spotoptim=3,
                 random_state=0,
                 warm_start_lags=False,
-                n_jobs_spotoptim=None,
             )
             task = types.SimpleNamespace(
                 config=cfg,
@@ -334,19 +332,11 @@ class SpotOptimStrategy:
                 kwargs_spotoptim["x0"] = x0
                 task.logger.info("  Warm-start lags seeded: %s", seed_str)
 
-        # Parallel evaluation: forward the configured worker count straight to
-        # SpotOptim (``kwargs_spotoptim`` is spread into its constructor).
-        n_jobs_spotoptim = getattr(task.config, "n_jobs_spotoptim", None)
-        if n_jobs_spotoptim is not None:
-            kwargs_spotoptim["n_jobs"] = n_jobs_spotoptim
-            task.logger.info("  SpotOptim n_jobs: %s", n_jobs_spotoptim)
-
         # Tuning visualization: forward TensorBoard knobs to SpotOptim. Users
         # set these as plain attributes on the config (the safe-package config
         # classes carry no __slots__, so no spotforecast2_safe change is
         # needed). Unset attributes are skipped so SpotOptim's own defaults
-        # (tensorboard_log=False) stay in charge. Requires spotoptim >= 0.12.8
-        # for live per-eval logging under n_jobs != 1.
+        # (tensorboard_log=False) stay in charge.
         tb_kwargs = {
             key: getattr(task.config, key)
             for key in ("tensorboard_log", "tensorboard_path", "tensorboard_clean")
