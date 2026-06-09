@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import ast
 import logging
-import multiprocessing
 import warnings
 from copy import deepcopy
 from typing import Any, Callable, Dict
@@ -288,8 +287,6 @@ def spotoptim_objective(
     all_lags: list,
     all_params: list[dict],
     n_trials: int | None = None,
-    config_counter: object | None = None,
-    config_counter_lock: object | None = None,
 ) -> np.ndarray:
     """SpotOptim objective function to evaluate hyperparameter sets.
 
@@ -319,17 +316,6 @@ def spotoptim_objective(
             shown as a prefix on each per-fold progress bar (when
             ``show_progress`` is ``True``). When ``None``, the label omits the
             total and reads "config k". Does not affect the optimisation.
-        config_counter: Optional shared running count of started config
-            evaluations (a `multiprocessing.Manager().Value("i", 0)` proxy).
-            With SpotOptim ``n_jobs > 1`` each evaluation runs in a worker
-            process holding its own (empty) copy of ``all_params``, so
-            ``len(all_params) + 1`` is stuck at 1 there; the manager-backed
-            counter is the only cross-process source for the "config k/N"
-            label. When ``None``, the label falls back to
-            ``len(all_params) + 1`` (correct in sequential mode).
-        config_counter_lock: Lock proxy (`multiprocessing.Manager().Lock()`)
-            guarding ``config_counter`` increments. Required together with
-            ``config_counter``.
 
     Returns:
         np.ndarray: 1D array of results for the primary metric.
@@ -374,19 +360,12 @@ def spotoptim_objective(
 
         if cv_name == "TimeSeriesFold":
             # Coarse-grained progress: prefix the per-fold bar with the running
-            # count of evaluated candidate configurations. With a shared
-            # ``config_counter`` (parallel SpotOptim) the count is incremented
-            # atomically across worker processes; otherwise ``all_params`` has
+            # count of evaluated candidate configurations. ``all_params`` has
             # one entry per already-completed candidate, so this candidate is
             # number ``len(all_params) + 1``. Built only when the bar is shown.
             progress_desc = None
             if show_progress:
-                if config_counter is not None and config_counter_lock is not None:
-                    with config_counter_lock:
-                        config_counter.value += 1
-                        config_idx = config_counter.value
-                else:
-                    config_idx = len(all_params) + 1
+                config_idx = len(all_params) + 1
                 progress_desc = (
                     f"config {config_idx}/{n_trials}"
                     if n_trials is not None
@@ -595,41 +574,14 @@ def spotoptim_search(
     all_lags: list = []
     all_params: list[dict] = []
 
-    # With SpotOptim ``n_jobs != 1`` every objective evaluation runs in a
-    # worker process that receives a dill copy of the optimizer — including
-    # this closure and its accumulator lists — so parent-side state never
-    # reaches the workers and worker-side appends never come back. Two
-    # consequences for progress display:
-    #   * the "config k/N" label cannot be derived from ``len(all_params)``
-    #     (stuck at 1 in every worker); a manager-backed shared counter is
-    #     the only cross-process source for k.
-    #   * a parent-side trial bar would never be updated (its ``update()``
-    #     runs on worker copies), so it is created in sequential mode only.
-    spotoptim_n_jobs = kwargs_spotoptim_.get("n_jobs", 1)
-    parallel_eval = isinstance(spotoptim_n_jobs, int) and spotoptim_n_jobs != 1
-
-    config_counter = None
-    config_counter_lock = None
-    counter_manager = None
-    # NOT gated on ``show_progress``: the per-config fold bars are always on
-    # (``_objective_wrapper`` passes ``show_progress=True`` to the objective
-    # below), so the label needs the shared counter in every parallel run —
-    # the MultiTask pipeline reaches this with ``show_progress=False`` and
-    # would otherwise show frozen "config 1/N" labels again.
-    if parallel_eval:
-        counter_manager = multiprocessing.Manager()
-        config_counter = counter_manager.Value("i", 0)
-        config_counter_lock = counter_manager.Lock()
-
-    # Single trial-level progress bar (sequential mode only, see above).
-    # Each entry in ``X`` is one trial (initial design point or sequential
-    # proposal), so we advance by ``len(X)`` per objective call.
-    # ``n_trials`` (== SpotOptim's ``max_iter``) is the total budget — it
-    # already includes the ``n_initial`` design points, so the total bar
-    # length is ``n_trials``.
+    # Single trial-level progress bar. Each entry in ``X`` is one trial
+    # (initial design point or sequential proposal), so we advance by
+    # ``len(X)`` per objective call. ``n_trials`` (== SpotOptim's
+    # ``max_iter``) is the total budget — it already includes the
+    # ``n_initial`` design points, so the total bar length is ``n_trials``.
     trial_bar = (
         tqdm(total=n_trials, desc="SpotOptim trials", leave=True)
-        if show_progress and not parallel_eval
+        if show_progress
         else None
     )
 
@@ -654,8 +606,6 @@ def spotoptim_search(
             all_lags=all_lags,
             all_params=all_params,
             n_trials=n_trials,
-            config_counter=config_counter,
-            config_counter_lock=config_counter_lock,
         )
         if trial_bar is not None:
             trial_bar.update(len(X))
@@ -680,47 +630,6 @@ def spotoptim_search(
     finally:
         if trial_bar is not None:
             trial_bar.close()
-        if counter_manager is not None:
-            counter_manager.shutdown()
-
-    # --- Parallel-safe result recovery ------------------------------------
-    # With ``n_jobs > 1`` SpotOptim evaluates the objective in worker
-    # processes (ProcessPoolExecutor on a GIL build), so the side-effect
-    # accumulators above are populated only in the workers and stay empty in
-    # this (parent) process. Rebuild them from the optimizer's own evaluation
-    # history, which *is* retained parent-side (``optimizer.X_`` / ``y_``).
-    # Decoding mirrors the objective: ``array_to_params`` handles both the
-    # string-label and integer-code factor encodings, and ``X_`` is stored in
-    # natural scale. Only the primary metric is recoverable this way -- the
-    # optimizer minimises a single scalar -- so any secondary metrics are
-    # filled with NaN.
-    if (
-        not all_lags
-        and getattr(optimizer, "X_", None) is not None
-        and len(optimizer.X_) > 0
-    ):
-        if len(metric) > 1:
-            warnings.warn(
-                "Parallel SpotOptim (n_jobs > 1) records only the primary "
-                f"metric ('{metric[0] if isinstance(metric[0], str) else metric[0].__name__}'); "
-                "secondary metrics are reported as NaN.",
-                IgnoredArgumentWarning,
-            )
-        y_hist = np.asarray(optimizer.y_, dtype=float).ravel()
-        for row, y_val in zip(np.asarray(optimizer.X_, dtype=object), y_hist):
-            params_dict = array_to_params(np.asarray(row), var_name, var_type, bounds)
-            sample_params = {k: v for k, v in params_dict.items() if k != "lags"}
-            lags_val = params_dict.get(
-                "lags",
-                forecaster_search.lags if hasattr(forecaster_search, "lags") else None,
-            )
-            if isinstance(lags_val, str):
-                lags_val = parse_lags_from_strings(lags_val)
-            all_lags.append(lags_val)
-            all_params.append(sample_params)
-            all_metric_values.append(
-                [float(y_val)] + [float("nan")] * (len(metric) - 1)
-            )
 
     # --- Build results DataFrame ------------------------------------------
     lags_list = [

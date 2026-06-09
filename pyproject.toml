@@ -1,6 +1,6 @@
 [project]
 name = "spotforecast2"
-version = "6.1.0"
+version = "7.0.0-rc.1"
 description = "Forecasting with spot"
 readme = "README.md"
 license = { text = "AGPL-3.0-or-later" }
@@ -31,9 +31,17 @@ dependencies = [
     "ruff>=0.15.6",
     "scikit-learn>=1.8.0",
     "shap>=0.49.1",
-    "spotforecast2-safe>=19.0.0,<21",
-    "spotoptim>=0.12.9",
+    "spotforecast2-safe>=21.0.0,<22",
+    # spotoptim 1.0 is sequential-only and lean: torch/tensorboard moved to its
+    # ``[torch]`` extra. sf2 forwards tensorboard_* kwargs into SpotOptim, so we
+    # pin the extra to keep the TensorBoard tuning dashboards working (they were
+    # always available via spotoptim's old hard torch dependency).
+    "spotoptim[torch]>=1.0.0,<2",
     "tqdm>=4.67.2",
+    # Directly imported by spotforecast2.tasks.task_entsoe (and the xgb
+    # forecaster model). Previously satisfied transitively; declared explicitly
+    # now that spotoptim 1.0 no longer pulls it in.
+    "xgboost>=3.2.0",
 ]
 
 [build-system]
@@ -75,10 +83,10 @@ spotforecast-n2o1-cov-df = "spotforecast2.tasks.task_n_to_1_with_covariates_and_
 # pre-release marker. Re-add an rc marker to the spotforecast2-safe specifier
 # (e.g. >=15.8.0rc1) to let sf2's CI integrate against an sf2-safe release
 # candidate without waiting for the develop→main promotion; every other
-# dependency stays on stable. The current floor tracks the stable release that
-# added the holiday-adjacency feature surface — get_holiday_adjacency_features
-# and the include_holiday_adjacency_features config flag
-# (spotforecast2-safe>=15.9.0), which multitask.base imports unconditionally.
+# dependency stays on stable. The current floor tracks the breaking
+# spotforecast2-safe 21.0.0 release, which dropped the now-dead
+# n_jobs_spotoptim config field in lockstep with spotoptim 1.0
+# (sequential-only); sf2 no longer reads or forwards it.
 prerelease = "explicit"
 
 [tool.pytest.ini_options]
