@@ -414,7 +414,7 @@ class TestParityWithBayesian:
 
 
 class TestConfigProgressLabel:
-    """The per-config progress label must count across worker processes."""
+    """The per-config progress label counts completed configurations."""
 
     @staticmethod
     def _record_descs(monkeypatch):
@@ -431,7 +431,7 @@ class TestConfigProgressLabel:
         )
         return descs
 
-    def _run_objective(self, y_series, cv, counter=None, lock=None):
+    def _run_objective(self, y_series, cv):
         from spotforecast2.model_selection.spotoptim_search import spotoptim_objective
 
         return spotoptim_objective(
@@ -453,66 +453,16 @@ class TestConfigProgressLabel:
             all_lags=[],
             all_params=[],
             n_trials=10,
-            config_counter=counter,
-            config_counter_lock=lock,
         )
 
-    def test_label_falls_back_to_local_count(self, y_series, cv, monkeypatch):
-        """Without a shared counter the label counts completed local configs."""
+    def test_label_counts_completed_configs(self, y_series, cv, monkeypatch):
+        """The label counts completed configs (len(all_params) + 1)."""
         descs = self._record_descs(monkeypatch)
         self._run_objective(y_series, cv)
         assert descs == ["config 1/10", "config 2/10"]
 
-    def test_label_uses_shared_counter(self, y_series, cv, monkeypatch):
-        """With a shared counter the label continues the cross-process count."""
-        import threading
-
-        class FakeCounter:
-            value = 5  # five configs already started in other workers
-
-        descs = self._record_descs(monkeypatch)
-        counter = FakeCounter()
-        self._run_objective(y_series, cv, counter=counter, lock=threading.Lock())
-        assert descs == ["config 6/10", "config 7/10"]
-        assert counter.value == 7
-
-    def test_parallel_labels_increment_with_show_progress_false(
-        self, y_series, forecaster, cv, capfd
-    ):
-        """Labels must increment even when the OUTER show_progress is False.
-
-        The MultiTask pipeline calls spotoptim_search with
-        show_progress=False, yet the per-config fold bars are always shown
-        (the objective wrapper hardcodes show_progress=True). Gating the
-        shared counter on the outer flag therefore reintroduced frozen
-        'config 1/N' labels in every real pipeline run — this is the exact
-        scenario from the 2026-06-07 team4_submit report.
-        """
-        spotoptim_search(
-            forecaster=forecaster,
-            y=y_series,
-            cv=cv,
-            search_space={"alpha": (0.01, 10.0)},
-            metric="mean_absolute_error",
-            n_trials=4,
-            n_initial=2,
-            return_best=False,
-            verbose=False,
-            show_progress=False,
-            kwargs_spotoptim={"n_jobs": 2},
-        )
-        err = capfd.readouterr().err
-        for k in range(1, 5):
-            assert f"config {k}/4" in err, f"missing 'config {k}/4' in:\n{err}"
-
-    def test_parallel_search_labels_increment(self, y_series, forecaster, cv, capfd):
-        """End to end: SpotOptim n_jobs=2 must not repeat 'config 1/N'.
-
-        Each parallel evaluation runs in a worker process holding a dill
-        copy of the objective closure, so a label derived from local list
-        length is stuck at 1 (the bug this guards against). The
-        manager-backed counter must yield one distinct label per config.
-        """
+    def test_search_labels_increment(self, y_series, forecaster, cv, capfd):
+        """End to end: a sequential search yields one distinct label per config."""
         spotoptim_search(
             forecaster=forecaster,
             y=y_series,
@@ -524,7 +474,6 @@ class TestConfigProgressLabel:
             return_best=False,
             verbose=False,
             show_progress=True,
-            kwargs_spotoptim={"n_jobs": 2},
         )
         err = capfd.readouterr().err
         for k in range(1, 5):
@@ -539,25 +488,8 @@ class TestConfigProgressLabel:
 class TestTensorboardPassThrough:
     """tensorboard_* kwargs flow through kwargs_spotoptim into SpotOptim."""
 
-    @staticmethod
-    def _spotoptim_version():
-        import importlib.metadata
-
-        from packaging.version import Version
-
-        return Version(importlib.metadata.version("spotoptim"))
-
-    def test_parallel_run_writes_event_files(self, y_series, forecaster, cv, tmp_path):
-        """Real tiny parallel run with tensorboard_log=True creates event files.
-
-        Live per-eval logging under n_jobs != 1 requires spotoptim>=0.12.8
-        (older versions log only the initial design in parallel mode).
-        """
-        import pytest as _pytest
-
-        if self._spotoptim_version() < type(self._spotoptim_version())("0.12.8"):
-            _pytest.skip("parallel TensorBoard infill logging needs spotoptim>=0.12.8")
-
+    def test_run_writes_event_files(self, y_series, forecaster, cv, tmp_path):
+        """A tiny run with tensorboard_log=True creates event files."""
         tb_path = tmp_path / "tb"
         spotoptim_search(
             forecaster=forecaster,
@@ -571,7 +503,6 @@ class TestTensorboardPassThrough:
             verbose=False,
             show_progress=False,
             kwargs_spotoptim={
-                "n_jobs": 2,
                 "tensorboard_log": True,
                 "tensorboard_path": str(tb_path),
             },

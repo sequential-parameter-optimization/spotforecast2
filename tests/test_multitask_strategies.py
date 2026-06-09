@@ -76,7 +76,6 @@ def _make_fake_task(**config_extra):
         n_initial_spotoptim=1,
         random_state=0,
         warm_start_lags=False,
-        n_jobs_spotoptim=None,
         **config_extra,
     )
     return types.SimpleNamespace(
@@ -203,5 +202,5 @@ def test_spotoptim_strategy_no_tensorboard_attrs_no_kwargs(monkeypatch):
         task, "A", _FakeForecaster(), y_train=None
     )
 
-    # n_jobs_spotoptim=None and no tensorboard attrs -> empty dict -> None.
+    # No tensorboard attrs -> empty kwargs dict -> None passed through.
     assert captured["kwargs_spotoptim"] is None
