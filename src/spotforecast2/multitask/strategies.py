@@ -241,9 +241,10 @@ class SpotOptimStrategy:
             task: A `BaseTask` (or compatible) instance that supplies ``cv_ts``,
                 ``config``, ``logger``, ``save_tuning_results``, and
                 ``create_forecaster``.  The config must expose
-                ``n_trials_spotoptim``, ``n_initial_spotoptim``,
-                ``random_state``, ``warm_start_lags``, and optionally
-                ``lags_consider`` and the TensorBoard knobs described
+                ``n_trials_spotoptim``, ``n_initial_spotoptim``, and
+                ``random_state``; optionally ``warm_start_lags`` (the seed
+                lag set, sf2-safe >= 22.0.0; ``None``/empty = cold start),
+                ``max_time_spotoptim``, and the TensorBoard knobs described
                 above.
             target: Target column name; forwarded to ``task.create_forecaster``
                 and ``task.save_tuning_results``.
@@ -288,7 +289,7 @@ class SpotOptimStrategy:
                 n_trials_spotoptim=5,
                 n_initial_spotoptim=3,
                 random_state=0,
-                warm_start_lags=False,
+                warm_start_lags=None,
             )
             task = types.SimpleNamespace(
                 config=cfg,
@@ -318,15 +319,15 @@ class SpotOptimStrategy:
         search_space = self.search_space or _default_spotoptim_search_space()
         cv = task.cv_ts(y_train)
 
-        # Warm start: inject ``lags_consider`` as a candidate lag set and seed
-        # the optimizer's first evaluation with it.  Only dict search spaces
-        # with a ``"lags"`` list are eligible; anything else falls through to a
-        # normal cold-start run.
+        # Warm start: ``config.warm_start_lags`` (sf2-safe >= 22.0.0) is the
+        # seed lag set itself — it is injected as a search-space candidate and
+        # seeds the optimizer's first evaluation. ``None``/empty disables the
+        # warm start.  Only dict search spaces with a ``"lags"`` list are
+        # eligible; anything else falls through to a normal cold-start run.
         kwargs_spotoptim: Dict[str, Any] = {}
-        lags_seed = getattr(task.config, "lags_consider", None)
+        lags_seed = getattr(task.config, "warm_start_lags", None)
         if (
-            getattr(task.config, "warm_start_lags", False)
-            and lags_seed
+            lags_seed
             and isinstance(search_space, dict)
             and isinstance(search_space.get("lags"), list)
         ):

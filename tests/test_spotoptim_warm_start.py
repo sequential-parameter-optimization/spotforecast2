@@ -1,7 +1,7 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Tests for warm-starting the SpotOptim search with ``lags_consider``.
+"""Tests for warm-starting the SpotOptim search with ``warm_start_lags``.
 
 Covers the ``build_warm_start_x0`` helper (full-dim seed point, clipping,
 graceful ``None`` cases) and an end-to-end check that the seeded lag
@@ -112,8 +112,7 @@ def test_warm_start_x0_round_trips_to_seed():
 
 
 class _MockConfig:
-    warm_start_lags = True
-    lags_consider = [1, 2, 24]
+    warm_start_lags = [1, 2, 24]
     random_state = 1
     n_trials_spotoptim = 4
     n_initial_spotoptim = 3
@@ -141,7 +140,7 @@ class _MockTask:
 
 
 def test_strategy_injects_seed_and_forwards_x0(monkeypatch):
-    """The strategy injects lags_consider as a candidate and forwards x0."""
+    """The strategy injects warm_start_lags as a candidate and forwards x0."""
     from spotforecast2.multitask.strategies import SpotOptimStrategy
 
     captured = {}
@@ -186,7 +185,7 @@ def test_strategy_injects_seed_and_forwards_x0(monkeypatch):
 
 
 def test_strategy_no_x0_when_flag_disabled(monkeypatch):
-    """With warm_start_lags False, no x0 is passed and lags is untouched."""
+    """With warm_start_lags None, no x0 is passed and lags is untouched."""
     from spotforecast2.multitask.strategies import SpotOptimStrategy
 
     captured = {}
@@ -207,7 +206,7 @@ def test_strategy_no_x0_when_flag_disabled(monkeypatch):
     )
 
     task = _MockTask()
-    task.config.warm_start_lags = False
+    task.config.warm_start_lags = None
     y = pd.Series(
         np.sin(np.arange(400) * 2 * np.pi / 24),
         index=pd.date_range("2022-01-01", periods=400, freq="h"),
