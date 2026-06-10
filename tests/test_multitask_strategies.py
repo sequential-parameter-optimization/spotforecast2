@@ -204,3 +204,49 @@ def test_spotoptim_strategy_no_tensorboard_attrs_no_kwargs(monkeypatch):
 
     # No tensorboard attrs -> empty kwargs dict -> None passed through.
     assert captured["kwargs_spotoptim"] is None
+
+
+def test_spotoptim_strategy_forwards_max_time(monkeypatch):
+    """config.max_time_spotoptim (minutes) must reach kwargs_spotoptim as max_time."""
+    import pandas as pd
+
+    import spotforecast2.model_selection as ms
+
+    captured = {}
+
+    def fake_search_forecaster(*args, **kwargs):
+        captured["kwargs_spotoptim"] = kwargs.get("kwargs_spotoptim")
+        results = pd.DataFrame({"params": [{"alpha": 1.0}], "lags": [[1, 2]]})
+        return results, object()
+
+    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search_forecaster)
+
+    task = _make_fake_task(max_time_spotoptim=2.5)
+    SpotOptimStrategy(search_space={"alpha": (0.1, 1.0)}).prepare_forecaster(
+        task, "A", _FakeForecaster(), y_train=None
+    )
+
+    assert captured["kwargs_spotoptim"]["max_time"] == 2.5
+
+
+def test_spotoptim_strategy_none_max_time_not_forwarded(monkeypatch):
+    """max_time_spotoptim=None (the config default) must forward nothing."""
+    import pandas as pd
+
+    import spotforecast2.model_selection as ms
+
+    captured = {}
+
+    def fake_search_forecaster(*args, **kwargs):
+        captured["kwargs_spotoptim"] = kwargs.get("kwargs_spotoptim")
+        results = pd.DataFrame({"params": [{"alpha": 1.0}], "lags": [[1, 2]]})
+        return results, object()
+
+    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search_forecaster)
+
+    task = _make_fake_task(max_time_spotoptim=None)
+    SpotOptimStrategy(search_space={"alpha": (0.1, 1.0)}).prepare_forecaster(
+        task, "A", _FakeForecaster(), y_train=None
+    )
+
+    assert captured["kwargs_spotoptim"] is None

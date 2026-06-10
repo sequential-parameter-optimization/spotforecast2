@@ -230,6 +230,13 @@ class SpotOptimStrategy:
         task its own ``tensorboard_path``, when several tasks share one
         log directory.
 
+        Time budget: when ``config.max_time_spotoptim`` is set (wall-clock
+        minutes, a first-class `ConfigMulti`/`ConfigEntsoe` field in
+        sf2-safe >= 21.2.0), it is forwarded as SpotOptim's ``max_time``;
+        the search stops after ``n_trials_spotoptim`` evaluations or that
+        time limit, whichever comes first. ``None`` (the default) means no
+        time limit.
+
         Args:
             task: A `BaseTask` (or compatible) instance that supplies ``cv_ts``,
                 ``config``, ``logger``, ``save_tuning_results``, and
@@ -350,6 +357,16 @@ class SpotOptimStrategy:
         if tb_kwargs:
             kwargs_spotoptim.update(tb_kwargs)
             task.logger.info("  SpotOptim TensorBoard: %s", tb_kwargs)
+
+        # Wall-clock budget: forward ``config.max_time_spotoptim`` (minutes,
+        # sf2-safe >= 21.2.0) as SpotOptim's ``max_time``. The search then
+        # stops at ``n_trials_spotoptim`` evaluations or the time limit,
+        # whichever comes first. ``None`` (the default) forwards nothing and
+        # leaves SpotOptim's own default (no limit) in charge.
+        max_time = getattr(task.config, "max_time_spotoptim", None)
+        if max_time is not None:
+            kwargs_spotoptim["max_time"] = float(max_time)
+            task.logger.info("  SpotOptim max_time: %.2f min", float(max_time))
 
         tuning_results, _ = spotoptim_search_forecaster(
             forecaster=forecaster,
