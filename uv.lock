@@ -3491,7 +3491,7 @@ wheels = [
 
 [[package]]
 name = "spotforecast2"
-version = "7.1.0"
+version = "8.0.0rc1"
 source = { editable = "." }
 dependencies = [
     { name = "astral" },
@@ -3571,7 +3571,7 @@ requires-dist = [
     { name = "safety", marker = "extra == 'dev'", specifier = ">=3.0.0" },
     { name = "scikit-learn", specifier = ">=1.8.0" },
     { name = "shap", specifier = ">=0.49.1" },
-    { name = "spotforecast2-safe", specifier = ">=21.2.0,<22" },
+    { name = "spotforecast2-safe", specifier = ">=22.0.0,<23" },
     { name = "spotoptim", extras = ["torch"], specifier = ">=1.0.0,<2" },
     { name = "tqdm", specifier = ">=4.67.2" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.29" },
@@ -3590,7 +3590,7 @@ dev = [
 
 [[package]]
 name = "spotforecast2-safe"
-version = "21.2.0"
+version = "22.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astral" },
@@ -3607,9 +3607,9 @@ dependencies = [
     { name = "statsmodels" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a5/48/e12f37462beae893f901751648f8b830475cd58d19d8e8e9703236cd25c8/spotforecast2_safe-21.2.0.tar.gz", hash = "sha256:1b181bc157a0765b15a5348831902465d356b21cba3b6ad36b57d54f6a51b07c", size = 20630614, upload-time = "2026-06-10T16:28:37.526Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/25/89/00f24736a21666be93e6e59fdc0958e497178eb890ab5cefadd88e6d980f/spotforecast2_safe-22.0.0.tar.gz", hash = "sha256:f2c411e074b41a0421185c58a086b6e61b90d4d4fcab9860a93fa7faa09e18bf", size = 20630930, upload-time = "2026-06-10T23:51:54.156Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/f8/73/0537ab7ce84308bfd49b04b365fde4a58ef2f8b3d40b415b8963777b71c7/spotforecast2_safe-21.2.0-py3-none-any.whl", hash = "sha256:1a80b4629062a0600b108416e93a07f75e1d31cf7bec0bcd02cb77089826e11c", size = 20696409, upload-time = "2026-06-10T16:28:34.959Z" },
+    { url = "https://files.pythonhosted.org/packages/f9/5a/d2bd77a6233ea08df61903391ab27bfe810dc4e107c2f452500e04c73f97/spotforecast2_safe-22.0.0-py3-none-any.whl", hash = "sha256:18906e1371cd93f03af4dbead15bb94db7945624aa24777cf12c06fe2d951e23", size = 20696710, upload-time = "2026-06-10T23:51:51.911Z" },
 ]
 
 [[package]]

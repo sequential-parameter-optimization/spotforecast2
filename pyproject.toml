@@ -31,9 +31,10 @@ dependencies = [
     "ruff>=0.15.6",
     "scikit-learn>=1.8.0",
     "shap>=0.49.1",
-    # 21.2.0 added the max_time_spotoptim config field that SpotOptimStrategy
-    # forwards as SpotOptim's max_time.
-    "spotforecast2-safe>=21.2.0,<22",
+    # 22.0.0 made warm_start_lags the seed lag list itself (default
+    # DEFAULT_WARM_START_LAGS, None disables) — consumed by SpotOptimStrategy.
+    # 21.2.0 added max_time_spotoptim, forwarded as SpotOptim's max_time.
+    "spotforecast2-safe>=22.0.0,<23",
     # spotoptim 1.0 is sequential-only and lean: torch/tensorboard moved to its
     # ``[torch]`` extra. sf2 forwards tensorboard_* kwargs into SpotOptim, so we
     # pin the extra to keep the TensorBoard tuning dashboards working (they were
