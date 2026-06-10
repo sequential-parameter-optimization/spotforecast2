@@ -877,7 +877,7 @@ def build_warm_start_x0(
             ``SpotOptimStrategy.prepare_forecaster``).
         forecaster: The pre-tuning forecaster; its ``estimator`` supplies the
             starting values for the numeric hyperparameter dimensions.
-        lags_seed: The lag configuration to seed (e.g. ``config.lags_consider``).
+        lags_seed: The lag configuration to seed (e.g. ``config.warm_start_lags``).
 
     Returns:
         A 1-D float array of length ``len(var_name)``, or ``None`` when the

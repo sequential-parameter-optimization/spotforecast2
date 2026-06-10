@@ -75,7 +75,7 @@ def _make_fake_task(**config_extra):
         n_trials_spotoptim=2,
         n_initial_spotoptim=1,
         random_state=0,
-        warm_start_lags=False,
+        warm_start_lags=None,
         **config_extra,
     )
     return types.SimpleNamespace(
