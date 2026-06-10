@@ -1,3 +1,10 @@
+## [7.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v7.0.0...v7.1.0) (2026-06-10)
+
+### Features
+
+* **deps:** require spotforecast2-safe >=21.2.0 ([1f52d04](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1f52d04b1e0e09fe1977b3f49a875454a93a08c2))
+* **multitask:** forward max_time_spotoptim to SpotOptim ([6bff756](https://github.com/sequential-parameter-optimization/spotforecast2/commit/6bff756ed3ebf063cd2f8b45904ce79668f2e64f))
+
 ## [7.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v6.1.0...v7.0.0) (2026-06-09)
 
 ### ⚠ BREAKING CHANGES
