@@ -1,3 +1,9 @@
+## [8.0.0-rc.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v8.0.0-rc.1...v8.0.0-rc.2) (2026-06-11)
+
+### Features
+
+* **deps:** require spotforecast2-safe >=22.0.0 ([13893ad](https://github.com/sequential-parameter-optimization/spotforecast2/commit/13893ad9173ef6988fad50614c633676dbaea9d3))
+
 ## [8.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v7.1.0...v8.0.0-rc.1) (2026-06-10)
 
 ### ⚠ BREAKING CHANGES
