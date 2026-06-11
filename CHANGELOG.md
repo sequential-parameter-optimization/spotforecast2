@@ -1,3 +1,18 @@
+## [8.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v7.1.0...v8.0.0) (2026-06-11)
+
+### ⚠ BREAKING CHANGES
+
+* **multitask:** configs with warm_start_lags=True no longer warm-start
+the search with lags_consider; set warm_start_lags to the seed lag list
+itself (or None to disable).
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+### Features
+
+* **deps:** require spotforecast2-safe >=22.0.0 ([13893ad](https://github.com/sequential-parameter-optimization/spotforecast2/commit/13893ad9173ef6988fad50614c633676dbaea9d3))
+* **multitask:** seed SpotOptim warm start from warm_start_lags list ([8565b8f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/8565b8fec2273873e006496c4d0fefd690a1bea2))
+
 ## [8.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v7.1.0...v8.0.0-rc.1) (2026-06-10)
 
 ### ⚠ BREAKING CHANGES
