@@ -11,10 +11,10 @@ import pytest
 
 from spotforecast2.stats.autocorrelation import select_pacf_lags
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_daily_ar_series(n_days: int = 120, seed: int = 42) -> pd.Series:
     """AR(1) with moderate coefficient for general lag selection tests."""
@@ -39,6 +39,7 @@ def _make_ar24_series(n_days: int = 200, seed: int = 42) -> pd.Series:
 # ---------------------------------------------------------------------------
 # Happy-path tests
 # ---------------------------------------------------------------------------
+
 
 class TestSelectPacfLagsHappyPath:
     def test_returns_list_of_ints(self):
@@ -89,6 +90,7 @@ class TestSelectPacfLagsHappyPath:
 # Degenerate / edge-case tests
 # ---------------------------------------------------------------------------
 
+
 class TestSelectPacfLagsDegenerate:
     def test_constant_series_fallback_returned(self):
         series = pd.Series([1.0] * 50)
@@ -138,6 +140,7 @@ class TestSelectPacfLagsDegenerate:
 # ---------------------------------------------------------------------------
 # Parameter variation
 # ---------------------------------------------------------------------------
+
 
 class TestSelectPacfLagsParams:
     def test_default_n_lags_200_top_k_8(self):
