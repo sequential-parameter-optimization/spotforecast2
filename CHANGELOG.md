@@ -1,3 +1,19 @@
+## [10.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v9.0.0...v10.0.0-rc.1) (2026-06-12)
+
+### ⚠ BREAKING CHANGES
+
+* **tasks:** the spotforecast2.tasks subpackage is removed.
+Import the data loaders from spotforecast2_safe.data.entsoe_loader, the
+LightGBM factory from spotforecast2_safe.multitask.factories, and the
+CLI module as spotforecast2.entsoe_cli. The spotforecast2-entsoe console
+script is unaffected.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+### Features
+
+* **tasks:** remove the tasks subpackage; relocate ENTSO-E CLI to spotforecast2.entsoe_cli ([0a9bc66](https://github.com/sequential-parameter-optimization/spotforecast2/commit/0a9bc666442a7010c42cedc7707773636bbbb8d2))
+
 ## [9.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v8.1.1...v9.0.0) (2026-06-12)
 
 ### ⚠ BREAKING CHANGES
