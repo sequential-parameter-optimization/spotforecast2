@@ -130,10 +130,10 @@ website:
             contents:
               - text: "autocorrelation"
                 file: docs/reference/stats.autocorrelation.qmd
-          - section: "Tasks"
+          - section: "ENTSO-E CLI"
             contents:
-              - text: "task_entsoe"
-                file: docs/reference/tasks.task_entsoe.qmd
+              - text: "entsoe_cli"
+                file: docs/reference/entsoe_cli.qmd
 
       - section: "Processing Guides"
         contents:
@@ -251,10 +251,10 @@ quartodoc:
       contents:
         - stats.autocorrelation
 
-    - title: "Tasks"
-      desc: "ENTSO-E forecasting task and CLI."
+    - title: "ENTSO-E CLI"
+      desc: "ENTSO-E download / train / predict command-line pipeline."
       contents:
-        - tasks.task_entsoe
+        - entsoe_cli
 
     - title: "Warnings"
       desc: "Warning-style configuration for spotforecast2."
