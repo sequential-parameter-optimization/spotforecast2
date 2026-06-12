@@ -15,12 +15,10 @@ import numpy as np
 import pandas as pd
 import pytest
 from spotforecast2_safe.configurator import ConfigEntsoe
+from spotforecast2_safe.multitask.factories import default_lgbm_forecaster_factory
 
+from spotforecast2.entsoe_cli import _run_entsoe_pipeline
 from spotforecast2.multitask.multi import MultiTask
-from spotforecast2.tasks.task_entsoe import (
-    _run_entsoe_pipeline,
-    entsoe_lgbm_factory,
-)
 
 
 def _synthetic_entsoe_df(n_days: int = 30) -> pd.DataFrame:
@@ -68,7 +66,7 @@ def entsoe_config(tmp_path: Path) -> ConfigEntsoe:
         predict_size=12,
     )
     cfg.data_loader = _make_loader(df)
-    cfg.forecaster_factory = entsoe_lgbm_factory
+    cfg.forecaster_factory = default_lgbm_forecaster_factory
     cfg.cache_home = str(tmp_path)
     return cfg
 

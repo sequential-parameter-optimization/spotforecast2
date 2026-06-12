@@ -30,9 +30,11 @@ import pandas as pd
 warnings.filterwarnings("ignore")
 
 from spotforecast2_safe.configurator import ConfigEntsoe
+from spotforecast2_safe.multitask.factories import (
+    default_lgbm_forecaster_factory as entsoe_lgbm_factory,
+)
 
 from spotforecast2.multitask.multi import MultiTask
-from spotforecast2.tasks.task_entsoe import entsoe_lgbm_factory
 
 CACHE_HOME = tempfile.mkdtemp()
 ```
