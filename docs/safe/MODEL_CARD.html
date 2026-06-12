@@ -553,38 +553,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-8" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/tasks.task_demo.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">task_demo</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
   <a href="../../docs/reference/tasks.task_entsoe.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">task_entsoe</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/tasks.task_n_to_1.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">task_n_to_1</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/tasks.task_n_to_1_dataframe.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">task_n_to_1_dataframe</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/tasks.task_n_to_1_with_covariates.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">task_n_to_1_with_covariates</span></a>
-  </div>
-</li>
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">task_n_to_1_with_covariates_and_dataframe</span></a>
   </div>
 </li>
       </ul>
@@ -663,12 +633,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-12" class="collapse list-unstyled sidebar-section depth1 ">  
-          <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../../docs/tasks/tasks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Overview</span></a>
-  </div>
-</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/tasks/multitask.html" class="sidebar-item-text sidebar-link">
@@ -888,7 +852,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="intended-use-and-scope" class="level2">
 <h2 class="anchored" data-anchor-id="intended-use-and-scope">2. Intended Use and Scope</h2>
-<p>spotforecast2 supports exploratory and applied forecasting of hourly electricity load and spot prices on ENTSO-E data, end to end, through the <code>spotforecast2-entsoe</code> and <code>spotforecast-demo</code> console scripts. Its distinctive capabilities are hyperparameter search — Bayesian search over lags, window features, and regressor parameters with Optuna (<code>bayesian_search_forecaster</code>), or surrogate-model search with SpotOptim (<code>spotoptim_search_forecaster</code>) — interactive inspection through Plotly figures, and global SHAP feature importances via <code>shap.TreeExplainer</code>. The <code>MultiTask</code> dispatcher and the <code>run()</code> entry point orchestrate multi-target pipelines: per-target data preparation, outlier handling, imputation, feature engineering, tuning, and prediction.</p>
+<p>spotforecast2 supports exploratory and applied forecasting of hourly electricity load and spot prices on ENTSO-E data, end to end, through the <code>spotforecast2-entsoe</code> console script. Its distinctive capabilities are hyperparameter search — Bayesian search over lags, window features, and regressor parameters with Optuna (<code>bayesian_search_forecaster</code>), or surrogate-model search with SpotOptim (<code>spotoptim_search_forecaster</code>) — interactive inspection through Plotly figures, and global SHAP feature importances via <code>shap.TreeExplainer</code>. The <code>MultiTask</code> dispatcher and the <code>run()</code> entry point orchestrate multi-target pipelines: per-target data preparation, outlier handling, imputation, feature engineering, tuning, and prediction.</p>
 <p>The intended downstream use is development and model selection: choosing lag windows and regressor hyperparameters here, then promoting the validated configuration into a spotforecast2-safe deployment for the deterministic inference path. Tuned <code>ForecasterRecursiveLGBMFull</code> and <code>ForecasterRecursiveXGBFull</code> models, or just their best parameters, also feed research notebooks and reporting.</p>
 <p>The scope has firm limits. spotforecast2 is deliberately not the certified, fail-safe inference layer: it introduces stochastic search, heavier third-party dependencies, and plotting backends. For high-risk, auditable, bit-for-bit reproducible deployment, use spotforecast2-safe. The visualization layer is for human inspection, not for driving automated control loops. Search budgets (<code>n_trials</code>, surrogate evaluations) must be bounded; an open-ended search is not an inference contract.</p>
 </section>
@@ -904,10 +868,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>importances <span class="op">=</span> model.get_global_shap_feature_importance(frac<span class="op">=</span><span class="fl">0.1</span>)</span>
 <span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(importances.head())</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Run a complete multi-target pipeline programmatically via <code>run()</code>, or use the bundled console scripts:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">spotforecast2-entsoe</span>      <span class="co"># ENTSO-E download / train / predict (needs ENTSOE_API_KEY)</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">spotforecast-demo</span>         <span class="co"># baseline vs. covariate vs. custom-LightGBM comparison</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>Additional N-to-1 pipeline variants are registered as <code>spotforecast-n2o1</code>, <code>spotforecast-n2o1-df</code>, <code>spotforecast-n2o1-cov</code>, and <code>spotforecast-n2o1-cov-df</code>.</p>
+<p>Run a complete multi-target pipeline programmatically via <code>run()</code>, or use the bundled console script:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">spotforecast2-entsoe</span>      <span class="co"># ENTSO-E download / train / predict (needs ENTSOE_API_KEY)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </section>
 <section id="technical-specification" class="level2">
 <h2 class="anchored" data-anchor-id="technical-specification">4. Technical Specification</h2>
