@@ -3,10 +3,13 @@
 
 from __future__ import annotations
 
+import logging
 from importlib.util import find_spec
 
 import numpy as np
 import pandas as pd
+
+_logger = logging.getLogger(__name__)
 
 
 def calculate_lag_autocorrelation(
@@ -192,3 +195,131 @@ def calculate_lag_autocorrelation(
         )
 
     return results
+
+
+def select_pacf_lags(
+    series: pd.Series,
+    *,
+    n_lags: int = 200,
+    top_k: int = 8,
+    fallback: list[int] | None = None,
+) -> list[int]:
+    """Select the most informative lags using the partial autocorrelation function.
+
+    Computes the PACF up to `n_lags` via `calculate_lag_autocorrelation`, then
+    returns the `top_k` lags whose `|PACF|` exceeds the 95 % significance band
+    (1.96 / sqrt(N)), sorted in ascending order.
+
+    This is a pure-compute helper ported from the operational team-4 pipeline
+    (`select_key_lags` in ``bart26k-lecture/scripts/team4_4zones_submit.py``).
+    No plotting, no side effects beyond an optional DEBUG log line.
+
+    Args:
+        series: The time series from which to estimate lags. Must contain at
+            least `2 * n_lags + 1` observations for statsmodels PACF to run
+            without truncating `n_lags`.
+        n_lags: Number of lags passed to `calculate_lag_autocorrelation`.
+            Default is 200.
+        top_k: Maximum number of lags to return (the `top_k` significant lags
+            ranked by descending `|PACF|`). Default is 8.
+        fallback: Lag list returned when no lag exceeds the significance band
+            (degenerate series: too short, nearly constant, or `n_lags` too
+            large). If `None`, a `ValueError` is raised instead.
+
+    Returns:
+        Sorted list of lag integers (ascending). Length is at most `top_k`;
+        may be shorter if fewer than `top_k` significant lags exist.
+
+    Raises:
+        ValueError: If no lag exceeds the significance band and `fallback` is
+            `None`. Pass `fallback=[1, 2, 24, 168]` (or any operator-chosen
+            constant) to suppress the error and use a safe default instead.
+
+    Examples:
+        Select significant lags from a synthetic AR(1) series:
+
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from spotforecast2.stats.autocorrelation import select_pacf_lags
+
+        rng = np.random.default_rng(42)
+        n = 24 * 120  # 120 days of hourly data
+        ar = np.zeros(n)
+        for t in range(1, n):
+            ar[t] = 0.7 * ar[t - 1] + rng.standard_normal()
+        series = pd.Series(ar)
+        lags = select_pacf_lags(series, n_lags=50, top_k=8)
+        print("selected lags:", lags)
+        assert isinstance(lags, list)
+        assert all(isinstance(x, int) for x in lags)
+        assert lags == sorted(lags)
+        assert len(lags) <= 8
+        assert 1 in lags, "lag-1 AR component should be selected"
+        ```
+
+        Select significant lags from an AR(24) process — lag 24 dominates:
+
+        ```{python}
+        import numpy as np
+        import pandas as pd
+        from spotforecast2.stats.autocorrelation import select_pacf_lags
+
+        rng = np.random.default_rng(42)
+        n = 24 * 200
+        ar = np.zeros(n)
+        for t in range(24, n):
+            ar[t] = 0.8 * ar[t - 24] + rng.standard_normal()
+        series = pd.Series(ar)
+        lags = select_pacf_lags(series, n_lags=50, top_k=8)
+        print("selected lags:", lags)
+        assert 24 in lags, f"lag 24 expected in {lags}"
+        ```
+
+        Degenerate (constant) series — fallback is returned when provided:
+
+        ```{python}
+        import pandas as pd
+        from spotforecast2.stats.autocorrelation import select_pacf_lags
+
+        series = pd.Series([1.0] * 50)
+        result = select_pacf_lags(series, n_lags=10, fallback=[1, 2, 24])
+        print("fallback lags:", result)
+        assert result == [1, 2, 24]
+        ```
+
+        Degenerate series with no fallback raises ValueError:
+
+        ```{python}
+        import pytest
+        import pandas as pd
+        from spotforecast2.stats.autocorrelation import select_pacf_lags
+
+        series = pd.Series([1.0] * 50)
+        with pytest.raises(ValueError, match="no significant"):
+            select_pacf_lags(series, n_lags=10, fallback=None)
+        ```
+
+    """
+    acf_df = calculate_lag_autocorrelation(series, n_lags=n_lags)
+    conf = 1.96 / np.sqrt(len(series))
+    significant = acf_df[acf_df["partial_autocorrelation_abs"] > conf]
+    top = significant.nlargest(top_k, "partial_autocorrelation_abs")
+    key_lags = sorted(top["lag"].astype(int).tolist())
+    _logger.debug(
+        "select_pacf_lags: N=%d band=+/-%.4f significant=%d top_%d=%s",
+        len(series),
+        conf,
+        len(significant),
+        top_k,
+        key_lags,
+    )
+    if not key_lags:
+        if fallback is not None:
+            return list(fallback)
+        raise ValueError(
+            f"select_pacf_lags: no significant PACF lags found "
+            f"(N={len(series)}, band={conf:.4f}, n_lags={n_lags}). "
+            "Pass fallback=<list> to use a safe default instead of raising."
+        )
+    return key_lags
