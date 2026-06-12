@@ -21,6 +21,8 @@ from typing import Any, Dict, Optional
 
 from spotforecast2_safe.multitask.base import (  # noqa: F401  (re-exported)
     BaseTask as SafeBaseTask,
+)
+from spotforecast2_safe.multitask.base import (
     PipelineConfig,
     agg_predictor,
 )
