@@ -63,6 +63,26 @@ import pandas as pd
 _logger = logging.getLogger(__name__)
 
 
+def _position_flag(pos: float, warn_frac: float) -> str:
+    """Classify a normalized boundary position as near-upper, near-lower, or interior.
+
+    Args:
+        pos: Position of the tuned value inside its dimension, normalized to
+            ``[0, 1]`` in the dimension's own scale.
+        warn_frac: Fraction of the range defining the "near-boundary" zone at
+            each end.
+
+    Returns:
+        ``"> upper"``, ``"< lower"``, or ``""`` (interior).
+    """
+    upper_zone = 1.0 - warn_frac
+    if pos > upper_zone:
+        return "> upper"
+    if pos < warn_frac:
+        return "< lower"
+    return ""
+
+
 def report_boundary_positions(
     params: Mapping[str, float | int],
     search_space: Mapping[str, Any],
@@ -158,11 +178,7 @@ def report_boundary_positions(
                 )
             else:
                 pos = (float(val) - low) / (high - low)
-            flag = (
-                "> upper"
-                if pos > 1 - warn_frac
-                else ("< lower" if pos < warn_frac else "")
-            )
+            flag = _position_flag(pos, warn_frac)
             log.info(
                 "  bound %-18s = %-11.5g in [%g, %g]%s  pos=%.2f%s",
                 key,
@@ -266,11 +282,7 @@ def boundary_report(
             )
         else:
             pos = (float(val) - low) / (high - low)
-        flag = (
-            "> upper"
-            if pos > 1 - warn_frac
-            else ("< lower" if pos < warn_frac else "")
-        )
+        flag = _position_flag(pos, warn_frac)
         rows.append(
             {
                 "param": name.replace("estimator__", ""),
@@ -298,7 +310,9 @@ def boundary_report(
                 "Use report_boundary_positions() instead if you have unprefixed keys.",
                 numeric_dims,
             )
-        return pd.DataFrame(columns=["param", "low", "high", "value", "scale", "position", "flag"])
+        return pd.DataFrame(
+            columns=["param", "low", "high", "value", "scale", "position", "flag"]
+        )
     return df.sort_values("position", ascending=False).reset_index(drop=True)
 
 
@@ -389,11 +403,7 @@ def suggest_bounds(
 
     """
     report = boundary_report(best_params, search_space, warn_frac=warn_frac)
-    flagged = {
-        row["param"]: row["flag"]
-        for _, row in report.iterrows()
-        if row["flag"]
-    }
+    flagged = {row["param"]: row["flag"] for _, row in report.iterrows() if row["flag"]}
     out: dict[str, Any] = {}
     for name, spec in search_space.items():
         if not (isinstance(spec, tuple) and len(spec) in (2, 3)):

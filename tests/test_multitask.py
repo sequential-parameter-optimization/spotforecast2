@@ -814,8 +814,6 @@ class TestCacheHomeResolution:
     """BaseTask must resolve cache_home=None to get_cache_home()."""
 
     def test_cache_home_none_resolves_to_default(self, tmp_path, monkeypatch):
-        import logging
-
         from spotforecast2_safe.data.fetch_data import get_cache_home
 
         # Redirect the package default so the test never touches the

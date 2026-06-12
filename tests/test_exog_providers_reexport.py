@@ -30,6 +30,8 @@ EXPECTED_FLAGS = {
     "include_entsoe_renewable_forecast",
     "include_entsoe_net_load",
     "include_entsoe_day_ahead_price",
+    "include_football_match_window",
+    "include_energy_saving_window",
 }
 
 
@@ -46,7 +48,9 @@ def test_registry_reexported_from_preprocessing():
         build_providers_from_config,
     )
 
-    assert set(EXOG_PROVIDER_REGISTRY) == EXPECTED_FLAGS
+    # Superset, not equality: additive provider releases in sf2-safe must not
+    # break sf2's suite; removals of expected flags still fail.
+    assert EXPECTED_FLAGS <= set(EXOG_PROVIDER_REGISTRY)
     assert issubclass(CovidInfectionRateProvider, ExogFeatureProvider)
     assert callable(build_providers) and callable(build_providers_from_config)
     # silence unused-import linters for the re-export assertions
