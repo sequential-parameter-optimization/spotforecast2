@@ -13,10 +13,11 @@ from spotforecast2_safe.stats import (
     compute_periodogram,
 )
 
-from .autocorrelation import calculate_lag_autocorrelation
+from .autocorrelation import calculate_lag_autocorrelation, select_pacf_lags
 
 __all__ = [
     "augmented_dickey_fuller",
     "calculate_lag_autocorrelation",
     "compute_periodogram",
+    "select_pacf_lags",
 ]

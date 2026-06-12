@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 from .bayesian_search import bayesian_search_forecaster
+from .boundary import boundary_report, report_boundary_positions, suggest_bounds
 from .grid_search import grid_search_forecaster
 from .random_search import random_search_forecaster
 from .spotoptim_search import build_warm_start_x0, spotoptim_search_forecaster
@@ -12,4 +13,7 @@ __all__ = [
     "bayesian_search_forecaster",
     "spotoptim_search_forecaster",
     "build_warm_start_x0",
+    "report_boundary_positions",
+    "boundary_report",
+    "suggest_bounds",
 ]

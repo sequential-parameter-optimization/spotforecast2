@@ -106,6 +106,8 @@ website:
             contents:
               - text: "bayesian_search"
                 file: docs/reference/model_selection.bayesian_search.qmd
+              - text: "boundary"
+                file: docs/reference/model_selection.boundary.qmd
               - text: "grid_search"
                 file: docs/reference/model_selection.grid_search.qmd
               - text: "random_search"
@@ -116,6 +118,8 @@ website:
                 file: docs/reference/model_selection.utils_metrics.qmd
           - section: "Plots"
             contents:
+              - text: "diagnostics"
+                file: docs/reference/plots.diagnostics.qmd
               - text: "outlier_plots"
                 file: docs/reference/plots.outlier_plots.qmd
               - text: "plotter"
@@ -215,16 +219,18 @@ quartodoc:
 
   sections:
     - title: "Plots"
-      desc: "Outlier, prediction, and time-series visualization tools."
+      desc: "Outlier, prediction, time-series, and operational diagnostic visualization tools."
       contents:
+        - plots.diagnostics
         - plots.outlier_plots
         - plots.plotter
         - plots.time_series_visualization
 
     - title: "Model Selection"
-      desc: "Search algorithms and cross-validation tools."
+      desc: "Search algorithms, cross-validation tools, and boundary management."
       contents:
         - model_selection.bayesian_search
+        - model_selection.boundary
         - model_selection.grid_search
         - model_selection.random_search
         - model_selection.spotoptim_search
