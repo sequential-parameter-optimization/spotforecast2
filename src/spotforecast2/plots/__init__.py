@@ -2,7 +2,6 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
 from .diagnostics import (
-    feature_family,
     plot_acf_with_lags,
     plot_feature_importance_by_family,
     plot_forecast_vs_reference,
@@ -20,7 +19,6 @@ from .time_series_visualization import (
 )
 
 __all__ = [
-    "feature_family",
     "plot_acf_with_lags",
     "plot_distribution",
     "plot_distributions",

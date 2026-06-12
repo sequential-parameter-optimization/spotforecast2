@@ -116,8 +116,6 @@ def plot_acf_with_lags(
         ```{python}
         import numpy as np
         import pandas as pd
-        import matplotlib
-        matplotlib.use("Agg")
         from spotforecast2.plots.diagnostics import plot_acf_with_lags
 
         rng = np.random.default_rng(0)
@@ -131,7 +129,6 @@ def plot_acf_with_lags(
     ax.bar(acf["lag"], acf["autocorrelation"], width=0.9, color="#1F4E79")
     ax.axhline(conf, color="#999999", lw=0.8, ls="--")
     ax.axhline(-conf, color="#999999", lw=0.8, ls="--")
-    n_annotated = 0
     for lag in key_lags:
         row = acf[acf["lag"] == lag]
         if row.empty:
@@ -146,7 +143,6 @@ def plot_acf_with_lags(
             color="#E07B00",
             arrowprops=dict(arrowstyle="->", color="#E07B00", lw=0.8),
         )
-        n_annotated += 1
     ax.set_xlabel("lag (hours)")
     ax.set_ylabel("autocorrelation")
     ax.set_title("ACF of Actual Load (annotated: data-selected key_lags)")
@@ -180,8 +176,6 @@ def plot_feature_importance_by_family(
 
     Examples:
         ```{python}
-        import matplotlib
-        matplotlib.use("Agg")
         from spotforecast2.plots.diagnostics import plot_feature_importance_by_family
 
         names = ["lag_1", "lag_24", "holiday_DE", "wind_speed_10m",
@@ -224,20 +218,23 @@ def plot_shap_summary(
     """SHAP bar-summary plot for a tree-based estimator.
 
     Ports `_plot_shap` from the chapter-14 team4 script.  `X` is subsampled
-    to at most `max_samples` rows (uniform stride) before computing SHAP
+    to approximately `max_samples` rows (uniform stride `len(X) // max_samples`;
+    lengths just above `max_samples` are passed in full) before computing SHAP
     values so the call stays fast even for large training matrices.
 
     The function uses `shap.TreeExplainer` and
     `shap.summary_plot(plot_type="bar", show=False)`, then captures the
-    current matplotlib figure via `plt.gcf()`.
+    current matplotlib figure via `plt.gcf()`.  Because the figure is harvested
+    from the global pyplot state this function is **not thread-safe**.  Callers
+    must close the returned figure (e.g. `plt.close(fig)`) before performing
+    other pyplot work.
 
     Args:
         estimator: A fitted tree-based estimator supported by
             `shap.TreeExplainer` (e.g. `LGBMRegressor`).
         X: Feature matrix; typically the design matrix returned by
             `ForecasterRecursive.create_train_X_y`.
-        max_samples: Maximum number of rows to pass to the SHAP explainer.
-            Defaults to 2000.
+        max_samples: Row budget passed to the SHAP explainer.  Defaults to 2000.
 
     Returns:
         A `matplotlib.figure.Figure`.
@@ -245,8 +242,6 @@ def plot_shap_summary(
     Examples:
         ```{python}
         #| eval: false
-        import matplotlib
-        matplotlib.use("Agg")
         import numpy as np
         import pandas as pd
         from lightgbm import LGBMRegressor
@@ -315,8 +310,6 @@ def plot_forecast_vs_reference(
 
     Examples:
         ```{python}
-        import matplotlib
-        matplotlib.use("Agg")
         import numpy as np
         import pandas as pd
         from spotforecast2.plots.diagnostics import plot_forecast_vs_reference
@@ -357,11 +350,12 @@ def plot_forecast_vs_reference(
         )
         mad = float((forecast.loc[overlap] - ref_aligned.loc[overlap]).abs().mean())
         logger.info(
-            "mean |%s - %s| over %d overlap hours: %.0f MW",
+            "mean |%s - %s| over %d overlap hours: %.1f %s",
             forecast_label,
             reference_label,
             len(overlap),
-            mad / unit_scale,
+            mad * unit_scale,
+            unit,
         )
     else:
         logger.info(

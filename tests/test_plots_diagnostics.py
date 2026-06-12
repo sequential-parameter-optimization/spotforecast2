@@ -56,10 +56,14 @@ _FAMILY_CASES = [
     ("poly_hour_2", "polynomial"),
     ("poly_dayofweek_3", "polynomial"),
     ("POLY_month", "polynomial"),
+    # precedence: poly beats window
+    ("poly_window_24", "polynomial"),
     # weather_window family
     ("window_mean_72", "weather_window"),
     ("roll_window_168", "weather_window"),
     ("WINDOW_std_24", "weather_window"),
+    # precedence: window beats cyclical
+    ("sin_window", "weather_window"),
     # cyclical/RBF family
     ("sin_hour", "cyclical/RBF"),
     ("cos_hour", "cyclical/RBF"),
@@ -300,3 +304,41 @@ def test_forecast_vs_reference_unit_scale_applied(caplog):
     # y-axis upper limit should be in the MW range (>1000), not GW (<100)
     ymin, ymax = ax.get_ylim()
     assert ymax > 1000
+
+
+def test_forecast_vs_reference_mad_logged_in_display_unit(caplog):
+    """MAD is logged in the display unit (GW), not in raw MW.
+
+    With a constant offset of 1000 MW and unit_scale=1e-3, the logged value
+    must be 1.0 GW.  The old bug (mad / unit_scale) would have logged 1000000.
+    """
+    import logging
+    import re
+
+    idx = pd.date_range("2024-01-15", periods=24, freq="h", tz="UTC")
+    forecast = pd.Series(np.full(24, 40_000.0), index=idx)
+    # Exact constant offset of 1000 MW → MAD = 1000 MW = 1.0 GW
+    reference = pd.Series(np.full(24, 41_000.0), index=idx)
+
+    with caplog.at_level(logging.INFO, logger="spotforecast2.plots.diagnostics"):
+        plot_forecast_vs_reference(
+            forecast,
+            reference,
+            forecast_label="fc",
+            reference_label="ref",
+            unit_scale=1e-3,
+            unit="GW",
+        )
+
+    # Find the MAD log message and extract the numeric value
+    mad_messages = [r for r in caplog.records if "overlap hours" in r.message]
+    assert mad_messages, "Expected MAD log message not found in caplog"
+    msg = mad_messages[0].message
+    # Extract the number immediately before " GW"
+    match = re.search(r"([\d.]+)\s+GW", msg)
+    assert match, f"Could not parse GW value from log message: {msg!r}"
+    logged_value = float(match.group(1))
+    assert logged_value == pytest.approx(1.0, abs=0.05), (
+        f"Logged MAD should be 1.0 GW, got {logged_value}. "
+        f"Full message: {msg!r}"
+    )
