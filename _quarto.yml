@@ -132,18 +132,8 @@ website:
                 file: docs/reference/stats.autocorrelation.qmd
           - section: "Tasks"
             contents:
-              - text: "task_demo"
-                file: docs/reference/tasks.task_demo.qmd
               - text: "task_entsoe"
                 file: docs/reference/tasks.task_entsoe.qmd
-              - text: "task_n_to_1"
-                file: docs/reference/tasks.task_n_to_1.qmd
-              - text: "task_n_to_1_dataframe"
-                file: docs/reference/tasks.task_n_to_1_dataframe.qmd
-              - text: "task_n_to_1_with_covariates"
-                file: docs/reference/tasks.task_n_to_1_with_covariates.qmd
-              - text: "task_n_to_1_with_covariates_and_dataframe"
-                file: docs/reference/tasks.task_n_to_1_with_covariates_and_dataframe.qmd
 
       - section: "Processing Guides"
         contents:
@@ -166,8 +156,6 @@ website:
 
       - section: "Tasks Guide"
         contents:
-          - text: "Overview"
-            file: docs/tasks/tasks.qmd
           - text: "Multitask Tutorial"
             file: docs/tasks/multitask.qmd
           - text: "ENTSO-E CLI"
@@ -264,14 +252,9 @@ quartodoc:
         - stats.autocorrelation
 
     - title: "Tasks"
-      desc: "Demonstration and predefined forecasting tasks."
+      desc: "ENTSO-E forecasting task and CLI."
       contents:
-        - tasks.task_demo
         - tasks.task_entsoe
-        - tasks.task_n_to_1
-        - tasks.task_n_to_1_dataframe
-        - tasks.task_n_to_1_with_covariates
-        - tasks.task_n_to_1_with_covariates_and_dataframe
 
     - title: "Warnings"
       desc: "Warning-style configuration for spotforecast2."
