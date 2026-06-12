@@ -116,6 +116,8 @@ website:
                 file: docs/reference/model_selection.utils_metrics.qmd
           - section: "Plots"
             contents:
+              - text: "diagnostics"
+                file: docs/reference/plots.diagnostics.qmd
               - text: "outlier_plots"
                 file: docs/reference/plots.outlier_plots.qmd
               - text: "plotter"
@@ -215,8 +217,9 @@ quartodoc:
 
   sections:
     - title: "Plots"
-      desc: "Outlier, prediction, and time-series visualization tools."
+      desc: "Outlier, prediction, time-series, and operational diagnostic visualization tools."
       contents:
+        - plots.diagnostics
         - plots.outlier_plots
         - plots.plotter
         - plots.time_series_visualization
