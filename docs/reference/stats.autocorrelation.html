@@ -76,9 +76,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bcbce66894bfa8e7e94e40e0186b9bb8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-9e38c0292fcf4c4fbca14a115feca65c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-7d8e07e1acd2a64c27a3b965bab9f207.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-9e38c0292fcf4c4fbca14a115feca65c.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-655808e3c14d9b59497a1b5a58e1ce29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-2dd548ee3eab68bd851dd9e3d9c9a811.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-655808e3c14d9b59497a1b5a58e1ce29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -460,6 +460,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/model_selection.boundary.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">boundary</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../docs/reference/model_selection.grid_search.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">grid_search</span></a>
   </div>
@@ -493,6 +499,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/plots.diagnostics.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">diagnostics</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/plots.outlier_plots.html" class="sidebar-item-text sidebar-link">
@@ -724,6 +736,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#functions" id="toc-functions" class="nav-link active" data-scroll-target="#functions">Functions</a>
   <ul class="collapse">
   <li><a href="#spotforecast2.stats.autocorrelation.calculate_lag_autocorrelation" id="toc-spotforecast2.stats.autocorrelation.calculate_lag_autocorrelation" class="nav-link" data-scroll-target="#spotforecast2.stats.autocorrelation.calculate_lag_autocorrelation">calculate_lag_autocorrelation</a></li>
+  <li><a href="#spotforecast2.stats.autocorrelation.select_pacf_lags" id="toc-spotforecast2.stats.autocorrelation.select_pacf_lags" class="nav-link" data-scroll-target="#spotforecast2.stats.autocorrelation.select_pacf_lags">select_pacf_lags</a></li>
   </ul></li>
   </ul>
 <div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/stats.autocorrelation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -765,6 +778,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <tr class="odd">
 <td><a href="#spotforecast2.stats.autocorrelation.calculate_lag_autocorrelation">calculate_lag_autocorrelation</a></td>
 <td>Calculate autocorrelation and partial autocorrelation for a time series.</td>
+</tr>
+<tr class="even">
+<td><a href="#spotforecast2.stats.autocorrelation.select_pacf_lags">select_pacf_lags</a></td>
+<td>Select the most informative lags using the partial autocorrelation function.</td>
 </tr>
 </tbody>
 </table>
@@ -892,7 +909,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="examples" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
 <p>Calculate autocorrelation for a simple Series:</p>
-<div id="c0e42afe" class="cell" data-execution_count="1">
+<div id="5434b34f" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.stats.autocorrelation <span class="im">import</span> calculate_lag_autocorrelation</span>
@@ -924,7 +941,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Calculate autocorrelation using only the last 20 samples:</p>
-<div id="486c742b" class="cell" data-execution_count="2">
+<div id="389e63f7" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.stats.autocorrelation <span class="im">import</span> calculate_lag_autocorrelation</span>
@@ -951,7 +968,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Calculate autocorrelation from a DataFrame with a single column:</p>
-<div id="f7698d47" class="cell" data-execution_count="3">
+<div id="30cafd5b" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.stats.autocorrelation <span class="im">import</span> calculate_lag_autocorrelation</span>
@@ -976,7 +993,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 <p>Sort results by autocorrelation in descending order:</p>
-<div id="d6b0a9dc" class="cell" data-execution_count="4">
+<div id="d8d16681" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.stats.autocorrelation <span class="im">import</span> calculate_lag_autocorrelation</span>
@@ -997,6 +1014,169 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 2    3         0.703936
 3    4         0.576826</code></pre>
 </div>
+</div>
+</section>
+</section>
+<section id="spotforecast2.stats.autocorrelation.select_pacf_lags" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.stats.autocorrelation.select_pacf_lags">select_pacf_lags</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>stats.autocorrelation.select_pacf_lags(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    series,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    n_lags<span class="op">=</span><span class="dv">200</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    top_k<span class="op">=</span><span class="dv">8</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    fallback<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Select the most informative lags using the partial autocorrelation function.</p>
+<p>Computes the PACF up to <code>n_lags</code> via <code>calculate_lag_autocorrelation</code>, then returns the <code>top_k</code> lags whose <code>|PACF|</code> exceeds the 95 % significance band (1.96 / sqrt(N)), sorted in ascending order.</p>
+<p>This is a pure-compute helper ported from the operational team-4 pipeline (<code>select_key_lags</code> in <code>bart26k-lecture/scripts/team4_4zones_submit.py</code>). No plotting, no side effects beyond an optional DEBUG log line.</p>
+<section id="parameters-1" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>series</td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.Series.html#pandas.Series">Series</a></td>
+<td>The time series from which to estimate lags. Must contain at least <code>2 * n_lags + 1</code> observations for statsmodels PACF to run without truncating <code>n_lags</code>.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>n_lags</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
+<td>Number of lags passed to <code>calculate_lag_autocorrelation</code>. Default is 200.</td>
+<td><code>200</code></td>
+</tr>
+<tr class="odd">
+<td>top_k</td>
+<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
+<td>Maximum number of lags to return (the <code>top_k</code> significant lags ranked by descending <code>\|PACF\|</code>). Default is 8.</td>
+<td><code>8</code></td>
+</tr>
+<tr class="even">
+<td>fallback</td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>] | None</td>
+<td>Lag list returned when no lag exceeds the significance band (degenerate series: too short, nearly constant, or <code>n_lags</code> too large). Elements are coerced to <code>int</code> before returning. If <code>None</code>, a <code>ValueError</code> is raised instead.</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-1" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
+<td>Sorted list of lag integers (ascending). Length is at most <code>top_k</code>;</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
+<td>may be shorter if fewer than <code>top_k</code> significant lags exist.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="raises-1" class="level4 doc-section doc-section-raises">
+<h4 class="doc-section doc-section-raises anchored" data-anchor-id="raises-1">Raises</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><a href="https://docs.python.org/3/library/exceptions.html#ValueError">ValueError</a></td>
+<td>If no lag exceeds the significance band and <code>fallback</code> is <code>None</code>. Pass <code>fallback=[1, 2, 24, 168]</code> (or any operator-chosen constant) to suppress the error and use a safe default instead.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-1" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
+<p>Select significant lags from a synthetic AR(1) series:</p>
+<div id="829f8a96" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.stats.autocorrelation <span class="im">import</span> select_pacf_lags</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">24</span> <span class="op">*</span> <span class="dv">120</span>  <span class="co"># 120 days of hourly data</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>ar <span class="op">=</span> np.zeros(n)</span>
+<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, n):</span>
+<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a>    ar[t] <span class="op">=</span> <span class="fl">0.7</span> <span class="op">*</span> ar[t <span class="op">-</span> <span class="dv">1</span>] <span class="op">+</span> rng.standard_normal()</span>
+<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>series <span class="op">=</span> pd.Series(ar)</span>
+<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>lags <span class="op">=</span> select_pacf_lags(series, n_lags<span class="op">=</span><span class="dv">50</span>, top_k<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"selected lags:"</span>, lags)</span>
+<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">isinstance</span>(lags, <span class="bu">list</span>)</span>
+<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">all</span>(<span class="bu">isinstance</span>(x, <span class="bu">int</span>) <span class="cf">for</span> x <span class="kw">in</span> lags)</span>
+<span id="cb11-15"><a href="#cb11-15" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> lags <span class="op">==</span> <span class="bu">sorted</span>(lags)</span>
+<span id="cb11-16"><a href="#cb11-16" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="bu">len</span>(lags) <span class="op">&lt;=</span> <span class="dv">8</span></span>
+<span id="cb11-17"><a href="#cb11-17" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="dv">1</span> <span class="kw">in</span> lags, <span class="st">"lag-1 AR component should be selected"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>selected lags: [1, 7, 10, 21, 44]</code></pre>
+</div>
+</div>
+<p>Select significant lags from an AR(24) process — lag 24 dominates:</p>
+<div id="96f6781f" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.stats.autocorrelation <span class="im">import</span> select_pacf_lags</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>rng <span class="op">=</span> np.random.default_rng(<span class="dv">42</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>n <span class="op">=</span> <span class="dv">24</span> <span class="op">*</span> <span class="dv">200</span></span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>ar <span class="op">=</span> np.zeros(n)</span>
+<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">24</span>, n):</span>
+<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>    ar[t] <span class="op">=</span> <span class="fl">0.8</span> <span class="op">*</span> ar[t <span class="op">-</span> <span class="dv">24</span>] <span class="op">+</span> rng.standard_normal()</span>
+<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a>series <span class="op">=</span> pd.Series(ar)</span>
+<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a>lags <span class="op">=</span> select_pacf_lags(series, n_lags<span class="op">=</span><span class="dv">50</span>, top_k<span class="op">=</span><span class="dv">8</span>)</span>
+<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"selected lags:"</span>, lags)</span>
+<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="dv">24</span> <span class="kw">in</span> lags, <span class="ss">f"lag 24 expected in </span><span class="sc">{</span>lags<span class="sc">}</span><span class="ss">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>selected lags: [1, 7, 10, 12, 17, 18, 23, 24]</code></pre>
+</div>
+</div>
+<p>Degenerate (constant) series — fallback is returned when provided:</p>
+<div id="d20eadc7" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.stats.autocorrelation <span class="im">import</span> select_pacf_lags</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>series <span class="op">=</span> pd.Series([<span class="fl">1.0</span>] <span class="op">*</span> <span class="dv">50</span>)</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>result <span class="op">=</span> select_pacf_lags(series, n_lags<span class="op">=</span><span class="dv">10</span>, fallback<span class="op">=</span>[<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">24</span>])</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"fallback lags:"</span>, result)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> result <span class="op">==</span> [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">24</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>fallback lags: [1, 2, 24]</code></pre>
+</div>
+</div>
+<p>Degenerate series with no fallback raises ValueError:</p>
+<div id="b5731e5a" class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pytest</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.stats.autocorrelation <span class="im">import</span> select_pacf_lags</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>series <span class="op">=</span> pd.Series([<span class="fl">1.0</span>] <span class="op">*</span> <span class="dv">50</span>)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="cf">with</span> pytest.raises(<span class="pp">ValueError</span>, match<span class="op">=</span><span class="st">"no significant"</span>):</span>
+<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>    select_pacf_lags(series, n_lags<span class="op">=</span><span class="dv">10</span>, fallback<span class="op">=</span><span class="va">None</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

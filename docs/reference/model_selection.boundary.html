@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>models.forecaster_recursive_lgbm_full – spotforecast2</title>
+<title>model_selection.boundary – spotforecast2</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -305,7 +305,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/models.forecaster_recursive_model_full.html">Models</a></li><li class="breadcrumb-item"><a href="../../docs/reference/models.forecaster_recursive_lgbm_full.html">forecaster_recursive_lgbm_full</a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.bayesian_search.html">Model Selection</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.boundary.html">boundary</a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
     </div>
@@ -357,13 +357,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true">
+            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false">
  <span class="menu-text">Models</span></a>
-          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="false" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 show">  
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/models.forecaster_recursive_model_full.html" class="sidebar-item-text sidebar-link">
@@ -372,7 +372,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/models.forecaster_recursive_lgbm_full.html" class="sidebar-item-text sidebar-link active">
+  <a href="../../docs/reference/models.forecaster_recursive_lgbm_full.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">forecaster_recursive_lgbm_full</span></a>
   </div>
 </li>
@@ -445,13 +445,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   </li>
           <li class="sidebar-item sidebar-item-section">
       <div class="sidebar-item-container"> 
-            <a class="sidebar-item-text sidebar-link text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false">
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true">
  <span class="menu-text">Model Selection</span></a>
-          <a class="sidebar-item-toggle text-start collapsed" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="false" aria-label="Toggle section">
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
             <i class="bi bi-chevron-right ms-2"></i>
           </a> 
       </div>
-      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 ">  
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth2 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/reference/model_selection.bayesian_search.html" class="sidebar-item-text sidebar-link">
@@ -460,7 +460,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../../docs/reference/model_selection.boundary.html" class="sidebar-item-text sidebar-link">
+  <a href="../../docs/reference/model_selection.boundary.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text">boundary</span></a>
   </div>
 </li>
@@ -733,21 +733,22 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#examples" id="toc-examples" class="nav-link active" data-scroll-target="#examples">Examples</a></li>
-  <li><a href="#classes" id="toc-classes" class="nav-link" data-scroll-target="#classes">Classes</a>
+  <li><a href="#functions" id="toc-functions" class="nav-link active" data-scroll-target="#functions">Functions</a>
   <ul class="collapse">
-  <li><a href="#spotforecast2.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull" id="toc-spotforecast2.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull" class="nav-link" data-scroll-target="#spotforecast2.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull">ForecasterRecursiveLGBMFull</a></li>
+  <li><a href="#spotforecast2.model_selection.boundary.boundary_report" id="toc-spotforecast2.model_selection.boundary.boundary_report" class="nav-link" data-scroll-target="#spotforecast2.model_selection.boundary.boundary_report">boundary_report</a></li>
+  <li><a href="#spotforecast2.model_selection.boundary.report_boundary_positions" id="toc-spotforecast2.model_selection.boundary.report_boundary_positions" class="nav-link" data-scroll-target="#spotforecast2.model_selection.boundary.report_boundary_positions">report_boundary_positions</a></li>
+  <li><a href="#spotforecast2.model_selection.boundary.suggest_bounds" id="toc-spotforecast2.model_selection.boundary.suggest_bounds" class="nav-link" data-scroll-target="#spotforecast2.model_selection.boundary.suggest_bounds">suggest_bounds</a></li>
   </ul></li>
   </ul>
-<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/models.forecaster_recursive_lgbm_full.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/model_selection.boundary.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/models.forecaster_recursive_model_full.html">Models</a></li><li class="breadcrumb-item"><a href="../../docs/reference/models.forecaster_recursive_lgbm_full.html">forecaster_recursive_lgbm_full</a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../../docs/reference/index.html">API Reference</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.bayesian_search.html">Model Selection</a></li><li class="breadcrumb-item"><a href="../../docs/reference/model_selection.boundary.html">boundary</a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title">models.forecaster_recursive_lgbm_full</h1>
+<h1 class="title">model_selection.boundary</h1>
 </div>
 
 
@@ -764,26 +765,27 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </header>
 
 
-<p><code>models.forecaster_recursive_lgbm_full</code></p>
-<p>LGBM forecaster with real Bayesian tuning and SHAP.</p>
-<p>This module provides <code>ForecasterRecursiveLGBMFull</code>, which combines the LightGBM forecaster from <code>spotforecast2-safe</code> with Bayesian hyperparameter optimisation (Optuna) and SHAP-based feature importance from <code>ForecasterRecursiveModelFull</code>.</p>
-<section id="examples" class="level2 doc-section doc-section-examples">
-<h2 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h2>
-<div id="2d83719c" class="cell" data-execution_count="1">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.models <span class="im">import</span> ForecasterRecursiveLGBMFull</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> ForecasterRecursiveLGBMFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> model.name <span class="op">==</span> <span class="st">"lgbm"</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> model.forecaster <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> model.n_trials <span class="op">==</span> <span class="dv">10</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"name=</span><span class="sc">{</span>model<span class="sc">.</span>name<span class="sc">}</span><span class="ss">, n_trials=</span><span class="sc">{</span>model<span class="sc">.</span>n_trials<span class="sc">}</span><span class="ss">, iteration=</span><span class="sc">{</span>model<span class="sc">.</span>iteration<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>name=lgbm, n_trials=10, iteration=0</code></pre>
-</div>
-</div>
-</section>
-<section id="classes" class="level2">
-<h2 class="anchored" data-anchor-id="classes">Classes</h2>
+<p><code>model_selection.boundary</code></p>
+<p>Search-space boundary management helpers for hyperparameter tuning.</p>
+<p>After a SpotOptim (or any optimizer) run, the tuned optimum may press against a search-space boundary — meaning the optimizer wanted to go further but was constrained. These helpers make that visible and actionable.</p>
+<p>Motivation: KB entry 2026-06-08-hyperparameter-boundary-management documents an operational case where <code>reg_alpha</code> pinned at its old ceiling (98.9 % of the linear range), inflating L1 regularization and flattening the live forecast. Widening that bound and re-running resolved the issue. The helpers below systematize that diagnostic loop.</p>
+<p>Three functions are provided:</p>
+<ul>
+<li><code>report_boundary_positions</code> — logs each dimension’s position and returns a list of flagged names. Decoupled from <code>MultiTask</code>: the caller extracts params (e.g.&nbsp;<code>estimator.get_params()</code>). Primary operational diagnostic.</li>
+<li><code>boundary_report</code> — returns a <code>pd.DataFrame</code> with one row per numeric dimension: position, scale, flag. Companion to <code>suggest_bounds</code>.</li>
+<li><code>suggest_bounds</code> — returns a copy of the search space with flagged bounds widened on the pressed side; pass it straight back to <code>run_task_spotoptim(search_space=...)</code>.</li>
+</ul>
+<p><strong>Key convention difference — prefix handling:</strong></p>
+<p><code>report_boundary_positions</code> strips the <code>"estimator__"</code> prefix from each search-space key before looking up the value in <code>params</code>. The <code>params</code> dict is expected to come from <code>estimator.get_params()</code> (scikit-learn style), which returns UN-prefixed keys such as <code>"reg_alpha"</code> — not <code>"estimator__reg_alpha"</code>.</p>
+<p><code>boundary_report</code> and <code>suggest_bounds</code> look up <code>best_params</code> using the search-space key <strong>as-is</strong>, including any <code>"estimator__"</code> prefix. The <code>best_params</code> dict is expected to come from a SpotOptim result, which stores FULL search-space keys (e.g.&nbsp;<code>"estimator__reg_alpha"</code>).</p>
+<p>Mixing conventions (passing <code>get_params()</code>-style keys to <code>boundary_report</code>, or SpotOptim result keys to <code>report_boundary_positions</code>) will silently produce an empty result because no key matches. If <code>boundary_report</code> returns an empty DataFrame for a space with numeric dimensions, a key-convention mismatch is the most likely cause.</p>
+<p>Ported from:</p>
+<ul>
+<li><code>report_boundary_positions</code>: <code>bart26k-lecture/scripts/team4_4zones_submit.py</code> (<code>report_boundary_positions</code> function, section <code>@sec-team4-boundary-diagnostics</code>).</li>
+<li><code>boundary_report</code> / <code>suggest_bounds</code>: <code>bart26k-lecture/14_team_4_submission.qmd</code> (cell <code>team4-boundary-helpers</code>, section <code>@sec-team4-boundary-management</code>).</li>
+</ul>
+<section id="functions" class="level2">
+<h2 class="anchored" data-anchor-id="functions">Functions</h2>
 <table class="caption-top table">
 <thead>
 <tr class="header">
@@ -793,21 +795,31 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td><a href="#spotforecast2.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull">ForecasterRecursiveLGBMFull</a></td>
-<td>LGBM forecaster with real Bayesian tuning and SHAP.</td>
+<td><a href="#spotforecast2.model_selection.boundary.boundary_report">boundary_report</a></td>
+<td>Tabulate each tuned value’s position inside its search-space bound.</td>
+</tr>
+<tr class="even">
+<td><a href="#spotforecast2.model_selection.boundary.report_boundary_positions">report_boundary_positions</a></td>
+<td>Log where each tuned value sits inside its numeric search-space interval.</td>
+</tr>
+<tr class="odd">
+<td><a href="#spotforecast2.model_selection.boundary.suggest_bounds">suggest_bounds</a></td>
+<td>Return a copy of <code>search_space</code> with flagged bounds widened.</td>
 </tr>
 </tbody>
 </table>
-<section id="spotforecast2.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull" class="level3">
-<h3 class="anchored" data-anchor-id="spotforecast2.models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull">ForecasterRecursiveLGBMFull</h3>
-<div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>models.forecaster_recursive_lgbm_full.ForecasterRecursiveLGBMFull(</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    iteration,</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    lags<span class="op">=</span><span class="dv">12</span>,</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">**</span>kwargs,</span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<p>LGBM forecaster with real Bayesian tuning and SHAP.</p>
-<p>Inherits the LightGBM forecaster initialisation from <code>ForecasterRecursiveLGBM</code> (<code>spotforecast2-safe</code>) and adds the real <code>tune()</code> and <code>get_global_shap_feature_importance()</code> from <code>ForecasterRecursiveModelFull</code>.</p>
-<p>The MRO ensures that <code>tune()</code> and SHAP methods resolve from <code>ForecasterRecursiveModelFull</code>, while the LightGBM-specific <code>__init__</code> (estimator wiring) comes from <code>ForecasterRecursiveLGBM</code>.</p>
+<section id="spotforecast2.model_selection.boundary.boundary_report" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.model_selection.boundary.boundary_report">boundary_report</h3>
+<div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>model_selection.boundary.boundary_report(</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    best_params,</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>    search_space,</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>    warn_frac<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Tabulate each tuned value’s position inside its search-space bound.</p>
+<p>Returns a DataFrame sorted by descending position, with one row per numeric dimension. Categorical and boolean-valued dimensions are skipped. <code>flag</code> is one of <code>"&gt; upper"</code>, <code>"&lt; lower"</code>, or <code>""</code> (interior).</p>
+<p>This function uses the <code>search_space</code> keys as-is (including any <code>"estimator__"</code> prefix) to look up matching entries in <code>best_params</code>. The returned <code>param</code> column strips the <code>"estimator__"</code> prefix for readability.</p>
+<p>Ported from <code>bart26k-lecture/14_team_4_submission.qmd</code>, cell <code>team4-boundary-helpers</code>.</p>
 <section id="parameters" class="level4 doc-section doc-section-parameters">
 <h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters">Parameters</h4>
 <table class="caption-top table">
@@ -821,44 +833,316 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </thead>
 <tbody>
 <tr class="odd">
-<td>iteration</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Training iteration index (0-based).</td>
+<td>best_params</td>
+<td><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping">Mapping</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#float">float</a> | <a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
+<td>Flat dict of parameter names to values, keyed with the same names as <code>search_space</code> (including any <code>"estimator__"</code> prefix).</td>
 <td><em>required</em></td>
 </tr>
 <tr class="even">
-<td>lags</td>
-<td><a href="https://docs.python.org/3/library/functions.html#int">int</a></td>
-<td>Number of lag features to use.</td>
-<td><code>12</code></td>
+<td>search_space</td>
+<td><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping">Mapping</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
+<td>Dict mapping parameter names to dimension specs: <code>(low, high)</code>, <code>(low, high, "log10")</code>, or a list of categories (skipped).</td>
+<td><em>required</em></td>
 </tr>
 <tr class="odd">
-<td>**kwargs</td>
-<td><a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a></td>
-<td>Forwarded to parent classes (e.g., <code>n_trials</code>, <code>predict_size</code>, <code>train_size</code>).</td>
-<td><code>{}</code></td>
+<td>warn_frac</td>
+<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
+<td>Fraction of the range (in the dimension’s own scale) defining the “near-boundary” zone. Default is 0.10.</td>
+<td><code>0.1</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
+<td>DataFrame with columns <code>param</code>, <code>low</code>, <code>high</code>, <code>value</code>,</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="https://pandas.pydata.org/docs/index.html#module-pandas">pd</a>.<a href="https://pandas.pydata.org/docs/reference/api/pandas.DataFrame.html#pandas.DataFrame">DataFrame</a></td>
+<td><code>scale</code>, <code>position</code>, <code>flag</code>, sorted by <code>position</code> descending.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
+<p>Report on a near-upper-boundary value:</p>
+<div id="6901c205" class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> boundary_report</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="st">"estimator__reg_alpha"</span>: <span class="fl">9.89</span>,</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"estimator__learning_rate"</span>: <span class="fl">0.069</span>,</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> {</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">"estimator__reg_alpha"</span>: (<span class="fl">0.001</span>, <span class="fl">10.0</span>),</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">"estimator__learning_rate"</span>: (<span class="fl">0.005</span>, <span class="fl">0.3</span>, <span class="st">"log10"</span>),</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>df <span class="op">=</span> boundary_report(best, space)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(df.to_string(index<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"reg_alpha"</span> <span class="kw">in</span> df[<span class="st">"param"</span>].values</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>flagged <span class="op">=</span> df[df[<span class="st">"flag"</span>] <span class="op">==</span> <span class="st">"&gt; upper"</span>][<span class="st">"param"</span>].tolist()</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> <span class="st">"reg_alpha"</span> <span class="kw">in</span> flagged</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>        param   low  high  value  scale  position    flag
+    reg_alpha 0.001  10.0  9.890 linear     0.989 &gt; upper
+learning_rate 0.005   0.3  0.069  log10     0.641        </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="spotforecast2.model_selection.boundary.report_boundary_positions" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.model_selection.boundary.report_boundary_positions">report_boundary_positions</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>model_selection.boundary.report_boundary_positions(</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    params,</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    search_space,</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    warn_frac<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    logger<span class="op">=</span><span class="va">None</span>,</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Log where each tuned value sits inside its numeric search-space interval.</p>
+<p>For each entry in <code>search_space</code> that is a 2- or 3-tuple numeric dimension <code>(low, high)</code> or <code>(low, high, "log10")</code>, the function:</p>
+<ul>
+<li>strips the <code>"estimator__"</code> prefix from the key when looking up the corresponding entry in <code>params</code>;</li>
+<li>skips non-numeric or boolean values;</li>
+<li>computes the position in the dimension’s own scale (log10 for log dims, guarding against <code>val &lt;= 0</code> or <code>low &lt;= 0</code>);</li>
+<li>flags <code>"&gt; upper"</code> when <code>pos &gt; 1 - warn_frac</code> and <code>"&lt; lower"</code> when <code>pos &lt; warn_frac</code>;</li>
+<li>logs each dimension at INFO level in a columnar format;</li>
+<li>returns the list of flagged strings (e.g.&nbsp;<code>["reg_alpha &gt; upper"]</code>).</li>
+</ul>
+<p>Categorical dimensions (list-valued entries) and unreadable entries are skipped. The function never raises — it is a diagnostic and returns an empty list on any unexpected error.</p>
+<section id="parameters-1" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-1">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>params</td>
+<td><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping">Mapping</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#float">float</a> | <a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
+<td>Flat dict of parameter names to numeric values, as returned by <code>estimator.get_params()</code> or equivalent. Keys should NOT carry the <code>"estimator__"</code> prefix (it is stripped from <code>search_space</code> keys, not from <code>params</code> keys).</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>search_space</td>
+<td><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping">Mapping</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
+<td>Dict mapping search-space keys (potentially with <code>"estimator__"</code> prefix) to dimension specs: <code>(low, high)</code>, <code>(low, high, "log10")</code>, or a list of categories.</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>warn_frac</td>
+<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
+<td>Fraction of the range (in the dimension’s own scale) that defines the “near-boundary” zone at each end. Default is 0.10.</td>
+<td><code>0.1</code></td>
+</tr>
+<tr class="even">
+<td>logger</td>
+<td><a href="https://docs.python.org/3/library/logging.html#module-logging">logging</a>.<a href="https://docs.python.org/3/library/logging.html#logging.Logger">Logger</a> | None</td>
+<td>Logger to use for INFO/WARNING messages. Defaults to the module-level <code>logging.getLogger(__name__)</code> logger.</td>
+<td><code>None</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-1" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-1">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#list">list</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>]</td>
+<td>List of flagged dimension strings, e.g.&nbsp;<code>["reg_alpha &gt; upper",   | |        | [list](`list`)\[[str](`str`)\] | "learning_rate &lt; lower"]</code>. Empty if all dimensions are interior.</td>
 </tr>
 </tbody>
 </table>
 </section>
 <section id="examples-1" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
-<div id="e2279e7d" class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.models <span class="im">import</span> ForecasterRecursiveLGBMFull</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>model <span class="op">=</span> ForecasterRecursiveLGBMFull(iteration<span class="op">=</span><span class="dv">0</span>)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> model.name <span class="op">==</span> <span class="st">"lgbm"</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> model.forecaster <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> model.n_trials <span class="op">==</span> <span class="dv">10</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> model.iteration <span class="op">==</span> <span class="dv">0</span></span>
-<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"name=</span><span class="sc">{</span>model<span class="sc">.</span>name<span class="sc">}</span><span class="ss">, n_trials=</span><span class="sc">{</span>model<span class="sc">.</span>n_trials<span class="sc">}</span><span class="ss">, iteration=</span><span class="sc">{</span>model<span class="sc">.</span>iteration<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"tune callable: </span><span class="sc">{</span><span class="bu">callable</span>(model.tune)<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"shap callable: </span><span class="sc">{</span><span class="bu">callable</span>(model.get_global_shap_feature_importance)<span class="sc">}</span><span class="ss">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Interior optimum — no flags returned:</p>
+<div id="94298989" class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> report_boundary_positions</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {<span class="st">"num_leaves"</span>: <span class="dv">300</span>, <span class="st">"learning_rate"</span>: <span class="fl">0.05</span>}</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> {</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    <span class="st">"estimator__num_leaves"</span>: (<span class="dv">8</span>, <span class="dv">1024</span>),</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="st">"estimator__learning_rate"</span>: (<span class="fl">0.005</span>, <span class="fl">0.3</span>, <span class="st">"log10"</span>),</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>flagged <span class="op">=</span> report_boundary_positions(params, space)</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"flagged:"</span>, flagged)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> flagged <span class="op">==</span> []</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>name=lgbm, n_trials=10, iteration=0
-tune callable: True
-shap callable: True</code></pre>
+<pre><code>flagged: []</code></pre>
 </div>
+</div>
+<p>Near-upper-boundary — flag is returned:</p>
+<div id="c40baf72" class="cell" data-execution_count="3">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> report_boundary_positions</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {<span class="st">"reg_alpha"</span>: <span class="fl">9.9</span>}</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> {<span class="st">"estimator__reg_alpha"</span>: (<span class="fl">0.001</span>, <span class="fl">10.0</span>)}</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>flagged <span class="op">=</span> report_boundary_positions(params, space)</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="st">"flagged:"</span>, flagged)</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> flagged <span class="op">==</span> [<span class="st">"reg_alpha &gt; upper"</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>boundary check: 1 tuned dim(s) near a bound (reg_alpha &gt; upper) -- consider widening that side and re-running.</code></pre>
+</div>
+<div class="cell-output cell-output-stdout">
+<pre><code>flagged: ['reg_alpha &gt; upper']</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="spotforecast2.model_selection.boundary.suggest_bounds" class="level3">
+<h3 class="anchored" data-anchor-id="spotforecast2.model_selection.boundary.suggest_bounds">suggest_bounds</h3>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>model_selection.boundary.suggest_bounds(</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    best_params,</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    search_space,</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    <span class="op">*</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    warn_frac<span class="op">=</span><span class="fl">0.1</span>,</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    widen_factor<span class="op">=</span><span class="fl">10.0</span>,</span>
+<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<p>Return a copy of <code>search_space</code> with flagged bounds widened.</p>
+<p>Upper-pinned dimensions grow upward (<code>high * widen_factor</code> for float/log, <code>high + (high - low)</code> for integer); lower-pinned dimensions grow downward (<code>low / widen_factor</code> for float/log, <code>max(1, low - (high - low))</code> for integer). Interior and categorical dimensions are copied unchanged.</p>
+<p>Pass the result straight back to <code>run_task_spotoptim(search_space=suggest_bounds(...))</code>.</p>
+<p>Ported from <code>bart26k-lecture/14_team_4_submission.qmd</code>, cell <code>team4-boundary-helpers</code> (parameter <code>widen</code> renamed to <code>widen_factor</code> for clarity).</p>
+<section id="parameters-2" class="level4 doc-section doc-section-parameters">
+<h4 class="doc-section doc-section-parameters anchored" data-anchor-id="parameters-2">Parameters</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>best_params</td>
+<td><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping">Mapping</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/functions.html#float">float</a> | <a href="https://docs.python.org/3/library/functions.html#int">int</a>]</td>
+<td>Flat dict of parameter names to values, keyed with the same names as <code>search_space</code> (including any <code>"estimator__"</code> prefix).</td>
+<td><em>required</em></td>
+</tr>
+<tr class="even">
+<td>search_space</td>
+<td><a href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Mapping">Mapping</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
+<td>Dict mapping parameter names to dimension specs: <code>(low, high)</code>, <code>(low, high, "log10")</code>, or a list of categories (returned unchanged).</td>
+<td><em>required</em></td>
+</tr>
+<tr class="odd">
+<td>warn_frac</td>
+<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
+<td>Fraction of the range (in the dimension’s own scale) defining the “near-boundary” zone. Default is 0.10.</td>
+<td><code>0.1</code></td>
+</tr>
+<tr class="even">
+<td>widen_factor</td>
+<td><a href="https://docs.python.org/3/library/functions.html#float">float</a></td>
+<td>Multiplicative factor for widening float/log bounds. Integer bounds use an additive span instead. Default is 10.0.</td>
+<td><code>10.0</code></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="returns-2" class="level4 doc-section doc-section-returns">
+<h4 class="doc-section doc-section-returns anchored" data-anchor-id="returns-2">Returns</h4>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Name</th>
+<th>Type</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
+<td>New search-space dict with the same keys as <code>search_space</code> but with</td>
+</tr>
+<tr class="even">
+<td></td>
+<td><a href="https://docs.python.org/3/library/stdtypes.html#dict">dict</a>[<a href="https://docs.python.org/3/library/stdtypes.html#str">str</a>, <a href="https://docs.python.org/3/library/typing.html#typing.Any">Any</a>]</td>
+<td>boundary-pressed bounds extended on the pressed side.</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-2" class="level4 doc-section doc-section-examples">
+<h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
+<p>Upper-pinned float bound is multiplied by widen_factor:</p>
+<div id="4adce599" class="cell" data-execution_count="4">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> suggest_bounds</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {<span class="st">"estimator__reg_alpha"</span>: <span class="fl">9.89</span>}</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> {<span class="st">"estimator__reg_alpha"</span>: (<span class="fl">0.001</span>, <span class="fl">10.0</span>)}</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>new_space <span class="op">=</span> suggest_bounds(best, space, widen_factor<span class="op">=</span><span class="fl">10.0</span>)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(new_space)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> new_space[<span class="st">"estimator__reg_alpha"</span>][<span class="dv">1</span>] <span class="op">==</span> <span class="fl">100.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'estimator__reg_alpha': (0.001, 100.0)}</code></pre>
+</div>
+</div>
+<p>Log-scale upper-pinned bound is also multiplied:</p>
+<div id="dc5781bf" class="cell" data-execution_count="5">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> suggest_bounds</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {<span class="st">"estimator__reg_alpha"</span>: <span class="fl">9.89</span>}</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> {<span class="st">"estimator__reg_alpha"</span>: (<span class="fl">0.001</span>, <span class="fl">10.0</span>, <span class="st">"log10"</span>)}</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>new_space <span class="op">=</span> suggest_bounds(best, space, widen_factor<span class="op">=</span><span class="fl">10.0</span>)</span>
+<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(new_space)</span>
+<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> new_space[<span class="st">"estimator__reg_alpha"</span>][<span class="dv">1</span>] <span class="op">==</span> <span class="fl">100.0</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'estimator__reg_alpha': (0.001, 100.0, 'log10')}</code></pre>
+</div>
+</div>
+<p>Integer bound grows additively:</p>
+<div id="e8b67a1c" class="cell" data-execution_count="6">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> suggest_bounds</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {<span class="st">"estimator__n_estimators"</span>: <span class="dv">4950</span>}</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> {<span class="st">"estimator__n_estimators"</span>: (<span class="dv">100</span>, <span class="dv">5000</span>)}</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>new_space <span class="op">=</span> suggest_bounds(best, space, widen_factor<span class="op">=</span><span class="fl">10.0</span>)</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(new_space)</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> new_space[<span class="st">"estimator__n_estimators"</span>][<span class="dv">1</span>] <span class="op">==</span> <span class="dv">5000</span> <span class="op">+</span> (<span class="dv">5000</span> <span class="op">-</span> <span class="dv">100</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>{'estimator__n_estimators': (100, 9900)}</code></pre>
+</div>
+</div>
+<p>Interior dimension is returned unchanged:</p>
+<div id="ef0b41e6" class="cell" data-execution_count="7">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> suggest_bounds</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {<span class="st">"estimator__num_leaves"</span>: <span class="dv">300</span>}</span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>space <span class="op">=</span> {<span class="st">"estimator__num_leaves"</span>: (<span class="dv">8</span>, <span class="dv">1024</span>)}</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>new_space <span class="op">=</span> suggest_bounds(best, space)</span>
+<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a><span class="cf">assert</span> new_space[<span class="st">"estimator__num_leaves"</span>] <span class="op">==</span> (<span class="dv">8</span>, <span class="dv">1024</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
@@ -1294,7 +1578,7 @@ shap callable: True</code></pre>
     </div>   
     <div class="nav-footer-center">
 <p>Copyright © 2024-2026 bartzbeielstein | <a href="https://www.gnu.org/licenses/agpl-3.0.html">AGPL-3.0-or-later</a></p>
-<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/models.forecaster_recursive_lgbm_full.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+<div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/edit/main/docs/reference/model_selection.boundary.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/sequential-parameter-optimization/spotforecast2/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
       &nbsp;
     </div>
