@@ -257,8 +257,16 @@ class TestSuggestBounds:
         assert new_space["lags"] == space["lags"]
 
     def test_all_keys_preserved(self):
-        """The returned dict has exactly the same keys as search_space."""
-        best = {"num_leaves": 512, "learning_rate": 0.05}
+        """The returned dict has exactly the same keys as search_space.
+
+        Uses prefixed keys (SpotOptim-result style) so the flagged/widened path
+        is exercised for at least one dimension.
+        """
+        # num_leaves=1000 is near upper of (8, 1024) — should be widened
+        best = {
+            "estimator__num_leaves": 1000,
+            "estimator__learning_rate": 0.05,
+        }
         space = {
             "estimator__num_leaves": (8, 1024),
             "estimator__learning_rate": (0.005, 0.3, "log10"),
@@ -266,6 +274,10 @@ class TestSuggestBounds:
         }
         new_space = suggest_bounds(best, space)
         assert set(new_space.keys()) == set(space.keys())
+        # The near-upper-boundary integer dim must have been widened upward
+        assert new_space["estimator__num_leaves"][1] > 1024
+        # Interior log10 dim is unchanged
+        assert new_space["estimator__learning_rate"] == space["estimator__learning_rate"]
 
     def test_widen_factor_parameter(self):
         """Different widen_factor values produce different bounds."""

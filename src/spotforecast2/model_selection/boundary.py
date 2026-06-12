@@ -24,6 +24,25 @@ Three functions are provided:
   widened on the pressed side; pass it straight back to
   ``run_task_spotoptim(search_space=...)``.
 
+**Key convention difference — prefix handling:**
+
+``report_boundary_positions`` strips the ``"estimator__"`` prefix from each
+search-space key before looking up the value in ``params``.  The ``params``
+dict is expected to come from ``estimator.get_params()`` (scikit-learn style),
+which returns UN-prefixed keys such as ``"reg_alpha"`` — not
+``"estimator__reg_alpha"``.
+
+``boundary_report`` and ``suggest_bounds`` look up ``best_params`` using the
+search-space key **as-is**, including any ``"estimator__"`` prefix.  The
+``best_params`` dict is expected to come from a SpotOptim result, which stores
+FULL search-space keys (e.g. ``"estimator__reg_alpha"``).
+
+Mixing conventions (passing ``get_params()``-style keys to ``boundary_report``,
+or SpotOptim result keys to ``report_boundary_positions``) will silently produce
+an empty result because no key matches.  If ``boundary_report`` returns an empty
+DataFrame for a space with numeric dimensions, a key-convention mismatch is the
+most likely cause.
+
 Ported from:
 
 - ``report_boundary_positions``: ``bart26k-lecture/scripts/team4_4zones_submit.py``
@@ -181,8 +200,8 @@ def boundary_report(
     """Tabulate each tuned value's position inside its search-space bound.
 
     Returns a DataFrame sorted by descending position, with one row per
-    numeric dimension. Categorical dimensions are skipped. ``flag`` is one of
-    ``"> upper"``, ``"< lower"``, or ``""`` (interior).
+    numeric dimension. Categorical and boolean-valued dimensions are skipped.
+    ``flag`` is one of ``"> upper"``, ``"< lower"``, or ``""`` (interior).
 
     This function uses the `search_space` keys as-is (including any
     ``"estimator__"`` prefix) to look up matching entries in `best_params`.
@@ -237,6 +256,8 @@ def boundary_report(
         val = best_params.get(name)  # type: ignore[arg-type]
         if val is None:
             continue
+        if isinstance(val, bool):
+            continue  # bool is a subclass of int; skip to avoid false positions
         if is_log:
             if val <= 0 or low <= 0:
                 continue
@@ -263,6 +284,20 @@ def boundary_report(
         )
     df = pd.DataFrame(rows)
     if df.empty:
+        numeric_dims = sum(
+            1
+            for spec in search_space.values()
+            if isinstance(spec, tuple) and len(spec) in (2, 3)
+        )
+        if numeric_dims > 0:
+            _logger.warning(
+                "boundary_report: result is empty but search_space has %d numeric "
+                "dimension(s). Check key-convention: best_params must use the FULL "
+                "search-space keys (e.g. 'estimator__reg_alpha'), not the unprefixed "
+                "get_params() style ('reg_alpha'). "
+                "Use report_boundary_positions() instead if you have unprefixed keys.",
+                numeric_dims,
+            )
         return pd.DataFrame(columns=["param", "low", "high", "value", "scale", "position", "flag"])
     return df.sort_values("position", ascending=False).reset_index(drop=True)
 

@@ -101,20 +101,25 @@ class TestSelectPacfLagsDegenerate:
             select_pacf_lags(series, n_lags=10, fallback=None)
 
     def test_very_short_series_fallback(self):
-        """Series shorter than 2*n_lags+1; PACF falls back on statsmodels truncation.
+        """Series shorter than 2*n_lags+1; statsmodels truncates n_lags internally.
 
-        No lag should pass the wide confidence band for a near-white-noise short series.
-        We do not mandate whether ValueError or fallback is triggered; only that either
-        the fallback list is returned or a ValueError is raised.
+        With fallback provided the function must return either the fallback list
+        (no significant lags found) or a valid list of ints (some lags pass the
+        wide confidence band for a very short series). It must never raise.
         """
         rng = np.random.default_rng(7)
         series = pd.Series(rng.standard_normal(20))
-        try:
-            result = select_pacf_lags(series, n_lags=5, top_k=2, fallback=[1, 2])
-            # if no significant lags, fallback should be returned
-            assert isinstance(result, list)
-        except ValueError:
-            pass  # also acceptable
+        result = select_pacf_lags(series, n_lags=5, top_k=2, fallback=[1, 2])
+        assert isinstance(result, list)
+        assert all(isinstance(x, int) for x in result)
+
+    def test_very_short_series_no_fallback_raises(self):
+        """Same short series without fallback: ValueError is raised when no
+        significant lags are found (constant-like after statsmodels truncation).
+        """
+        series = pd.Series([1.0] * 12)  # constant → no significant lags, no fallback
+        with pytest.raises(ValueError, match="no significant"):
+            select_pacf_lags(series, n_lags=5, top_k=2, fallback=None)
 
     def test_fallback_list_copied(self):
         """The returned list must be a copy, not the same object as fallback."""

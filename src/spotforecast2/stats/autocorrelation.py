@@ -224,7 +224,8 @@ def select_pacf_lags(
             ranked by descending `|PACF|`). Default is 8.
         fallback: Lag list returned when no lag exceeds the significance band
             (degenerate series: too short, nearly constant, or `n_lags` too
-            large). If `None`, a `ValueError` is raised instead.
+            large). Elements are coerced to `int` before returning. If `None`,
+            a `ValueError` is raised instead.
 
     Returns:
         Sorted list of lag integers (ascending). Length is at most `top_k`;
@@ -316,7 +317,7 @@ def select_pacf_lags(
     )
     if not key_lags:
         if fallback is not None:
-            return list(fallback)
+            return [int(x) for x in fallback]
         raise ValueError(
             f"select_pacf_lags: no significant PACF lags found "
             f"(N={len(series)}, band={conf:.4f}, n_lags={n_lags}). "

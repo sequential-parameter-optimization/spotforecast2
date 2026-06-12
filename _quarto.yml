@@ -128,8 +128,6 @@ website:
             contents:
               - text: "autocorrelation"
                 file: docs/reference/stats.autocorrelation.qmd
-              - text: "select_pacf_lags"
-                file: docs/reference/stats.select_pacf_lags.qmd
           - section: "Tasks"
             contents:
               - text: "task_demo"
@@ -261,7 +259,6 @@ quartodoc:
       desc: "Statistical analysis tools."
       contents:
         - stats.autocorrelation
-        - stats.select_pacf_lags
 
     - title: "Tasks"
       desc: "Demonstration and predefined forecasting tasks."
