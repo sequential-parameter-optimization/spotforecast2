@@ -185,9 +185,9 @@ def plot_feature_importance_by_family(
         print(type(fig).__name__)
         ```
     """
-    ranking = sorted(
-        zip(names, importances), key=lambda kv: kv[1], reverse=True
-    )[:top_n]
+    ranking = sorted(zip(names, importances), key=lambda kv: kv[1], reverse=True)[
+        :top_n
+    ]
     labels = [n for n, _ in ranking][::-1]
     values = [v for _, v in ranking][::-1]
     colors = [_FAMILY_COLOR.get(feature_family(n), "#888888") for n in labels]
@@ -195,13 +195,9 @@ def plot_feature_importance_by_family(
     fig, ax = plt.subplots(figsize=(8.5, 5.5))
     ax.barh(labels, values, color=colors)
     ax.set_xlabel("split count (feature importance)")
-    ax.set_title(
-        f"Top-{top_n} feature importances (coloured by family; lags in red)"
-    )
+    ax.set_title(f"Top-{top_n} feature importances (coloured by family; lags in red)")
     ax.grid(True, axis="x", color="#E5E5E5", linewidth=0.5)
-    handles = [
-        plt.Rectangle((0, 0), 1, 1, color=c) for c in _FAMILY_COLOR.values()
-    ]
+    handles = [plt.Rectangle((0, 0), 1, 1, color=c) for c in _FAMILY_COLOR.values()]
     ax.legend(handles, _FAMILY_COLOR.keys(), fontsize=7, loc="lower right")
     for spine in ("top", "right"):
         ax.spines[spine].set_visible(False)
