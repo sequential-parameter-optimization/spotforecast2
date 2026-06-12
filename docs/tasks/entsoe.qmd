@@ -275,107 +275,94 @@ print(ts_clean.values)  # [1.0, 2.0, 3.0, 4.0, 5.0]
 
 ## Forecaster Models
 
+The pipeline builds its forecasters through *factory* functions that take a
+`ConfigEntsoe` and return a ready-to-fit
+`spotforecast2_safe.forecaster.recursive.ForecasterRecursive`.
+
 ### LightGBM Forecaster
 
-Create a LightGBM-based recursive forecaster:
+The stock LightGBM factory lives in the safe package:
 
-```python
-from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM, config
+```{python}
+from spotforecast2_safe.configurator import ConfigEntsoe
+from spotforecast2_safe.multitask.factories import default_lgbm_forecaster_factory
 
-model = ForecasterRecursiveLGBM(iteration=1)
+config = ConfigEntsoe()
+forecaster = default_lgbm_forecaster_factory(config)
 
-print(model.name)             # 'lgbm'
-print(model.random_state)     # 314159 (from config)
-print(len(model.preprocessor.periods))  # 5 (from config)
+print(type(forecaster).__name__)
+print("lags:", len(forecaster.lags))
 ```
 
 ### XGBoost Forecaster
 
-Create an XGBoost-based recursive forecaster:
+The XGBoost variant ships with the CLI module (xgboost is not a
+safe-package dependency):
 
-```python
-from spotforecast2.tasks.task_entsoe import ForecasterRecursiveXGB, config
+```{python}
+from spotforecast2_safe.configurator import ConfigEntsoe
 
-model = ForecasterRecursiveXGB(iteration=1, lags=24)
+from spotforecast2.entsoe_cli import entsoe_xgb_factory
 
-print(model.name)  # 'xgb'
+config = ConfigEntsoe()
+forecaster = entsoe_xgb_factory(config)
+
+print(type(forecaster.estimator).__name__)
 ```
 
-### Custom Configuration Forecaster
-
-Override default configuration values:
-
-```python
-from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
-from spotforecast2_safe.data import Period
-
-custom_periods = [
-    Period(name='hourly', n_periods=24, column='hour', input_range=(1, 24)),
-]
-
-model = ForecasterRecursiveLGBM(
-    iteration=1,
-    lags=48,
-    periods=custom_periods,
-    country_code='FR',
-    random_state=42
-)
-
-print(len(model.preprocessor.periods))  # 1
-print(model.preprocessor.country_code)  # 'FR'
-```
-
----
+Both factories honour `config.random_state`, `config.lags_consider`, and
+`config.window_size`; supply your own factory through
+`config.forecaster_factory` to customise further (see the Multitask
+tutorial).
 
 ## Using the Python API (Notebooks & Quarto)
 
 ### Full Prediction Pipeline
 
-For users working in Jupyter Notebooks or Quarto, the entire ENTSO-E pipeline can be executed using the Python API. This approach is highly recommended for safety-critical research as it allows for precise control over time windows and hyperparameters.
+For users working in Jupyter Notebooks or Quarto, the entire ENTSO-E pipeline
+can be executed through `MultiTask` — the same path the CLI's `train` and
+`predict` subcommands take. This approach is recommended for research as it
+gives precise control over time windows and hyperparameters.
 
 ```python
-import pandas as pd
+import logging
 import os
+
+from spotforecast2_safe.configurator import ConfigEntsoe
+from spotforecast2_safe.data.entsoe_loader import entsoe_data_loader
+from spotforecast2_safe.data.fetch_data import get_cache_home
 from spotforecast2_safe.downloader.entsoe import download_new_data
-from spotforecast2_safe.manager.trainer import handle_training as handle_training_safe
-from spotforecast2_safe.manager.predictor import get_model_prediction as get_model_prediction_safe
-from spotforecast2.plots.plotter import make_plot
-from spotforecast2.tasks.task_entsoe import ForecasterRecursiveLGBM
+from spotforecast2_safe.multitask.factories import default_lgbm_forecaster_factory
 
-# 1. Setup Time Windows (Last 3 years until last month) and country:
-country_code = "ES"  
-now = pd.Timestamp.now(tz='UTC').floor('D')
-current_month_start = now.replace(day=1)
-last_month_start = (current_month_start - pd.Timedelta(days=1)).replace(day=1)
+from spotforecast2.multitask import MultiTask
 
-# 2. Download Data (Optional, requires ENTSOE_API_KEY)
+# 1. Download data (optional, requires ENTSOE_API_KEY)
 api_key = os.environ.get("ENTSOE_API_KEY")
 if api_key:
-    download_new_data(api_key=api_key, start="202301010000", country_code=country_code)
+    download_new_data(api_key=api_key, start="202301010000")
 
-# 3. Configure and Train
-# Explicit parameters override global configuration for reproducibility
-model_class = ForecasterRecursiveLGBM
-model_name = "lgbm_advanced"
+# 2. Wire the loader and factory into the config
+config = ConfigEntsoe()
+config.targets = ["Actual Load"]
+config.agg_weights = [1.0]
+config.bounds = [(-1e9, 1e9)]
+config.data_loader = entsoe_data_loader
+config.forecaster_factory = default_lgbm_forecaster_factory
+config.data_frame_name = "entsoe-lgbm"
 
-handle_training_safe(
-    model_class=model_class,
-    model_name=model_name,
-    train_size=pd.Timedelta(days=3 * 365),
-    end_dev=last_month_start.strftime("%Y-%m-%d %H:%M%z"),
-    country_code=country_code
+# 3. Run the five-step pipeline (task="defaults" trains; "predict" reuses
+#    the saved model)
+mt = MultiTask(
+    config,
+    task="defaults",
+    cache_home=get_cache_home(config.cache_home),
+    log_level=logging.ERROR,
 )
-
-# 4. Generate Predictions for the forecast horizon
-# The predictor will automatically load the model trained above
-predictions = get_model_prediction_safe(
-    model_name=model_name,
-    predict_size=24 * 31
-)
-
-# 5. Visualize Results
-if predictions:
-    make_plot(predictions)
+mt.prepare_data()
+mt.detect_outliers()
+mt.impute()
+mt.build_exogenous_features()
+mt.run(show=True)
 ```
 
 ---
