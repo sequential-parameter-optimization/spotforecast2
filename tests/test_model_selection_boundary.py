@@ -13,7 +13,6 @@ from spotforecast2.model_selection.boundary import (
     suggest_bounds,
 )
 
-
 # ---------------------------------------------------------------------------
 # Shared fixtures / helpers
 # ---------------------------------------------------------------------------
@@ -37,6 +36,7 @@ MIXED_SPACE = {**LINEAR_SPACE, **LOG_SPACE}
 # ---------------------------------------------------------------------------
 # report_boundary_positions
 # ---------------------------------------------------------------------------
+
 
 class TestReportBoundaryPositions:
     def test_interior_no_flag(self):
@@ -72,6 +72,7 @@ class TestReportBoundaryPositions:
         # learning_rate = 0.006 in (0.005, 0.3) log10:
         # pos = (log10(0.006) - log10(0.005)) / (log10(0.3) - log10(0.005))
         import math
+
         low, high, val = 0.005, 0.3, 0.006
         pos = (math.log10(val) - math.log10(low)) / (math.log10(high) - math.log10(low))
         assert pos < 0.10  # confirm this is a near-lower case
@@ -131,9 +132,7 @@ class TestReportBoundaryPositions:
         with caplog.at_level(logging.INFO, logger="test_custom_boundary_logger"):
             report_boundary_positions(params, space, logger=custom_logger)
         # The custom logger should have emitted at least one INFO message
-        assert any(
-            r.name == "test_custom_boundary_logger" for r in caplog.records
-        )
+        assert any(r.name == "test_custom_boundary_logger" for r in caplog.records)
 
     def test_multiple_flags(self):
         """Multiple near-boundary dims all appear in the returned list."""
@@ -157,6 +156,7 @@ class TestReportBoundaryPositions:
 # boundary_report (DataFrame form)
 # ---------------------------------------------------------------------------
 
+
 class TestBoundaryReport:
     def test_returns_dataframe(self):
         best = {"estimator__reg_alpha": 9.89, "estimator__learning_rate": 0.069}
@@ -165,7 +165,15 @@ class TestBoundaryReport:
             "estimator__learning_rate": (0.005, 0.3, "log10"),
         }
         df = boundary_report(best, space)
-        assert set(df.columns) == {"param", "low", "high", "value", "scale", "position", "flag"}
+        assert set(df.columns) == {
+            "param",
+            "low",
+            "high",
+            "value",
+            "scale",
+            "position",
+            "flag",
+        }
 
     def test_flagged_near_upper(self):
         best = {"estimator__reg_alpha": 9.89}
@@ -191,8 +199,8 @@ class TestBoundaryReport:
 
     def test_sorted_descending_position(self):
         best = {
-            "estimator__reg_alpha": 9.89,   # near upper → high position
-            "estimator__num_leaves": 300,    # interior
+            "estimator__reg_alpha": 9.89,  # near upper → high position
+            "estimator__num_leaves": 300,  # interior
         }
         space = {
             "estimator__reg_alpha": (0.001, 10.0),
@@ -212,6 +220,7 @@ class TestBoundaryReport:
 # ---------------------------------------------------------------------------
 # suggest_bounds
 # ---------------------------------------------------------------------------
+
 
 class TestSuggestBounds:
     def test_interior_unchanged(self):
@@ -277,7 +286,9 @@ class TestSuggestBounds:
         # The near-upper-boundary integer dim must have been widened upward
         assert new_space["estimator__num_leaves"][1] > 1024
         # Interior log10 dim is unchanged
-        assert new_space["estimator__learning_rate"] == space["estimator__learning_rate"]
+        assert (
+            new_space["estimator__learning_rate"] == space["estimator__learning_rate"]
+        )
 
     def test_widen_factor_parameter(self):
         """Different widen_factor values produce different bounds."""

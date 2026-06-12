@@ -323,9 +323,9 @@ class TestPlotWithOutliersConfigTargetsFallback:
             for w in caught
             if issubclass(w.category, (DeprecationWarning, FutureWarning))
         ]
-        assert deprecation_warnings == [], (
-            f"Unexpected deprecation warnings: {[str(w.message) for w in deprecation_warnings]}"
-        )
+        assert (
+            deprecation_warnings == []
+        ), f"Unexpected deprecation warnings: {[str(w.message) for w in deprecation_warnings]}"
 
     def test_explicit_targets_wins_over_config_targets(self):
         """When explicit targets= differs from config.targets, explicit wins."""

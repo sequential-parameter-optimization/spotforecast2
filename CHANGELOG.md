@@ -1,3 +1,19 @@
+## [9.0.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v8.1.1...v9.0.0-rc.1) (2026-06-12)
+
+### ⚠ BREAKING CHANGES
+
+* **tasks:** the spotforecast-demo, spotforecast-n2o1,
+spotforecast-n2o1-df, spotforecast-n2o1-cov, and spotforecast-n2o1-cov-df
+console scripts and the spotforecast2.tasks.task_demo /
+spotforecast2.tasks.task_n_to_1* modules are removed.
+spotforecast2-entsoe and spotforecast2.tasks.task_entsoe are unaffected.
+
+Co-Authored-By: Claude Fable 5 <noreply@anthropic.com>
+
+### Features
+
+* **tasks:** remove unused demo and n-to-1 task modules and console scripts ([98dc393](https://github.com/sequential-parameter-optimization/spotforecast2/commit/98dc393a06f1e34b675275144f8a37c88178e755))
+
 ## [8.1.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v8.1.0...v8.1.1) (2026-06-12)
 
 ### Code Refactoring

@@ -26,7 +26,6 @@ from spotforecast2.plots.diagnostics import (  # noqa: E402
     plot_shap_summary,
 )
 
-
 # ---------------------------------------------------------------------------
 # Teardown
 # ---------------------------------------------------------------------------
@@ -174,8 +173,14 @@ def test_importance_plot_top_n_respected():
 
 def test_importance_plot_family_colors_distinct():
     """Known feature names from different families get different bar colors."""
-    names = ["lag_1", "holiday_DE", "poly_hour_2", "window_mean_72",
-             "sin_hour", "wind_speed"]
+    names = [
+        "lag_1",
+        "holiday_DE",
+        "poly_hour_2",
+        "window_mean_72",
+        "sin_hour",
+        "wind_speed",
+    ]
     scores = [100, 90, 80, 70, 60, 50]
     fig = plot_feature_importance_by_family(names, scores)
     ax = fig.axes[0]
@@ -205,9 +210,7 @@ def test_shap_summary_returns_figure():
     from lightgbm import LGBMRegressor
 
     rng = np.random.default_rng(7)
-    X = pd.DataFrame(
-        rng.standard_normal((120, 4)), columns=["f0", "f1", "f2", "f3"]
-    )
+    X = pd.DataFrame(rng.standard_normal((120, 4)), columns=["f0", "f1", "f2", "f3"])
     y = X["f0"] * 2 + rng.standard_normal(120) * 0.1
     est = LGBMRegressor(n_estimators=10, verbose=-1, random_state=0)
     est.fit(X, y)
@@ -228,9 +231,7 @@ def test_shap_summary_subsamples_max_samples():
     from lightgbm import LGBMRegressor
 
     rng = np.random.default_rng(9)
-    X = pd.DataFrame(
-        rng.standard_normal((500, 3)), columns=["a", "b", "c"]
-    )
+    X = pd.DataFrame(rng.standard_normal((500, 3)), columns=["a", "b", "c"])
     y = X["a"] + rng.standard_normal(500) * 0.2
     est = LGBMRegressor(n_estimators=10, verbose=-1, random_state=0)
     est.fit(X, y)
@@ -254,8 +255,7 @@ def test_forecast_vs_reference_returns_figure_with_overlap():
     forecast = _make_forecast(24)
     reference = _make_forecast(24, seed=1)  # same index -> full overlap
     fig = plot_forecast_vs_reference(
-        forecast, reference,
-        forecast_label="team_4", reference_label="ENTSO-E"
+        forecast, reference, forecast_label="team_4", reference_label="ENTSO-E"
     )
     assert isinstance(fig, Figure)
 
@@ -297,9 +297,7 @@ def test_forecast_vs_reference_unit_scale_applied(caplog):
     forecast = _make_forecast(24)
     reference = _make_forecast(24, seed=5)
     with caplog.at_level(logging.INFO, logger="spotforecast2.plots.diagnostics"):
-        fig = plot_forecast_vs_reference(
-            forecast, reference, unit_scale=1.0, unit="MW"
-        )
+        fig = plot_forecast_vs_reference(forecast, reference, unit_scale=1.0, unit="MW")
     ax = fig.axes[0]
     # y-axis upper limit should be in the MW range (>1000), not GW (<100)
     ymin, ymax = ax.get_ylim()
@@ -339,6 +337,5 @@ def test_forecast_vs_reference_mad_logged_in_display_unit(caplog):
     assert match, f"Could not parse GW value from log message: {msg!r}"
     logged_value = float(match.group(1))
     assert logged_value == pytest.approx(1.0, abs=0.05), (
-        f"Logged MAD should be 1.0 GW, got {logged_value}. "
-        f"Full message: {msg!r}"
+        f"Logged MAD should be 1.0 GW, got {logged_value}. " f"Full message: {msg!r}"
     )

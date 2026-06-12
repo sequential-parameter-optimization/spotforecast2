@@ -35,7 +35,7 @@ The current release is 3.3.0, tracking the stable public interface re-exported a
 
 ## 2. Intended Use and Scope
 
-spotforecast2 supports exploratory and applied forecasting of hourly electricity load and spot prices on ENTSO-E data, end to end, through the `spotforecast2-entsoe` and `spotforecast-demo` console scripts. Its distinctive capabilities are hyperparameter search — Bayesian search over lags, window features, and regressor parameters with Optuna (`bayesian_search_forecaster`), or surrogate-model search with SpotOptim (`spotoptim_search_forecaster`) — interactive inspection through Plotly figures, and global SHAP feature importances via `shap.TreeExplainer`. The `MultiTask` dispatcher and the `run()` entry point orchestrate multi-target pipelines: per-target data preparation, outlier handling, imputation, feature engineering, tuning, and prediction.
+spotforecast2 supports exploratory and applied forecasting of hourly electricity load and spot prices on ENTSO-E data, end to end, through the `spotforecast2-entsoe` console script. Its distinctive capabilities are hyperparameter search — Bayesian search over lags, window features, and regressor parameters with Optuna (`bayesian_search_forecaster`), or surrogate-model search with SpotOptim (`spotoptim_search_forecaster`) — interactive inspection through Plotly figures, and global SHAP feature importances via `shap.TreeExplainer`. The `MultiTask` dispatcher and the `run()` entry point orchestrate multi-target pipelines: per-target data preparation, outlier handling, imputation, feature engineering, tuning, and prediction.
 
 The intended downstream use is development and model selection: choosing lag windows and regressor hyperparameters here, then promoting the validated configuration into a spotforecast2-safe deployment for the deterministic inference path. Tuned `ForecasterRecursiveLGBMFull` and `ForecasterRecursiveXGBFull` models, or just their best parameters, also feed research notebooks and reporting.
 
@@ -60,14 +60,11 @@ importances = model.get_global_shap_feature_importance(frac=0.1)
 print(importances.head())
 ```
 
-Run a complete multi-target pipeline programmatically via `run()`, or use the bundled console scripts:
+Run a complete multi-target pipeline programmatically via `run()`, or use the bundled console script:
 
 ```bash
 spotforecast2-entsoe      # ENTSO-E download / train / predict (needs ENTSOE_API_KEY)
-spotforecast-demo         # baseline vs. covariate vs. custom-LightGBM comparison
 ```
-
-Additional N-to-1 pipeline variants are registered as `spotforecast-n2o1`, `spotforecast-n2o1-df`, `spotforecast-n2o1-cov`, and `spotforecast-n2o1-cov-df`.
 
 ## 4. Technical Specification
 
