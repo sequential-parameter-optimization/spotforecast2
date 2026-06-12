@@ -1,3 +1,15 @@
+## [8.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v8.0.0...v8.1.0) (2026-06-12)
+
+### Features
+
+* **plots:** operational diagnostics plots (ACF, importance-by-family, SHAP summary, forecast-vs-reference) ([0bbc0c6](https://github.com/sequential-parameter-optimization/spotforecast2/commit/0bbc0c6586502f5f0466fa4d24a92a8bdfcec00f))
+* **stats:** PACF lag selection + search-space boundary report ([c8079b2](https://github.com/sequential-parameter-optimization/spotforecast2/commit/c8079b2a10fbfb97e333c89948eb234fc2381e9d))
+
+### Bug Fixes
+
+* **plots:** apply code-review fixes to diagnostics.py ([5a7857c](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5a7857c1d9ac012a47e975354381dc0af7ba43fc))
+* **stats,model_selection:** code-review fixes for PACF lag selection and boundary helpers ([62af0dd](https://github.com/sequential-parameter-optimization/spotforecast2/commit/62af0dddc84de20cbf4145dbf961852d404a3643))
+
 ## [8.1.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v8.0.0...v8.1.0-rc.1) (2026-06-12)
 
 ### Features
