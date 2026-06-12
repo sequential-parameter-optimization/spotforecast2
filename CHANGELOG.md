@@ -1,3 +1,9 @@
+## [8.1.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v8.1.0...v8.1.1-rc.1) (2026-06-12)
+
+### Code Refactoring
+
+* **model_selection:** extract _position_flag, drop shadowing import (CodeQL) ([5f5d096](https://github.com/sequential-parameter-optimization/spotforecast2/commit/5f5d0965de936b11e03738f9669ab0ed4b867c01))
+
 ## [8.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v8.0.0...v8.1.0) (2026-06-12)
 
 ### Features
