@@ -1,13 +1,16 @@
 # SPDX-FileCopyrightText: 2026 bartzbeielstein
 # SPDX-License-Identifier: AGPL-3.0-or-later
 
-"""Consumer-contract test protecting ``bart26k-lecture/14_team_4_submission.qmd``.
+"""Consumer-contract test protecting ``bart26l-vorlesung/14_team_4_submission.qmd``.
 
 Decider requirement (ADR ``adr-multitask-configmulti-merge``, 2026-06-06):
 every refactoring or code change must keep the lecture document valid and
-tested — always against its *most recent* version. This test therefore parses
-the qmd at test time (no frozen copy) and statically verifies its API surface
-against the installed packages:
+tested — always against its *most recent* version. The source of truth is the
+German lecture book ``bart26l-vorlesung``; ``bart26k-lecture`` is its generated
+English mirror with byte-identical python cells, so the contract is checked
+against the German source. This test therefore parses the qmd at test time
+(no frozen copy) and statically verifies its API surface against the installed
+packages:
 
 1. every ``spotforecast2`` / ``spotforecast2_safe`` import in its python cells
    resolves,
@@ -35,7 +38,7 @@ from spotforecast2_safe.configurator.config_entsoe import ConfigEntsoe
 
 from spotforecast2.multitask import MultiTask
 
-DEFAULT_QMD = Path.home() / "workspace" / "bart26k-lecture" / "14_team_4_submission.qmd"
+DEFAULT_QMD = Path.home() / "workspace" / "bart26l-vorlesung" / "14_team_4_submission.qmd"
 QMD_PATH = Path(os.environ.get("TEAM4_QMD", DEFAULT_QMD))
 
 pytestmark = pytest.mark.skipif(
