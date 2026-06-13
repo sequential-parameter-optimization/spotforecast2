@@ -34,12 +34,12 @@ dependencies = [
     # 22.0.0 made warm_start_lags the seed lag list itself (default
     # DEFAULT_WARM_START_LAGS, None disables) — consumed by SpotOptimStrategy.
     # 21.2.0 added max_time_spotoptim, forwarded as SpotOptim's max_time.
-    "spotforecast2-safe>=22.3.0,<23",
+    "spotforecast2-safe>=22.3.0",
     # spotoptim 1.0 is sequential-only and lean: torch/tensorboard moved to its
     # ``[torch]`` extra. sf2 forwards tensorboard_* kwargs into SpotOptim, so we
     # pin the extra to keep the TensorBoard tuning dashboards working (they were
     # always available via spotoptim's old hard torch dependency).
-    "spotoptim[torch]>=1.0.0,<2",
+    "spotoptim[torch]>=1.0.0",
     "tqdm>=4.67.2",
     # Directly imported by spotforecast2.entsoe_cli (and the xgb forecaster
     # model). Previously satisfied transitively; declared explicitly now that
@@ -48,7 +48,7 @@ dependencies = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.9.18,<0.10.0"]
+requires = ["uv_build>=0.9.18"]
 build-backend = "uv_build"
 
 [dependency-groups]
