@@ -233,10 +233,10 @@ def check_listing_coverage(rendered: dict) -> list[str]:
             wholesale.add(dotted)  # whole module documented -> all members included
             continue
         except ImportError:
-            pass
-        module, _, symbol = dotted.rpartition(".")
-        if module:
-            listed_by_module.setdefault(module, set()).add(symbol)
+            # Not a whole-module path; treat as module.symbol entry below.
+            module, _, symbol = dotted.rpartition(".")
+            if module:
+                listed_by_module.setdefault(module, set()).add(symbol)
 
     gaps: list[str] = []
     for module, listed in sorted(listed_by_module.items()):
