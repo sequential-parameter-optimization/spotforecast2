@@ -205,6 +205,17 @@ quartodoc:
   parser: google
   render_interlinks: true
 
+  # Default options applied to every documented object.  include_inherited
+  # surfaces methods a class inherits from its base classes so they are not
+  # silently missing from the rendered API page.  The multitask task classes
+  # inherit their pipeline steps (prepare_data, detect_outliers, impute,
+  # build_exogenous_features, ...) cross-package from
+  # spotforecast2_safe.multitask.base.BaseTask; griffe resolves these members
+  # statically, so no `dynamic: true` is needed here (it remains only on the
+  # agg_predictor re-export alias below).  Enforced by docs/check_api_coverage.py.
+  options:
+    include_inherited: true
+
   sections:
     - title: "Plots"
       desc: "Outlier, prediction, time-series, and operational diagnostic visualization tools."
@@ -227,6 +238,13 @@ quartodoc:
     - title: "Models"
       desc: "Full-featured forecaster classes with Bayesian tuning and SHAP."
       contents:
+        # These full-models inherit fit / predict / backtest / ... cross-package
+        # from spotforecast2_safe via the spotforecast2_safe.forecaster.wrappers
+        # re-export alias, which griffe cannot resolve (statically or
+        # dynamically) — so those inherited methods do not render here.  They are
+        # documented on their canonical home, the spotforecast2-safe API site
+        # (ForecasterRecursiveModel / ForecasterRecursiveLGBM), and are listed
+        # under DOCUMENTED_ELSEWHERE in docs/check_api_coverage.py.
         - models.forecaster_recursive_model_full
         - models.forecaster_recursive_lgbm_full
         - models.forecaster_recursive_xgb_full
