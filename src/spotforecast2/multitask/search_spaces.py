@@ -210,10 +210,70 @@ def search_space_xgb(trial: Any) -> Dict[str, Any]:
     }
 
 
+def search_space_catboost(trial: Any) -> Dict[str, Any]:
+    """Optuna search space for CatBoost hyperparameters.
+
+    Consumed by ``ForecasterRecursiveModelFull.tune`` via the
+    ``SEARCH_SPACES`` registry below. Estimator keys use the ``estimator__``
+    prefix; see `_default_optuna_search_space` for the rationale.
+
+    The space is deliberately ``bootstrap_type``-agnostic: it omits
+    ``subsample`` / ``colsample`` (valid only for specific CatBoost bootstrap
+    types) to avoid invalid-combination errors, and instead tunes CatBoost's
+    native ``depth`` / ``l2_leaf_reg`` / ``random_strength`` /
+    ``bagging_temperature`` levers.
+
+    Args:
+        trial: An ``optuna.trial.Trial`` instance.
+
+    Returns:
+        Mapping of hyperparameter name to suggested value for the current
+        trial.
+
+    Examples:
+        ```{python}
+        import optuna
+        from spotforecast2.multitask.search_spaces import search_space_catboost
+
+        optuna.logging.set_verbosity(optuna.logging.WARNING)
+        study = optuna.create_study(
+            direction="minimize",
+            sampler=optuna.samplers.TPESampler(seed=42),
+        )
+        trial = study.ask()
+        params = search_space_catboost(trial)
+        print("Keys:", list(params.keys()))
+        assert "estimator__depth" in params
+        assert "lags" in params
+        assert isinstance(params["estimator__learning_rate"], float)
+        ```
+    """
+    return {
+        "estimator__depth": trial.suggest_int("estimator__depth", 4, 10),
+        "estimator__learning_rate": trial.suggest_float(
+            "estimator__learning_rate", 0.001, 0.2, log=True
+        ),
+        "estimator__l2_leaf_reg": trial.suggest_float(
+            "estimator__l2_leaf_reg", 1.0, 10.0, log=True
+        ),
+        "estimator__n_estimators": trial.suggest_int(
+            "estimator__n_estimators", 50, 600, step=50
+        ),
+        "estimator__random_strength": trial.suggest_float(
+            "estimator__random_strength", 0.0, 2.0
+        ),
+        "estimator__bagging_temperature": trial.suggest_float(
+            "estimator__bagging_temperature", 0.0, 1.0
+        ),
+        "lags": trial.suggest_categorical("lags", LAGS_CONSIDER),
+    }
+
+
 #: Registry mapping model name to its Optuna search-space function.
 #: Consumed by ``ForecasterRecursiveModelFull.tune`` to pick the right
 #: search space based on ``self.name``.
 SEARCH_SPACES: Dict[str, Any] = {
     "lgbm": search_space_lgbm,
     "xgb": search_space_xgb,
+    "catboost": search_space_catboost,
 }

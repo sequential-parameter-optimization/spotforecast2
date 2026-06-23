@@ -13,6 +13,11 @@ authors = [
 requires-python = ">=3.13"
 dependencies = [
     "astral>=3.2",
+    # Directly imported by spotforecast2.entsoe_cli (catboost factory) and the
+    # CatBoost forecaster model. Core dep for parity with xgboost — sf2 is the
+    # unrestricted sibling, so the CVE-minimisation constraint that keeps
+    # catboost optional in spotforecast2-safe does not apply here.
+    "catboost>=1.2",
     "entsoe-py>=0.7.10",
     "feature-engine>=1.9.3",
     "holidays>=0.90",
@@ -31,10 +36,12 @@ dependencies = [
     "ruff>=0.15.6",
     "scikit-learn>=1.8.0",
     "shap>=0.49.1",
-    # 22.0.0 made warm_start_lags the seed lag list itself (default
-    # DEFAULT_WARM_START_LAGS, None disables) — consumed by SpotOptimStrategy.
-    # 21.2.0 added max_time_spotoptim, forwarded as SpotOptim's max_time.
-    "spotforecast2-safe>=22.3.0",
+    # 23.0.0 added ForecasterRecursiveCatBoost (wrapped by
+    # ForecasterRecursiveCatBoostFull). 22.0.0 made warm_start_lags the seed lag
+    # list itself (default DEFAULT_WARM_START_LAGS, None disables) — consumed by
+    # SpotOptimStrategy. 21.2.0 added max_time_spotoptim, forwarded as SpotOptim's
+    # max_time.
+    "spotforecast2-safe>=23.0.0",
     # spotoptim 1.0 is sequential-only and lean: torch/tensorboard moved to its
     # ``[torch]`` extra. sf2 forwards tensorboard_* kwargs into SpotOptim, so we
     # pin the extra to keep the TensorBoard tuning dashboards working (they were
