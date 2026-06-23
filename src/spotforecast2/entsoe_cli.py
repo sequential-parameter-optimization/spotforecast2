@@ -33,6 +33,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 import pandas as pd
+from catboost import CatBoostRegressor
 from spotforecast2_safe.configurator import ConfigEntsoe
 from spotforecast2_safe.data.entsoe_loader import entsoe_data_loader
 from spotforecast2_safe.data.fetch_data import get_cache_home
@@ -45,7 +46,11 @@ from xgboost import XGBRegressor
 
 from spotforecast2.multitask.multi import MultiTask
 
-_PROJECT_BY_MODEL = {"lgbm": "entsoe-lgbm", "xgb": "entsoe-xgb"}
+_PROJECT_BY_MODEL = {
+    "lgbm": "entsoe-lgbm",
+    "xgb": "entsoe-xgb",
+    "catboost": "entsoe-catboost",
+}
 
 # Default single-target list for ENTSO-E load forecasting.  ``download_new_data``
 # / ``merge_build_manual`` produce a CSV whose load column is named
@@ -107,7 +112,66 @@ def entsoe_xgb_factory(
     )
 
 
-_FACTORY_BY_MODEL = {"lgbm": default_lgbm_forecaster_factory, "xgb": entsoe_xgb_factory}
+def entsoe_catboost_factory(
+    config: ConfigEntsoe,
+    *,
+    weight_func: Optional[Any] = None,
+    target: Optional[str] = None,
+) -> ForecasterRecursive:
+    """CatBoost ForecasterRecursive for the ENTSO-E pipeline.
+
+    Mirrors `entsoe_xgb_factory` but uses a `CatBoostRegressor` estimator with
+    the determinism / fail-safe flags pinned by the safe CatBoost wrapper
+    (``random_seed``, ``thread_count=1``, ``allow_writing_files=False``).  Lives
+    here rather than in the safe package because, although the safe wrapper
+    treats catboost as an optional import, sf2 declares it as a core dependency.
+
+    Args:
+        config: Any object exposing ``random_state``, ``lags_consider``, and
+            ``window_size`` (typically `ConfigEntsoe`).
+        weight_func: Per-sample weight function from the imputation step.
+        target: Ignored; accepted for factory-signature compatibility.
+
+    Examples:
+        ```{python}
+        from catboost import CatBoostRegressor
+        from spotforecast2_safe.configurator import ConfigEntsoe
+        from spotforecast2_safe.forecaster.recursive import ForecasterRecursive
+
+        from spotforecast2.entsoe_cli import entsoe_catboost_factory
+
+        config = ConfigEntsoe()
+        forecaster = entsoe_catboost_factory(
+            config, weight_func=None, target="Actual Load"
+        )
+
+        print(type(forecaster).__name__)
+        assert isinstance(forecaster, ForecasterRecursive)
+        assert isinstance(forecaster.estimator, CatBoostRegressor)
+        print("lags:", forecaster.lags)
+        ```
+    """
+    del target
+    return ForecasterRecursive(
+        estimator=CatBoostRegressor(
+            random_seed=config.random_state,
+            thread_count=1,
+            verbose=False,
+            allow_writing_files=False,
+        ),
+        lags=config.lags_consider[-1],
+        window_features=RollingFeatures(
+            stats=["mean"], window_sizes=config.window_size
+        ),
+        weight_func=weight_func,
+    )
+
+
+_FACTORY_BY_MODEL = {
+    "lgbm": default_lgbm_forecaster_factory,
+    "xgb": entsoe_xgb_factory,
+    "catboost": entsoe_catboost_factory,
+}
 
 
 def _build_entsoe_config(model: str) -> ConfigEntsoe:
@@ -223,7 +287,9 @@ def main() -> None:
     parser_dl.add_argument("dates", nargs="*", help="Start [End]")
 
     parser_tr = subparsers.add_parser("train", help="Train a forecaster")
-    parser_tr.add_argument("model", choices=["lgbm", "xgb"], default="lgbm", nargs="?")
+    parser_tr.add_argument(
+        "model", choices=["lgbm", "xgb", "catboost"], default="lgbm", nargs="?"
+    )
     parser_tr.add_argument("--show", action="store_true")
     parser_tr.add_argument(
         "--force",
@@ -232,7 +298,9 @@ def main() -> None:
     )
 
     parser_pr = subparsers.add_parser("predict", help="Predict with a saved forecaster")
-    parser_pr.add_argument("model", choices=["lgbm", "xgb"], default="lgbm", nargs="?")
+    parser_pr.add_argument(
+        "model", choices=["lgbm", "xgb", "catboost"], default="lgbm", nargs="?"
+    )
     parser_pr.add_argument("--show", action="store_true")
 
     subparsers.add_parser("merge", help="Merge raw CSVs into the interim file")

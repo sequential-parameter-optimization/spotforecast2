@@ -14,15 +14,20 @@ Covers:
 
 import pandas as pd
 from spotforecast2_safe.forecaster.wrappers import (
+    ForecasterRecursiveCatBoost,
     ForecasterRecursiveLGBM,
     ForecasterRecursiveModel,
     ForecasterRecursiveXGB,
 )
 
 # Package-level aliases — used by TestImports to verify re-export paths
+from spotforecast2.models import ForecasterRecursiveCatBoostFull as _CFull
 from spotforecast2.models import ForecasterRecursiveLGBMFull as _LFull
 from spotforecast2.models import ForecasterRecursiveModelFull as _MFull
 from spotforecast2.models import ForecasterRecursiveXGBFull as _XFull
+from spotforecast2.models.forecaster_recursive_catboost_full import (
+    ForecasterRecursiveCatBoostFull,
+)
 from spotforecast2.models.forecaster_recursive_lgbm_full import (
     ForecasterRecursiveLGBMFull,
 )
@@ -49,6 +54,9 @@ class TestImports:
 
     def test_package_models_xgb_full(self):
         assert ForecasterRecursiveXGBFull is _XFull
+
+    def test_package_models_catboost_full(self):
+        assert ForecasterRecursiveCatBoostFull is _CFull
 
 
 # ---------------------------------------------------------------------------
@@ -202,6 +210,93 @@ class TestForecasterRecursiveXGBFull:
 
 
 # ---------------------------------------------------------------------------
+# ForecasterRecursiveCatBoostFull
+# ---------------------------------------------------------------------------
+
+
+class TestForecasterRecursiveCatBoostFull:
+    """Verify ForecasterRecursiveCatBoostFull construction and MRO."""
+
+    def test_name(self):
+        assert ForecasterRecursiveCatBoostFull(iteration=0).name == "catboost"
+
+    def test_forecaster_not_none(self):
+        assert ForecasterRecursiveCatBoostFull(iteration=0).forecaster is not None
+
+    def test_n_trials_default(self):
+        assert ForecasterRecursiveCatBoostFull(iteration=0).n_trials == 10
+
+    def test_custom_n_trials(self):
+        assert ForecasterRecursiveCatBoostFull(iteration=0, n_trials=7).n_trials == 7
+
+    def test_iteration(self):
+        assert ForecasterRecursiveCatBoostFull(iteration=4).iteration == 4
+
+    def test_inherits_model_full(self):
+        assert issubclass(ForecasterRecursiveCatBoostFull, ForecasterRecursiveModelFull)
+
+    def test_inherits_catboost(self):
+        assert issubclass(ForecasterRecursiveCatBoostFull, ForecasterRecursiveCatBoost)
+
+    def test_inherits_base_model(self):
+        assert issubclass(ForecasterRecursiveCatBoostFull, ForecasterRecursiveModel)
+
+    def test_tune_resolves_from_model_full(self):
+        mro_names = [c.__name__ for c in ForecasterRecursiveCatBoostFull.__mro__]
+        full_idx = mro_names.index("ForecasterRecursiveModelFull")
+        cb_idx = mro_names.index("ForecasterRecursiveCatBoost")
+        assert full_idx < cb_idx
+
+    def test_shap_untuned_returns_empty_series(self):
+        from unittest.mock import patch
+
+        model = ForecasterRecursiveCatBoostFull(iteration=0)
+        dummy_X = pd.DataFrame({"a": [1.0, 2.0]})
+        dummy_y = pd.Series([1.0, 2.0])
+        with patch.object(model, "_get_training_data", return_value=(dummy_X, dummy_y)):
+            result = model.get_global_shap_feature_importance()
+        assert isinstance(result, pd.Series)
+        assert result.empty
+
+    def test_predict_size_custom(self):
+        model = ForecasterRecursiveCatBoostFull(iteration=0, predict_size=12)
+        assert model.predict_size == 12
+
+    def test_random_state_custom(self):
+        model = ForecasterRecursiveCatBoostFull(iteration=0, random_state=99)
+        assert model.random_state == 99
+
+
+# ---------------------------------------------------------------------------
+# Search-space registry
+# ---------------------------------------------------------------------------
+
+
+class TestSearchSpaceCatBoost:
+    """Verify CatBoost is wired into the Optuna search-space registry."""
+
+    def test_catboost_registered(self):
+        from spotforecast2.multitask.search_spaces import SEARCH_SPACES
+
+        assert "catboost" in SEARCH_SPACES
+
+    def test_search_space_keys(self):
+        import optuna
+
+        from spotforecast2.multitask.search_spaces import search_space_catboost
+
+        optuna.logging.set_verbosity(optuna.logging.WARNING)
+        study = optuna.create_study(
+            direction="minimize",
+            sampler=optuna.samplers.TPESampler(seed=0),
+        )
+        params = search_space_catboost(study.ask())
+        assert "estimator__depth" in params
+        assert "estimator__learning_rate" in params
+        assert "lags" in params
+
+
+# ---------------------------------------------------------------------------
 # from_config classmethod
 # ---------------------------------------------------------------------------
 
@@ -245,3 +340,10 @@ class TestFromConfig:
         cfg = ConfigMulti(random_state=7)
         model = ForecasterRecursiveXGBFull.from_config(iteration=0, config=cfg)
         assert model.random_state == 7
+
+    def test_catboost_from_config_returns_instance(self):
+        from spotforecast2_safe.configurator.config_multi import ConfigMulti
+
+        cfg = ConfigMulti()
+        model = ForecasterRecursiveCatBoostFull.from_config(iteration=0, config=cfg)
+        assert isinstance(model, ForecasterRecursiveCatBoostFull)

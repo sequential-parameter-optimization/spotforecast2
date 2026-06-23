@@ -84,6 +84,8 @@ website:
                 file: docs/reference/models.forecaster_recursive_lgbm_full.qmd
               - text: "forecaster_recursive_xgb_full"
                 file: docs/reference/models.forecaster_recursive_xgb_full.qmd
+              - text: "forecaster_recursive_catboost_full"
+                file: docs/reference/models.forecaster_recursive_catboost_full.qmd
           - section: "Multitask"
             contents:
               - text: "agg_predictor"
@@ -248,6 +250,7 @@ quartodoc:
         - models.forecaster_recursive_model_full
         - models.forecaster_recursive_lgbm_full
         - models.forecaster_recursive_xgb_full
+        - models.forecaster_recursive_catboost_full
 
     - title: "Multitask"
       desc: "Multi-target forecasting pipeline tasks and dispatcher."
