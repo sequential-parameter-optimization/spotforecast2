@@ -1,3 +1,14 @@
+## [10.1.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.0.0...v10.1.0-rc.1) (2026-06-23)
+
+### Features
+
+* **models:** add ForecasterRecursiveCatBoostFull (CatBoost tuning + SHAP) ([#228](https://github.com/sequential-parameter-optimization/spotforecast2/issues/228)) ([08447e5](https://github.com/sequential-parameter-optimization/spotforecast2/commit/08447e5d051375699bf2131cb5660268daf8d77b))
+
+### Documentation
+
+* render inherited API methods and gate public-symbol coverage ([98b6a2a](https://github.com/sequential-parameter-optimization/spotforecast2/commit/98b6a2a04170a61c03e40e31ce89821935012688))
+* render inherited API methods and gate public-symbol coverage ([#226](https://github.com/sequential-parameter-optimization/spotforecast2/issues/226)) ([2529c6e](https://github.com/sequential-parameter-optimization/spotforecast2/commit/2529c6e72e19a0c7fae914399c44ffb19ffebf5b))
+
 ## [10.0.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v9.0.0...v10.0.0) (2026-06-12)
 
 ### ⚠ BREAKING CHANGES

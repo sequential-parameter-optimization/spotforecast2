@@ -11,8 +11,12 @@ Classes:
     ForecasterRecursiveModelFull: Base model with Bayesian tuning and SHAP.
     ForecasterRecursiveLGBMFull: LightGBM model with tuning and SHAP.
     ForecasterRecursiveXGBFull: XGBoost model with tuning and SHAP.
+    ForecasterRecursiveCatBoostFull: CatBoost model with tuning and SHAP.
 """
 
+from spotforecast2.models.forecaster_recursive_catboost_full import (
+    ForecasterRecursiveCatBoostFull,
+)
 from spotforecast2.models.forecaster_recursive_lgbm_full import (
     ForecasterRecursiveLGBMFull,
 )
@@ -27,4 +31,5 @@ __all__ = [
     "ForecasterRecursiveModelFull",
     "ForecasterRecursiveLGBMFull",
     "ForecasterRecursiveXGBFull",
+    "ForecasterRecursiveCatBoostFull",
 ]
