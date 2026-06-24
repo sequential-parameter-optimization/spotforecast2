@@ -104,6 +104,8 @@ website:
                 file: docs/reference/multitask.CleanTask.qmd
               - text: "MultiTask"
                 file: docs/reference/multitask.MultiTask.qmd
+              - text: "run"
+                file: docs/reference/multitask.run.qmd
           - section: "Model Selection"
             contents:
               - text: "bayesian_search"
@@ -266,6 +268,7 @@ quartodoc:
         - multitask.PredictTask
         - multitask.CleanTask
         - multitask.MultiTask
+        - multitask.run
 
     - title: "Stats"
       desc: "Statistical analysis tools."

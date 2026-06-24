@@ -1,3 +1,9 @@
+## [10.2.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.1.0...v10.2.0-rc.1) (2026-06-24)
+
+### Features
+
+* **multitask:** add run() convenience wrapper ([#230](https://github.com/sequential-parameter-optimization/spotforecast2/issues/230)) ([35c0a9f](https://github.com/sequential-parameter-optimization/spotforecast2/commit/35c0a9f88b24b50d36fc588a5f08542822921c96))
+
 ## [10.1.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.0.0...v10.1.0) (2026-06-23)
 
 ### Features
