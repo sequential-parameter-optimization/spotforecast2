@@ -266,6 +266,7 @@ quartodoc:
         - multitask.PredictTask
         - multitask.CleanTask
         - multitask.MultiTask
+        - multitask.run
 
     - title: "Stats"
       desc: "Statistical analysis tools."

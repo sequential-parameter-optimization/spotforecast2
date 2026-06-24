@@ -18,9 +18,13 @@ forecasting pipelines:
 - MultiTask — dispatcher that selects one of the tasks
   via a ``task`` parameter.
 
+A high-level ``run`` convenience function wraps the full pipeline sequence
+behind a single call (see ``spotforecast2.multitask.runner``).
+
 Public API
 ----------
-All classes are importable directly from ``spotforecast2.multitask``.
+All classes and the ``run`` function are importable directly from
+``spotforecast2.multitask``.
 """
 
 from spotforecast2.multitask.base import BaseTask, agg_predictor
@@ -30,6 +34,7 @@ from spotforecast2.multitask.lazy import LazyTask
 from spotforecast2.multitask.multi import MultiTask
 from spotforecast2.multitask.optuna import OptunaTask
 from spotforecast2.multitask.predict import PredictTask
+from spotforecast2.multitask.runner import run
 from spotforecast2.multitask.spotoptim import SpotOptimTask
 
 __all__ = [
@@ -42,4 +47,5 @@ __all__ = [
     "PredictTask",
     "SpotOptimTask",
     "agg_predictor",
+    "run",
 ]
