@@ -1,3 +1,9 @@
+## [10.2.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.2.1...v10.2.2) (2026-06-25)
+
+### Bug Fixes
+
+* **ci:** fix dependabot-auto-merge workflow failures ([47527fc](https://github.com/sequential-parameter-optimization/spotforecast2/commit/47527fc2e8bc6db03db8e81901d826f014bc396e))
+
 ## [10.2.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.2.0...v10.2.1) (2026-06-25)
 
 ### Bug Fixes
