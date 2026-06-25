@@ -1,7 +1,8 @@
-## [10.2.1-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.2.0...v10.2.1-rc.1) (2026-06-25)
+## [10.2.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.2.0...v10.2.1) (2026-06-25)
 
 ### Bug Fixes
 
+* **deps:** patch npm and Python security vulnerabilities ([353e2c2](https://github.com/sequential-parameter-optimization/spotforecast2/commit/353e2c256c2760306519d6c051d7b674b5e5f1a9))
 * **deps:** patch npm and Python security vulnerabilities ([9e6bda9](https://github.com/sequential-parameter-optimization/spotforecast2/commit/9e6bda9481b7e51fad21640dbc416fe4ab29b7cc)), closes [#85](https://github.com/sequential-parameter-optimization/spotforecast2/issues/85) [#83](https://github.com/sequential-parameter-optimization/spotforecast2/issues/83)
 
 ## [10.2.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.1.0...v10.2.0) (2026-06-24)
