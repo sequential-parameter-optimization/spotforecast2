@@ -369,6 +369,18 @@ class SpotOptimStrategy:
             kwargs_spotoptim["max_time"] = float(max_time)
             task.logger.info("  SpotOptim max_time: %.2f min", float(max_time))
 
+        # Generic SpotOptim constructor passthrough: ``cfg.spotoptim_kwargs``
+        # (a plain dict attribute, like the TensorBoard knobs above) forwards
+        # knobs that have no first-class config field — e.g. the restart
+        # controls ``restart_after_n``/``max_restarts`` that the ENTSO-E
+        # team4 200-trial configuration needs (spotoptim >= 3.0.0; KB
+        # spotoptim/2026-07-05-round4-final-verdict-prod-t200-restarts).
+        # Applied last so explicit entries win over the derived kwargs above.
+        extra_kwargs = getattr(task.config, "spotoptim_kwargs", None)
+        if extra_kwargs:
+            kwargs_spotoptim.update(extra_kwargs)
+            task.logger.info("  SpotOptim extra kwargs: %s", extra_kwargs)
+
         tuning_results, _ = spotoptim_search_forecaster(
             forecaster=forecaster,
             y=y_train,
