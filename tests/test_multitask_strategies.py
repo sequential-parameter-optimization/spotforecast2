@@ -250,3 +250,57 @@ def test_spotoptim_strategy_none_max_time_not_forwarded(monkeypatch):
     )
 
     assert captured["kwargs_spotoptim"] is None
+
+
+def test_spotoptim_strategy_forwards_spotoptim_kwargs(monkeypatch):
+    """config.spotoptim_kwargs (generic passthrough) must reach kwargs_spotoptim,
+    winning over derived entries on key collisions."""
+    import pandas as pd
+
+    import spotforecast2.model_selection as ms
+
+    captured = {}
+
+    def fake_search_forecaster(*args, **kwargs):
+        captured["kwargs_spotoptim"] = kwargs.get("kwargs_spotoptim")
+        results = pd.DataFrame({"params": [{"alpha": 1.0}], "lags": [[1, 2]]})
+        return results, object()
+
+    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search_forecaster)
+
+    task = _make_fake_task(
+        max_time_spotoptim=2.5,
+        spotoptim_kwargs={"restart_after_n": 50, "max_restarts": 3, "max_time": 9.0},
+    )
+    SpotOptimStrategy(search_space={"alpha": (0.1, 1.0)}).prepare_forecaster(
+        task, "A", _FakeForecaster(), y_train=None
+    )
+
+    ks = captured["kwargs_spotoptim"]
+    assert ks["restart_after_n"] == 50
+    assert ks["max_restarts"] == 3
+    # explicit passthrough wins over the derived max_time_spotoptim entry
+    assert ks["max_time"] == 9.0
+
+
+def test_spotoptim_strategy_no_spotoptim_kwargs_attr_is_noop(monkeypatch):
+    """Configs without the attribute (all existing configs) forward nothing new."""
+    import pandas as pd
+
+    import spotforecast2.model_selection as ms
+
+    captured = {}
+
+    def fake_search_forecaster(*args, **kwargs):
+        captured["kwargs_spotoptim"] = kwargs.get("kwargs_spotoptim")
+        results = pd.DataFrame({"params": [{"alpha": 1.0}], "lags": [[1, 2]]})
+        return results, object()
+
+    monkeypatch.setattr(ms, "spotoptim_search_forecaster", fake_search_forecaster)
+
+    task = _make_fake_task()
+    SpotOptimStrategy(search_space={"alpha": (0.1, 1.0)}).prepare_forecaster(
+        task, "A", _FakeForecaster(), y_train=None
+    )
+
+    assert not captured["kwargs_spotoptim"]
