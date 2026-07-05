@@ -1,3 +1,9 @@
+## [10.3.0-rc.1](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.2.2...v10.3.0-rc.1) (2026-07-05)
+
+### Features
+
+* **multitask:** generic spotoptim_kwargs config passthrough to SpotOptim ([764c115](https://github.com/sequential-parameter-optimization/spotforecast2/commit/764c11582534042f70d14c7335cce8131169a1ec))
+
 ## [10.2.2](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.2.1...v10.2.2) (2026-06-25)
 
 ### Bug Fixes
