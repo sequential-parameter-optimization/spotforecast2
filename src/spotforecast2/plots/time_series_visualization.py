@@ -205,7 +205,7 @@ def visualize_ts_plotly(
             hovermode="x unified",
         )
 
-        fig.show()
+        fig.show(renderer="png")
 
 
 def visualize_ts_comparison(
@@ -372,7 +372,7 @@ def visualize_ts_comparison(
                 hovermode="x unified",
             )
 
-            fig.show()
+            fig.show(renderer="png")
 
 
 def plot_zoomed_timeseries(
