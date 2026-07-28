@@ -76,9 +76,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bcbce66894bfa8e7e94e40e0186b9bb8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-655808e3c14d9b59497a1b5a58e1ce29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-2dd548ee3eab68bd851dd9e3d9c9a811.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-655808e3c14d9b59497a1b5a58e1ce29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-bf3113a5df9682bf20dcb07c5fa7f465.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-09468aa67b55cac8e351c0954d117e4f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-bf3113a5df9682bf20dcb07c5fa7f465.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -513,8 +513,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/plots.comparison.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">comparison</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../docs/reference/plots.diagnostics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">diagnostics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/plots.evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">evaluation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -599,6 +611,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/plots/evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Evaluating a Forecasting Campaign</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/plots/outliers.html" class="sidebar-item-text sidebar-link">
@@ -856,7 +874,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="examples" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples">Examples</h4>
 <p>Report on a near-upper-boundary value:</p>
-<div id="6901c205" class="cell" data-execution_count="1">
+<div id="2dec2976" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> boundary_report</span>
 <span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {</span>
@@ -961,7 +979,7 @@ learning_rate 0.005   0.3  0.069  log10     0.641        </code></pre>
 <section id="examples-1" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-1">Examples</h4>
 <p>Interior optimum — no flags returned:</p>
-<div id="94298989" class="cell" data-execution_count="2">
+<div id="3c97816c" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> report_boundary_positions</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {<span class="st">"num_leaves"</span>: <span class="dv">300</span>, <span class="st">"learning_rate"</span>: <span class="fl">0.05</span>}</span>
@@ -977,7 +995,7 @@ learning_rate 0.005   0.3  0.069  log10     0.641        </code></pre>
 </div>
 </div>
 <p>Near-upper-boundary — flag is returned:</p>
-<div id="c40baf72" class="cell" data-execution_count="3">
+<div id="354a32c8" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> report_boundary_positions</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>params <span class="op">=</span> {<span class="st">"reg_alpha"</span>: <span class="fl">9.9</span>}</span>
@@ -1073,7 +1091,7 @@ learning_rate 0.005   0.3  0.069  log10     0.641        </code></pre>
 <section id="examples-2" class="level4 doc-section doc-section-examples">
 <h4 class="doc-section doc-section-examples anchored" data-anchor-id="examples-2">Examples</h4>
 <p>Upper-pinned float bound is multiplied by widen_factor:</p>
-<div id="4adce599" class="cell" data-execution_count="4">
+<div id="f4ef4533" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> suggest_bounds</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {<span class="st">"estimator__reg_alpha"</span>: <span class="fl">9.89</span>}</span>
@@ -1086,7 +1104,7 @@ learning_rate 0.005   0.3  0.069  log10     0.641        </code></pre>
 </div>
 </div>
 <p>Log-scale upper-pinned bound is also multiplied:</p>
-<div id="dc5781bf" class="cell" data-execution_count="5">
+<div id="ce682395" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> suggest_bounds</span>
 <span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {<span class="st">"estimator__reg_alpha"</span>: <span class="fl">9.89</span>}</span>
@@ -1099,7 +1117,7 @@ learning_rate 0.005   0.3  0.069  log10     0.641        </code></pre>
 </div>
 </div>
 <p>Integer bound grows additively:</p>
-<div id="e8b67a1c" class="cell" data-execution_count="6">
+<div id="45eef8df" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> suggest_bounds</span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {<span class="st">"estimator__n_estimators"</span>: <span class="dv">4950</span>}</span>
@@ -1112,7 +1130,7 @@ learning_rate 0.005   0.3  0.069  log10     0.641        </code></pre>
 </div>
 </div>
 <p>Interior dimension is returned unchanged:</p>
-<div id="ef0b41e6" class="cell" data-execution_count="7">
+<div id="fd7adf60" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.model_selection.boundary <span class="im">import</span> suggest_bounds</span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>best <span class="op">=</span> {<span class="st">"estimator__num_leaves"</span>: <span class="dv">300</span>}</span>

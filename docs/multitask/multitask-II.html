@@ -76,9 +76,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="../../site_libs/quarto-html/quarto-syntax-highlighting-bcbce66894bfa8e7e94e40e0186b9bb8.css" rel="stylesheet" class="quarto-color-scheme-extra" id="quarto-text-highlighting-styles">
 <script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../../site_libs/bootstrap/bootstrap-655808e3c14d9b59497a1b5a58e1ce29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
-<link href="../../site_libs/bootstrap/bootstrap-dark-2dd548ee3eab68bd851dd9e3d9c9a811.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
-<link href="../../site_libs/bootstrap/bootstrap-655808e3c14d9b59497a1b5a58e1ce29.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-bf3113a5df9682bf20dcb07c5fa7f465.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../site_libs/bootstrap/bootstrap-dark-09468aa67b55cac8e351c0954d117e4f.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<link href="../../site_libs/bootstrap/bootstrap-bf3113a5df9682bf20dcb07c5fa7f465.min.css" rel="stylesheet" append-hash="true" class="quarto-color-scheme-extra" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -516,8 +516,20 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth2 ">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/plots.comparison.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">comparison</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
   <a href="../../docs/reference/plots.diagnostics.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text">diagnostics</span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/reference/plots.evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">evaluation</span></a>
   </div>
 </li>
           <li class="sidebar-item">
@@ -602,6 +614,12 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           </a> 
       </div>
       <ul id="quarto-sidebar-section-10" class="collapse list-unstyled sidebar-section depth1 ">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../../docs/plots/evaluation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Evaluating a Forecasting Campaign</span></a>
+  </div>
+</li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../../docs/plots/outliers.html" class="sidebar-item-text sidebar-link">
@@ -755,7 +773,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <section id="vorbereitung" class="level2">
 <h2 class="anchored" data-anchor-id="vorbereitung">Vorbereitung</h2>
 <p>Bereitstellen des DataFrames <code>df</code> aus dem mitgelieferten Demo-Datensatz <code>demo10.csv</code> (11 Zielreihen, stündlich, ca. zwei Jahre):</p>
-<div id="cf6246d9" class="cell" data-execution_count="1">
+<div id="ea81990a" class="cell" data-execution_count="1">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> warnings</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.data.fetch_data <span class="im">import</span> fetch_data, get_package_data_home</span>
@@ -872,7 +890,7 @@ Private Daten nicht in versionierten Seiten ausführen
 <section id="konfiguration" class="level2">
 <h2 class="anchored" data-anchor-id="konfiguration">Konfiguration</h2>
 <p>Konfiguration der Parameter und des Cache-Verzeichnisses. Seit Version 3.9.0 werden Trainings- und Validierungsfenster als <code>pd.Timedelta</code> über die <code>ConfigMulti</code>-Felder <code>train_size</code> und <code>delta_val</code> gesetzt; die früheren Parameter <code>train_days</code> / <code>val_days</code> existieren nicht mehr. Alle weiteren Schlüsselwortargumente des <code>MultiTask</code>-Konstruktors werden als <code>**overrides</code> an <code>config.set_params()</code> weitergereicht — unbekannte Parameter führen zu einem expliziten <code>ValueError</code> statt zu stillem Ignorieren. Da diese <code>**overrides</code> die übergebene <code>ConfigMulti</code> direkt mutieren, legt jeder Task-Abschnitt unten eine eigene frische <code>ConfigMulti</code> an, damit sich Einstellungen nicht zwischen den Abschnitten vermischen.</p>
-<div id="fdd53965" class="cell" data-execution_count="2">
+<div id="4d59595f" class="cell" data-execution_count="2">
 <div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> tempfile</span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
@@ -897,7 +915,7 @@ Note
 </div>
 </div>
 <p>Importieren der Pipeline-Klasse und ihrer Konfiguration:</p>
-<div id="3e00621a" class="cell" data-execution_count="3">
+<div id="4d516a92" class="cell" data-execution_count="3">
 <div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2.multitask.multi <span class="im">import</span> MultiTask</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> spotforecast2_safe.configurator.config_multi <span class="im">import</span> ConfigMulti</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -907,7 +925,7 @@ Note
 <section id="optuna" class="level3">
 <h3 class="anchored" data-anchor-id="optuna">Optuna</h3>
 <p>Tunen der Hyperparameter (wöchentlich):</p>
-<div id="7bb53580" class="cell" data-execution_count="4">
+<div id="11b4990c" class="cell" data-execution_count="4">
 <div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>cfg_optuna <span class="op">=</span> ConfigMulti()</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>cfg_optuna.data_frame_name <span class="op">=</span> PROJECT_NAME   <span class="co"># Projektname = Cache-/Modell-Namespace</span></span>
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -978,7 +996,7 @@ Note
 <section id="lazy" class="level3">
 <h3 class="anchored" data-anchor-id="lazy">Lazy</h3>
 <p>Model-Fit und Prediction mit den besten Hyperparametern aus Optuna, ohne erneutes Tuning (täglich oder stündlich). Wurde die Optuna-Phase noch nicht ausgeführt, startet <code>lazy</code> automatisch mit den Standardparametern. Mit <code>run(show=True)</code> ließen sich zusätzlich interaktive Grafiken pro Ziel und für die Aggregation anzeigen; hier bleibt das mit <code>run(show=False)</code> ausgeschaltet, um die Seite schlank zu halten. Eine eigene frische <code>ConfigMulti</code> stellt sicher, dass keine Einstellungen aus dem Optuna-Abschnitt hereinlecken.</p>
-<div id="e828a7f3" class="cell" data-execution_count="5">
+<div id="261e2f9a" class="cell" data-execution_count="5">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>cfg_lazy <span class="op">=</span> ConfigMulti()</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>cfg_lazy.data_frame_name <span class="op">=</span> PROJECT_NAME</span>
 <span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1047,7 +1065,7 @@ Note
 <section id="predict" class="level3">
 <h3 class="anchored" data-anchor-id="predict">Predict</h3>
 <p>Nur Vorhersage, ohne Tuning oder Fit. Die Schritte <code>optuna</code> oder <code>lazy</code> müssen bereits einmal gelaufen sein, damit die Modelle im Cache vorliegen (<code>auto_save_models=True</code> ist der Standard).</p>
-<div id="841b1080" class="cell" data-execution_count="6">
+<div id="a3f43a15" class="cell" data-execution_count="6">
 <div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>cfg_predict <span class="op">=</span> ConfigMulti()</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>cfg_predict.data_frame_name <span class="op">=</span> PROJECT_NAME</span>
 <span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1112,7 +1130,7 @@ Note
 <section id="clean" class="level3">
 <h3 class="anchored" data-anchor-id="clean">Clean</h3>
 <p>Löschen der Cache-Daten für das Projekt. Mit <code>dry_run=True</code> wird nur angezeigt, welche Dateien gelöscht würden, ohne sie tatsächlich zu entfernen.</p>
-<div id="b831f4c2" class="cell" data-execution_count="7">
+<div id="ea8a9829" class="cell" data-execution_count="7">
 <div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>cfg_clean <span class="op">=</span> ConfigMulti()</span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>cfg_clean.data_frame_name <span class="op">=</span> PROJECT_NAME</span>
 <span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1125,18 +1143,18 @@ Note
 <span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>mt_clean_dry.run()   <span class="co"># dry_run=True: zeigt nur an, was gelöscht würde</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[clean] Dry run — would delete: /tmp/tmp3poge5iz
+<pre><code>[clean] Dry run — would delete: /tmp/tmpr25w78ke
   Would remove: logging
   Would remove: models
   Would remove: tuning_results</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="7">
 <pre><code>{'status': 'dry_run',
- 'cache_dir': PosixPath('/tmp/tmp3poge5iz'),
+ 'cache_dir': PosixPath('/tmp/tmpr25w78ke'),
  'deleted_items': ['logging', 'models', 'tuning_results']}</code></pre>
 </div>
 </div>
-<div id="196225a0" class="cell" data-execution_count="8">
+<div id="cd847131" class="cell" data-execution_count="8">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>cfg_clean_real <span class="op">=</span> ConfigMulti()</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>cfg_clean_real.data_frame_name <span class="op">=</span> PROJECT_NAME</span>
 <span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a></span>
@@ -1149,11 +1167,11 @@ Note
 <span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a>mt_clean.run()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[clean] Cache removed successfully: /tmp/tmp3poge5iz</code></pre>
+<pre><code>[clean] Cache removed successfully: /tmp/tmpr25w78ke</code></pre>
 </div>
 <div class="cell-output cell-output-display" data-execution_count="8">
 <pre><code>{'status': 'success',
- 'cache_dir': PosixPath('/tmp/tmp3poge5iz'),
+ 'cache_dir': PosixPath('/tmp/tmpr25w78ke'),
  'deleted_items': ['logging', 'models', 'tuning_results']}</code></pre>
 </div>
 </div>
