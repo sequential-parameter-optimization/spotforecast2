@@ -1,3 +1,23 @@
+## [10.4.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.3.0...v10.4.0) (2026-07-28)
+
+### Features
+
+* **deps:** require spotforecast2-safe 25.2.0 ([f8119f7](https://github.com/sequential-parameter-optimization/spotforecast2/commit/f8119f75da54697f1c179464061c5ac528607ddd))
+* **plots:** add campaign evaluation figures ([89a3c96](https://github.com/sequential-parameter-optimization/spotforecast2/commit/89a3c965007a714dc40515449694da8cea62ba25))
+* **plots:** add rank-stability and critical-difference figures ([1dddc83](https://github.com/sequential-parameter-optimization/spotforecast2/commit/1dddc8355045a07feba8f91ebfc1fbc6980c798d))
+
+### Bug Fixes
+
+* **deps:** declare scipy as a direct dependency ([40b94bf](https://github.com/sequential-parameter-optimization/spotforecast2/commit/40b94bf9dcbde97b1b24604730caaae08d8294b7))
+
+### Documentation
+
+* **plots:** add forecast-evaluation guide ([7df7644](https://github.com/sequential-parameter-optimization/spotforecast2/commit/7df7644b4a7eb30f9c7586a737b81b7b16d5252d))
+
+### Code Refactoring
+
+* **plots:** address review findings on the evaluation figures ([7605bd9](https://github.com/sequential-parameter-optimization/spotforecast2/commit/7605bd9f27dadf151bf2af45dff7477024393ef8))
+
 ## [10.3.0](https://github.com/sequential-parameter-optimization/spotforecast2/compare/v10.2.2...v10.3.0) (2026-07-05)
 
 ### Features
