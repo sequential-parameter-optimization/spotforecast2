@@ -16,21 +16,24 @@ from __future__ import annotations
 
 from collections.abc import Mapping, Sequence
 
-import matplotlib.pyplot as plt
 import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+
+from spotforecast2.plots._axes import ensure_axes
 
 # ---------------------------------------------------------------------------
 # Internal helpers
 # ---------------------------------------------------------------------------
 
 
-def _x_values(series: pd.Series, x: str):
+def _x_values(series: pd.Series, x: str) -> pd.Index:
     """Return the x coordinates for `series` given `x` ("index" or "hour")."""
     if x == "hour":
         return series.index.hour
-    return series.index
+    if x == "index":
+        return series.index
+    raise ValueError(f"x must be 'index' or 'hour', got {x!r}.")
 
 
 # ---------------------------------------------------------------------------
@@ -102,11 +105,7 @@ def plot_metric_timeline(
     """
     colors = colors or {}
 
-    owns_figure = ax is None
-    if owns_figure:
-        fig, ax = plt.subplots(figsize=figsize)
-    else:
-        fig = ax.figure
+    fig, ax, owns_figure = ensure_axes(ax, figsize)
 
     n_lines = len(series)
     if band is not None:
@@ -152,6 +151,7 @@ def plot_error_profile(
     marker: str = "o",
     marker_size: float = 3.0,
     zero_line: bool = True,
+    zero_line_color: str = "black",
     xlabel: str = "",
     ylabel: str = "mean error",
     xticks: Sequence[float] | None = None,
@@ -173,6 +173,7 @@ def plot_error_profile(
         marker: Marker style for every entry.
         marker_size: Marker size for every entry.
         zero_line: When `True`, draw a horizontal reference line at 0.
+        zero_line_color: Color of the zero reference line.
         xlabel: X-axis label.
         ylabel: Y-axis label.
         xticks: Explicit tick positions for the x axis. When `None`, the
@@ -205,14 +206,10 @@ def plot_error_profile(
     """
     colors = colors or {}
 
-    owns_figure = ax is None
-    if owns_figure:
-        fig, ax = plt.subplots(figsize=figsize)
-    else:
-        fig = ax.figure
+    fig, ax, owns_figure = ensure_axes(ax, figsize)
 
     if zero_line:
-        ax.axhline(0, color="black", lw=0.8)
+        ax.axhline(0, color=zero_line_color, lw=0.8)
 
     for name in profile.columns:
         ax.plot(
@@ -314,11 +311,7 @@ def plot_forecast_overlay(
     colors = colors or {}
     linestyles = linestyles or {}
 
-    owns_figure = ax is None
-    if owns_figure:
-        fig, ax = plt.subplots(figsize=figsize)
-    else:
-        fig = ax.figure
+    fig, ax, owns_figure = ensure_axes(ax, figsize)
 
     n_lines = 0
     if actual is not None:

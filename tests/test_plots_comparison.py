@@ -187,3 +187,58 @@ def test_critical_difference_ax_injection_no_new_figure():
     fig = plot_critical_difference(positions, sig_matrix, ax=ax)
     assert fig is ax.figure
     assert len(plt.get_fignums()) == n_figs_before
+
+
+# ---------------------------------------------------------------------------
+# Review-driven additions: color fidelity, palette validation, lazy import
+# ---------------------------------------------------------------------------
+
+
+def test_rank_stability_label_colors_parameterized():
+    fig = plot_rank_stability(
+        _make_ranks(),
+        highlight={"team_a": "#2a78d6"},
+        label_color="#0b0b0b",
+        muted_label_color="#52514e",
+    )
+    colors = {t.get_color() for t in fig.axes[0].texts}
+    assert {"#0b0b0b", "#52514e"} <= colors
+
+
+def test_rank_stability_label_color_defaults_to_ambient_text_color():
+    fig = plot_rank_stability(_make_ranks(), highlight={"team_a": "#2a78d6"})
+    ambient = plt.rcParams["text.color"]
+    highlighted = [t for t in fig.axes[0].texts if t.get_color() == ambient]
+    assert highlighted  # highlighted labels use the ambient text color
+
+
+def test_rank_stability_tick_label_params_forwarded():
+    fig = plot_rank_stability(
+        _make_ranks(), tick_labelsize=9, tick_labelcolor="#0b0b0b"
+    )
+    tick_label = fig.axes[0].get_xticklabels()[0]
+    assert tick_label.get_fontsize() == 9
+    assert tick_label.get_color() == "#0b0b0b"
+
+
+def test_critical_difference_incomplete_palette_raises():
+    positions, sig_matrix = _make_cd_panel()
+    with pytest.raises(ValueError, match="color_palette must cover"):
+        plot_critical_difference(
+            positions, sig_matrix, color_palette={positions.index[0]: "#888888"}
+        )
+
+
+def test_scikit_posthocs_import_stays_lazy():
+    """Importing the module must not import scikit_posthocs (seaborn cost)."""
+    import subprocess
+    import sys
+
+    code = (
+        "import sys; import spotforecast2.plots.comparison; "
+        "assert 'scikit_posthocs' not in sys.modules, 'import not lazy'"
+    )
+    result = subprocess.run(
+        [sys.executable, "-c", code], capture_output=True, text=True, check=False
+    )
+    assert result.returncode == 0, result.stderr

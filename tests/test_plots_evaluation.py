@@ -218,3 +218,21 @@ def test_forecast_overlay_ax_injection_no_new_figure():
     fig = plot_forecast_overlay(forecasts, actual=actual, ax=ax)
     assert fig is ax.figure
     assert len(plt.get_fignums()) == n_figs_before
+
+
+# ---------------------------------------------------------------------------
+# Review-driven additions: zero-line color, x-mode validation
+# ---------------------------------------------------------------------------
+
+
+def test_error_profile_zero_line_color_parameterized():
+    fig = plot_error_profile(_make_profile(), zero_line_color="#0b0b0b")
+    zero_lines = [ln for ln in fig.axes[0].lines if ln.get_color() == "#0b0b0b"]
+    assert zero_lines
+
+
+def test_forecast_overlay_invalid_x_raises():
+    idx = pd.date_range("2024-01-15", periods=24, freq="h", tz="UTC")
+    series = pd.Series(range(24), index=idx, dtype=float)
+    with pytest.raises(ValueError, match="x must be"):
+        plot_forecast_overlay({"f": series}, x="Hour")

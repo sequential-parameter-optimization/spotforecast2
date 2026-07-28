@@ -37,9 +37,9 @@ dependencies = [
     "scikit-learn>=1.8.0",
     # Backs plots.comparison.plot_critical_difference (Demsar CD diagram).
     "scikit-posthocs>=0.11",
-    # Imported at module scope by plots/distribution.py (gaussian_kde) and
-    # model_selection/random_search.py; previously satisfied only
-    # transitively via other dependencies.
+    # Imported at module scope by plots/distribution.py (gaussian_kde);
+    # also used in model_selection/random_search.py docstring examples.
+    # Previously satisfied only transitively via other dependencies.
     "scipy>=1.11",
     "shap>=0.49.1",
     # 23.0.0 added ForecasterRecursiveCatBoost (wrapped by

@@ -21,6 +21,8 @@ import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
+from spotforecast2.plots._axes import ensure_axes
+
 # ---------------------------------------------------------------------------
 # Public helpers
 # ---------------------------------------------------------------------------
@@ -37,7 +39,11 @@ def plot_rank_stability(
     marker_size: float = 2.0,
     highlight_marker_size: float = 3.0,
     label_fontsize: float = 7.5,
+    label_color: str | None = None,
+    muted_label_color: str = "0.35",
     annotate: bool = True,
+    tick_labelsize: float | None = None,
+    tick_labelcolor: str | None = None,
     ax: Axes | None = None,
     figsize: tuple[float, float] = (6.3, 5.2),
 ) -> Figure:
@@ -65,11 +71,21 @@ def plot_rank_stability(
         marker_size: Marker size for non-highlighted entries.
         highlight_marker_size: Marker size for highlighted entries.
         label_fontsize: Font size of the `annotate=True` text labels.
+        label_color: Text color of the labels of highlighted entries.
+            Defaults to None, which uses the ambient
+            ``matplotlib.rcParams["text.color"]``.
+        muted_label_color: Text color of the labels of non-highlighted
+            entries.
         annotate: When `True`, write `"label rank"` to the left of the
             first column and `"rank label"` to the right of the last
-            column for every entry, clipped to the axes only if `clip_on`
-            is enabled by the caller (here: never — labels are drawn with
-            `clip_on=False` so they render outside the axes box).
+            column for every entry. The labels are drawn with
+            `clip_on=False`, so they render outside the axes box — widen
+            the figure margins (e.g. via ``fig.subplots_adjust``) to make
+            room for them.
+        tick_labelsize: Font size of the x tick labels. Defaults to None
+            (leave the ambient size).
+        tick_labelcolor: Color of the x tick labels. Defaults to None
+            (leave the ambient color).
         ax: Existing axes to draw into. When given, no new figure is
             created and the function returns `ax.figure`.
         figsize: Figure size used when `ax` is not given.
@@ -100,12 +116,10 @@ def plot_rank_stability(
     """
     labels = labels or {}
     highlight = highlight or {}
+    if label_color is None:
+        label_color = plt.rcParams["text.color"]
 
-    owns_figure = ax is None
-    if owns_figure:
-        fig, ax = plt.subplots(figsize=figsize)
-    else:
-        fig = ax.figure
+    fig, ax, _ = ensure_axes(ax, figsize)
 
     metrics = list(ranks.columns)
     n_metrics = len(metrics)
@@ -128,7 +142,7 @@ def plot_rank_stability(
         )
         if annotate:
             label = labels.get(entry_id, entry_id)
-            text_color = "black" if is_highlighted else "0.35"
+            text_color = label_color if is_highlighted else muted_label_color
             ax.text(
                 -0.12,
                 y[0],
@@ -157,10 +171,12 @@ def plot_rank_stability(
     ax.grid(False)
     for spine in ax.spines.values():
         spine.set_visible(False)
-    ax.tick_params(length=0)
-
-    if owns_figure:
-        fig.subplots_adjust(left=0.27, right=0.73, top=0.98, bottom=0.05)
+    tick_kwargs: dict[str, object] = {"length": 0}
+    if tick_labelsize is not None:
+        tick_kwargs["labelsize"] = tick_labelsize
+    if tick_labelcolor is not None:
+        tick_kwargs["labelcolor"] = tick_labelcolor
+    ax.tick_params(**tick_kwargs)
 
     return fig
 
@@ -241,11 +257,15 @@ def plot_critical_difference(
     """
     import scikit_posthocs as sp
 
-    owns_figure = ax is None
-    if owns_figure:
-        fig, ax = plt.subplots(figsize=figsize)
-    else:
-        fig = ax.figure
+    if color_palette is not None:
+        missing = [e for e in positions.index if e not in color_palette]
+        if missing:
+            raise ValueError(
+                "color_palette must cover every entry in positions; "
+                f"missing: {missing}."
+            )
+
+    fig, ax, _ = ensure_axes(ax, figsize)
 
     if labels:
         positions = positions.rename(index=labels)
