@@ -2,13 +2,26 @@ from spotforecast2_safe import Period as PeriodTop
 from spotforecast2_safe.data import Period as PeriodData
 from spotforecast2_safe.data.data_classes import Period as PeriodFull
 
-from spotforecast2.plots import plot_critical_difference, plot_rank_stability
+from spotforecast2.plots import (
+    plot_critical_difference,
+    plot_error_profile,
+    plot_forecast_overlay,
+    plot_metric_timeline,
+    plot_rank_stability,
+)
 
 
 def test_import_plots_comparison_symbols():
     """Verify the rank-stability/CD plot symbols are importable from the
     spotforecast2.plots package."""
     for fn in (plot_rank_stability, plot_critical_difference):
+        assert callable(fn)
+
+
+def test_import_plots_evaluation_symbols():
+    """Verify the campaign-evaluation plot symbols are importable from the
+    spotforecast2.plots package."""
+    for fn in (plot_metric_timeline, plot_error_profile, plot_forecast_overlay):
         assert callable(fn)
 
 

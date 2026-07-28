@@ -126,6 +126,8 @@ website:
                 file: docs/reference/plots.comparison.qmd
               - text: "diagnostics"
                 file: docs/reference/plots.diagnostics.qmd
+              - text: "evaluation"
+                file: docs/reference/plots.evaluation.qmd
               - text: "outlier_plots"
                 file: docs/reference/plots.outlier_plots.qmd
               - text: "plotter"
@@ -228,6 +230,7 @@ quartodoc:
       contents:
         - plots.comparison
         - plots.diagnostics
+        - plots.evaluation
         - plots.outlier_plots
         - plots.plotter
         - plots.time_series_visualization

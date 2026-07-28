@@ -14,12 +14,18 @@ import matplotlib
 matplotlib.use("Agg", force=True)
 
 import matplotlib.pyplot as plt
+import numpy as np
 import pandas as pd
 import pytest
 
 from spotforecast2.plots.comparison import (
     plot_critical_difference,
     plot_rank_stability,
+)
+from spotforecast2.plots.evaluation import (
+    plot_error_profile,
+    plot_forecast_overlay,
+    plot_metric_timeline,
 )
 
 # ---------------------------------------------------------------------------
@@ -34,7 +40,7 @@ def close_all_figures():
     plt.close("all")
 
 
-def test_no_rcparams_mutation_across_comparison_functions():
+def test_no_rcparams_mutation_across_all_five_functions():
     before = dict(matplotlib.rcParams)
 
     ranks = pd.DataFrame({"mae": [1, 2, 3], "rmse": [1, 3, 2]}, index=["a", "b", "c"])
@@ -46,6 +52,19 @@ def test_no_rcparams_mutation_across_comparison_functions():
     sig_matrix.loc["a", "c"] = 0.01
     sig_matrix.loc["c", "a"] = 0.01
     plot_critical_difference(positions, sig_matrix)
+
+    idx = pd.date_range("2024-01-01", periods=10, freq="D")
+    rng = np.random.default_rng(0)
+    series = {"a": pd.Series(rng.standard_normal(10), index=idx)}
+    plot_metric_timeline(series)
+
+    profile = pd.DataFrame({"a": rng.standard_normal(24)}, index=range(24))
+    plot_error_profile(profile)
+
+    hour_idx = pd.date_range("2024-01-15", periods=24, freq="h", tz="UTC")
+    actual = pd.Series(rng.standard_normal(24), index=hour_idx)
+    forecasts = {"a": actual + rng.standard_normal(24) * 0.1}
+    plot_forecast_overlay(forecasts, actual=actual)
 
     after = dict(matplotlib.rcParams)
     assert before == after
