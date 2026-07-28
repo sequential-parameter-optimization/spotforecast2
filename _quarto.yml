@@ -150,6 +150,8 @@ website:
             
       - section: "Plots Guides"
         contents:
+          - text: "Evaluating a Forecasting Campaign"
+            file: docs/plots/evaluation.qmd
           - text: "Outlier Detection"
             file: docs/plots/outliers.qmd
           - text: "Time Series Visualization"
