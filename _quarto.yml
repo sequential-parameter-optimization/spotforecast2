@@ -122,8 +122,12 @@ website:
                 file: docs/reference/model_selection.utils_metrics.qmd
           - section: "Plots"
             contents:
+              - text: "comparison"
+                file: docs/reference/plots.comparison.qmd
               - text: "diagnostics"
                 file: docs/reference/plots.diagnostics.qmd
+              - text: "evaluation"
+                file: docs/reference/plots.evaluation.qmd
               - text: "outlier_plots"
                 file: docs/reference/plots.outlier_plots.qmd
               - text: "plotter"
@@ -146,6 +150,8 @@ website:
             
       - section: "Plots Guides"
         contents:
+          - text: "Evaluating a Forecasting Campaign"
+            file: docs/plots/evaluation.qmd
           - text: "Outlier Detection"
             file: docs/plots/outliers.qmd
           - text: "Time Series Visualization"
@@ -224,7 +230,9 @@ quartodoc:
     - title: "Plots"
       desc: "Outlier, prediction, time-series, and operational diagnostic visualization tools."
       contents:
+        - plots.comparison
         - plots.diagnostics
+        - plots.evaluation
         - plots.outlier_plots
         - plots.plotter
         - plots.time_series_visualization

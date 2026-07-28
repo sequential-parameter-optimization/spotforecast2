@@ -254,4 +254,4 @@ def visualize_outliers_plotly_scatter(
         }
         layout_kwargs.update(kwargs)
         fig.update_layout(**layout_kwargs)
-        fig.show()
+        fig.show(renderer="png")
