@@ -47,7 +47,7 @@ dependencies = [
     # list itself (default DEFAULT_WARM_START_LAGS, None disables) — consumed by
     # SpotOptimStrategy. 21.2.0 added max_time_spotoptim, forwarded as SpotOptim's
     # max_time.
-    "spotforecast2-safe>=23.0.0",
+    "spotforecast2-safe>=25.2.0",
     # spotoptim 1.0 is sequential-only and lean: torch/tensorboard moved to its
     # ``[torch]`` extra. sf2 forwards tensorboard_* kwargs into SpotOptim, so we
     # pin the extra to keep the TensorBoard tuning dashboards working (they were

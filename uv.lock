@@ -3648,7 +3648,7 @@ requires-dist = [
     { name = "scikit-posthocs", specifier = ">=0.11" },
     { name = "scipy", specifier = ">=1.11" },
     { name = "shap", specifier = ">=0.49.1" },
-    { name = "spotforecast2-safe", specifier = ">=23.0.0" },
+    { name = "spotforecast2-safe", specifier = ">=25.2.0" },
     { name = "spotoptim", extras = ["torch"], specifier = ">=1.0.0" },
     { name = "tqdm", specifier = ">=4.67.2" },
     { name = "ty", marker = "extra == 'dev'", specifier = ">=0.0.29" },
@@ -3667,7 +3667,7 @@ dev = [
 
 [[package]]
 name = "spotforecast2-safe"
-version = "25.1.0"
+version = "25.2.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "astral" },
@@ -3684,9 +3684,9 @@ dependencies = [
     { name = "statsmodels" },
     { name = "tqdm" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/60/74/d972ceb280916e0d042939600e34c86b24a5dcbd16a8156ec45f76f5965a/spotforecast2_safe-25.1.0.tar.gz", hash = "sha256:8d5daa485700a029a744db837edb26575efb0503200e14f8fd93a16e5cea3703", size = 20710819, upload-time = "2026-07-18T21:21:37.535Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/30/97/8b39fb05755deb15daf7731a773a094fe6ae858aa252cda513d488ef3f0b/spotforecast2_safe-25.2.0.tar.gz", hash = "sha256:6d186f61ed3ff36735b978012f42348cfd4bd1d8924ea88cefba6a7ea9c0200c", size = 20719208, upload-time = "2026-07-28T17:52:35.28Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/72/61/db4a88e3d4173a8bb0a28285a120fb31c512052d9728890b95209e3d99b7/spotforecast2_safe-25.1.0-py3-none-any.whl", hash = "sha256:1049507862e87d455adff6ef2172e4d3189f103a9c3abe456511d69539756a3a", size = 20787120, upload-time = "2026-07-18T21:21:34.628Z" },
+    { url = "https://files.pythonhosted.org/packages/7d/e6/d94690dbacf0e07347fc743883be13f8a32d99d9cf8f145f15eba922beaf/spotforecast2_safe-25.2.0-py3-none-any.whl", hash = "sha256:93599c9277ec70724e4ed92eb5f39a8d1ad996c45109236017c6c365f4d9e3e8", size = 20797102, upload-time = "2026-07-28T17:52:32.925Z" },
 ]
 
 [[package]]
