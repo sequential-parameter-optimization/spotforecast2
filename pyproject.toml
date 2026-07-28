@@ -35,6 +35,8 @@ dependencies = [
     "pytest-cov>=7.0.0",
     "ruff>=0.15.6",
     "scikit-learn>=1.8.0",
+    # Backs plots.comparison.plot_critical_difference (Demsar CD diagram).
+    "scikit-posthocs>=0.11",
     # Imported at module scope by plots/distribution.py (gaussian_kde) and
     # model_selection/random_search.py; previously satisfied only
     # transitively via other dependencies.

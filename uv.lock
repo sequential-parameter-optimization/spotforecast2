@@ -3315,6 +3315,23 @@ wheels = [
 ]
 
 [[package]]
+name = "scikit-posthocs"
+version = "0.14.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+    { name = "scipy" },
+    { name = "seaborn" },
+    { name = "statsmodels" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/15/88/1a1758a6b68079cc58dd38b291cd194a29f9018a0eb5397342c5156009e5/scikit_posthocs-0.14.0.tar.gz", hash = "sha256:3b9f9273fc9037ee967d11b6a15aef1c6c0ed33a1936ff8879d6f5fb0a181227", size = 40554, upload-time = "2026-05-26T13:01:40.73Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/75/50/975860099ee9f1288f030374386d110c54d58cd1dc71df023135aa79633d/scikit_posthocs-0.14.0-py3-none-any.whl", hash = "sha256:9e2ecd5828cb783c42c1923e223eab202f529b03ab97de587647ab30f6e88333", size = 36836, upload-time = "2026-05-26T13:01:39.23Z" },
+]
+
+[[package]]
 name = "scipy"
 version = "1.18.0"
 source = { registry = "https://pypi.org/simple" }
@@ -3353,6 +3370,20 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/f7/86/5185061a1fcc41d18c5dc2463969b3a3964b31d9ac67b2fb05d4c7ff7670/scipy-1.18.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:9aac6192fac56bf2ca534389d24623f07b39ff83317d58287285e7fbd622ff76", size = 37472480, upload-time = "2026-06-19T15:01:35.136Z" },
     { url = "https://files.pythonhosted.org/packages/31/8e/f04c68e39919a010d34f2ee1367fd705b0a25a02f609d755f0bfbc0a15fc/scipy-1.18.0-cp314-cp314t-win_amd64.whl", hash = "sha256:e40baea28ae7f5475c779741e2d90b1247c78531207b49c7030e698ff81cee3f", size = 37365390, upload-time = "2026-06-19T15:01:38.091Z" },
     { url = "https://files.pythonhosted.org/packages/d5/19/969dc072906c84dd0a3b05dcf57ea750936087d7873549e408b35cfc3f97/scipy-1.18.0-cp314-cp314t-win_arm64.whl", hash = "sha256:368e0a705903c466aa5f08eefb39e6b1b6b2d659e7352a31fd9e2438365be0f8", size = 25279661, upload-time = "2026-06-19T15:01:40.817Z" },
+]
+
+[[package]]
+name = "seaborn"
+version = "0.13.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "matplotlib" },
+    { name = "numpy" },
+    { name = "pandas" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/86/59/a451d7420a77ab0b98f7affa3a1d78a313d2f7281a57afb1a34bae8ab412/seaborn-0.13.2.tar.gz", hash = "sha256:93e60a40988f4d65e9f4885df477e2fdaff6b73a9ded434c1ab356dd57eefff7", size = 1457696, upload-time = "2024-01-25T13:21:52.551Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/83/11/00d3c3dfc25ad54e731d91449895a79e4bf2384dc3ac01809010ba88f6d5/seaborn-0.13.2-py3-none-any.whl", hash = "sha256:636f8336facf092165e27924f223d3c62ca560b1f2bb5dff7ab7fad265361987", size = 294914, upload-time = "2024-01-25T13:21:49.598Z" },
 ]
 
 [[package]]
@@ -3553,6 +3584,7 @@ dependencies = [
     { name = "pytest-cov" },
     { name = "ruff" },
     { name = "scikit-learn" },
+    { name = "scikit-posthocs" },
     { name = "scipy" },
     { name = "shap", version = "0.49.1", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine == 'x86_64' and sys_platform == 'darwin'" },
     { name = "shap", version = "0.52.0", source = { registry = "https://pypi.org/simple" }, marker = "platform_machine != 'x86_64' or sys_platform != 'darwin'" },
@@ -3613,6 +3645,7 @@ requires-dist = [
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.3.0" },
     { name = "safety", marker = "extra == 'dev'", specifier = ">=3.0.0" },
     { name = "scikit-learn", specifier = ">=1.8.0" },
+    { name = "scikit-posthocs", specifier = ">=0.11" },
     { name = "scipy", specifier = ">=1.11" },
     { name = "shap", specifier = ">=0.49.1" },
     { name = "spotforecast2-safe", specifier = ">=23.0.0" },
